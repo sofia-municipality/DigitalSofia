@@ -1,0 +1,36 @@
+@import "./../../../../assets/styles/mixins.scss";
+@import "./../../../../assets/styles/themes.scss";
+
+.pointer{
+  cursor: pointer;
+}
+
+.pageWrapper {
+  padding-inline: 15px;
+  padding-block: 5px;
+  background-color: transparent;
+}
+
+.page {
+  color: $sm-indigo-3;
+  font-size: 16px;
+  font-family: "Sofia Sans";
+  background-color: transparent !important;
+  &:hover {
+    text-decoration: none !important;
+  }
+
+  @include screen-size(large) {
+    font-size: 24px;
+  }
+}
+
+.activePageWrapper {
+  border: 1px solid $sm-indigo-0;
+  background-color: $sm-white;
+}
+
+.activePage {
+  color: $sm-blue;
+  font-weight: 400;
+}

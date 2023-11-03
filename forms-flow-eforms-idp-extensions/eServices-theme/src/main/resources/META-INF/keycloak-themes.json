@@ -1,0 +1,9 @@
+{
+    "themes": [
+    {
+        "name": "eServices-theme",
+        "types": [
+            "login"
+        ]
+    }]
+}

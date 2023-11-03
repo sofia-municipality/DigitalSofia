@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_background"
+    android:fitsSystemWindows="true"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/margin_16"
+        android:src="@drawable/ic_error_red" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvErrorTitle"
+        style="@style/TextStyle.24spSemiBoldMainColor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_32"
+        android:layout_marginTop="@dimen/margin_32"
+        android:layout_marginEnd="@dimen/margin_32"
+        android:gravity="center"
+        android:singleLine="false"
+        android:text="@string/error_blocked_title" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvErrorDescription"
+        style="@style/TextStyle.20spRegularMainColor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_32"
+        android:layout_marginTop="@dimen/margin_32"
+        android:layout_marginEnd="@dimen/margin_32"
+        android:layout_marginBottom="@dimen/margin_64"
+        android:gravity="center"
+        android:singleLine="false"
+        tools:text="@string/error_blocked_description" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnForgotPin"
+        style="@style/ButtonStyle.TransparentBlue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/margin_32"
+        android:text="@string/auth_enter_pin_forgot_title" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>

@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-flow-api
+  namespace : forms-flow-api
+  labels:
+    app.kubernetes.io/name: formsflowapi
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: formsflowapi
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: formsflowapi
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: formsflowapi
+          image: sofiamunicipalitydigitall/forms-flow-api:latest
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c",  "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf && apt update && apt -y install cron vim  && env >> /etc/environment && crontab -l | { cat; echo '*/1 * * * * (FLASK_APP=/forms-flow-api/app/manage.py bash -c \"/venv/bin/flask cron expire-documents\") >> /var/log/syslog 2>&1'; } | crontab - && service cron start " ]
+          ports:
+            - containerPort: 5000
+              name: http-api
+              protocol: TCP
+          env:
+            - name: INSIGHT_API_KEY
+              value: "{API Key from Redash}"
+            - name: INSIGHT_API_URL
+              value: "http://forms-flow-analytics-svc.forms-flow-analytics.svc.cluster.local:5000"
+            - name: DATABASE_URL
+              value: ""
+            - name: BPM_TOKEN_API
+              value: "http://identity-dev-eservices.egov.bg/auth/realms/forms-flow-ai/protocol/openid-connect/token"
+            - name: BPM_CLIENT_ID
+              value: "forms-flow-bpm"
+            - name: BPM_CLIENT_SECRET
+              value: ""
+            - name: BPM_API_URL
+              value: "http://forms-flow-bpm-svc.forms-flow-bpm.svc.cluster.local:8080/camunda"
+            - name: FORMSFLOW_API_CORS_ORIGINS
+              value: "*"
+            - name: JWT_OIDC_WELL_KNOWN_CONFIG
+              value: "http://identity-dev-eservices.egov.bg/auth/realms/forms-flow-ai/.well-known/openid-configuration"
+            - name: JWT_OIDC_JWKS_URI
+              value: "http://identity-dev-eservices.egov.bg/auth/realms/forms-flow-ai/protocol/openid-connect/certs"
+            - name: JWT_OIDC_ISSUER
+              value: "http://identity-dev-eservices.egov.bg/auth/realms/forms-flow-ai"
+            - name: JWT_OIDC_AUDIENCE
+              value: "forms-flow-web"
+            - name: JWT_OIDC_CACHING_ENABLED
+              value: "True"
+            - name: KEYCLOAK_URL
+              value: "http://identity-dev-eservices.egov.bg"
+            - name: KEYCLOAK_URL_REALM
+              value: "forms-flow-ai"
+            - name: WEB_API_BASE_URL
+              value: "http://api-dev-eservices.egov.bg"
+            - name: WEB_BASE_URL
+              value: "http://dev-eservices.sofia.bg"
+            - name: FORMIO_WEB_URL
+              value: "http://forms-dev-eservices.egov.bg"
+            - name: FORMIO_URL
+              value: "http://forms-flow-forms-svc.forms-flow-forms.svc.cluster.local:3001"
+            - name: MULTI_TENANCY_ENABLED
+              value: "false"
+            - name: KEYCLOAK_ENABLE_CLIENT_AUTH
+              value: "false"
+            - name: FORM_EMBED_JWT_SECRET
+              value: ""
+            - name: FORMIO_ROOT_EMAIL
+              value: ""
+            - name: FORMIO_ROOT_PASSWORD
+              value: ""
+            - name: FORMIO_JWT_SECRET
+              value: ""
+            - name: FORMIO_FILE_RESOURCE_PATH
+              value: "generated-files"
+            - name: CRON_DOCUMENT_TRANSACTION_TIMEOUT
+              value: "1"
+            - name: EUROTRUST_EXPIRE_TIMEOUT
+              value: "30"
+            - name: EFORM_INTEGRATIONS_URL
+              value: "http://forms-flow-eforms-integrations-svc.form-flow-eforms-integrations.svc.cluster.local:8002"
+            - name: FORMSFLOW_DOC_API_URL
+              value: "http://forms-flow-documents-svc.forms-flow-documents.svc.cluster.local:5006"
+            - name: SIGN_SERVICE_API_URL
+              value: "http://signature-services-svc.forms-flow-eforms-signature-services.svc.cluster.local:8004/api"

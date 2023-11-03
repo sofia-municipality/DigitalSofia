@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_settings"
+    app:startDestination="@id/settingsFragment">
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.settings.settings.SettingsFragment"
+        android:label="settingsFragment"
+        tools:layout="@layout/fragment_settings" >
+
+        <action
+            android:id="@+id/toProfileFragment"
+            app:destination="@id/profileFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+        <action
+            android:id="@+id/toLanguageFragment"
+            app:destination="@id/languageFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+        <action
+            android:id="@+id/toAuthMethodFragment"
+            app:destination="@id/authMethodFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.settings.profile.ProfileFragment"
+        android:label="profileFragment"
+        tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/languageFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.settings.language.SettingsLanguageFragment"
+        android:label="languageFragment"
+        tools:layout="@layout/fragment_language" />
+
+    <fragment
+        android:id="@+id/authMethodFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.settings.auth.SettingsAuthMethodFragment"
+        android:label="authMethodFragment"
+        tools:layout="@layout/fragment_auth_method" />
+
+</navigation>

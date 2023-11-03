@@ -1,0 +1,62 @@
+@import "./../../../../../../../assets/styles/mixins.scss";
+@import "./../../../../../../../assets/styles/themes.scss";
+@import "./../../../../../../../assets/styles/typography.scss";
+
+.accordionCard {
+  padding: 20px;
+}
+
+.accordionCta {
+  background-color: transparent !important;
+  border: none !important;
+  text-align: start;
+  width: 100%;
+
+  font-family: 'Sofia Sans';
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 29px;
+  padding: 0 !important;
+
+  &:focus {
+    box-shadow: none !important;
+  }
+}
+
+.headerTitle {
+  font-family: 'Sofia Sans';
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+
+  color: $sm-indigo-dark;
+
+  @include screen-size(medium) {
+    font-size: 20px;
+  }
+}
+
+.icon {
+  color: $sm-indigo-dark;
+}
+
+.accordionCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.accordionBody {
+  margin-top: 10px;
+  padding: 0 !important;
+
+  font-family: 'Sofia Sans';
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 140%;
+
+  color: $sm-indigo-dark;
+  @include screen-size(medium) {
+    font-size: 16px;
+  }
+}

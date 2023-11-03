@@ -1,0 +1,161 @@
+@mixin sofiaSansBlack {
+  font-family: "Sofia Sans";
+  font-style: normal;
+  font-weight: 900;
+}
+
+@mixin sofiaSansExtraBold {
+  font-family: "Sofia Sans";
+  font-style: normal;
+  font-weight: 900;
+}
+
+@mixin sofiaSansBold {
+  font-family: "Sofia Sans Bold";
+  font-style: normal;
+  font-weight: 700;
+}
+
+@mixin sofiaSansSemiBold {
+  font-family: "Sofia Sans";
+  font-style: normal;
+  font-weight: 700;
+}
+
+@mixin sofiaSansMedium {
+  font-family: "Sofia Sans";
+  font-style: normal;
+  font-weight: 500;
+}
+
+@mixin sofiaSansRegular {
+  font-family: "Sofia Sans";
+  font-style: normal;
+  font-weight: 400;
+}
+
+@mixin sofiaSansLight {
+  font-family: "Sofia Sans";
+  font-style: normal;
+  font-weight: 300;
+}
+
+@mixin sofiaSansExtraLight{
+  font-family: "Sofia Sans";
+  font-style: normal;
+  font-weight: 300;
+}
+
+@mixin sofiaSansThin {
+  font-family: "Sofia Sans";
+  font-style: normal;
+  font-weight: 100;
+}
+
+@mixin sm-heading-extra-bold-mobile {
+  @include sofiaSansExtraBold;
+  font-size: 36px;
+  line-height: 100%;
+}
+
+@mixin sm-heading-1 {
+  @include sofiaSansExtraBold;
+  font-size: 64px;
+  line-height: 100%;
+}
+
+@mixin sm-heading-2 {
+  @include sofiaSansMedium;
+  font-size: 40px;
+  line-height: 140%;
+}
+
+@mixin sm-heading-3 {
+  @include sofiaSansMedium;
+  font-size: 32px;
+  line-height: 140%;
+}
+
+@mixin sm-heading-4 {
+  @include sofiaSansMedium;
+  font-size: 24px;
+  line-height: 140%;
+}
+
+@mixin sm-heading-5 {
+  @include sofiaSansMedium;
+  font-size: 20px;
+  line-height: 140%;
+}
+
+@mixin sm-heading-6 {
+  @include sofiaSansMedium;
+  font-size: 16px;
+  line-height: 140%;
+}
+
+@mixin sm-body-medium {
+  @include sofiaSansMedium;
+  font-size: 19px;
+  line-height: 150%;
+}
+
+@mixin sm-body-regular {
+  @include sofiaSansRegular;
+  font-size: 19px;
+  line-height: 150%;
+}
+
+@mixin sm-body-light {
+  @include sofiaSansLight;
+  font-size: 19px;
+  line-height: 150%;
+}
+
+@mixin sm-body-2-medium {
+  @include sofiaSansMedium;
+  font-size: 16px;
+  line-height: 150%;
+}
+
+@mixin sm-body-2-regular {
+  @include sofiaSansRegular;
+  font-size: 16px;
+  line-height: 150%;
+}
+
+@mixin sm-body-2-light {
+  @include sofiaSansLight;
+  font-size: 16px;
+  line-height: 150%;
+}
+
+@mixin sm-caption-medium {
+  @include sofiaSansMedium;
+  font-size: 14px;
+  line-height: 140%;
+}
+
+@mixin sm-caption-regular {
+  @include sofiaSansRegular;
+  font-size: 14px;
+  line-height: 140%;
+}
+
+@mixin sm-caption-light {
+  @include sofiaSansLight;
+  font-size: 14px;
+  line-height: 140%;
+}
+
+@mixin sm-tiny-light {
+  @include sofiaSansLight;
+  font-size: 12px;
+  line-height: 140%;
+}
+
+@mixin sm-tiny-thin {
+  @include sofiaSansThin;
+  font-size: 12px;
+  line-height: 140%;
+}

@@ -1,0 +1,25 @@
+pipeline {
+    environment {
+        DEPLOY = "${env.BRANCH_NAME == "develop" ? "true" : "false"}"
+        NAME = "${env.BRANCH_NAME == "develop" ? "example" : "example-staging"}"
+    }
+    
+    agent any
+    
+     stages {
+        stage('Deploy DEV') {
+            when {
+                environment name: 'DEPLOY', value: 'true'
+            }
+            steps {
+                withKubeConfig([credentialsId: 'kubeconfig-dev', serverUrl: 'https://172.23.230.133:6443']) {
+                   sh 'kubectl delete all --all -n forms-flow-forms '                   
+                   sh 'kubectl apply -f ./dhcho/dev/deployment_dev.yaml '
+                   sh 'kubectl apply -f ./dhcho/dev/service_dev.yaml '
+                   sh 'kubectl apply -f ./dhcho/dev/ingress_dev.yaml '
+                    }
+                }
+            }
+            
+    }
+}

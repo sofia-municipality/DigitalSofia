@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App -->
+    <color name="color_primary">#232D3A</color>
+    <color name="color_primary_15">#202C3C</color>
+    <color name="color_primary_inactive">#232D3A</color>
+    <color name="color_main_text">#403A52</color>
+    <color name="color_input_hint">#6C757D</color>
+    <color name="color_button_text">#5E596E</color>
+    <color name="color_white_text">#FFFFFF</color>
+    <color name="color_ripple">#05000000</color>
+    <color name="color_blue">#5268A0</color>
+    <color name="color_light_blue">#6682C7</color>
+    <color name="color_super_light_blue">#E0E6F4</color>
+    <color name="color_green">#729651</color>
+    <color name="color_background">#FFFFFF</color>
+    <color name="color_background_30_percents">#AAFFFFFF</color>
+    <color name="color_orange">#FB5622</color>
+    <color name="color_red">#FF0000</color>
+    <color name="color_success">#3FD945</color>
+    <color name="color_transparent">#00FFFFFF</color>
+    <color name="color_deemed_light">#80FB5622</color>
+    <color name="color_deemed_hard">#F3DBD5</color>
+    <color name="color_gray">#7C788B</color>
+    <color name="color_gray_light">#9A9FAD</color>
+    <color name="color_gray_medium">#DADCE4</color>
+    <color name="color_additional_accent">#3FD945</color>
+    <color name="color_switch">#007BFF</color>
+    <color name="color_background_error_field">#F0F2F9</color>
+
+    <!-- SDK -->
+    <color name="evrotrustMainColor1">#5268A0</color>
+    <color name="evrotrustMainColor2">#5268A0</color>
+    <color name="evrotrustMainColor3">#5268A0</color>
+    <color name="evrotrustBackgroundColor1">#FFFFFF</color>
+    <color name="evrotrustBackgroundColor2">#FFFFFF</color>
+    <color name="evrotrustBackgroundColor3">#FFFFFF</color>
+    <color name="evrotrustTextColor1">#403A52</color>
+    <color name="evrotrustTextColor2">#FFFFFF</color>
+    <color name="evrotrustHintTextColor">#6C757D</color>
+
+</resources>

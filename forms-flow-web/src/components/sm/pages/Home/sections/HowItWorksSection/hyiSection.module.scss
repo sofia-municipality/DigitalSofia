@@ -1,0 +1,61 @@
+@import "../../home.module.scss";
+
+.howSection {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  padding-right: 30px;
+  align-items: center;
+
+  background-color: #FAFAFA;
+
+  @include screen-size(medium) {
+    padding-top: 140px;
+    padding-bottom: 100px;
+  }
+}
+
+.stepContent {
+  padding-inline: 30px;
+
+  @include screen-size(medium) {
+    padding-inline: 15px;
+  }
+}
+
+.stepsContainer {
+  margin-top: 50px;
+  padding-left: 10px;
+
+  @include screen-size(medium) {
+    margin-top: 60px;
+  }
+}
+
+.stepDescription {
+  font-family: 'Sofia Sans';
+  font-weight: 400;
+  font-size: 19px;
+  line-height: 28px;
+
+  margin-top: 30px;
+
+  @include screen-size(medium) {
+    margin-top: 40px;
+  }
+}
+
+.step {
+  margin-bottom: 50px;
+  @include screen-size(medium) {
+    margin-bottom: 0;
+    margin-top: 40px;
+  }
+}
+
+.howLoginCta {
+  margin-top: 50px;
+
+  @include screen-size(medium) {
+    margin-top: 100px;
+  }
+}

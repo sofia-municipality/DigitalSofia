@@ -1,0 +1,128 @@
+@import "./../../../../assets/styles/mixins.scss";
+@import "./../../../../assets/styles/themes.scss";
+@import "./../../../../assets/styles/typography.scss";
+
+.createSection {
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: nowrap;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  @include screen-size(large) {
+    align-items: unset;
+    flex-direction: row;
+    margin-top: 40px;
+    gap: 40px;
+  }
+}
+
+.sectionCard {
+  background-color: #FCFCFC;
+  padding-inline: 30px !important;
+  padding-block: 50px;
+  box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 2px 12px rgba(12, 14, 25, 0.12);
+  border-radius: 2px;
+  max-width: 600px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  @include screen-size(large) {
+    max-width: unset;
+    padding-inline: 50px !important;
+    padding-block: 50px 100px;
+  }
+
+  @include screen-size(huge) {
+    padding-inline: 80px !important;
+  }
+
+  @include screen-size(large) {
+    &:hover {
+      box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 2px 12px rgba(12, 14, 25, 0.24);
+      background-color: $sm-white;
+    }
+  
+    &:hover .imgBorder {
+      transform: rotate(180deg);
+    }
+  
+    &:hover .icon {
+      display: none;
+      color: $sm-blue-6;
+    }
+
+    &:hover .iconActive {
+      display: block;
+    }
+  }
+}
+
+.icon {
+  margin-left: -37px;
+  width: 25px !important;
+  height: 25px !important;
+}
+
+.iconActive {
+  display: none;
+}
+
+.imgBorder {
+  -webkit-transition: transform 0.5s ease-in-out;
+  -moz-transition: transform 0.5s ease-in-out;
+  -o-transition: transform 0.5s ease-in-out;
+  transition: transform 0.5s ease-in-out;
+}
+
+.imgWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  text-align: center;
+  color: $sm-indigo-dark;
+  margin-top: 20px;
+
+  @include sm-heading-4;
+
+  @include screen-size(medium) {
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 38px;
+  }
+}
+
+.subTitle {
+  color: $sm-indigo-4;
+  margin-top: 20px;
+
+  @include sm-heading-5;
+
+  @include screen-size(medium) {
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 120%;
+  }
+}
+
+.description {
+  font-family: 'Sofia Sans';
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 150%;
+  color: $sm-indigo-4;
+  margin-top: 25px;
+}
+
+.cta {
+  width: 100% !important;
+  margin-top: 20px;
+}

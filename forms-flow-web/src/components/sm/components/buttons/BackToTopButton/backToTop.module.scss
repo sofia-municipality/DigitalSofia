@@ -1,0 +1,29 @@
+@import "./../../../../../assets/styles/themes.scss";
+@import "./../../../../../assets/styles/mixins.scss";
+
+.backToTopButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none !important;
+  background-color: $sm-indigo-dark !important;
+  color: $sm-white !important;
+  width: 30px;
+  height: 30px;
+  border-radius: 100px;
+
+  float: right;
+  margin-right: 20px;
+  margin-bottom: 50px;
+
+  @include screen-size(medium) {
+    margin-right: 50px;
+  }
+
+  &:hover, &:focus, &:active {
+    box-shadow: none !important;
+    background-color: $sm-indigo-dark !important;
+    color: $sm-white !important;
+  }
+
+}

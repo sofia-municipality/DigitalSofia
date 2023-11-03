@@ -1,0 +1,67 @@
+"FaceTec_accessibility_cancel_button" = "Откажи";
+"FaceTec_accessibility_torch_button" = "Активирайте осветлението";
+"FaceTec_accessibility_tap_guidance" = "Натиснете 2 пъти върху екрана за насоки как да позиционирате лицето си.";
+
+"FaceTec_accessibility_feedback_move_phone_away" = "Отдалечете екрана.";
+"FaceTec_accessibility_feedback_move_phone_closer" = "Приближете екрана.";
+"FaceTec_accessibility_feedback_face_too_far_left" = "Позиционирайте лицето си в овала.";
+"FaceTec_accessibility_feedback_face_too_far_right" = "Позиционирайте лицето си в овала.";
+"FaceTec_accessibility_feedback_face_too_low" = "Позиционирайте лицето си в овала.";
+"FaceTec_accessibility_feedback_face_too_high" = "Позиционирайте лицето си в овала.";
+"FaceTec_accessibility_feedback_face_rotated_too_far_left" = "Позиционирайте лицето си в овала.";
+"FaceTec_accessibility_feedback_face_rotated_too_far_right" = "Позиционирайте лицето си в овала.";
+"FaceTec_accessibility_feedback_face_pointing_too_far_left" = "Позиционирайте лицето си в овала.";
+"FaceTec_accessibility_feedback_face_pointing_too_far_right" = "Позиционирайте лицето си в овала.";
+"FaceTec_accessibility_feedback_face_not_on_camera" = "Face Not On Camera";
+"FaceTec_accessibility_feedback_hold_device_to_eye_level" = "Задръжте устройството на нивото на очите.";
+
+"FaceTec_initializing_camera" = "Моля изчакайте.";
+
+"FaceTec_action_ok" = "OK";
+"FaceTec_action_im_ready" = "ГОТОВО";
+"FaceTec_action_try_again" = "Опитай пак";
+"FaceTec_action_continue" = "Продължи";
+"FaceTec_action_confirm" = "Потвърдете информацията";
+
+"FaceTec_camera_permission_header" = "Достъп до камерата";
+"FaceTec_camera_permission_message_enroll" = "Натиснете бутона по-долу, за да използвате предна камера.";
+"FaceTec_camera_permission_message_auth" = "Изполването на камерата не е разрешено.Натиснете по-долу за отваряне на настройки.";
+"FaceTec_camera_permission_enable_camera" = "ДАЙТЕ ДОСТЪП";
+"FaceTec_camera_permission_launch_settings" = "ОТВОРЕТЕ НАСТРОЙКИ";
+
+"FaceTec_feedback_center_face" = "Центрирайте лицето си";
+"FaceTec_feedback_face_not_found" = "Поставете лицето в рамката";
+"FaceTec_feedback_face_not_looking_straight_ahead" = "Гледайте право напред";
+"FaceTec_feedback_face_not_upright" = "Дръжте главата си изправена";
+"FaceTec_feedback_hold_steady" = "Не мърдайте, моля";
+"FaceTec_feedback_move_phone_away" = "Отдалечете устройството";
+"FaceTec_feedback_move_phone_closer" = "Приближете устройството";
+"FaceTec_feedback_move_phone_to_eye_level" = "Преместете устройството до нивото на очите";
+"FaceTec_feedback_use_even_lighting" = "Осветете по-добре лицето си";
+
+"FaceTec_instructions_header_ready_1" = "Приготви се за";
+"FaceTec_instructions_header_ready_2" = "Лицево разпознаване";
+"FaceTec_instructions_message_ready_1" = "Лицето трябва да е в рамката,";
+"FaceTec_instructions_message_ready_2" = "Натиснете 'Готов съм' и се приближете";
+
+"FaceTec_presession_frame_your_face" = "Лицето трябва да е в рамката";
+"FaceTec_presession_position_face_straight_in_oval" = "Гледайте напред";
+"FaceTec_presession_hold_steady_3" = "Задръжте стабилно: 3";
+"FaceTec_presession_hold_steady_2" = "Задръжте стабилно: 2";
+"FaceTec_presession_hold_steady_1" = "Задръжте стабилно: 1";
+"FaceTec_presession_eyes_straight_ahead" = "Погледнете напред";
+"FaceTec_presession_remove_dark_glasses" = "Премахнете тъмни очила";
+"FaceTec_presession_neutral_expression" = "Неутрален израз, без усмивка";
+"FaceTec_presession_conditions_too_bright" = "Неподходяща светлина";
+"FaceTec_presession_brighten_your_environment" = "Застанете на по-светло място";
+
+"FaceTec_result_facescan_upload_message" = "Вашата снимка се обработва";
+"FaceTec_result_success_message" = "Готово!";
+
+"FaceTec_retry_header" = "Опитайте отново";
+"FaceTec_retry_subheader_message" = "Имаме нужда от по-ясна снимка";
+"FaceTec_retry_instruction_message_1" = "Застанете с неутрално изражение. Не се усмихвайте.";
+"FaceTec_retry_instruction_message_2" = "Избягвайте отблясъци или силна светлина";
+"FaceTec_retry_instruction_message_3" = "Твърде размазано, почистете камерата си";
+"FaceTec_retry_your_image_label" = "Вашето селфи";
+"FaceTec_retry_ideal_image_label" = "Идеалната поза";

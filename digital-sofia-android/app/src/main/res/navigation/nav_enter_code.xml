@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_enter_code"
+    app:startDestination="@id/enterPinFragment">
+
+    <fragment
+        android:id="@+id/enterPinFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.auth.pin.AuthEnterPinFragment"
+        android:label="enterPinFragment"
+        tools:layout="@layout/fragment_enter_pin">
+
+        <argument
+            android:name="forceDisableBiometric"
+            android:defaultValue="false"
+            app:argType="boolean" />
+
+        <action
+            android:id="@+id/toAutoForgotPinFragment"
+            app:destination="@id/autoForgotPinFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/autoForgotPinFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.auth.forgot.AuthForgotPinFragment"
+        android:label="autoForgotPinFragment"
+        tools:layout="@layout/fragment_forgot_pin" />
+
+    <fragment
+        android:id="@+id/enterBiometricFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.auth.biometric.AuthEnterBiometricFragment"
+        android:label="enterBiometricFragment"
+        tools:layout="@layout/fragment_enter_biometric">
+
+        <action
+            android:id="@+id/toEnterPinFragment"
+            app:destination="@id/enterPinFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+    </fragment>
+
+</navigation>

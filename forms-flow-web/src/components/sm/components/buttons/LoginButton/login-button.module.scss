@@ -1,0 +1,16 @@
+@import "./../../../../../assets/styles/mixins.scss";
+
+.loginCta {
+  width: 140px;
+  height: 60px;
+
+  font-size: 24px !important;
+  line-height: 17px !important;
+  font-weight: 300;
+
+  &:hover {
+    @include screen-size(large) {
+      font-weight: 400;
+    }
+  }
+}

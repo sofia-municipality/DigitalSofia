@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_shadow"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/icClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="@dimen/margin_20"
+        android:layout_marginEnd="@dimen/margin_32"
+        android:clickable="true"
+        android:focusable="true"
+        app:srcCompat="@drawable/ic_close" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvSettings"
+        style="@style/TextStyle.20spRegularMainColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginStart="@dimen/margin_32"
+        android:layout_marginTop="@dimen/margin_24"
+        android:layout_marginEnd="@dimen/margin_32"
+        android:clickable="true"
+        android:drawablePadding="@dimen/margin_24"
+        android:focusable="true"
+        android:gravity="end"
+        android:singleLine="false"
+        android:text="@string/menu_settings"
+        app:drawableEndCompat="@drawable/ic_gear" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="@dimen/margin_32"
+        android:layout_marginTop="@dimen/margin_24"
+        android:layout_marginEnd="@dimen/margin_32"
+        android:background="@color/color_gray_light" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvQuestions"
+        style="@style/TextStyle.20spRegularMainColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginStart="@dimen/margin_32"
+        android:layout_marginTop="@dimen/margin_24"
+        android:layout_marginEnd="@dimen/margin_32"
+        android:clickable="true"
+        android:drawablePadding="@dimen/margin_24"
+        android:focusable="true"
+        android:gravity="end"
+        android:text="@string/menu_frequently_asked_questions"
+        app:drawableEndCompat="@drawable/ic_green_bullet" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvContacts"
+        style="@style/TextStyle.20spRegularMainColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginStart="@dimen/margin_32"
+        android:layout_marginTop="@dimen/margin_24"
+        android:layout_marginEnd="@dimen/margin_32"
+        android:clickable="true"
+        android:drawablePadding="@dimen/margin_24"
+        android:focusable="true"
+        android:gravity="end"
+        android:text="@string/menu_contacts"
+        app:drawableEndCompat="@drawable/ic_blue_bullet" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvConditions"
+        style="@style/TextStyle.14spRegularMainColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginStart="@dimen/margin_32"
+        android:layout_marginTop="@dimen/margin_64"
+        android:layout_marginEnd="@dimen/margin_32"
+        android:layout_marginBottom="@dimen/margin_32"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="end"
+        android:text="@string/menu_general_terms_and_use_policy" />
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

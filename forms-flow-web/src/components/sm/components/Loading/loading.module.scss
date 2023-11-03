@@ -1,0 +1,37 @@
+@import "./../../../../assets/styles/themes.scss";
+
+.wrapper {
+  display: flex;
+  height: 80svh;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader {
+  width: 50px;
+  height: 50px;
+  
+  border-style: solid;
+  border-width: 2px;
+  border-image: $sm-gradient-top 1;
+
+  animation: loading-animation 1.4s infinite ease-out;
+}
+
+@keyframes loading-animation {
+  0% {
+    border-image: $sm-gradient-top 1;
+  }
+  25% {
+    border-image: $sm-gradient-right 1;
+  }
+  50%{
+    border-image: $sm-gradient-bottom 1;
+  }
+  75%{
+    border-image:  $sm-gradient-left 1;
+  }
+  100% {
+    border-image: $sm-gradient-top 1;
+  }
+}

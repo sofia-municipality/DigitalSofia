@@ -1,0 +1,120 @@
+@import "./../../../../../assets/styles/themes.scss";
+@import "./../../../../../assets/styles/mixins.scss";
+
+.btnContainer {
+  width: 100%;
+  height: 80px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+
+  @include screen-size(medium) {
+    width: 340px;
+  }
+
+  @media screen and (max-width: 280px) {
+    width: 260px;
+  }
+}
+
+.btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+  background-color: $sm-white;
+  color: $sm-indigo-dark;
+
+  font-family: 'Sofia Sans';
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 24px;
+  text-align: center;
+
+  -webkit-transition: background-color 0.5s ease-in-out;
+  -moz-transition: background-color 0.5s ease-in-out;
+  -o-transition: background-color 0.5s ease-in-out;
+  transition: background-color 0.5s ease-in-out;
+
+  &:focus {
+    color: $sm-indigo-dark !important;
+    text-decoration: none !important;
+  }
+}
+
+.btnLine {
+  height: 2px;
+  background: $sm-indigo-dark;
+  width: 0;
+  position: absolute;
+  right: 100%;
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+
+  &.left {
+    right: 100%;
+  }
+  &.right {
+    left: 100%;
+  }
+}
+
+.circle {
+  width: 10px;
+  height: 10px;
+  background-color: $sm-white;
+  border-radius: 50%;
+
+  position: absolute;
+  z-index: 1;
+
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+
+  &.left {
+    left: -3px;
+  }
+  &.right {
+    right: -3px;
+  }
+}
+
+.btnContainer:hover > .btn {
+  color: $sm-indigo-dark;
+  text-decoration: none;
+}
+
+@include screen-size(large) {
+  .btnContainer:hover > .btnLine {
+    width: 15px;
+  }
+  
+  .btnContainer:hover > .btn {
+    background-color: $sm-indigo-dark;
+    text-decoration: none;
+    color: $sm-white;
+  
+    border-image: none;
+    border: none; 
+  }
+  
+  .btnContainer:hover > .circle {
+    border: 2px solid $sm-indigo-dark;
+  
+    &.left {
+      left: -16px;
+    }
+    &.right {
+      right: -16px;
+    }
+  }
+}
+
+

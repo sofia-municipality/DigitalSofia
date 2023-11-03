@@ -1,0 +1,108 @@
+@import "./../../../../../../../assets/styles/themes.scss";
+@import "./../../../../../../../assets/styles/mixins.scss";
+@import "./../../../../../../../assets/styles/typography.scss";
+
+.addressCardHeaderMobile {
+  display: flex;
+  flex-direction: column;
+}
+
+.iconNamesWrapper {
+  display: grid;
+  grid-template-columns: 0fr 1fr;
+  grid-gap: 10px;
+}
+
+.iconWrapper, .iconWrapperMobile {
+  width: 40px;
+  height: 40px;
+  border-radius: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: $sm-white;
+}
+
+.iconWrapperMobile {
+  width: 25px;
+  height: 25px;
+}
+
+.mobileIcon {
+  width: 15px;
+  height: 15px;
+}
+
+.addressCardHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+.iconImageWrapper {
+  display: grid;
+  grid-template-columns: 0fr 1fr;
+  grid-gap: 20px;
+}
+
+.namesWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.names {
+  font-size: 20px;
+  font-family: 'Sofia Sans';
+  font-weight: 400;
+  line-height: 29px;
+  color: $sm-indigo-dark;
+  margin-bottom: 0;
+  word-break: break-word;
+
+  @include screen-size(medium) {
+    font-size: 24px;
+  }
+}
+
+.formName {
+  font-family: 'Sofia Sans';
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  color: $sm-indigo-4;
+}
+
+.entryNumber {
+  align-self: flex-end;
+  margin-bottom: 10px;
+}
+
+.entryNumberMobile {
+  margin-bottom: 10px;
+}
+
+.entryNumberLabel {
+  font-family: 'Sofia Sans';
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+  margin-right: 5px;
+
+  color: $sm-indigo-4;
+
+  @include screen-size(medium) {
+    font-size: 16px;
+  }
+}
+
+.entryNumberValue {
+  font-family: 'Sofia Sans';
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 24px;
+
+  color: $sm-indigo-dark;
+  @include screen-size(medium) {
+    font-weight: 600;
+    font-size: 20px;
+  }
+}

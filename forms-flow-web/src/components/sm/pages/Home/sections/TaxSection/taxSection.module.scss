@@ -1,0 +1,44 @@
+@import "../../home.module.scss";
+
+.taxImgwrapper {
+  padding-inline: 0;
+  @include screen-size(medium) {
+    padding-inline: 15px;
+  }
+}
+
+.taxImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius:3px;
+}
+
+.taxSection {
+  padding-bottom: 50px;
+  @include screen-size(medium) {
+    padding-top: 140px;
+    padding-bottom: 190px;
+  }
+
+  background-color: #F5F5F5;
+  border-bottom: 1px solid transparent;
+  border-image: $sm-gradient-x;
+  border-image-slice: 1;
+}
+
+.taxContent {
+  margin-top: 30px;
+  padding-inline: 30px;
+  @include screen-size(medium) {
+    margin-top: 0;
+  }
+
+  @include screen-size(extra-large) {
+    padding-inline: 50px;
+  }
+
+  @include screen-size(huge) {
+    padding-inline: 100px;
+  }
+}

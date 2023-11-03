@@ -1,0 +1,96 @@
+@import "./../../../../../assets/styles/themes.scss";
+@import "./../../../../../assets/styles/mixins.scss";
+@import "./../../../../../assets/styles/buttons.scss";
+
+.smCta {
+  font-family: Sofia Sans !important;
+  color: $sm-indigo-4;
+
+  font-family: 'Sofia Sans';
+  font-style: normal;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 6px;
+  border-style: outset;
+  border-color: buttonborder;
+
+  &.large {
+    @include sm-cta-size-large;
+  }
+
+  &.medium {
+    @include sm-cta-size-medium;
+  }
+
+  &.small {
+    @include sm-cta-size-small;
+  }
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &.primary {
+   @include sm-cta-primary;
+  }
+  
+  &.secondary {
+    @include sm-cta-secondary;
+    &.loading {
+      display: flex;
+      align-items: center;
+      &:after {
+        content: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="white" d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8Z"%2F%3E%3C%2Fsvg%3E');
+        width: 24px;
+        height: 24px;
+        margin-left: 10px;
+        margin-right: -10px;
+        display: block;
+        animation: lds-dual-ring 1.2s linear infinite;
+      }
+    }
+  }
+
+  &.tertiary {
+    @include sm-cta-tertiary;
+  }
+
+  &.quaternary {
+    @include sm-cta-quaternary;
+  }
+
+  &.outline {
+    @include sm-cta-outline;
+  }
+
+  &.transparent {
+    @include sm-cta-transparent;
+  }
+
+  &.link {
+    @include sm-cta-link;
+  }
+
+  &.success {
+    @include sm-cta-success;
+  }
+
+  &.error {
+    @include sm-cta-error;
+  }
+
+  &.error-outline {
+    @include sm-cta-error;
+  }
+}
+
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

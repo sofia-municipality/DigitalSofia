@@ -1,0 +1,79 @@
+@import "./../../../../assets/styles/mixins.scss";
+@import "./../../../../assets/styles/themes.scss";
+
+.smCard {
+  width: 100%;
+
+  :global .card {
+    border: none;
+  }
+
+  :global .card-header {
+    background-color: white;
+    border: none;
+    padding-top: 15px !important;
+  }
+
+  &:hover {
+    .headerTitle {
+      color: $sm-indigo-dark;
+    }
+
+    .line {
+      background: $sm-gradient-x;
+    }
+
+    .arrowDown {
+      color: $sm-indigo-3 !important;
+    }
+  }
+
+  &.expanded {
+    .headerTitle {
+      color: $sm-red;
+    }
+
+    .line {
+      background: none;
+    }
+  }
+}
+
+.accordionCta {
+  background-color: transparent !important;
+  border: none !important;
+  text-align: start;
+  width: 100%;
+
+  font-family: 'Sofia Sans';
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 29px;
+  padding: 0 !important;
+
+  &:focus {
+    box-shadow: none !important;
+  }
+}
+
+.headerTitle {
+  color: $sm-indigo-4;
+}
+
+.icon {
+  color: $sm-indigo-1 !important;
+}
+
+.line {
+  width: 100%;
+  height: 1px;
+  margin-top: 25px;
+
+  background: $sm-indigo-0;
+}
+
+.smCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

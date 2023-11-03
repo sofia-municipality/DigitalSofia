@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="android:statusBarColor">@color/color_background</item>
+        <item name="android:navigationBarColor">@color/color_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="windowSplashScreenBackground">@color/color_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/img_logo_small</item>
+        <item name="postSplashScreenTheme">@style/Theme.App</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="29">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+
+    <style name="Theme.App" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:background">@color/color_background</item>
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryVariant">@color/color_primary</item>
+        <item name="colorOnPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary</item>
+        <item name="colorSecondary">@color/color_primary</item>
+        <item name="colorSecondaryVariant">@color/color_primary</item>
+        <item name="colorOnSecondary">@color/color_primary</item>
+        <item name="colorAccent">@color/color_primary</item>
+        <item name="android:statusBarColor">@android:color/background_light</item>
+        <item name="android:navigationBarColor">@android:color/background_light</item>
+        <item name="android:colorEdgeEffect">@color/color_primary</item>
+        <item name="android:windowBackground">@color/color_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
+        <item name="windowActionModeOverlay">true</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="29">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="CustomListPopupWindowStyle" parent="Widget.AppCompat.ListPopupWindow">
+        <item name="android:popupBackground">@drawable/bg_popup_window_menu</item>
+    </style>
+
+    <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:layout_marginStart">@dimen/margin_16</item>
+        <item name="android:layout_marginEnd">@dimen/margin_16</item>
+        <item name="android:background">@drawable/bg_bottom_sheet_base</item>
+    </style>
+
+    <style name="AppBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+        <item name="colorAccent">@color/color_primary</item>
+    </style>
+
+    <style name="BannerMessageStyle">
+        <item name="android:windowEnterAnimation">@anim/banner_slide_down</item>
+        <item name="android:windowExitAnimation">@anim/banner_slide_up</item>
+    </style>
+
+    <!-- Buttons -->
+
+    <style name="ButtonStyle">
+        <item name="android:paddingTop">@dimen/margin_5</item>
+        <item name="android:paddingBottom">@dimen/margin_5</item>
+        <item name="android:paddingStart">@dimen/margin_18</item>
+        <item name="android:paddingEnd">@dimen/margin_18</item>
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:elevation">0dp</item>
+        <item name="cornerRadius">2dp</item>
+        <item name="android:textColor">@color/color_white_text</item>
+    </style>
+
+    <style name="ButtonStyle.Green">
+        <item name="android:background">@drawable/bg_ripple_green_button_states</item>
+    </style>
+
+    <style name="ButtonStyle.LightBlue">
+        <item name="android:background">@drawable/bg_ripple_light_blue_button_states</item>
+    </style>
+
+    <style name="ButtonStyle.Blue">
+        <item name="android:background">@drawable/bg_ripple_blue_button_states</item>
+    </style>
+
+    <style name="ButtonStyle.Orange">
+        <item name="android:background">@drawable/bg_ripple_orange_button_states</item>
+    </style>
+
+    <style name="ButtonStyle.Transparent">
+        <item name="android:background">@drawable/bg_ripple_transparent_button</item>
+        <item name="android:textColor">@color/color_button_text</item>
+    </style>
+
+    <style name="ButtonStyle.TransparentBlue">
+        <item name="android:background">@drawable/bg_ripple_transparent_button</item>
+        <item name="android:textColor">@color/color_light_blue</item>
+    </style>
+
+    <!-- CheckBox -->
+
+    <style name="CheckBoxStyle" parent="Base.Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:textColor">@color/color_blue</item>
+        <item name="buttonTint">@drawable/bg_check_box</item>
+    </style>
+
+    <!-- Tab layout -->
+
+    <style name="AppTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabGravity">fill</item>
+        <item name="tabIndicator">@null</item>
+        <item name="tabMaxWidth">0dp</item>
+        <item name="tabIndicatorHeight">0dp</item>
+        <item name="tabMode">fixed</item>
+        <item name="tabIndicatorFullWidth">false</item>
+        <item name="android:tabStripEnabled">false</item>
+        <item name="tabRippleColor">@color/color_ripple</item>
+        <item name="tabBackground">@drawable/bg_tabs_selector</item>
+    </style>
+
+    <!-- Text -->
+
+    <style name="TextStyle">
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <!-- Text 12sp -->
+
+    <style name="TextStyle.12spRegularMainColor">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+    </style>
+
+    <style name="TextStyle.12spSemiBoldMainColor">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_semi_bold</item>
+    </style>
+
+    <style name="TextStyle.12spBoldMainColor">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_bold</item>
+    </style>
+
+    <style name="TextStyle.12spRegularGrayColor">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/color_gray</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+    </style>
+
+    <!-- Text 14sp -->
+
+    <style name="TextStyle.14spRegularMainColor">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+    </style>
+
+    <style name="TextStyle.14spSemiBoldMainColor">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_semi_bold</item>
+    </style>
+
+    <style name="TextStyle.14spBoldMainColor">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_bold</item>
+    </style>
+
+    <style name="TextStyle.14spRegularGrayColor">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/color_gray</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+    </style>
+
+    <style name="TextStyle.14spRegularButtonGrayColor">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/color_button_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+    </style>
+
+    <!-- Text 16sp -->
+
+    <style name="TextStyle.16spRegularMainColor">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+    </style>
+
+    <style name="TextStyle.16spSemiBoldMainColor">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_semi_bold</item>
+    </style>
+
+    <style name="TextStyle.16spBoldMainColor">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_bold</item>
+    </style>
+
+    <style name="TextStyle.16spRegularGrayColor">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/color_gray</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+    </style>
+
+    <style name="TextStyle.16spRegularLightBlueColor">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/color_light_blue</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+    </style>
+
+    <style name="TextStyle.16spRegularButtonGrayColor">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/color_button_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+    </style>
+
+    <!-- Text 18sp -->
+
+    <style name="TextStyle.18spRegularMainColor">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+    </style>
+
+    <style name="TextStyle.18spSemiBoldMainColor">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_semi_bold</item>
+    </style>
+
+    <style name="TextStyle.18spBoldMainColor">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_bold</item>
+    </style>
+
+    <style name="TextStyle.18spRegularGrayColor">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/color_gray</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+    </style>
+
+    <style name="TextStyle.18spRegularButtonGrayColor">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/color_button_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+    </style>
+
+    <!-- Text 20sp -->
+
+    <style name="TextStyle.20spRegularMainColor">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="TextStyle.20spSemiBoldMainColor">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_semi_bold</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="TextStyle.20spBoldMainColor">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_bold</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="TextStyle.20spRegularGrayColor">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/color_gray</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="TextStyle.20spRegularButtonGrayColor">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/color_button_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+    </style>
+
+    <!-- Text 24sp -->
+
+    <style name="TextStyle.24spRegularMainColor">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="TextStyle.24spSemiBoldMainColor">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_semi_bold</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="TextStyle.24spBoldMainColor">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_bold</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="TextStyle.24spRegularGrayColor">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/color_gray</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="TextStyle.24spRegularButtonGrayColor">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/color_button_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+    </style>
+
+    <!-- Text 32sp -->
+
+    <style name="TextStyle.32spRegularMainColor">
+        <item name="android:textSize">32sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="TextStyle.32spSemiBoldMainColor">
+        <item name="android:textSize">32sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_semi_bold</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="TextStyle.32spBoldMainColor">
+        <item name="android:textSize">32sp</item>
+        <item name="android:textColor">@color/color_main_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_bold</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="TextStyle.32spRegularGrayColor">
+        <item name="android:textSize">32sp</item>
+        <item name="android:textColor">@color/color_gray</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="TextStyle.32spRegularButtonGrayColor">
+        <item name="android:textSize">32sp</item>
+        <item name="android:textColor">@color/color_button_text</item>
+        <item name="android:fontFamily">@font/sofia_sans_regular</item>
+    </style>
+
+    <!-- Text inputs -->
+    <style name="DefaultTextInputLayoutStyle" parent="ThemeOverlay.MaterialComponents.TextInputEditText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/margin_16</item>
+        <item name="android:layout_marginEnd">@dimen/margin_16</item>
+        <item name="android:layout_marginTop">@dimen/margin_16</item>
+        <item name="boxStrokeColor">@android:color/transparent</item>
+        <item name="boxBackgroundMode">filled</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+        <item name="boxBackgroundColor">@android:color/transparent</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/default_small_corners_radius</item>
+        <item name="boxCornerRadiusTopStart">@dimen/default_small_corners_radius</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/default_small_corners_radius</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/default_small_corners_radius</item>
+        <item name="endIconDrawable">@drawable/ic_clean</item>
+        <item name="endIconMode">clear_text</item>
+        <item name="endIconTint">@null</item>
+        <item name="errorEnabled">false</item>
+        <item name="errorTextColor">@color/color_orange</item>
+        <item name="errorIconDrawable">@null</item>
+        <!-- Default hint color-->
+        <item name="android:textColorHint">@color/color_input_hint</item>
+        <!-- Focused hint color-->
+        <item name="hintTextColor">@color/color_input_hint</item>
+        <item name="hintTextAppearance">@style/TextStyle.12spRegularMainColor</item>
+        <item name="hintEnabled">true</item>
+    </style>
+
+    <style name="DefaultEditTextStyle" parent="TextStyle.24spRegularMainColor">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingTop">@dimen/margin_32</item>
+        <item name="android:paddingBottom">@dimen/margin_8</item>
+        <item name="android:background">@drawable/bg_input_layout_default</item>
+        <item name="android:textColorHint">@color/color_input_hint</item>
+        <item name="android:textSize">@dimen/default_medium_text_size</item>
+        <item name="android:inputType">text</item>
+    </style>
+
+    <!-- Passcode -->
+
+    <declare-styleable name="PasscodeView">
+        <attr name="itemCount" format="integer" />
+        <attr name="itemWidth" format="dimension" />
+        <attr name="itemHeight" format="dimension" />
+        <attr name="itemRadius" format="dimension" />
+        <attr name="itemSpacing" format="dimension" />
+        <attr name="lineWidth" format="dimension" />
+        <attr name="lineColor" format="reference|color" />
+        <attr name="viewType" format="enum">
+            <enum name="rectangle" value="0" />
+            <enum name="line" value="1" />
+            <enum name="none" value="2" />
+        </attr>
+        <attr name="android:cursorVisible" />
+        <attr name="cursorWidth" format="dimension" />
+        <attr name="cursorColor" format="reference|color" />
+        <attr name="android:itemBackground" />
+        <attr name="hideLineWhenFilled" format="boolean" />
+        <attr name="state_filled" format="boolean" />
+        <attr name="state_error" format="boolean" />
+        <attr name="rtlTextDirection" format="boolean" />
+    </declare-styleable>
+
+    <style name="PassCodeButtonStyle" parent="TextStyle.32spRegularMainColor">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:background">@drawable/bg_ripple_default_oval</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:lineSpacingExtra">0dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="PassCodeStyle" parent="TextStyle.16spRegularMainColor">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:focusable">false</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:gravity">bottom</item>
+        <item name="android:inputType">numberPassword</item>
+        <item name="android:itemBackground">@drawable/bg_pass_code</item>
+        <item name="android:paddingTop">@dimen/margin_8</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:paddingStart">@dimen/margin_16</item>
+        <item name="android:paddingEnd">@dimen/margin_16</item>
+        <item name="android:theme">@style/PasscodeOtpViewTheme</item>
+        <item name="android:textColor">@color/color_primary</item>
+        <item name="cursorColor">@android:color/transparent</item>
+        <item name="itemHeight">@dimen/margin_12</item>
+        <item name="itemSpacing">@dimen/margin_24</item>
+        <item name="itemWidth">@dimen/margin_12</item>
+        <item name="state_filled">true</item>
+        <item name="viewType">none</item>
+    </style>
+
+    <style name="PasscodeOtpViewTheme" parent="Widget.AppCompat.EditText">
+        <item name="android:background">@null</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textSelectHandleLeft">@drawable/zero_px_transparent</item>
+        <item name="android:textSelectHandleRight">@drawable/zero_px_transparent</item>
+        <item name="android:textSelectHandle">@drawable/zero_px_transparent</item>
+    </style>
+
+    <!-- Switches -->
+    <style name="SwitchStyle" parent="TextStyle.24spRegularMainColor">
+        <item name="switchPadding">8dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="trackTint">@color/selector_switch_track</item>
+        <item name="thumbTint">@color/selector_switch_thumb</item>
+        <item name="colorControlActivated">@color/color_switch</item>
+    </style>
+
+</resources>

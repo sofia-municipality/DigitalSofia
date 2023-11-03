@@ -1,0 +1,47 @@
+@import "./../../../../../../../assets/styles/themes.scss";
+@import "./../../../../../../../assets/styles/mixins.scss";
+
+.title {
+  margin-bottom: 5px;
+  font-family: 'Sofia Sans';
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 19px;
+
+  color: $sm-indigo-dark;
+
+  @include screen-size(medium) {
+    font-size: 16px;
+  }
+}
+
+.line {
+  height: 10px;
+  width: 1px;
+}
+
+.progress {
+  display: flex;
+  gap: 5px;
+}
+
+.progressStep {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+
+  &:not([id*=active]) {
+    border: 2px solid $sm-indigo-0-5;
+  }
+}
+
+.activeProgressStep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.statusProgressWrapper {
+  padding-left: 10px;
+}

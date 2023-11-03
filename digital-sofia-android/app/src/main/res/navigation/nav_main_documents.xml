@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_main_documents"
+    app:startDestination="@id/documentsFragment">
+
+    <fragment
+        android:id="@+id/documentsFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.main.documents.DocumentsFragment"
+        android:label="documentsFragment"
+        tools:layout="@layout/fragment_documents" >
+
+        <action
+            android:id="@+id/toDocumentPreviewFragment"
+            app:destination="@id/documentPreviewFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/documentPreviewFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.main.documents.preview.DocumentPreviewFragment"
+        android:label="documentPreviewFragment"
+        tools:layout="@layout/fragment_documents" >
+
+        <argument
+            android:name="url"
+            app:argType="string"
+            app:nullable="false" />
+
+    </fragment>
+
+
+</navigation>

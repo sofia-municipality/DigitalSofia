@@ -1,0 +1,123 @@
+@import "./../../../../../../../assets/styles/mixins.scss";
+@import "./../../../../../../../assets/styles/themes.scss";
+@import "./../../../../../../../assets/styles/typography.scss";
+
+.localTaxesContainer {
+  background-color: #FAFAFA;
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @include screen-size(medium) {
+    padding-block: 5vh;
+    padding-inline: 15px;
+  }
+}
+
+.localTaxesContent {
+  width: 100%;
+  max-width: 1200px;
+  background-color: #F5F5F5;
+  box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 2px 12px rgba(12, 14, 25, 0.12);
+  min-height: 90vh;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+
+  @include screen-size(medium) {
+    background-color: $sm-white;
+  }
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  @include screen-size(medium) {
+    margin-top: 20px;
+  }
+
+  & > div {
+    width: 100%;
+    max-width: 960px;
+  }
+}
+
+.accordionWrapper {
+  margin-block: 10px 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  @include screen-size(medium) {
+    margin-block: 30px 0;
+  }
+}
+
+.accordionPaymentWrapper {
+  margin-block: 10px 160px;
+}
+
+.referenceFooter {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background-color: $sm-white;
+  padding-block: 20px;
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #DBD8DD 25.01%, #E2DFE3 74.99%, rgba(255, 255, 255, 0) 100%);
+  border-image-slice: 1;
+
+  & > div {
+    width: 100%;
+    max-width: 960px;
+  }
+
+  @include screen-size(medium) {
+    margin-top: 30px;
+    position: relative;
+    padding-block: 30px;
+  }
+}
+
+.noTaxDataFound {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 20px;
+  min-height: 30vh;
+}
+
+.noTaxDataFoundText {
+  @include sm-heading-4;
+  color: $sm-indigo-3;
+}
+
+.currency {
+  font-family: 'Sofia Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 140%;
+  color: $sm-indigo-dark;
+  margin-left: 2px;
+}
+
+.paySumTotal {
+  font-family: Sofia Sans;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 34px;
+  letter-spacing: 0px;
+  text-align: right;
+  color: $sm-red-6;
+}
+
+.paySumTotalLabel {
+  display: inline-block;
+}

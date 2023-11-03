@@ -1,0 +1,12 @@
+[
+  {
+    "name": "bg",
+    "value": "БГ",
+    "label": "Български"
+  },
+  {
+    "name": "en",
+    "value": "EN",
+    "label": "English"
+  }
+]

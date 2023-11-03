@@ -1,0 +1,112 @@
+@import "./../../../../../assets/styles/mixins.scss";
+@import "./../../../../../assets/styles/themes.scss";
+
+.profileIconWrapper {
+  width: 30px;
+  height: 30px;
+  background-color: $sm-white !important;
+  padding: 0;
+  border: none;
+  position: relative;
+  z-index: 2;
+
+  margin-right: 20px;
+  @include screen-size(large) {
+    width: 60px;
+    height: 60px;
+
+    margin-right: 0;
+  }
+}
+
+.profileWrapper {
+  float: right;
+  display: flex;
+  align-items: center;
+}
+
+.sessionTimer {
+  margin-right: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.profileIcon {
+  width: 12px !important;
+  height: 10px !important;
+  color: $sm-indigo-dark;
+
+  @include screen-size(large) {
+    width: 24px !important;
+    height: 22px !important;
+  }
+}
+
+.overlay {
+  width: 280px;
+  height: 420px;
+  position: absolute;
+  z-index: 1;
+  background-color: $sm-white;
+  box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 2px 12px rgba(12, 14, 25, 0.12);
+}
+
+.overlayMenu {
+  margin-top: 100px;
+}
+
+.pencilIcon {
+  color: $sm-orange;
+}
+
+.navLink {
+  font-family: 'Sofia Sans';
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 17px;
+
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+
+  color: $sm-indigo-dark;
+
+  &:hover {
+    color: $sm-indigo-dark;
+  }
+}
+
+.icon {
+  margin-right: 20px;
+}
+
+.taskIcon {
+  color: $sm-blue;
+}
+
+.personIcon {
+  color: $sm-indigo-4;
+}
+
+.logoutIcon {
+  color: $sm-indigo-4;
+}
+
+.logoutCta {
+  font-family: 'Sofia Sans';
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 17px;
+  margin-top: 70px;
+
+  color: $sm-indigo-3;
+
+  border: none !important;
+  background-color: $sm-white !important;
+  padding: 0.5rem 1rem;
+
+  &:hover, &:focus {
+    color: $sm-indigo-3 !important;
+    box-shadow: none !important;
+  }
+}

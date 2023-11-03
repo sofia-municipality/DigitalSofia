@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-flow-documents
+  namespace: forms-flow-documents
+  labels:
+    app.kubernetes.io/name: forms-flow-documents
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: forms-flow-documents
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: forms-flow-documents
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: form-flow-web
+          image: sofiamunicipalitydigitall/forms-flow-documents:latest
+          ports:
+            - containerPort: 5006
+              name: http
+              protocol: TCP
+          env:
+            - name: FORMIO_URL
+              value: "http://forms-flow-forms-svc.forms-flow-forms.svc.cluster.local:3001"
+            - name: FORMIO_ROOT_EMAIL
+              value: ""
+            - name: FORMIO_ROOT_PASSWORD
+              value: ""
+            - name: FORMIO_JWT_SECRET
+              value: "test-secret"
+            - name: JWT_OIDC_WELL_KNOWN_CONFIG
+              value: "http://identity-dev-eservices.egov.bg/auth/realms/forms-flow-ai/.well-known/openid-configuration"
+            - name: JWT_OIDC_JWKS_URI
+              value: "http://identity-dev-eservices.egov.bg/auth/realms/forms-flow-ai/protocol/openid-connect/certs"
+            - name: JWT_OIDC_ISSUER
+              value: "http://identity-dev-eservices.egov.bg/auth/realms/forms-flow-ai"
+            - name: JWT_OIDC_AUDIENCE
+              value: "forms-flow-web"
+            - name: JWT_OIDC_CACHING_ENABLED
+              value: "True"
+            - name: KEYCLOAK_URL
+              value: "http://identity-dev-eservices.egov.bg"
+            - name: KEYCLOAK_URL_REALM
+              value: "forms-flow-ai"
+            - name: FORMSFLOW_API_URL
+              value: "http://api-dev-eservices.egov.bg"
+            - name: FORMSFLOW_DOC_API_URL
+              value: "http://127.0.0.1:5006"
+            - name: BPM_API_URL
+              value: "http://forms-flow-bpm-svc.forms-flow-bpm.svc.cluster.local:8000/camunda"
+            - name: APPLICATION_NAME
+              value: "formsflow.ai"
+            - name: CHROME_DRIVER_PATH
+              value: "/usr/local/bin/chromedriver"
+            - name: FORMSFLOW_API_CORS_ORIGINS
+              value: "*"
+            - name: CUSTOM_SUBMISSION_ENABLED
+              value: "false"
+            - name: CUSTOM_SUBMISSION_URL
+              value: "http://localhost:6212"
+            - name: FORMSFLOW_API_DB_URL
+              value: "postgresql://documents:jw8s0F4@172.23.230.134:5432/documentsdbdev"
+            - name: FORMSFLOW_API_DB_USER
+              value: ""
+            - name: FORMSFLOW_API_DB_PASSWORD
+              value: ""
+            - name: FORMSFLOW_API_DB_NAME
+              value: "documentsdbdev"

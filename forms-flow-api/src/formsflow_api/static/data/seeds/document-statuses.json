@@ -1,0 +1,47 @@
+[
+    {
+        "title": "Unsigned",
+        "eurotrust_status": null,
+        "formio_status": "unsigned"
+    },
+    {
+        "title": "Pending",
+        "eurotrust_status": 1,
+        "formio_status": "signing"
+    },
+    {
+        "title": "Signed",
+        "eurotrust_status": 2,
+        "formio_status": "signed"
+    },
+    {
+        "title": "Rejected",
+        "eurotrust_status": 3,
+        "formio_status": "rejected"
+    },
+    {
+        "title": "Expired",
+        "eurotrust_status": 4,
+        "formio_status": "expired"
+    },
+    {
+        "title": "Failed",
+        "eurotrust_status": 5,
+        "formio_status": "failed"
+    },
+    {
+        "title": "Withdrawn",
+        "eurotrust_status": 6,
+        "formio_status": "withdrawn"
+    },
+    {
+        "title": "Undeliverable",
+        "eurotrust_status": 7,
+        "formio_status": "failed"
+    },
+    {
+        "title": "On hold",
+        "eurotrust_status": 99,
+        "formio_status": "signing" 
+    }
+]

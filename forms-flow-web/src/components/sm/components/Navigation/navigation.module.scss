@@ -1,0 +1,313 @@
+@import "./../../../../assets/styles/mixins.scss";
+@import "./../../../../assets/styles/themes.scss";
+
+.line {
+  height: 2px;
+  display: inline-flex;
+  width: 0;
+
+  left: 0;
+  position: absolute;
+
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+}
+
+.circle {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: $sm-white;
+  display: inline-block;
+}
+
+.animatedCircle {
+  @extend .circle;
+
+  position: absolute;
+  left: 0;
+
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+}
+
+.circleWrapper {
+  margin-left: 10px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.navLink {
+  font-size: 24px;
+  font-family: Sofia Sans;
+  line-height: 17px;
+  font-weight: 400;
+  color: $sm-indigo-dark;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: start;
+
+  padding-block: 15px;
+  margin-top: 10px;
+
+  @include screen-size(large) {
+    margin-top: 0;
+    font-weight: 300;
+  }
+}
+
+.navLink:hover > .circleWrapper > .line {
+  width: 12px;
+}
+
+.navLink:hover > .circleWrapper > .animatedCircle {
+  left: 10px;
+}
+
+.navLink:hover {
+  text-shadow: 1px 0;
+}
+
+.navContent {
+  height: 100vh;
+  flex-wrap: nowrap !important;
+  flex-direction: column;
+  padding: 0!important;
+  @supports (-webkit-touch-callout: none) {
+    height:calc(100vh - 100px);
+  }
+
+  @include screen-size(large) {
+    height: auto;
+    flex-direction: row;
+  }
+
+  &.portrait {
+    height: auto;
+  }
+}
+
+.logoWrapper {
+  width: 180px;
+
+  @media screen and (max-width: 280px) {
+    width: 150px;
+  }
+
+  @include screen-size(huge) {
+    width: 200px;
+  }
+
+  @include screen-size(ultra-wide) {
+    margin-right: 65px;
+  }
+}
+
+.navLoginWrapper {
+  @include screen-size(large) {
+    width: 180px;
+  }
+
+  @include screen-size(huge) {
+    width: 240px;
+  }
+}
+
+.navContainer {
+  flex-direction: column;
+  padding: 0;
+  top: unset !important;
+
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+
+  @include screen-size(large) {
+    top: 0 !important;
+    border-bottom: 1px solid $sm-indigo-0;
+    padding-inline: 35px !important;
+    padding-block: 30px !important;
+
+    &.small {
+      padding-block: 15px !important;
+    }
+  }
+
+  :global .navbar-nav .nav-link {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+
+    @include screen-size(large) {
+      padding-left: 15px !important;
+      padding-right: 15px !important;
+    }
+    @include screen-size(huge) {
+      padding-left: 30px !important;
+      padding-right: 30px !important;
+    }
+  }
+
+  :global .navbar-toggler {
+    border: none;
+    padding: 0;
+  }
+}
+
+.mobileContainer {
+  background-color: $sm-white;
+  position: fixed;
+  overflow: hidden;
+
+  &.portrait {
+    position: relative;
+    overflow: visible;
+  }
+}
+
+.navigation {
+  margin-top: 0 !important;
+  border-bottom: 1px solid $sm-indigo-0;
+
+  padding: 20px !important;
+
+  @media screen and (max-width: 280px) {
+    max-width: none !important;
+  }
+  @supports (-webkit-touch-callout: none) {
+    height: calc(100vh - 100px);
+  }
+}
+
+.navLogo {
+  width: 100px;
+  height: 60px;
+
+  -webkit-transition: all 0.5s ease-in-out;
+  -moz-transition: all 0.5s ease-in-out;
+  -o-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+
+  &.small {
+    width: 65px;
+    height: 40px;
+  }
+
+  @include screen-size(large) {
+    width: 180px;
+    height: 120px;
+
+    &.small {
+      width: 115px;
+      height: 70px;
+    }
+  }
+
+  @include screen-size(huge) {
+    width: 200px;
+  }
+}
+
+.navLinksContainer {
+  padding-inline: 0px;
+}
+
+.navContentWrapper {
+  padding: 20px;
+}
+
+.collapseCloseIcon {
+  :global .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3ctitle%3eclose%3c/title%3e%3cpath d='M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z' /%3e%3c/svg%3e") !important;
+  }
+}
+
+.collapseIcon {
+  :global .navbar-toggler-icon {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.navLoginCta {
+  float: right;
+  margin-bottom: 200px;
+  @include screen-size(large) {
+    margin-bottom: 0;
+  }
+  &.small {
+    width: 112px;
+    height: 50px;
+  }
+}
+
+.skip-to-main-content-link {
+  position: absolute;
+  left: -9999px;
+  z-index: 999;
+  opacity: 0;
+}
+
+.skip-to-main-content-link:focus {
+  left: 7%;
+  transform: translateX(-50%);
+  opacity: 1;
+  top: 4%;
+  position: absolute;
+
+  &.small {
+    top: 10% !important;
+  }
+}
+
+.mobileNavActions {
+  display: flex;
+  align-items: center;
+}
+
+.logoutCta {
+  font-family: 'Sofia Sans';
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 17px;
+  margin-top: 30px;
+
+  color: $sm-indigo-3;
+
+  border: none !important;
+  background-color: $sm-white !important;
+  padding: 0;
+
+  &:hover, &:focus {
+    color: $sm-indigo-3 !important;
+    box-shadow: none !important;
+  }
+
+  @media screen and (min-width: 390px) {
+    margin-top: 50px;
+  }
+}
+
+.mobileNavIcon {
+  margin-right: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.profileMenu {
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  @media screen and (min-width: 390px) {
+    margin-top: 50px;
+  }
+}

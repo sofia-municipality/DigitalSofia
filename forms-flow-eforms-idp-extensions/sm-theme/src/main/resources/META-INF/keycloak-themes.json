@@ -1,0 +1,9 @@
+{
+    "themes": [
+    {
+        "name": "sm-theme",
+        "types": [
+            "login"
+        ]
+    }]
+}

@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "782626110276",
+    "project_id": "sofia-municipality",
+    "storage_bucket": "sofia-municipality.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:782626110276:android:b7b4309e6a85a2cc527511",
+        "android_client_info": {
+          "package_name": "com.digitall.digital_sofia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "782626110276-g5s3339j17d1hm3hj8rt4gh7gvdmomg9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.digitall.digital_sofia",
+            "certificate_hash": "cab2eb9a87fac40f49a0f4ee0b30e2850db7eb1d"
+          }
+        },
+        {
+          "client_id": "782626110276-tkpekjkraedo76ncjths8jovapnaglrm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDttHQA6RSphnCKCzWf7We1dRUeI1BkDNY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "782626110276-tkpekjkraedo76ncjths8jovapnaglrm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "782626110276-muahoa25cnf5448ss4ns2q8oceo774fp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.Digitall.Digital-Sofia"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

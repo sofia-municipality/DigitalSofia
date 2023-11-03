@@ -1,0 +1,20 @@
+@import "./../../../../assets/styles/mixins.scss";
+@import "./../../../../assets/styles/themes.scss";
+
+.pageContainer {
+  padding-top: 90px;
+  margin-top: 0;
+
+  &.withNavAnimation {
+    padding-top: 110px;
+  }
+
+  @include screen-size(large) {
+    margin-top: 0 !important;
+    padding-top:0 !important;
+  }
+
+  &:focus-visible {
+    outline: none !important;
+  }
+}

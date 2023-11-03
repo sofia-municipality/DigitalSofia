@@ -1,0 +1,77 @@
+@import "./../../../../assets/styles/mixins.scss";
+@import "./../../../../assets/styles/themes.scss";
+
+.section {
+  @include screen-size(medium) {
+    padding-inline: 30px;
+  }
+
+  @include screen-size(large) {
+    padding-inline: 40px;
+    display: flex;
+    justify-content: center;
+
+    & .sectionContent {
+      width: 100%;
+      max-width: 1200px;
+    }
+  }
+
+  &:focus-visible {
+    outline: none !important;
+  }
+
+  scroll-margin: 90px;
+}
+
+// Address section
+.sectionMainTitle {
+  font-family: 'Sofia Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 30px;
+  color: $sm-indigo-dark;
+
+  @include screen-size(large) {
+    font-size: 42px;
+  }
+}
+
+.sectionSubtitle {
+  font-family: 'Sofia Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 28px;
+  color: $sm-indigo-dark;
+  
+  margin-top: 20px !important;
+  @include screen-size(large) {
+    font-size: 32px;
+    line-height: 38px;
+  }
+}
+
+.sectionDescription {
+  font-family: 'Sofia Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 28px;
+
+  margin-top: 30px;
+
+  @include screen-size(large) {
+    margin-top: 60px;
+    font-size: 19px;
+  }
+}
+
+.sectionMainCta {
+  margin-top: 30px;
+
+  @include screen-size(large) {
+    margin-top: 40px;
+  }
+}
+

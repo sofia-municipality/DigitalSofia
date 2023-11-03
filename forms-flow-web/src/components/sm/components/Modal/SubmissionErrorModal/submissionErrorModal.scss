@@ -1,0 +1,18 @@
+@import "./../../../../../assets/styles/themes.scss";
+@import "./../../../../../assets/styles/typography.scss";
+
+.submissionErrorModal {
+  background: rgba(255, 255, 255, 0.9);
+  padding-inline: 0 !important;
+  & .modal-dialog {
+    border: none !important;
+    background-color: #FAFAFA !important;
+    box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 2px 12px rgba(12, 14, 25, 0.24);
+
+    & .modal-content {
+      border: 1px solid $sm-red !important;
+      border-radius: 2px !important;
+      background-color: #FAFAFA;
+    }
+  }
+}

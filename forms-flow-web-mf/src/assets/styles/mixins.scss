@@ -1,0 +1,17 @@
+@import './breakpoints.module.scss';
+
+@mixin screen-size($size) {
+  @if $size == small {
+    @media (min-width: $grid-sm) { @content; }
+  } @else if $size == medium {
+    @media (min-width: $grid-md) { @content; }
+  } @else if $size == large {
+    @media (min-width: $grid-lg) { @content; }
+  } @else if $size == extra-large {
+    @media (min-width: $grid-xl) { @content; }
+  } @else if $size == huge {
+    @media (min-width: $grid-xxl) { @content; }
+  } @else if $size == ultra-wide {
+    @media (min-width: $grid-xxxl) { @content; }
+  }
+}

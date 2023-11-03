@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_auth_registration"
+    app:startDestination="@id/registrationStartFragment">
+
+
+    <fragment
+        android:id="@+id/registrationStartFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.registration.start.RegistrationStartFragment"
+        android:label="startRegistrationFragment"
+        tools:layout="@layout/fragment_registration_start">
+
+        <action
+            android:id="@+id/toEnterEgnFragment"
+            app:destination="@id/enterEgnFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/registrationStartFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/enterEgnFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.registration.egn.RegistrationEnterEgnFragment"
+        android:label="enterEgnFragment"
+        tools:layout="@layout/fragment_registration_enter_egn">
+
+        <action
+            android:id="@+id/toEnterPinFragment"
+            app:destination="@id/registrationEnterPinFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+        <action
+            android:id="@+id/toCreatePinFragment"
+            app:destination="@id/registrationCreatePinFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+        <action
+            android:id="@+id/toEnterEmailFragment"
+            app:destination="@id/registrationEnterEmailFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/registrationEnterPinFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.registration.pin.enter.RegistrationEnterPinFragment"
+        android:label="registrationEnterPinFragment"
+        tools:layout="@layout/fragment_registration_enter_pin">
+
+        <action
+            android:id="@+id/toRegistrationIntroFragment"
+            app:destination="@id/registrationIntroFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/registrationEnterPinFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/registrationEnterEmailFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.registration.email.RegistrationEnterEmailFragment"
+        android:label="registrationEnterEmailFragment"
+        tools:layout="@layout/fragment_registration_enter_email">
+
+        <action
+            android:id="@+id/toCreatePinFragment"
+            app:destination="@id/registrationCreatePinFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/registrationCreatePinFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.registration.pin.create.RegistrationCreatePinFragment"
+        android:label="registrationCreatePinFragment"
+        tools:layout="@layout/fragment_registration_create_pin">
+
+        <action
+            android:id="@+id/toRegistrationEnableBiometricFragment"
+            app:destination="@id/registrationEnableBiometricFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/registrationCreatePinFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/toRegistrationIntroFragment"
+            app:destination="@id/registrationIntroFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/registrationCreatePinFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/registrationEnableBiometricFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.registration.biometric.RegistrationEnableBiometricFragment"
+        android:label="registrationEnableBiometricFragment"
+        tools:layout="@layout/fragment_enable_biometric">
+
+        <action
+            android:id="@+id/toRegistrationIntroFragment"
+            app:destination="@id/registrationIntroFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/registrationEnableBiometricFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/registrationIntroFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.registration.confirm.RegistrationConfirmIdentificationFragment"
+        android:label="registrationIntroFragment"
+        tools:layout="@layout/fragment_registration_intro">
+
+        <action
+            android:id="@+id/toRegistrationDisagreeFragment"
+            app:destination="@id/registrationDisagreeFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+        <action
+            android:id="@+id/toRegistrationReadyFragment"
+            app:destination="@id/registrationReadyFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+        <action
+            android:id="@+id/toRegistrationErrorFragment"
+            app:destination="@id/registrationErrorFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/registrationIntroFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/toRegistrationRegisterNewUserFragment"
+            app:destination="@id/registrationRegisterNewUserFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/registrationIntroFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/registrationDisagreeFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.registration.disagree.RegistrationDisagreeFragment"
+        android:label="registrationDisagreeFragment"
+        tools:layout="@layout/fragment_registration_disagree">
+
+        <action
+            android:id="@+id/toRegistrationIntroFragment"
+            app:destination="@id/registrationIntroFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/registrationDisagreeFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/registrationReadyFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.registration.ready.RegistrationReadyFragment"
+        android:label="registrationReadyFragment"
+        tools:layout="@layout/fragment_registration_ready">
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/registrationRegisterNewUserFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.registration.register.RegistrationRegisterNewUserFragment"
+        android:label="registrationSignDocumentFragment"
+        tools:layout="@layout/fragment_registration_ready">
+
+        <action
+            android:id="@+id/toRegistrationShareYourDataFragment"
+            app:destination="@id/registrationShareYourDataFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/registrationRegisterNewUserFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/registrationShareYourDataFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.registration.share.RegistrationShareYourDataFragment"
+        android:label="registrationShareYourDataFragment"
+        tools:layout="@layout/fragment_registration_share_your_data">
+
+        <action
+            android:id="@+id/toRegistrationReadyFragment"
+            app:destination="@id/registrationReadyFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+        <action
+            android:id="@+id/toRegistrationErrorFragment"
+            app:destination="@id/registrationErrorFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/registrationErrorFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.registration.error.RegistrationErrorFragment"
+        android:label="registrationErrorFragment"
+        tools:layout="@layout/fragment_registration_error">
+
+        <argument
+            android:name="errorMessage"
+            app:argType="com.digitall.digital_sofia.models.common.StringSource"
+            app:nullable="false" />
+
+        <action
+            android:id="@+id/toRegistrationDisagreeFragment"
+            app:destination="@id/registrationDisagreeFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+        <action
+            android:id="@+id/toRegistrationRegisterNewUserFragment"
+            app:destination="@id/registrationRegisterNewUserFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/registrationErrorFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+
+</navigation>

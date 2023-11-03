@@ -1,0 +1,49 @@
+@import "./../../../../../../../../assets/styles/mixins.scss";
+@import "./../../../../../../../../assets/styles/themes.scss";
+@import "./../../../../../../../../assets/styles/typography.scss";
+
+.contentHeader {
+  @include screen-size(medium) {
+    padding-inline: 10px;
+  }
+}
+
+.taxRecordIdentifier {
+  @include sm-body-2-regular;
+  color: $sm-indigo-dark;
+}
+
+.taxRecordIdentifierLabel {
+  @include sm-caption-regular;
+  color: $sm-indigo-4;
+}
+
+.taxRecordTotal {
+  @include sm-body-medium;
+  font-weight: 500;
+  color: $sm-indigo-dark;
+}
+
+.taxRecordTotalLabel {
+  @include sm-caption-regular;
+  margin-right: 10px;
+  color: $sm-indigo-4;
+}
+
+.currency {
+  font-family: 'Sofia Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 140%;
+  color: $sm-indigo-dark;
+  margin-left: 2px;
+}
+
+.checkbox {
+  margin-inline: 10px;
+
+  @include screen-size(medium) {
+    margin-right: calc(0.75rem + 20px);
+  }
+}

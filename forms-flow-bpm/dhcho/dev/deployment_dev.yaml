@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-flow-bpm
+  namespace : forms-flow-bpm
+  labels:
+    app.kubernetes.io/name: camunda
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: camunda
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: camunda
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: form-flow-bpm
+          image: sofiamunicipalitydigitall/forms-flow-bpm:latest
+          ports:
+            - containerPort: 8080
+              name: http-camunda
+              protocol: TCP
+          env:
+            - name: KEYCLOAK_URL_REALM
+              value: "forms-flow-ai"
+            - name: KEYCLOAK_URL
+              value: "http://identity-dev-eservices.egov.bg"
+            - name: KEYCLOAK_CLIENTID
+              value: "forms-flow-bpm"
+            - name: KEYCLOAK_CLIENTSECRET
+              value: "Z9sjTpQ49vQidNpu1XyETT6Jsty1hbEL"
+            - name: CAMUNDA_JDBC_URL
+              value: "jdbc:postgresql://172.23.230.134:5432/camundadbdev"
+            - name: CAMUNDA_JDBC_USER
+              value: ""
+            - name: CAMUNDA_JDBC_PASSWORD
+              value: ""
+            - name: CAMUNDA_JDBC_DRIVER
+              value: "org.postgresql.Driver"
+            - name: CAMUNDA_APP_ROOT_LOG_FLAG
+              value: "error"
+            - name: FORMSFLOW_API_URL
+              value: "http://api-dev-eservices.egov.bg"
+            - name: FORMIO_URL
+              value: "http://forms-dev-eservices.egov.bg"
+            - name: FORMIO_ROOT_EMAIL
+              value: ""
+            - name: FORMIO_ROOT_PASSWORD
+              value: ""
+            - name: APP_SECURITY_ORIGIN
+              value: "*"
+            - name: WEBSOCKET_SECURITY_ORIGIN
+              value: "http://dev-eservices.sofia.bg,http://dev-eservices.egov.bg"
+            - name: WEBSOCKET_MESSAGE_TYPE
+              value: "TASK_EVENT"
+            - name: WEBSOCKET_ENCRYPT_KEY
+              value: ""
+            - name: DATA_BUFFER_SIZE
+              value: "30"
+            - name: IDENTITY_PROVIDER_MAX_RESULT_SIZE
+              value: "250"
+            - name: KEYCLOAK_WEB_CLIENTID
+              value: "forms-flow-web"
+            - name: KEYCLOAK_ENABLE_CLIENT_AUTH
+              value: "false"
+            - name: BPM_CLIENT_CONN_TIMEOUT
+              value: "5000"
+            - name: DATA_ANALYSIS_URL
+              value: "http://localhost:6000/analysis"
+            - name: CUSTOM_SUBMISSION_URL
+              value: ""
+            - name: CUSTOM_SUBMISSION_ENABLED
+              value: "false"
+            - name: MULTI_TENANCY_ENABLED
+              value: "false"
+            - name: FORMSFLOW_ADMIN_URL
+              value: "http://admin-api-dev-eservices.egov.bg"
+            - name: REDIS_ENABLED
+              value: "false"
+            - name: REDIS_HOST
+              value: ""
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASSCODE
+              value: ""
+            - name: SESSION_COOKIE_SECURE
+              value: "false"
+            - name: CAMUNDA_DEBUG
+              value: "false"
+            - name: CAMUNDA_METRICS_FLAG
+              value: "false"
+            - name: WEB_URL
+              value: "http://dev-eservices.sofia.bg"
+            - name: FORMS_FLOW_INTEGRATIONS_URL
+              value: "http://forms-flow-eforms-integrations-svc.form-flow-eforms-integrations.svc.cluster.local:8002/integrations"
+            - name: NOTIFICATION_PREFIX
+              value: "/notifications"
