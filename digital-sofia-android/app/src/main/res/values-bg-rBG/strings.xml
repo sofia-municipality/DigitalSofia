@@ -1,0 +1,289 @@
+<resources>
+    <string name="app_name">DigitalSofia</string>
+    <string name="loader_wait_message">We are looking for your data, it might take a moment.</string>
+
+    <!-- Errors -->
+    <string name="error">Нищо се обърка</string>
+    <string name="error_loading_error">Съжаляваме, изглежда нещо се обърка. Моля, опитайте отново.</string>
+    <string name="error_network_error">Изглежда, че нямате връзка, моля, опитайте отново.</string>
+    <string name="error_network_not_available">Няма интернет връзка</string>
+    <string name="error_invalid_format">Невалиден формат</string>
+    <string name="error_not_enough_characters">Няма достатъчно знаци в полето.</string>
+    <string name="error_cannot_be_empty">Това поле не може да бъде празно.</string>
+    <string name="error_password_must_contain_only_numbers">Паролата трябва да съдържа само цифри</string>
+    <string name="must_contain_only_numbers">Тук са разрешени само числа</string>
+    <string name="error_empty_state_tile">Нищо не е намерено</string>
+    <string name="error_empty_state_description">Обновете екрана, ако съдържанието трябва да присъства</string>
+    <string name="error_no_consent_to_share_data">Няма съгласие за споделяне на данни</string>
+    <string name="error_pin_code_not_setup">Pin code not setup</string>
+    <string name="error_user_not_setup_correct">User not setup correct</string>
+    <string name="error_user_is_not_identified">User is not identified</string>
+    <string name="error_user_name_not_found">User name not found</string>
+    <string name="error_user_email_not_found">User email not found</string>
+    <string name="error_user_phone_not_found">User phone not found</string>
+    <string name="error_user_personal_identification_number_not_found">User personal identification number not found</string>
+    <string name="error_request_is_being_processed">The request is being processed, please wait and click update</string>
+
+    <!-- Errors sdk -->
+    <string name="sdk_error_sdk_not_set">Неправилна конфигурация, моля опитайте отново или рестартирайте приложение</string>
+    <string name="sdk_error_user_not_specified">Потребителят не е посочен, моля опитайте отново или рестартирайте приложение</string>
+    <string name="sdk_error_wrong_input">Грешно въвеждане, моля опитайте отново или рестартирайте приложение</string>
+    <string name="sdk_error_cancelled">Отменено от потребителя, моля опитайте отново или рестартирайте приложение</string>
+    <string name="sdk_error_unknown">Неизвестна грешка, моля опитайте отново или рестартирайте приложение</string>
+    <string name="sdk_error_critical">Критична грешка, моля опитайте отново или рестартирайте приложение</string>
+
+    <!-- Blocked -->
+    <string name="error_blocked_title">Входът е блокиран</string>
+    <string name="error_blocked_description">Отключване след %s секунди</string>
+
+    <!-- Common -->
+    <string name="cancel">Отказ</string>
+    <string name="exit">Изход</string>
+    <string name="back">Назад</string>
+    <string name="apply">Прилагане</string>
+    <string name="retry">Опитайте отново</string>
+    <string name="reload">Презареждане</string>
+    <string name="next">Напред</string>
+    <string name="proceed">Напред</string>
+    <string name="start">Стартиране</string>
+    <string name="hide">Скриване</string>
+    <string name="show">Покажи</string>
+    <string name="save">Запазване</string>
+    <string name="close">Затваряне</string>
+    <string name="remove">Премахване</string>
+    <string name="share">Споделяне</string>
+    <string name="select">Изберете</string>
+    <string name="invite">Покани</string>
+    <string name="delete">Изтриване</string>
+    <string name="skip">Пропускане</string>
+    <string name="clear">Изчистване</string>
+    <string name="clear_all">Изчистване на всички</string>
+    <string name="view_all">Преглед на всички</string>
+    <string name="see_all">Виж всички</string>
+    <string name="all">Всички</string>
+    <string name="edit">Редактиране</string>
+    <string name="edit_data">Редактиране на данни</string>
+    <string name="verify">Потвърдете</string>
+    <string name="done">Готово</string>
+    <string name="bullet">•</string>
+    <string name="confirm">Потвърдете</string>
+    <string name="continue_label">Продължи</string>
+    <string name="optional">По избор</string>
+    <string name="unknown">Неизвестен</string>
+    <string name="need_help">Нуждаете се от помощ?</string>
+    <string name="are_you_sure">Сигурни ли сте?</string>
+    <string name="oops">Ами сега</string>
+    <string name="oops_with_dots">Oops…</string>
+    <string name="sorry">Съжаляваме</string>
+    <string name="logout">Изход</string>
+    <string name="try_again">Опитайте отново</string>
+    <string name="ok">Ok</string>
+    <string name="no">Не</string>
+    <string name="yes">Да</string>
+    <string name="update">Обнови</string>
+    <string name="wait">Моля, изчакайте</string>
+
+    <!-- Notifications -->
+    <string name="channel_name">DigitalSofia</string>
+    <string name="channel_description">известия от приложение DigitalSofia</string>
+    <string name="warning_label">Внимание</string>
+    <string name="notifications_window_label">За да работи правилно приложението, трябва да разрешите известия. Текущо известие: %s</string>
+    <string name="settings_label">Настройки</string>
+
+    <!-- Passcode -->
+    <string name="passcode_btn_1">1</string>
+    <string name="passcode_btn_2">2</string>
+    <string name="passcode_btn_3">3</string>
+    <string name="passcode_btn_4">4</string>
+    <string name="passcode_btn_5">5</string>
+    <string name="passcode_btn_6">6</string>
+    <string name="passcode_btn_7">7</string>
+    <string name="passcode_btn_8">8</string>
+    <string name="passcode_btn_9">9</string>
+    <string name="passcode_btn_0">0</string>
+
+    <!-- Permissions -->
+    <string name="permissions_modal_title">Изисква се достъп</string>
+    <string name="permissions_modal_description">Моля, коригирайте настройките си, за да разрешите на GTWorld достъп до вашите %s, без него не можете да продължите.</string>
+    <string name="permissions_modal_step_1">Включете «%s» в настройките.</string>
+    <string name="permissions_modal_step_2">След това се върнете към приложението.</string>
+    <string name="permissions_modal_open_settings">Отворете настройките</string>
+    <string name="permissions_contacts">Контакти</string>
+    <string name="permissions_camera">Камера</string>
+    <string name="permissions_location">Местоположение</string>
+
+    <!-- Settings -->
+    <string name="pending_requests">Чакащи искания</string>
+    <string name="settings_title">Настройки</string>
+    <string name="settings_delete_profile">Изтриване на профил</string>
+    <string name="settings_profile">Профил</string>
+    <string name="settings_application_language">Език на приложението</string>
+    <string name="settings_security_on_entry">Защита при вход</string>
+    <string name="settings_change_pin">Промяна на ПИН</string>
+
+    <!-- Auth method -->
+    <string name="auth_method_title">Защита при вход</string>
+    <string name="auth_method_pin">ПИН</string>
+    <string name="auth_method_biometric">Пръстов отпечатък</string>
+
+    <!-- Change pin -->
+    <string name="change_pin_create_title">Промяна на ПИН</string>
+    <string name="change_pin_create_description_1">Въведете 6 цифрен ПИН код, с който ще достъпвате Вашия профил</string>
+    <string name="change_pin_create_description_2">Въведете отново 6 цифрен ПИН код за да не стават грешки</string>
+
+    <string name="change_pin_enter_title">Промяна на ПИН</string>
+    <string name="change_pin_enter_description">Въведете текущия си 6-цифрен ПИН код</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Профил</string>
+
+    <!-- Language -->
+    <string name="language_title">Език на приложението</string>
+    <string name="language_bg">Български</string>
+    <string name="language_en">English</string>
+
+    <!-- Registration start -->
+    <string name="start_title">Добре дошли в Digital Sofia</string>
+    <string name="start_description">мобилното електронно гише на Столична община</string>
+
+    <string name="start_button">Напред</string>
+    <!-- Registration enter EGN -->
+    <string name="registration_enter_egn_title">Добре дошли в Digital Sofia</string>
+    <string name="registration_enter_egn_description">Моля, веведете ЕГН за да продължите с регистрацията</string>
+    <string name="registration_enter_egn_egn_title">ЕГН</string>
+    <string name="registration_enter_egn_egn_error">Моля, въведете коректен Единен Граждански Номер</string>
+    <string name="registration_enter_egn_email_title">E-mail</string>
+    <string name="registration_enter_egn_email_error">Моля, въведете коректен E-mail</string>
+    <string name="registration_enter_egn_phone_title">Телефонен номер</string>
+    <string name="registration_enter_egn_phone_error">Моля, въведете коректен телефонен номер</string>
+    <string name="registration_enter_egn_egn_hint">Въведете ЕГН</string>ц
+    <string name="registration_enter_egn_email_hint">Въведете e-mail</string>
+    <string name="registration_enter_egn_phone_hint">Въведете телефонен номер</string>
+    <string name="registration_enter_egn_conditions">Съгласен съм с общите условия на Digital Sofia</string>
+    <string name="registration_enter_egn_conditions_error">Моля, съгласете се с общите условия</string>
+
+    <!-- Registration enter phone -->
+    <string name="registration_enter_phone_title">Въведете телефонен номер</string>
+    <string name="registration_enter_phone_description">Моля, веведете телефонен номер за да продължите с регистрацията</string>
+    <string name="registration_enter_phone_input_title">Телефонен номер</string>
+    <string name="registration_enter_phone_input_hint">Въведете телефонен номер</string>
+
+    <!-- Registration enter email -->
+    <string name="registration_enter_email_title">Добре дошли в Digital Sofia</string>
+    <string name="registration_enter_email_description">Ще са ни необходимо още малко данни за да продължим с регистрацията</string>
+
+    <!-- Registration create PIN -->
+    <string name="registration_create_pin_title">Създай ПИН</string>
+    <string name="registration_create_pin_description">Въведете 6 цифрен ПИН код, с който ще достъпвате Вашия профил</string>
+    <string name="registration_create_pin_confirm_title">Потвърди ПИН</string>
+    <string name="registration_create_pin_confirm_description">Въведете 6 цифрен ПИН код, с който ще достъпвате Вашия профил</string>
+
+    <!-- Registration enter PIN -->
+    <string name="registration_enter_pin_title">Здравей</string>
+    <string name="registration_enter_pin_forgot_title">Забравили сте ПИН-а си?</string>
+    <string name="registration_enter_pin_incorrect">PIN is incorrect. The number of attempts left: %s\nTry again or click the forgotten password button.</string>
+    <string name="registration_enter_pin_error_check_remote">PIN is incorrect. Try again or click the forgotten password button.</string>
+
+    <!-- Create code -->
+    <string name="create_pin_title">Създайте парола</string>
+    <string name="create_pin_description">За да защитите по-добре приложението си, избягвайте използването на последователни номера, повтарящи се цифри, датата ви на раждане или телефонния ви номер.</string>
+    <string name="create_pin_error_pass_code_not_secure">Паролата ви е твърде проста. Използвайте различни числа, за да създадете по-силно.</string>
+    <string name="create_pin_error_pass_code_cannot_be_set_as_sequential_numbers">Не използвайте последователни номера. Твърде лесно е да се познае. Направете по-надеждна парола.</string>
+    <string name="create_pin_error_pass_code_repeating_digits_more_than_2">Не използвайте повтарящи се цифри повече от два пъти. Твърде лесно е да се познае. Направете по-надеждна парола.</string>
+    <string name="create_pin_error_pass_code_your_date_of_birth">Не използвайте рождения си ден. Твърде лесно е да се познае. Направете по-надеждна парола.</string>
+    <string name="create_pin_error_pass_code_your_part_phone_number">Не използвайте никаква част от телефонния си номер. Твърде лесно е да се познае. Направете по-надеждна парола.</string>
+    <string name="create_pin_error_pass_code_already_used">Вече сте използвали тази комбинация за парола. Моля, създайте нов. </string>
+
+    <!-- Confirm code -->
+    <string name="confirm_pin_title">Потвърдете паролата</string>
+    <string name="confirm_pin_description">Въведете паролата си още веднъж, за да сте сигурни, че е правилна.</string>
+    <string name="confirm_pin_error_password_not_match">Вашата парола не съвпада с тази, която предоставихте по-рано.</string>
+
+    <!-- Auth Enable biometric -->
+    <string name="enable_biometric_title">Активиране на биометричните данни</string>
+    <string name="enable_biometric_for_faster_login_description">Можете да включите биометричните данни за по-бързо влизане.</string>
+    <string name="enable_biometric_for_faster_transactions_and_in_app_actions_description">Можете да включите биометричните данни за по-бързи транзакции и действия в приложението.</string>
+    <string name="enable_biometric_btn_later">Настройте го по-късно</string>
+    <string name="enable_biometric_btn_enable">Активиране</string>
+
+    <!-- Auth Enter pin -->
+    <string name="auth_enter_pin_title">Здравей, %s,</string>
+    <string name="auth_enter_pin_forgot_title">Забравили сте ПИН-а си?</string>
+    <string name="auth_enter_pin_incorrect">PIN is incorrect. The number of attempts left: %s\nTry again or click forgot password button.</string>
+    <string name="auth_enter_pin_error_check_remote">PIN is incorrect. Try again or click the forgotten password button.</string>
+
+    <!-- Enter biometric -->
+    <string name="enter_biometric_title">Здравей, %s,</string>
+    <string name="enter_biometric_use_pin">Използване на ПИН</string>
+    <string name="enter_biometric_confirm">Потвърдете вход в приложението</string>
+
+    <!-- Registration intro -->
+    <string name="registration_intro_title">Идентификация</string>
+    <string name="registration_intro_description">Съгласен съм да премина през процес на първоначална идентификация.</string>
+    <string name="registration_intro_btn_yes">Съгласен съм</string>
+    <string name="registration_intro_btn_no">Не съм съгласен</string>
+
+    <!-- Share your data -->
+    <string name="registration_share_your_data_title">Споделете данните си</string>
+    <string name="registration_share_your_data_description">За да получите достъп до услугата, е необходимо да бъде потвърдена Вашата самоличност. Не можете да използвате наличните услуги, без да споделите личните си данни. Ако не желаете да споделите личните си данни онлайн, можете да подадете своето заявление на гише, като посетите своята районна администрация.</string>
+    <string name="registration_share_your_data_send_error">Error sending data, please try again later</string>
+
+    <!-- Registration disagree -->
+    <string name="registration_disagree_title">Идентификация</string>
+    <string name="registration_disagree_description">Ако откажете регистрацията си, при следващ вход ще е необходимо да стартирате процеса на регистрация отново.</string>
+    <string name="registration_disagree_btn_yes">Идентификация</string>
+    <string name="registration_disagree_btn_no">Назад</string>
+
+    <!-- Registration ready -->
+    <string name="registration_ready_hello">Здравей, %s,</string>
+    <string name="registration_ready_title">Всичко е готово!</string>
+    <string name="registration_ready_description">Вече имаш профил в Дигитална София и можеш да заявиш нова услуга на електронното гише</string>
+    <string name="registration_ready_button">Заяви услуга</string>
+
+    <!-- Registration error -->
+    <string name="registration_error_title">Здравей</string>
+    <string name="registration_error_button">Започни регистрацията от начало</string>
+
+    <!-- Documents -->
+    <string name="document_title">Документи</string>
+    <string name="document_created_on">Създаден на</string>
+    <string name="document_signed_on">Подписан на</string>
+    <string name="document_status_signed">Подписан</string>
+    <string name="document_status_wait_sign">Очаква подпис</string>
+    <string name="document_status_expired">Изтекъл</string>
+    <string name="document_status_rejected">Отхвърлен</string>
+    <string name="document_status_pending">В изчакване</string>
+    <string name="document_status_unsigned">Неподписан</string>
+    <string name="document_status_unknown">Неизвестен</string>
+    <string name="document_view_file">Виж файл</string>
+    <string name="document_download_file">Изтегли</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_main_home">Заяви услуга</string>
+    <string name="nav_main_my_services">Моите услуги</string>
+    <string name="nav_main_documents">Документи</string>
+    <string name="nav_main_service_request">Подписване</string>
+
+    <!--Menu -->
+    <string name="menu_settings">Настройки</string>
+    <string name="menu_frequently_asked_questions">Често задавани въпроси</string>
+    <string name="menu_contacts">Контакти</string>
+    <string name="menu_logout">Изход</string>
+    <string name="menu_general_terms_and_use_policy">Общи условия и политики за ползване</string>
+
+    <!-- Auth Biometric -->
+    <string name="auth_biometric_scanner_description">Използвайте биометрични данни за отключване на приложението</string>
+    <string name="auth_biometric_scanner_title">Удостоверяване</string>
+    <string name="auth_biometric_scanner_failed">Пръстовият отпечатък не е разпознат.</string>
+    <string name="auth_biometric_scanner_many_attempts">Твърде много опити. Моля, опитайте отново по-късно.</string>
+
+    <!-- Lorem ipsum -->
+    <string name="lorem_ipsum_size_1">Lorem ipsum</string>
+    <string name="lorem_ipsum_size_2">Lorem ipsum dolor</string>
+    <string name="lorem_ipsum_size_3">Lorem ipsum dolor sit amet</string>
+    <string name="lorem_ipsum_size_4">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut</string>
+    <string name="lorem_ipsum_size_5">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</string>
+    <string name="lorem_ipsum_size_6">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</string>
+    <string name="lorem_ipsum_size_7">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+
+</resources>

@@ -1,0 +1,15 @@
+.foreignerForbbidenModal {
+  background: rgba(255, 255, 255, 0.9);
+  & .modal-dialog {
+    border: none !important;
+    border-radius: 2px !important;
+    background-color: #FAFAFA !important;
+    box-shadow: 0px 2px 12px 0px rgba(12, 14, 25, 0.12), 0px 0px 1px 0px rgba(12, 14, 25, 0.24);
+
+    & .modal-content {
+      border: none !important;
+      border-radius: 2px !important;
+      background-color: #FAFAFA !important;
+    }
+  }
+}

@@ -1,0 +1,65 @@
+pipeline {
+    environment {
+        DEPLOY = "${env.BRANCH_NAME == "develop" ? "true" : "false"}"
+        NAME = "${env.BRANCH_NAME == "develop" ? "example" : "example-staging"}"
+        gitCredentialId = 'bitbucket-password' //defined in credentials area
+        gitUrl = 'https://bitbucket.org/intracol/forms-flow-eforms-integrations.git'
+        deployBranch = 'develop'
+    }
+    
+    agent any
+    
+     stages {
+        stage('Checkout forms-flow-eforms-integrations') {
+             when {
+                environment name: 'DEPLOY', value: 'true'
+            }
+            steps {
+                git(
+                url: gitUrl,
+                credentialsId: gitCredentialId,
+                branch: deployBranch
+                 )
+            }
+        }
+        
+
+
+        stage('Build forms-flow-eforms-integrations') {
+            when {
+                environment name: 'DEPLOY', value: 'true'
+            }
+            steps {
+                sh 'sudo docker build -t sofiamunicipalitydigitall/forms-flow-eforms-integrations:dev-$BUILD_NUMBER .'
+            }
+        }
+
+        stage('Push Image') {
+            when {
+                environment name: 'DEPLOY', value: 'true'
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh 'sudo docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                    sh 'sudo docker push $DOCKER_USERNAME/forms-flow-eforms-integrations:dev-$BUILD_NUMBER'
+                }
+            }
+        }
+
+        stage('Deploy DEV') {
+            when {
+                environment name: 'DEPLOY', value: 'true'
+            }
+            steps {
+                withKubeConfig([credentialsId: 'kubeconfig-dev', serverUrl: 'https://172.23.230.133:6443']) {
+                   sh """ 
+                  sed -i 's+image: sofiamunicipalitydigitall/forms-flow-eforms-integrations:.*+image: sofiamunicipalitydigitall/forms-flow-eforms-integrations:dev-${env.BUILD_NUMBER}+g' ./dhcho/dev/deployment_dev.yaml 
+                  """
+                   sh 'kubectl apply -f ./dhcho/dev/deployment_dev.yaml '
+                   sh 'kubectl apply -f ./dhcho/dev/service_dev.yaml '
+                    }
+                }
+            }
+         
+    }
+}

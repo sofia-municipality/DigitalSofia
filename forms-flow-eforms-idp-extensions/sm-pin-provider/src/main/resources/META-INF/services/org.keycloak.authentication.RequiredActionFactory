@@ -1,0 +1,2 @@
+com.bulpros.keycloak.phone.authentication.requiredactions.UpdatePhoneNumberRequiredActionFactory
+com.bulpros.keycloak.phone.authentication.requiredactions.ConfigSmsOtpRequiredActionFactory

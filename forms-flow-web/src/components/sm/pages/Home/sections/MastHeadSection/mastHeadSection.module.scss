@@ -1,0 +1,164 @@
+@import "../../home.module.scss";
+
+.title {
+  font-family: 'Sofia Sans';
+  font-weight: 800;
+  font-size: 32px;
+  line-height: 100%;
+ 
+  background: $sm-gradient-red-yellow-x;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  @include screen-size(medium) {
+    font-size: 48px;
+  }
+
+  @include screen-size(large) {
+    font-size: 64px;
+  }
+}
+
+.desc {
+  font-family: 'Sofia Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 140%;
+
+  margin-top: 30px;
+
+  @include screen-size(medium) {
+    font-size: 22px;
+  }
+
+  @include screen-size(large) {
+    font-size: 24px;
+  }
+}
+
+.mainSection {
+  background: url('/assets/sm-main-masthead-background.png');
+
+  @include screen-size(medium) {
+    padding-top: 60px;
+    padding-bottom: 100px;
+  }
+
+  border-bottom: 1px solid transparent;
+  border-image: $sm-gradient-x;
+  border-image-slice: 1;
+}
+
+.rightContainer {
+  background-color: $sm-white;
+  padding-bottom: 55px;
+  @include screen-size(medium) {
+    background-color: unset;
+    padding-bottom: 0;
+  }
+}
+
+.leftContainer {
+  padding: 30px;
+  @include screen-size(medium) {
+    padding: 0 15px;
+  }
+}
+
+.circleWrapper {
+  background-color: $sm-white;
+  width: 100%;
+  padding-top: 30px;
+
+  @include screen-size(medium) {
+    width: 350px;
+    height: 350px;
+
+    padding-top: 0;
+    margin-top: 80px;
+
+    border-radius: 50%;
+    box-shadow: 0px 0px 2px rgba(12, 14, 25, 0.12), 0px 8px 20px rgba(12, 14, 25, 0.12);
+    position: relative;
+  }
+
+  @include screen-size(large) {
+    width: 400px;
+    height: 400px;
+  }
+  
+}
+
+.circleContent {
+  padding-inline: 15px;
+  @include screen-size(medium) {
+    padding-inline: 0;
+    position: absolute;
+
+    left: 55px;
+    top: 80px;
+  }
+
+  @include screen-size(large) {
+    left: 70px;
+    top: 100px;
+  }
+}
+
+.circle {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: $sm-white;
+  margin-top: 10px;
+
+  margin-right: 20px;
+}
+
+.bullet {
+  font-family: 'Sofia Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 27px;
+  font-weight: 400;
+  display: grid;
+  grid-template-columns: 0.01fr 1fr;
+  
+  margin-top: 30px;
+  color: $sm-indigo-dark;
+
+  @include screen-size(medium) {
+    font-size: 18px;
+    max-width: 280px;
+    grid-template-columns: 0.1fr 1fr;
+  }
+
+  @include screen-size(large) {
+    font-size: 20px;
+    max-width: 285px;
+  }
+
+  &:last-child {
+    margin-bottom: 25px;
+    @include screen-size(medium) {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.bulletText {
+  @include screen-size(medium) {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.5;
+    hyphens: auto;
+    word-break: break-word;
+  }
+}

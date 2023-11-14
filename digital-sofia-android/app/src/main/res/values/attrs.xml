@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CustomToolbar">
+        <attr name="toolbar_title" format="string" />
+        <attr name="toolbar_icon" format="reference" />
+        <attr name="toolbar_show_settings" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="SettingsButtonView">
+        <attr name="settings_button_view_title" format="string" />
+        <attr name="settings_button_view_description" format="string" />
+        <attr name="settings_button_view_icon" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="SettingsButtonSecondaryView">
+        <attr name="settings_button_secondary_view_title" format="string" />
+        <attr name="settings_button_secondary_view_icon" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="KeyboardView">
+        <attr format="integer" name="keyboard_view_numbers" />
+    </declare-styleable>
+
+    <declare-styleable name="CustomTextInputLayout">
+        <attr format="enum" name="custom_text_input_radius">
+            <enum name="default_radius_4" value="0" />
+            <enum name="medium_radius_6" value="1" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="ErrorView">
+        <attr name="error_view_title" format="string" />
+        <attr name="error_view_show_title" format="boolean" />
+        <attr name="error_view_description" format="string" />
+        <attr name="error_view_show_description" format="boolean" />
+        <attr name="error_view_icon" format="reference" />
+        <attr name="error_view_button_title" format="string" />
+    </declare-styleable>
+
+</resources>

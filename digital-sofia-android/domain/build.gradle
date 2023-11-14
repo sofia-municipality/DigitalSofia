@@ -1,0 +1,63 @@
+apply plugin: 'com.android.library'
+apply plugin: 'org.jetbrains.kotlin.android'
+apply plugin: 'org.jetbrains.kotlin.kapt'
+
+android {
+
+    namespace 'com.digitall.digital_sofia.domain'
+
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 24
+        targetSdk 34
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            debuggable true
+            jniDebuggable true
+            renderscriptDebuggable true
+        }
+        release {
+            minifyEnabled true
+            debuggable false
+            jniDebuggable false
+            renderscriptDebuggable false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+
+    lintOptions {
+        warning 'InvalidPackage'
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+}
+
+dependencies {
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
+    implementation 'io.insert-koin:koin-android:3.5.0'
+    implementation 'javax.inject:javax.inject:1'
+
+    // tests
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'io.insert-koin:koin-test:3.5.0'
+    testImplementation "androidx.arch.core:core-testing:2.2.0"
+    testImplementation 'io.insert-koin:koin-test-junit4:3.5.0'
+    testImplementation 'org.mockito:mockito-core:5.6.0'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:5.1.0'
+}

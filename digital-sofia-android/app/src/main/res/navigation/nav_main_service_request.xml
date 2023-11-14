@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_main_service_request"
+    app:startDestination="@id/serviceRequestFragment">
+
+    <fragment
+        android:id="@+id/serviceRequestFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.main.request.ServiceRequestFragment"
+        android:label="serviceRequestFragment"
+        tools:layout="@layout/fragment_base_web_view" />
+
+</navigation>

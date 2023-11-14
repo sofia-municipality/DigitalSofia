@@ -1,0 +1,4 @@
+rootProject.name = "Digital Sofia"
+include ':app'
+include ':domain'
+include ':data'

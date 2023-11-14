@@ -1,0 +1,35 @@
+@import "./../../../../../assets/styles/mixins.scss";
+@import "./../../../../../assets/styles/themes.scss";
+@import "./../../../../../assets/styles/typography.scss";
+
+.waitingForSignText {
+  font-family: 'Sofia Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  color: $primary-blue;
+}
+
+.pendingSignatureCard {
+  padding-block: 20px;
+}
+
+.pendingSignatureCard:not(:last-child) {
+  border-bottom: 1px solid $sm-indigo-0;
+}
+
+.pendingSignatureCardCtasWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  @include screen-size(medium) {
+    flex-direction: row;
+  }
+}
+
+.signedOnText {
+  @include sm-heading-6;
+  color: $sm-indigo-4;
+}

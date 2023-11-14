@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_background"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <com.digitall.digital_sofia.ui.view.CustomToolbar
+        android:id="@+id/customToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:toolbar_icon="@drawable/ic_back"
+        app:toolbar_title="@string/back" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        style="@style/TextStyle.24spRegularMainColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_20"
+        android:layout_marginTop="@dimen/margin_16"
+        android:text="@string/profile_title"
+        app:fontFamily="sans-serif" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvUserName"
+        style="@style/TextStyle.16spRegularMainColor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_20"
+        android:layout_marginTop="@dimen/margin_16"
+        android:layout_marginEnd="@dimen/margin_20"
+        android:singleLine="false"
+        app:fontFamily="sans-serif" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>

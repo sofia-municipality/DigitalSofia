@@ -1,0 +1,101 @@
+@import "../../home.module.scss";
+
+.faqSection {
+  background-color: #F5F5F5;
+  &:focus-visible {
+    outline: none !important;
+  }
+
+  scroll-margin: 90px;
+}
+
+.faqWrapper {
+  @include screen-size(medium) {
+    padding-block: 80px;
+  }
+
+  @include screen-size(large) {
+    padding-block: 120px
+  }
+}
+
+.faqContent {
+  background-color: $sm-white;
+
+  box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 2px 12px rgba(12, 14, 25, 0.12);
+
+  @include screen-size(medium) {
+    padding: 70px;
+  }
+
+  @include screen-size(extra-large) {
+    padding: 100px;
+  }
+}
+
+.faqList {
+  margin-top: 35px;
+  padding-inline: 20px;
+
+  @include screen-size(medium) {
+    padding-inline: 0px;
+    margin-top: 70px;
+  }
+}
+
+.faqHeader {
+  padding-left: 20px;
+  padding-top: 30px;
+  padding-right: 10px;
+
+  @include screen-size(medium) {
+    padding-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+  }
+}
+
+.openAllLinkMobile {
+  float: right;
+  margin-top: -30px;
+}
+
+.openAllLink {
+  color: $sm-blue;
+  cursor: pointer;
+  font-weight: 400;
+
+  &:hover {
+    color: $sm-blue !important;
+  }
+}
+
+.viewAllLinkWrapper{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+  margin-bottom: 30px;
+  @include screen-size(medium) {
+    margin-bottom: 0;
+  }
+}
+
+.viewAllLink {
+  font-family: 'Sofia Sans';
+  font-weight: 400;
+  font-size: 19px;
+  line-height: 28px;
+  text-decoration: underline;
+  color: $primary-blue;
+
+  &:hover {
+    color: $sm-blue !important;
+  }
+
+}
+
+.viewAllLinkIcon {
+  margin-left: 15px;
+  color: $sm-indigo-dark;
+}

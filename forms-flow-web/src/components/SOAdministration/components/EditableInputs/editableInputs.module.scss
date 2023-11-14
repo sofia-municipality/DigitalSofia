@@ -1,0 +1,15 @@
+.addCta {
+  margin-bottom: 20px;
+}
+
+.addCta, .removeCta {
+  border-radius: 50%;
+  padding: 2px;
+}
+
+.removeCtaWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}

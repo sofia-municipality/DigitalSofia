@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_activity"
+    app:startDestination="@id/startFlowFragment">
+
+    <fragment
+        android:id="@+id/startFlowFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.start.StartFlowFragment"
+        android:label="startFlowFragment"
+        tools:layout="@layout/fragment_flow_container" />
+
+    <action
+        android:id="@+id/toStartFlowFragment"
+        app:destination="@id/startFlowFragment"
+        app:enterAnim="@anim/fragment_scale_enter_front"
+        app:exitAnim="@anim/fragment_scale_enter_back"
+        app:popEnterAnim="@anim/fragment_scale_exit_back"
+        app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+    <fragment
+        android:id="@+id/registrationFlowFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.registration.RegistrationFlowFragment"
+        android:label="registrationFlowFragment"
+        tools:layout="@layout/fragment_flow_container" />
+
+    <action
+        android:id="@+id/toRegistrationFlowFragment"
+        app:destination="@id/registrationFlowFragment"
+        app:enterAnim="@anim/fragment_scale_enter_front"
+        app:exitAnim="@anim/fragment_scale_enter_back"
+        app:popEnterAnim="@anim/fragment_scale_exit_back"
+        app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+    <fragment
+        android:id="@+id/enterCodeFlowFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.auth.AuthEnterCodeFlowFragment"
+        android:label="authEnterFlowFragment"
+        tools:layout="@layout/fragment_flow_container" />
+
+    <action
+        android:id="@+id/toEnterCodeFlowFragment"
+        app:destination="@id/enterCodeFlowFragment"
+        app:enterAnim="@anim/fragment_scale_enter_front"
+        app:exitAnim="@anim/fragment_scale_enter_back"
+        app:popEnterAnim="@anim/fragment_scale_exit_back"
+        app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+    <fragment
+        android:id="@+id/mainTabsFlowFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.main.MainTabsFlowFragment"
+        android:label="mainTabsFlowFragment"
+        tools:layout="@layout/fragment_main_tabs_flow_container" />
+
+    <action
+        android:id="@+id/toMainTabsFlowFragment"
+        app:destination="@id/mainTabsFlowFragment"
+        app:enterAnim="@anim/fragment_scale_enter_front"
+        app:exitAnim="@anim/fragment_scale_enter_back"
+        app:popEnterAnim="@anim/fragment_scale_exit_back"
+        app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+    <dialog
+        android:id="@+id/permissionBottomSheetFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.permissions.PermissionBottomSheetFragment"
+        android:label="permissionBottomSheetFragment"
+        tools:layout="@layout/bottom_sheet_permission">
+        <argument
+            android:name="permissionId"
+            app:argType="string"
+            app:nullable="false" />
+    </dialog>
+
+    <action
+        android:id="@+id/toPermissionBottomSheetFragment"
+        app:destination="@id/permissionBottomSheetFragment"
+        app:enterAnim="@anim/fragment_scale_enter_front"
+        app:exitAnim="@anim/fragment_scale_enter_back"
+        app:popEnterAnim="@anim/fragment_scale_exit_back"
+        app:popExitAnim="@anim/fragment_scale_exit_front">
+    </action>
+
+    <dialog
+        android:id="@+id/biometricErrorBottomSheetFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.error.biometric.BiometricErrorBottomSheetFragment"
+        android:label="biometricErrorBottomSheetFragment"
+        tools:layout="@layout/bottom_sheet_biometric_error">
+    </dialog>
+
+    <action
+        android:id="@+id/toBiometricErrorBottomSheetFragment"
+        app:destination="@id/biometricErrorBottomSheetFragment"
+        app:enterAnim="@anim/fragment_scale_enter_front"
+        app:exitAnim="@anim/fragment_scale_enter_back"
+        app:popEnterAnim="@anim/fragment_scale_exit_back"
+        app:popExitAnim="@anim/fragment_scale_exit_front">
+    </action>
+
+    <fragment
+        android:id="@+id/settingsFlowFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.settings.SettingsFlowFragment"
+        android:label="settingsFlowFragment"
+        tools:layout="@layout/fragment_flow_container" />
+
+    <action
+        android:id="@+id/toSettingsFlowFragment"
+        app:destination="@id/settingsFlowFragment"
+        app:enterAnim="@anim/fragment_scale_enter_front"
+        app:exitAnim="@anim/fragment_scale_enter_back"
+        app:popEnterAnim="@anim/fragment_scale_exit_back"
+        app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+    <fragment
+        android:id="@+id/faqFlowFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.faq.FaqFlowFragment"
+        android:label="faqFlowFragment"
+        tools:layout="@layout/fragment_flow_container" />
+
+    <action
+        android:id="@+id/toFaqFlowFragment"
+        app:destination="@id/faqFlowFragment"
+        app:enterAnim="@anim/fragment_scale_enter_front"
+        app:exitAnim="@anim/fragment_scale_enter_back"
+        app:popEnterAnim="@anim/fragment_scale_exit_back"
+        app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+    <fragment
+        android:id="@+id/conditionsFlowFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.conditions.ConditionsFlowFragment"
+        android:label="conditionsFlowFragment"
+        tools:layout="@layout/fragment_flow_container" />
+
+    <action
+        android:id="@+id/toConditionsFlowFragment"
+        app:destination="@id/conditionsFlowFragment"
+        app:enterAnim="@anim/fragment_scale_enter_front"
+        app:exitAnim="@anim/fragment_scale_enter_back"
+        app:popEnterAnim="@anim/fragment_scale_exit_back"
+        app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+    <fragment
+        android:id="@+id/blockedFlowFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.error.blocked.BlockedFlowFragment"
+        android:label="blockedFlowFragment"
+        tools:layout="@layout/fragment_flow_container" />
+
+    <action
+        android:id="@+id/toBlockedFlowFragment"
+        app:destination="@id/blockedFlowFragment"
+        app:enterAnim="@anim/fragment_scale_enter_front"
+        app:exitAnim="@anim/fragment_scale_enter_back"
+        app:popEnterAnim="@anim/fragment_scale_exit_back"
+        app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+    <fragment
+        android:id="@+id/changePinFlowFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.settings.pin.ChangePinFlowFragment"
+        android:label="changePinFlowFragment"
+        tools:layout="@layout/fragment_flow_container" />
+
+    <action
+        android:id="@+id/toContactsFlowFragment"
+        app:destination="@id/contactsFlowFragment"
+        app:enterAnim="@anim/fragment_scale_enter_front"
+        app:exitAnim="@anim/fragment_scale_enter_back"
+        app:popEnterAnim="@anim/fragment_scale_exit_back"
+        app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+    <fragment
+        android:id="@+id/contactsFlowFragment"
+        android:name="com.digitall.digital_sofia.ui.fragments.contacts.ContactsFlowFragment"
+        android:label="contactsFlowFragment"
+        tools:layout="@layout/fragment_flow_container" />
+
+    <action
+        android:id="@+id/toChangePinFlowFragment"
+        app:destination="@id/changePinFlowFragment"
+        app:enterAnim="@anim/fragment_scale_enter_front"
+        app:exitAnim="@anim/fragment_scale_enter_back"
+        app:popEnterAnim="@anim/fragment_scale_exit_back"
+        app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+
+</navigation>

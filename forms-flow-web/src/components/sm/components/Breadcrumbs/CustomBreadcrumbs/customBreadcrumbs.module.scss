@@ -1,0 +1,59 @@
+@import "./../../../../../assets/styles/themes.scss";
+@import "./../../../../../assets/styles/mixins.scss";
+@import "./../../../../../assets/styles/typography.scss";
+
+.line {
+  background: $sm-gradient-x;
+  transform: rotate(90deg);
+  height: 1px;
+  width: 26px;
+}
+
+.circle {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: $sm-white;
+  display: inline-block;
+  border: 2px solid $sm-blue;
+  z-index: 1;
+  margin-top: 10px;
+}
+
+.breadcrumbs {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 10px;
+}
+
+.breadcrumbsWrapper {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.pageTitle {
+  @include sm-heading-4;
+  color: $sm-indigo-4;
+  margin-top: 10px;
+
+  @include screen-size(medium) {
+    font-weight: 500;
+    font-size: 32px;
+  }
+}
+
+.backLink {
+  margin-top: 20px;
+  color: $sm-indigo-4;
+  font-family: 'Sofia Sans';
+  font-weight: 500;
+  font-size: 16px;
+
+  &:hover {
+    text-decoration: none;
+    color: $sm-indigo-4;
+  }
+}

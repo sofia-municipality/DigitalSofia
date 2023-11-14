@@ -1,0 +1,72 @@
+@import "../../../assets/styles/themes.scss";
+@import "../../../assets/styles/typography.scss";
+
+.modalContentContainer, .loadingContainer {
+  padding-bottom: 30px;
+  padding-inline: 30px;
+}
+
+.loadingContainer {
+  min-height: 50vh;
+}
+
+.modalCloseCta {
+  height: 30px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modalHeader, .modalBody, .modalFooter {
+  padding: 0;
+}
+
+.modalHeader, .modalBody {
+  border-bottom: none;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.modalFooter {
+  border-top: none;
+}
+
+.modalHeader {
+  margin-bottom: 20px;
+  @include sm-heading-4;
+  color: $sm-indigo-dark;
+  text-align: center;
+}
+
+.modalBody {
+  margin-bottom: 40px;
+  @include sm-body-regular;
+  color: $sm-indigo-dark;
+
+  & p {
+    text-align: center;
+  }
+}
+
+.confirmCta {
+  padding: 9px 18px !important;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.referenceNumberLabel, .referenceNumber {
+  @include sm-heading-5;
+}
+
+.referenceNumberLabel {
+  color: $sm-indigo-dark;
+}
+
+.referenceNumber {
+  color: $sm-blue-6;
+  margin-left: 5px;
+}

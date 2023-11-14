@@ -1,0 +1,15 @@
+gunicorn
+Flask
+Flask-SQLAlchemy
+flask-restx
+flask-jwt-oidc
+python-dotenv
+psycopg2-binary
+requests
+attrs
+Werkzeug==2.1.2 # Watch out updates on https://github.com/python-restx/flask-restx/issues/460
+sqlalchemy_utils
+sqlalchemy
+spacy<3
+nltk
+Flask-Migrate

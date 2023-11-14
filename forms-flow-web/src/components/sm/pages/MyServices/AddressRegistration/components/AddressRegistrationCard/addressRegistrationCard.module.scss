@@ -1,0 +1,88 @@
+@import "./../../../../../../../assets/styles/mixins.scss";
+@import "./../../../../../../../assets/styles/themes.scss";
+@import "./../../../../../../../assets/styles/typography.scss";
+
+.addressCardWrapper {
+  padding: 20px;
+  background: #FCFCFC;
+  box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 2px 12px rgba(12, 14, 25, 0.12);
+  border-radius: 2px;
+  
+  @include screen-size(medium) {
+    padding: 30px;
+  }
+
+  &:hover {
+    box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 2px 12px rgba(12, 14, 25, 0.24);
+    background-color: $sm-white;
+
+    & .accordion {
+      background-color: $sm-white !important;
+    }
+  }
+}
+
+.accordion {
+  background-color: #FCFCFC !important;
+}
+
+.addressCardFooter {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+
+  @include screen-size(medium) {
+    display: grid;
+    grid-template-columns: 1fr 0.7fr;
+    grid-gap: 10px;
+  }
+}
+
+.address {
+  font-family: 'Sofia Sans';
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
+  text-align: center;
+
+  color: $sm-indigo-dark;
+  align-self: flex-start;
+
+  @include screen-size(medium) {
+    align-self: center;
+    text-align: left;
+  }
+}
+
+.ctasWrapper {
+  display: flex;
+  gap: 10px;
+  flex-direction: column-reverse;
+  width: 100%;
+  margin-top: 20px;
+
+  @include screen-size(medium) {
+    margin-top: 0px;
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+  }
+}
+
+.addressCta {
+  padding: 1px 15px;
+  text-align: center;
+  height: 40px !important;
+  width: 100%;
+  font-weight: 400 !important;
+  font-size: 18px !important;
+
+  @include screen-size(medium) {
+    height: 60px !important;
+    width: auto !important;
+    font-size: 20px !important;
+  }
+}

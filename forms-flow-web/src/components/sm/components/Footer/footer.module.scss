@@ -1,0 +1,33 @@
+@import "./../../../../assets/styles/mixins.scss";
+@import "./../../../../assets/styles/themes.scss";
+
+.smFooter {
+  background-color: $sm-indigo-dark;
+  color: $sm-white;
+  font-family: Sofia Sans;
+
+  font-weight: 400;
+  font-size: 16px;
+
+  @media screen and (max-width: 280px) {
+    font-size: 13px;
+  }
+
+  @media screen and (min-width: 1163px) {
+    font-size: 20px;
+  }
+}
+
+.footerLink {
+  color: $sm-white !important;
+  font-family: Sofia Sans;
+
+  &:hover {
+    text-decoration: none!important;
+  }
+}
+
+.copyright {
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+}

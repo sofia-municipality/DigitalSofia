@@ -1,0 +1,2 @@
+com.bulpros.keycloak.phone.providers.rest.SmsResourceProviderFactory
+com.bulpros.keycloak.phone.providers.rest.PersonIdentifierResourceProviderFactory

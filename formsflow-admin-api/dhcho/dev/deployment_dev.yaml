@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-flow-admin
+  namespace : forms-flow-admin
+  labels:
+    app.kubernetes.io/name: formsflowadmin
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: formsflowadmin
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: formsflowadmin
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: formsflowadmin
+          image: sofiamunicipalitydigitall/forms-flow-admin:latest
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 1001
+         # command: [ "/bin/bash", "-c", "--" ]
+         # args: [ "while true; do sleep 3600; done;" ]
+          ports:
+            - containerPort: 5000
+              name: http-api
+              protocol: TCP
+          env:
+            - name: DATABASE_USERNAME
+              value: ""
+            - name: DATABASE_PASSWORD
+              value: ""
+            - name: DATABASE_NAME
+              value: ""
+            - name: DATABASE_HOST
+              value: ""
+            - name: DATABASE_PORT
+              value: "5432"
+            - name: FLASK_ENV
+              value: "development"
+            - name: JWT_OIDC_WELL_KNOWN_CONFIG
+              value: "http://identity-dev-eservices.egov.bg/auth/realms/forms-flow-ai/.well-known/openid-configuration"
+            - name: JWT_OIDC_JWKS_URI
+              value: "http://identity-dev-eservices.egov.bg/auth/realms/forms-flow-ai/protocol/openid-connect/certs"
+            - name: JWT_OIDC_ISSUER
+              value: "http://identity-dev-eservices.egov.bg/auth/realms/forms-flow-ai"
+            - name: JWT_OIDC_AUDIENCE
+              value: "forms-flow-web"
+            - name: JWT_OIDC_CACHING_ENABLED
+              value: "True"
+            - name: JWT_OIDC_TEST_ALGORITHMS
+              value: "RS256"
+            - name: KEYCLOAK_URL
+              value: "http://identity-dev-eservices.egov.bg"
+            - name: KEYCLOAK_URL_REALM
+              value: "forms-flow-ai"
+            - name: FORMSFLOW_WEB_URL
+              value: "http://dev-eservices.egov.bg"
+            - name: BPM_API_URL
+              value: "http://forms-flow-bpm-svc.forms-flow-bpm.svc.cluster.local:8080/camunda"
+            - name: BPM_CLIENT_SECRET
+              value: ""
+            - name: KEYCLOAK_ADMIN_CLIENT
+              value: "forms-flow-bpm"
+            - name: KEYCLOAK_ADMIN_SECRET
+              value: ""
+            - name: INSIGHT_API_URL
+              value: "http://forms-flow-analytics-svc.forms-flow-analytics.svc.cluster.local:5000"
+            - name: INSIGHT_API_KEY
+              value: ""
+            - name: FORMIO_ROOT_EMAIL
+              value: ""
+            - name: FORMIO_ROOT_PASSWORD
+              value: ""
+            - name: FORMIO_URL
+              value: "http://forms-flow-forms-svc.forms-flow-forms.svc.cluster.local:3001"
+            - name: FORMIO_JWT_SECRET
+              value: ""

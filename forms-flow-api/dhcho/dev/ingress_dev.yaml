@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: forms-flow-api-nginx
+  namespace: forms-flow-api
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "30m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+   # kubernetes.io/ingress.class: "nginx"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "api-dev-eservices.egov.bg"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: forms-flow-api-svc
+            port:
+              number: 5000

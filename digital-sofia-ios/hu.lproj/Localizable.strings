@@ -1,0 +1,46 @@
+/* 
+  Localizable.strings
+  Digital Sofia
+
+  Created by Mehmed Kadir on 25.01.23.
+  
+*/
+
+"continue_button_title"     = "Continue";
+"id_number_placeholder"     = "Enter ID number";
+"nationality_placeholder"   = "Pick nationality";
+"id_number_label"           = "Personal ID number";
+"nationality_label"         = "Nationality";
+"tab_bar_home_title"        = "Home";
+"tab_bar_services_title"    = "Service";
+"tab_bar_docs_title"        = "Documents";
+"tab_bar_my_services_title" = "My Services";
+"home_view_table_title"     = "Pending documents";
+"sofia_municipality"        = "Sofia Municipality";
+"created_on_date"           = "Created on";
+"signed_on_date"            = "Signed on";
+"open_file"                 = "Open file";
+"download"                  = "Download";
+"signed"                    = "Signed";
+"pending_signature"         = "Pending";
+"settings_title"            = "Settings";
+"delete_profile"            = "Delete profile";
+"profile_option_profile"    = "Profile";
+"profile_option_language"   = "Language";
+"profile_option_security"   = "Login security";
+"profile_option_PIN"        = "Change your PIN";
+"no_pending_documents"      = "There are no pending documents";
+"security_face_id"          = "Face ID";
+"security_touch_id"         = "Touch ID";
+"security_pin"              = "PIN";
+"back_button_title"         = "Back";
+"english_language_text"     = "English";
+"bulgarian_language_text"   = "Bulgarian";
+"menu_faq_title"            = "FAQ";
+"menu_contacts_title"       = "Contacts";
+"menu_exit_title"           = "Exit";
+"menu_pp_title"             = "Pricacy Policy and Terms & Conditions";
+"pin_confirm_view_title"    = "Confirm PIN";
+"pin_confirm_view_details"  = "Repeat the 6 digit PIN code to confirm";
+"pin_create_view_title"     = "Create PIN";
+"pin_create_view_details"   = "Create a 6 digit PIN code to secue your profile";

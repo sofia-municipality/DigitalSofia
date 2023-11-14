@@ -1,0 +1,46 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+        maven {
+            url 'https://maven.google.com'
+        }
+        maven {
+            url 'https://jitpack.io'
+        }
+        maven {
+            url 'https://github.com/QuickBlox/quickblox-android-sdk-releases/raw/master/'
+        }
+        maven {
+            url "https://maven.regulaforensics.com/RegulaDocumentReader"
+        }
+    }
+    dependencies {
+        classpath "com.google.gms:google-services:4.4.0"
+        classpath "com.google.firebase:firebase-crashlytics-gradle:2.9.9"
+        classpath "com.android.tools.build:gradle:8.1.2"
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.10'
+        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.7.4'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+        maven {
+            url 'https://maven.google.com'
+        }
+        maven {
+            url 'https://jitpack.io'
+        }
+        maven {
+            url 'https://github.com/QuickBlox/quickblox-android-sdk-releases/raw/master/'
+        }
+        maven {
+            url "https://maven.regulaforensics.com/RegulaDocumentReader"
+        }
+    }
+}

@@ -1,0 +1,53 @@
+pipeline {
+    environment {
+        DEPLOY = "${env.BRANCH_NAME == "develop" ? "true" : "false"}"
+        NAME = "${env.BRANCH_NAME == "develop" ? "example" : "example-staging"}"
+
+    }
+  
+    agent {
+      kubernetes {
+        cloud 'kubernetes-dev'
+        yaml '''
+          apiVersion: v1
+          kind: Pod
+          spec:
+            containers:
+            - name: micro
+              image: docker.io/ubuntu:latest
+              volumeMounts:
+                - name: js
+                  mountPath: /mnt
+              command:
+              - cat
+              tty: true
+            volumes:
+            - name: js
+              nfs:
+                server: 172.23.230.140
+                path: /mnt
+          '''
+      }
+    }
+
+    stages {
+      stage('WEB Micro FrontEnd Service') {
+          steps {
+            container('micro'){                
+                sh '''
+                apt update
+                apt-get install -y  curl
+                curl -sL https://deb.nodesource.com/setup_14.x |  bash -
+                apt-get install -y  nodejs 
+                node -v
+                npm install
+                npm run build
+                ls -l 
+                rm -rf /mnt/forms-flow-web-mf-service/*
+                mv ./dist /mnt/forms-flow-web-mf-service
+                '''              
+            }
+          }
+        }
+  }
+}

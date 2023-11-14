@@ -1,0 +1,55 @@
+@import "./../../../assets/styles/mixins.scss";
+
+.blocksWrapper{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 500px;
+}
+
+.faq {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+  hyphens: auto;
+  word-break: break-word;
+
+  font-size: 20px;
+
+  @include screen-size(medium) {
+    font-size: 28px;
+  }
+}
+
+.faqWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  margin-right: 20px;
+  background-color: transparent;
+  color: black;
+  border: none;
+
+  &:hover, &:focus {
+    background-color: transparent !important;
+    color: black !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+}
+
+.content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.addCta {
+  width: 100px;
+  float: right;
+}

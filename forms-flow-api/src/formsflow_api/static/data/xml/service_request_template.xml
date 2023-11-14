@@ -1,0 +1,567 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ServiceRequest>
+    <requestURI>
+        <!-- Референтен номер -->
+        <!-- Задължилтено -->
+        <identifier>#{/data/reference_number}</identifier>
+        <identifierType>
+            <code>1006-100001</code>
+            <name>Идентификатор на заявление за услуга</name>
+        </identifierType>
+
+    </requestURI>
+    
+    <!-- Задължилтено - кога е направен пдф-а -->
+    <requestDateTime>#{/data/issueDateCaseIdentifier}</requestDateTime>
+    
+    <!-- Задължилтено - реджикс -->
+    <dataProcessingAgreement>#{/data/autoFillData ?? true}</dataProcessingAgreement>
+    <authorType>
+        <code>#{/data/requestorTypeSelect/authorTypeCode ?? 1006-020001}</code>
+        <name>#{/data/requestorTypeSelect/authorType ?? Титуляр}</name>
+    </authorType>
+    <publicService>
+        <identifier>
+            <!-- 2079 - Ако смяна на постоянен -->
+            <!-- 2107 - Ако е смяна на настоящ -->
+
+            <!-- Задължилтено -->
+            <identifier>#{/system/serviceId} </identifier>
+            <identifierType>
+                <code>1006-100008</code>
+                <name>Идентификатор на публична услуга</name>
+            </identifierType>
+        </identifier>
+        <!-- Издаване на удостоверение за постоянен адрес след подаване на заявление за промяна на постоянен адрес -->
+        <!-- Издаване на удостоверение за настоящ адрес след подаване на адресна карта за заявяване или за промяна на настоящ адрес -->
+        <!-- Задължилтено -->
+        <name>#{/system/serviceName}</name>
+        <language>
+            <code>BG</code>
+            <name>Български</name>
+        </language>
+        <status>
+            <code>1006-050001</code>
+            <name>Активна</name>
+        </status>
+    </publicService>
+    <serviceProvider>
+        <legalIdentifier>
+            <identifier>#{/data/caseDataSource/data/supplier}</identifier>
+            <identifierType>
+                <code>1006-100003</code>
+                <name>БУЛСТАТ</name>
+            </identifierType>
+        </legalIdentifier>
+        <identifier>
+            <!-- Района на общините - от ексел Д колоната - ид -->
+            <!-- Задължилтено -->
+            <identifier>#{/system/serviceSupplierId}</identifier>
+            <identifierType>
+                <code>1006-100007</code>
+                <name>Идентификатор на публична организация</name>
+            </identifierType>
+        </identifier>
+
+        <!-- Района на общините - от ексел Д колоната - title -->
+        <!-- Задължилтено -->
+        <preferredLabel>#{/system/serviceSupplierName}</preferredLabel>
+
+        <organizationType>
+            <code>#{/data/caseDataSource/data/serviceSupplierTypeCode}</code>
+            <name>#{/data/caseDataSource/data/serviceSupplierTypeName}</name>
+        </organizationType>
+
+        <administrativeUnits>
+            <legalIdentifier>
+                <identifier>#{/data/caseDataSource/data/administrationUnitEDelivery}</identifier>
+                <identifierType>
+                    <code>1006-100003</code>
+                    <name>БУЛСТАТ</name>
+                </identifierType>
+            </legalIdentifier>
+            <identifier>
+                <identifier>#{/data/caseDataSource/data/serviceSupplierId}</identifier>
+                <identifierType>
+                    <code>1006-100007</code>
+                    <name>Идентификатор на публична организация</name>
+                </identifierType>
+            </identifier>
+            <preferredLabel>#{/data/caseDataSource/data/administrationUnit}</preferredLabel>
+            <organizationType>
+                <code>#{/data/caseDataSource/data/administrationUnitEDelivery}</code>
+                <name>#{/data/caseDataSource/data/administrationUnit}</name>
+            </organizationType>
+        </administrativeUnits>
+    </serviceProvider>
+    <requestType>
+        <code>#{/data/requestTypeCode ?? 0006-000121}</code>
+        <name>#{/data/requestTypeName ?? Първоначално заявление за предоставяне на електронна административна услуга}</name>
+    </requestType>
+    <resultChannel>
+        <identifier>#{/data/channel/channelType}</identifier>
+        <channelType>
+            <code>#{/data/channel/channelType}</code>
+            <name>#{/data/channel/channelName}</name>
+        </channelType>
+        <contactAddressCountry>
+            <code>#{/data/contactAddressCountryCode}</code>
+            <name>#{/data/contactAddressCountryName}</name>
+        </contactAddressCountry>
+        <contactAddress>#{/data/contactAddress}</contactAddress>
+    </resultChannel>
+    <processTime>
+        <processTimeType>
+            <code>#{/data/deadline/deadlineType/deadlineTypeType ?? 0006-000083}</code>
+            <name>#{/data/deadline/deadlineType/deadlineTypeName ?? Нормална услуга}</name>
+        </processTimeType>
+        <processTimeUnit>
+            <code>#{/data/deadline/deadlineUnit/deadlineUnitType ?? workDays}</code>
+            <name>#{/data/deadline/deadlineUnit/deadlineUnitName ?? Работни дни}</name>
+        </processTimeUnit>
+        <processTime>#{/data/deadline/deadlineValue ?? 0}</processTime>
+    </processTime>
+    <!-- Представляващо лице -->
+    <requestAuthor>
+        <!-- Заявяващо лице -->
+        <person>
+            <!-- Лични данни -->
+            <personalData>
+                <identifier>
+                    <identifier>#{/data/idCardNumber}</identifier>
+                    <identifierType>
+                        <code>#{/data/requestorIdentifierTypeSelect ?? idn}</code>
+                        <name>#{/data/idCardNumber}</name>
+                    </identifierType>
+                </identifier>
+                <fullName>#{/data/firstName} #{/data/middleName} #{/data/lastName}</fullName>
+                <firstName>#{/data/firstName}</firstName>
+                <middleName>#{/data/middleName}</middleName>
+                <familyName>#{/data/lastName}</familyName>
+                <fullNameLatin>#{/data/requestorFirstNameLatin} #{/data/requestorMiddleNameLatin} #{/data/requestorFamilyNameLatin}</fullNameLatin>
+                <firstNameLatin>#{/data/requestorFirstNameLatin}</firstNameLatin>
+                <middleNameLatin>#{/data/requestorMiddleNameLatin}</middleNameLatin>
+                <familyNameLatin>#{/data/requestorFamilyNameLatin}</familyNameLatin>
+                <!-- <gender>
+                    <code>#{/data/requestorGenderCode}</code>
+                    <name>#{/data/requestorGenderName}</name>
+                </gender> -->
+                <!-- <countryOfBirth>
+                    <code>#{/data/requestorCountryOfBirthCode}</code>
+                    <name>#{/data/requestorCountryOfBirth}</name>
+                </countryOfBirth> -->
+                <!-- <dateOfBirth>#{/data/requestorDateOfBirth}</dateOfBirth> -->
+                <!-- <placeOfBirth>#{/data/requestorCountryOfBirthCode}</placeOfBirth> -->
+                <!-- <citizenship>
+                    <code>#{/data/requestorCitizenshipCode}</code>
+                    <name>#{/data/requestorCitizenship}</name>
+                </citizenship> -->
+                <!-- <regix>
+                    <isSynchronized>#{/data/isRequestorPersonRegixSynced}</isSynchronized>
+                    <dateTime>#{/data/regixMessageTimeRequestorDetails}</dateTime>
+                </regix> -->
+            </personalData>
+            <!-- Документ за самоличност -->
+            <!-- <identificationDocument>
+                <documentType>
+                    <code>#{/data/requestorPhysicalDocumentTypeCode}</code>
+                    <name>#{/data/requestorPhysicalDocumentTypeName}</name>
+                </documentType>
+                <documentNumber>#{/data/requestorDocumentNumber}</documentNumber>
+                <issueDate>#{/data/requestorDocumentIssueDate}</issueDate>
+                <issuer>#{/data/requestorDocumentIssuer}</issuer>
+                <validTo>#{/data/requestorDocumentValidTo}</validTo>
+                <regix>
+                    <isSynchronized>#{/data/isRequestorIdentificationDocumentRegixSynced}</isSynchronized>
+                    <dateTime>#{/data/regixMessageTimeRequestorIdentificationDocument}</dateTime>
+                </regix>
+            </identificationDocument> -->
+            <!-- Постоянен адрес -->
+            <!-- <permanentAddress>
+                <country>
+                    <code>#{/data/requestorPermAddrCountryCode}</code>
+                    <name>#{/data/requestorPermAddrCountry}</name>
+                </country>
+                <address>
+                    <district>
+                        <code>#{/data/requestorPermAddrDistrictCode}</code>
+                        <name>#{/data/requestorPermAddrDistrict}</name>
+                    </district>
+                    <municipality>
+                        <code>#{/data/requestorPermAddrMunicipalityCode}</code>
+                        <name>#{/data/requestorPermAddrMunicipality}</name>
+                    </municipality>
+                    <settlement>
+                        <code>#{/data/requestorPermAddrSettlementCode}</code>
+                        <name>#{/data/requestorPermAddrSettlement}</name>
+                    </settlement>
+                    <area>
+                        <code>#{/data/requestorPermAddrAreaCode}</code>
+                        <name>#{/data/requestorPermAddrArea}</name>
+                    </area>
+                    <locationName>#{/data/requestorPermAddrLocationName}</locationName>
+                    <buildingNumber>#{/data/requestorPermAddrBuildingNumber}</buildingNumber>
+                    <entrance>#{/data/requestorPermAddrEntrance}</entrance>
+                    <floor>#{/data/requestorPermAddrFloor}</floor>
+                    <apartment>#{/data/requestorPermAddrApartment}</apartment>
+                    <fullAddress>#{/data/requestorPermAddrFullAddress}</fullAddress>
+                    <postCode>#{/data/requestorPermAddrPostCode}</postCode>
+                </address>
+                <regix>
+                    <isSynchronized>#{/data/isRequestorPerrAddrRegixSynced}</isSynchronized>
+                    <dateTime>#{/data/regixMessageTimeRequestorPerrAddr}</dateTime>
+                </regix>
+            </permanentAddress> -->
+            <!-- Настоящ адрес -->
+            <!-- <presentAddress>
+                <country>
+                    <code>#{/data/requestorPresAddrCountryCode}</code>
+                    <name>#{/data/requestorPresAddrCountry}</name>
+                </country>
+                <address>
+                    <district>
+                        <code>#{/data/requestorPresAddrDistrictCode}</code>
+                        <name>#{/data/requestorPresAddrDistrict}</name>
+                    </district>
+                    <municipality>
+                        <code>#{/data/requestorPresAddrMunicipalityCode}</code>
+                        <name>#{/data/requestorPresAddrMunicipality}</name>
+                    </municipality>
+                    <settlement>
+                        <code>#{/data/requestorPresAddrSettlementCode}</code>
+                        <name>#{/data/requestorPresAddrSettlement}</name>
+                    </settlement>
+                    <area>
+                        <code>#{/data/requestorPresAddrAreaCode}</code>
+                        <name>#{/data/requestorPresAddrArea}</name>
+                    </area>
+                    <locationName>#{/data/requestorPresAddrLocationName}</locationName>
+                    <buildingNumber>#{/data/requestorPresAddrBuildingNumber}</buildingNumber>
+                    <entrance>#{/data/requestorPresAddrEntrance}</entrance>
+                    <floor>#{/data/requestorPresAddrFloor}</floor>
+                    <apartment>#{/data/requestorPresAddrApartment}</apartment>
+                    <fullAddress>#{/data/requestorPresAddrFullAddress}</fullAddress>
+                    <postCode>#{/data/requestorPresAddrPostCode}</postCode>
+                </address>
+                <regix>
+                    <isSynchronized>#{/data/isRequestorPresAddrRegixSynced}</isSynchronized>
+                    <dateTime>#{/data/regixMessageTimeRequestorPresAddr}</dateTime>
+                </regix>
+            </presentAddress> -->
+            <!-- Адрес за кореспонденция -->
+            <!-- <corrAddress>
+                <country>
+                    <code>#{/data/requestorCorrAddrCountryCode}</code>
+                    <name>#{/data/requestorCorrAddrCountry}</name>
+                </country>
+                <address>
+                    <district>
+                        <code>#{/data/requestorCorrAddrDistrictCode}</code>
+                        <name>#{/data/requestorCorrAddrDistrict}</name>
+                    </district>
+                    <municipality>
+                        <code>#{/data/requestorCorrAddrMunicipalityCode}</code>
+                        <name>#{/data/requestorCorrAddrMunicipality}</name>
+                    </municipality>
+                    <settlement>
+                        <code>#{/data/requestorCorrAddrSettlementCode}</code>
+                        <name>#{/data/requestorCorrAddrSettlement}</name>
+                    </settlement>
+                    <area>
+                        <code>#{/data/requestorCorrAddrAreaCode}</code>
+                        <name>#{/data/requestorCorrAddrArea}</name>
+                    </area>
+                    <locationName>#{/data/requestorCorrAddrLocationName}</locationName>
+                    <buildingNumber>#{/data/requestorCorrAddrBuildingNumber}</buildingNumber>
+                    <entrance>#{/data/requestorCorrAddrEntrance}</entrance>
+                    <floor>#{/data/requestorCorrAddrFloor}</floor>
+                    <apartment>#{/data/requestorCorrAddrApartment}</apartment>
+                    <fullAddress>#{/data/requestorCorrAddrFullAddress}</fullAddress>
+                    <postCode>#{/data/requestorCorrAddrPostCode}</postCode>
+                </address>
+            </corrAddress> -->
+            <!-- Вид акт на представителство -->
+            <!-- <representation>
+                <type>#{/data/requestorRepresentationType}</type>
+                <number>#{/data/requestorActNumber}</number>
+                <dateTime>#{/data/requestorActDate}</dateTime>
+            </representation> -->
+            <!-- Данни на пълномощника -->
+            <!-- <authorizationDocument>
+                <number>#{/data/requestorAuthorizationDocumentNumber}</number>
+                <dateTime>#{/data/requestorAuthorizationDocumentDate}</dateTime>
+                <certifiedBy>#{/data/requestorAuthorizationDocumentCertifiedBy}</certifiedBy>
+                <validTo>#{/data/requestorAuthorizationDocumentValidTo}</validTo>
+            </authorizationDocument> -->
+        </person>
+        <!-- Канали за комуникация -->
+        <communicationChannels>
+            <communicationChannel>
+                <contactType>
+                    <code>1006-030006</code>
+                    <name>Електронна поща</name>
+                </contactType>
+                <contact>#{/data/email}</contact>
+            </communicationChannel>
+            <communicationChannel>
+                <contactType>
+                    <code>1006-030005</code>
+                    <name>Телефон</name>
+                </contactType>
+                <contact>#{/data/requestorPhoneNumber}</contact>
+            </communicationChannel>
+            <communicationChannel>
+                <contactType>
+                    <code>1006-999999</code>
+                    <name>Факс</name>
+                </contactType>
+                <contact>#{/data/requestorFax}</contact>
+            </communicationChannel>
+        </communicationChannels>
+    </requestAuthor>
+
+    <applicant>
+        <!-- Юридическо лице -->
+        <legal>
+            <legalData>
+                <identifier>
+                    <identifier>#{/data/applicant}</identifier>
+                    <identifierType>
+                        <code>#{/data/applicantIdentifierType}</code>
+                        <name>#{/data/applicant}</name>
+                    </identifierType>
+                </identifier>
+                <eik>#{/data/applicantLegalEik}</eik>
+                <name>#{/data/applicantLegalName}</name>
+                <nameLatin>#{/data/applicantLegalNameLatin}</nameLatin>
+                <companyType>#{/data/applicantLegalCompanyType}</companyType>
+                <isLegal>#{/data/isApplicantLegal}</isLegal>
+                <regix>
+                    <isSynchronized>#{/data/isApplicantLegalRegixSynced}</isSynchronized>
+                    <dateTime>#{/data/regixMessageTimeApplicantLegal}</dateTime>
+                </regix>
+            </legalData>
+            <!-- Седалище и адрес -->
+            <address>
+                <country>
+                    <code>#{/data/applicantLegalRegAddrCountryCode}</code>
+                    <name>#{/data/applicantLegalRegAddrCountryName}</name>
+                </country>
+                <address>
+                    <district>
+                        <code>#{/data/applicantLegalRegAddrDistrictCode}</code>
+                        <name>#{/data/applicantLegalRegAddrDistrict}</name>
+                    </district>
+                    <municipality>
+                        <code>#{/data/applicantLegalRegAddrMunicipalityCode}</code>
+                        <name>#{/data/applicantLegalRegAddrMunicipality}</name>
+                    </municipality>
+                    <settlement>
+                        <code>#{/data/applicantLegalRegAddrSettlementCode}</code>
+                        <name>#{/data/applicantLegalRegAddrSettlement}</name>
+                    </settlement>
+                    <area>
+                        <code>#{/data/applicantLegalRegAddrAreaCode}</code>
+                        <name>#{/data/applicantLegalRegAddrArea}</name>
+                    </area>
+                    <locationName>#{/data/applicantLegalRegAddrLocationName}</locationName>
+                    <buildingNumber>#{/data/applicantLegalRegAddrBuildingNumber}</buildingNumber>
+                    <entrance>#{/data/applicantLegalRegAddrEntrance}</entrance>
+                    <floor>#{/data/applicantLegalRegAddrFloor}</floor>
+                    <apartment>#{/data/applicantLegalRegAddrApartment}</apartment>
+                    <fullAddress>#{/data/applicantLegalRegAddrFullAddress}</fullAddress>
+                    <postCode>#{/data/applicantLegalRegAddrPostCode}</postCode>
+                </address>
+                <regix>
+                    <isSynchronized>#{/data/isApplicantLegalRegixSynced}</isSynchronized>
+                    <dateTime>#{/data/regixMessageTimeApplicantLegal}</dateTime>
+                </regix>
+            </address>
+        </legal>
+        <!-- Физическо лице -->
+        <person>
+            <!-- Лични данни -->
+            <personalData>
+                <identifier>
+                    <identifier>#{/data/applicantPhysicalIdentifier}</identifier>
+                    <identifierType>
+                        <code>#{/data/applicantPhysicalIdentifierType}</code>
+                        <name>#{/data/applicantPhysicalIdentifier}</name>
+                    </identifierType>
+                </identifier>
+                <fullName>#{/data/applicantPhysicalFirstName} #{/data/applicantPhysicalMiddleName} #{/data/applicantPhysicalFamilyName}</fullName>
+                <firstName>#{/data/applicantPhysicalFirstName}</firstName>
+                <middleName>#{/data/applicantPhysicalMiddleName}</middleName>
+                <familyName>#{/data/applicantPhysicalFamilyName}</familyName>
+                <fullNameLatin>#{/data/applicantPhysicalFirstNameLatin} #{/data/applicantPhysicalMiddleNameLatin} #{/data/applicantPhysicalFamilyNameLatin}</fullNameLatin>
+                <firstNameLatin>#{/data/applicantPhysicalFirstNameLatin}</firstNameLatin>
+                <middleNameLatin>#{/data/applicantPhysicalMiddleNameLatin}</middleNameLatin>
+                <familyNameLatin>#{/data/applicantPhysicalFamilyNameLatin}</familyNameLatin>
+                <gender>
+                    <code>#{/data/applicantGenderCode}</code>
+                    <name>#{/data/applicantGenderName}</name>
+                </gender>
+                <countryOfBirth>
+                    <code>#{/data/applicantPhysicalCountryOfBirthCode}</code>
+                    <name>#{/data/applicantPhysicalCountryOfBirth}</name>
+                </countryOfBirth>
+                <dateOfBirth>#{/data/applicantPhysicalDateOfBirth}</dateOfBirth>
+                <placeOfBirth>#{/data/applicantPhysicalPlaceOfBirth}</placeOfBirth>
+                <citizenship>
+                    <code>#{/data/applicantPhysicalNationalityCode}</code>
+                    <name>#{/data/applicantPhysicalNationality}</name>
+                </citizenship>
+                <regix>
+                    <isSynchronized>#{/data/isApplicantPersonRegixSynced}</isSynchronized>
+                    <dateTime>#{/data/regixMessageTimeApplicantPhysical}</dateTime>
+                </regix>
+            </personalData>
+            <!--  документ за самоличност-->
+            <identificationDocument>
+                <documentType>
+                    <code>#{/data/applicantPhysicalDocumentTypeCode}</code>
+                    <name>#{/data/applicantPhysicalDocumentTypeName}</name>
+                </documentType>
+                <documentNumber>#{/data/applicantPhysicalDocumentNumber}</documentNumber>
+                <issueDate>#{/data/applicantPhysicalDocumentIssueDate}</issueDate>
+                <issuer>#{/data/applicantPhysicalDocumentIssuer}</issuer>
+                <validTo>#{/data/applicantPhysicalDocumentValidTo}</validTo>
+                <regix>
+                    <isSynchronized>#{/data/isRequestorPersonalIdentifierRegixSynced}</isSynchronized>
+                    <dateTime>#{/data/regixMessageTimeApplicantPersonalIdentifier}</dateTime>
+                </regix>
+            </identificationDocument>
+            <!-- Постоянен адрес -->
+            <permanentAddress>
+                <country>
+                    <code>#{/data/applicantPhysicalPermAddrCountryCode}</code>
+                    <name>#{/data/applicantPhysicalPermAddrCountry}</name>
+                </country>
+                <address>
+                    <district>
+                        <code>#{/data/applicantPhysicalPermAddrDistrictCode}</code>
+                        <name>#{/data/applicantPhysicalPermAddrDistrict}</name>
+                    </district>
+                    <municipality>
+                        <code>#{/data/applicantPhysicalPermAddrMunicipalityCode}</code>
+                        <name>#{/data/applicantPhysicalPermAddrMunicipality}</name>
+                    </municipality>
+                    <settlement>
+                        <code>#{/data/applicantPhysicalPermAddrSettlementCode}</code>
+                        <name>#{/data/applicantPhysicalPermAddrSettlement}</name>
+                    </settlement>
+                    <area>
+                        <code>#{/data/applicantPhysicalPermAddrAreaCode}</code>
+                        <name>#{/data/applicantPhysicalPermAddrArea}</name>
+                    </area>
+                    <locationName>#{/data/applicantPhysicalPermAddrLocationName}</locationName>
+                    <buildingNumber>#{/data/applicantPhysicalPermAddrBuildingNumber}</buildingNumber>
+                    <entrance>#{/data/applicantPhysicalPermAddrEntrance}</entrance>
+                    <floor>#{/data/applicantPhysicalPermAddrFloor}</floor>
+                    <apartment>#{/data/applicantPhysicalPermAddrApartment}</apartment>
+                    <fullAddress>#{/data/applicantPhysicalPermAddrFullAddress}</fullAddress>
+                    <postCode>#{/data/applicantPhysicalPermAddrPostCode}</postCode>
+                </address>
+                <regix>
+                    <isSynchronized>#{/data/isApplicantPerrAddrRegixSynced}</isSynchronized>
+                    <dateTime>#{/data/regixMessageTimeApplicantPerrAddr}</dateTime>
+                </regix>
+            </permanentAddress>
+            <!-- Настоящ адрес -->
+            <presentAddress>
+                <country>
+                    <code>#{/data/applicantPhysicalPresAddrCountryCode}</code>
+                    <name>#{/data/applicantPhysicalPresAddrCountry}</name>
+                </country>
+                <address>
+                    <district>
+                        <code>#{/data/applicantPhysicalPresAddrDistrictCode}</code>
+                        <name>#{/data/applicantPhysicalPresAddrDistrict}</name>
+                    </district>
+                    <municipality>
+                        <code>#{/data/applicantPhysicalPresAddrMunicipalityCode}</code>
+                        <name>#{/data/applicantPhysicalPresAddrMunicipality}</name>
+                    </municipality>
+                    <settlement>
+                        <code>#{/data/applicantPhysicalPresAddrSettlementCode}</code>
+                        <name>#{/data/applicantPhysicalPresAddrSettlement}</name>
+                    </settlement>
+                    <area>
+                        <code>#{/data/applicantPhysicalPresAddrAreaCode}</code>
+                        <name>#{/data/applicantPhysicalPresAddrArea}</name>
+                    </area>
+                    <locationName>#{/data/applicantPhysicalPresAddrLocationName}</locationName>
+                    <buildingNumber>#{/data/applicantPhysicalPresAddrBuildingNumber}</buildingNumber>
+                    <entrance>#{/data/applicantPhysicalPresAddrEntrance}</entrance>
+                    <floor>#{/data/applicantPhysicalPresAddrFloor}</floor>
+                    <apartment>#{/data/applicantPhysicalPresAddrApartment}</apartment>
+                    <fullAddress>#{/data/applicantPhysicalPresAddrFullAddress}</fullAddress>
+                    <postCode>#{/data/applicantPhysicalPresAddrPostCode}</postCode>
+                </address>
+                <regix>
+                    <isSynchronized>#{/data/isApplicantPresAddrRegixSynced}</isSynchronized>
+                    <dateTime>#{/data/regixMessageTimeApplicantPresAddr}</dateTime>
+                </regix>
+            </presentAddress>
+            <!-- Адрес за кореспонденция -->
+            <corrAddress>
+                <country>
+                    <code>#{/data/applicantPhysicalCorrAddrCountryCode}</code>
+                    <name>#{/data/applicantPhysicalCorrAddrCountry}</name>
+                </country>
+                <address>
+                    <district>
+                        <code>#{/data/applicantPhysicalCorrAddrDistrictCode}</code>
+                        <name>#{/data/applicantPhysicalCorrAddrDistrict}</name>
+                    </district>
+                    <municipality>
+                        <code>#{/data/applicantPhysicalCorrAddrMunicipalityCode}</code>
+                        <name>#{/data/applicantPhysicalCorrAddrMunicipality}</name>
+                    </municipality>
+                    <settlement>
+                        <code>#{/data/applicantPhysicalCorrAddrSettlementCode}</code>
+                        <name>#{/data/applicantPhysicalCorrAddrSettlement}</name>
+                    </settlement>
+                    <area>
+                        <code>#{/data/applicantPhysicalCorrAddrAreaCode}</code>
+                        <name>#{/data/applicantPhysicalCorrAddrArea}</name>
+                    </area>
+                    <locationName>#{/data/applicantPhysicalCorrAddrLocationName}</locationName>
+                    <buildingNumber>#{/data/applicantPhysicalCorrAddrBuildingNumber}</buildingNumber>
+                    <entrance>#{/data/applicantPhysicalCorrAddrEntrance}</entrance>
+                    <floor>#{/data/applicantPhysicalCorrAddrFloor}</floor>
+                    <apartment>#{/data/applicantPhysicalCorrAddrApartment}</apartment>
+                    <fullAddress>#{/data/applicantPhysicalCorrAddrFullAddress}</fullAddress>
+                    <postCode>#{/data/applicantPhysicalCorrAddrPostCode}</postCode>
+                </address>
+            </corrAddress>
+        </person>
+        <!-- Канали за комуникация -->
+        <communicationChannels>
+            <communicationChannel>
+                <contactType>
+                    <code>1006-030006</code>
+                    <name>Електронна поща</name>
+                </contactType>
+                <contact>#{/data/email}</contact>
+            </communicationChannel>
+            <communicationChannel>
+                <contactType>
+                    <code>1006-030005</code>
+                    <name>Телефон</name>
+                </contactType>
+                <contact>#{/data/applicantPhoneNumber}</contact>
+            </communicationChannel>
+            <communicationChannel>
+                <contactType>
+                    <code>1006-999999</code>
+                    <name>Факс</name>
+                </contactType>
+                <contact>#{/data/applicantFax}</contact>
+            </communicationChannel>
+        </communicationChannels>
+    </applicant>
+
+    <!-- Специфично съдържание на услугата -->
+    <specificContent>#{/data/specificContent/*}</specificContent>
+</ServiceRequest>

@@ -1,0 +1,149 @@
+$primary-blue: #036 !important;
+$white: #fff !important;
+$yellow: #fcba19;
+$purple: #7979d4;
+$green: #43893e;
+$light-white:rgba(255,255,255,0.95);
+$black:#000;
+$light-blue: #4d61fc;
+$light-grey: #f3f3f3;
+$dark-blue: #1a5a96;
+$blue: #001dff;
+$gray: #b4b4b4;
+$gray-100: #f8f9fa;
+$gray-300: #dee2e6;
+
+
+// SM vars
+$sm-white: #FFFFFF;
+
+// Red
+$sm-red: #D04925;
+$sm-red-0-5: #FAEDE9;
+$sm-red-1: #F6DBD3;
+$sm-red-1-5: #F1C8BE;
+$sm-red-2: #ECB6A8;
+$sm-red-3: #E3927C;
+$sm-red-4: #D96D51;
+$sm-red-5: #D04925;
+$sm-red-6: #A63A1E;
+$sm-red-7: #7D2C16;
+$sm-red-8: #531D0F;
+$sm-red-8-5: #3E160B;
+$sm-red-9: #2A0F07;
+$sm-red-9-5: #150704;
+
+// Orange
+$sm-orange: #F68213;
+$sm-orange-0-5: #FEF3E7;
+$sm-orange-1: #FDE6D0;
+$sm-orange-1-5: #FCDAB8;
+$sm-orange-2: #FBCDA1;
+$sm-orange-3: #FAB471;
+$sm-orange-4: #F89B42;
+$sm-orange-5: #F68213;
+$sm-orange-6: #C7690F;
+$sm-orange-7: #98500B;
+$sm-orange-8: #683708;
+$sm-orange-8-5: #512B06;
+$sm-orange-9: #391E04;
+$sm-orange-9-5: #221202;
+$sm-orange-10: #0A0500;
+
+// Yellow
+$sm-yellow: #F0D032;
+$sm-yellow-0-5: #FEFAEB;
+$sm-yellow-1: #FCF6D6;
+$sm-yellow-1-5: #FBF1C2;
+$sm-yellow-2: #F9ECAD;
+$sm-yellow-3: #F6E384;
+$sm-yellow-4: #F3D95B;
+$sm-yellow-5: #F0D032;
+$sm-yellow-6: #C0A628;
+$sm-yellow-7: #907D1E;
+$sm-yellow-8: #605314;
+$sm-yellow-8-5: #483E0F;
+$sm-yellow-9: #302A0A;
+$sm-yellow-9-5: #181505;
+
+//Green
+$sm-green: #729651;
+$sm-green-0-5: #F1F5EE;
+$sm-green-1: #E3EADC;
+$sm-green-1-5: #D5E0CB;
+$sm-green-2: #C7D5B9;
+$sm-green-3: #AAC097;
+$sm-green-4: #8EAB74;
+$sm-green-5: #729651;
+$sm-green-6: #5B7841;
+$sm-green-7: #445A31;
+$sm-green-8: #2E3C20;
+$sm-green-8-5: #222D18;
+$sm-green-9: #171E10;
+$sm-green-9-5: #0B0F08;
+
+// Blue
+$sm-blue: #6682C7;
+$sm-blue-0-5: #F0F3F9;
+$sm-blue-1: #E0E6F4;
+$sm-blue-1-5: #D1DAEE;
+$sm-blue-2: #C2CDE9;
+$sm-blue-3: #A3B4DD;
+$sm-blue-4: #859BD2;
+$sm-blue-5: #6682C7;
+$sm-blue-6: #5268A0;
+$sm-blue-7: #3E4F79;
+$sm-blue-8: #293552;
+$sm-blue-8-5: #1F283F;
+$sm-blue-9: #151C2B;
+$sm-blue-9-5: #0B0F18;
+$sm-blue-10: #010204;
+
+//Purple
+$sm-purple: #801CAF;
+$sm-purple-0: #FBF5FD;
+$sm-purple-0-5: #EFDFF5;
+$sm-purple-1: #E2CAED;
+$sm-purple-1-5: #D6B4E6;
+$sm-purple-2: #CA9EDE;
+$sm-purple-3: #B173CE;
+$sm-purple-4: #9947BF;
+$sm-purple-5: #801CAF;
+$sm-purple-6: #66168C;
+$sm-purple-7: #4D1169;
+$sm-purple-8: #330B46;
+$sm-purple-8-5: #260835;
+$sm-purple-9: #1A0623;
+$sm-purple-9-5: #0D0312;
+
+// Indigo
+$sm-indigo-dark: #403A52;
+$sm-indigo-0: #D7D4E0;
+$sm-indigo-0-5: #C8C5D2;
+$sm-indigo-1: #B9B5C4;
+$sm-indigo-1-5: #AAA6B5;
+$sm-indigo-2: #9B96A7;
+$sm-indigo-3: #7C788B;
+$sm-indigo-4: #5E596E;
+$sm-indigo-5: #403A52;
+$sm-indigo-6: #332E42;
+$sm-indigo-7: #262331;
+$sm-indigo-8: #1A1721;
+$sm-indigo-8-5: #131119;
+$sm-indigo-9: #0D0C10;
+$sm-indigo-9-5: #060608;
+$sm-indigo-10: #000000;
+
+// SM gradients
+$sm-gradient-corner: linear-gradient(135.03deg, #F1471D 0%, #FCD205 31.77%, #5D9656 63.64%, #5784CC 100%);
+$sm-gradient-y: linear-gradient(179.9deg, #F1471D -6.39%, #F1491D 10.77%, #F2501C 16.96%, #F35B19 21.36%, #F46C17 24.93%, #F68213 27.99%, #F89E0E 30.69%, #FABD09 33.07%, #FCD205 34.38%, #5E984B 79.76%, #5D9656 80.82%, #5B917A 84.9%, #5A8C98 89.21%, #5989AF 93.74%, #5886BF 98.6%, #5784C9 103.99%, #5784CC 111.01%);
+$sm-gradient-x: linear-gradient(90.03deg, #F1471D -6.39%, #F1491D 10.77%, #F2501C 16.96%, #F35B19 21.36%, #F46C17 24.93%, #F68213 27.99%, #F89E0E 30.69%, #FABD09 33.07%, #FCD205 34.38%, #5E984B 79.76%, #5D9656 80.82%, #5B917A 84.9%, #5A8C98 89.21%, #5989AF 93.74%, #5886BF 98.6%, #5784C9 103.99%, #5784CC 111.01%);
+$sm-gradient-red-yellow-x: linear-gradient(90.03deg, #F1471D 0.02%, #FCD205 99.98%);
+$sm-gradient-yellow-green-x: linear-gradient(90.03deg, #FCD205 0.02%, #5E984B 99.98%);
+$sm-gradient-yellow-blue-x: linear-gradient(90.03deg, #FCD205 0.02%, #6682C7 99.98%);
+$sm-gradient-green-blue-x: linear-gradient(315deg, #6682C7 0%, #729651 100%);
+$sm-gradient-red-blue-x: linear-gradient(90.03deg, #F1471D 0.02%, #6682C7 99.98%);
+$sm-gradient-bottom: linear-gradient(0.03deg, #F1471D 0.02%, #F1491D 14.64%, #F2501C 19.9%, #F35B19 23.65%, #F46C17 26.69%, #F68213 29.29%, #F89E0E 31.59%, #FABD09 33.62%, #FCD205 34.74%, #5E984B 73.37%, #5D9656 74.27%, #5B917A 77.75%, #5A8C98 81.42%, #5989AF 85.27%, #5886BF 89.41%, #5784C9 94%, #5784CC 99.98%);
+$sm-gradient-top: linear-gradient(179.9deg, #F1471D -6.39%, #F1491D 10.77%, #F2501C 16.96%, #F35B19 21.36%, #F46C17 24.93%, #F68213 27.99%, #F89E0E 30.69%, #FABD09 33.07%, #FCD205 34.38%, #5E984B 79.76%, #5D9656 80.82%, #5B917A 84.9%, #5A8C98 89.21%, #5989AF 93.74%, #5886BF 98.6%, #5784C9 103.99%, #5784CC 111.01%);
+$sm-gradient-left: linear-gradient(90.03deg, #F1471D -6.39%, #F1491D 10.77%, #F2501C 16.96%, #F35B19 21.36%, #F46C17 24.93%, #F68213 27.99%, #F89E0E 30.69%, #FABD09 33.07%, #FCD205 34.38%, #5E984B 79.76%, #5D9656 80.82%, #5B917A 84.9%, #5A8C98 89.21%, #5989AF 93.74%, #5886BF 98.6%, #5784C9 103.99%, #5784CC 111.01%);
+$sm-gradient-right: linear-gradient(270.03deg, #F1471D 0.02%, #F1491D 14.64%, #F2501C 19.9%, #F35B19 23.65%, #F46C17 26.69%, #F68213 29.29%, #F89E0E 31.59%, #FABD09 33.62%, #FCD205 34.74%, #5E984B 73.37%, #5D9656 74.27%, #5B917A 77.75%, #5A8C98 81.42%, #5989AF 85.27%, #5886BF 89.41%, #5784C9 94%, #5784CC 99.98%);

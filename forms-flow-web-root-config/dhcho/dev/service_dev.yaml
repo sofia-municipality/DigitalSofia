@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: forms-flow-web-root-config-svc
+  namespace: forms-flow-web-root-config
+  labels:
+    name: formsflowwebroot
+spec:
+  selector:
+    name: formsflowwebroot
+  ports:
+    - name: forms-flow-web-root-config-port
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+    

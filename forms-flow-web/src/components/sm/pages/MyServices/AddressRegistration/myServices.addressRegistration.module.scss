@@ -1,0 +1,45 @@
+@import "./../../../../../assets/styles/mixins.scss";
+@import "./../../../../../assets/styles/themes.scss";
+@import "./../../../../../assets/styles/typography.scss";
+
+.addressWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #FAFAFA;
+}
+
+.addressContainer {
+  padding-top: 20px;
+  min-height: 100vh;
+
+  padding-inline: 10px;
+  max-width: 1200px;
+  width: 100%;
+
+  margin-bottom: 20px;
+}
+
+.contentWrapper, .servicesWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.servicesWrapper {
+  padding: 0 !important;
+  margin: 0 !important;
+  list-style-type: none;
+}
+
+.noServicesFound {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 50vh;
+}
+
+.noServicesText {
+  @include sm-heading-4;
+}

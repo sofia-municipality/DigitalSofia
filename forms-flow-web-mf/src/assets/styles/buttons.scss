@@ -1,0 +1,169 @@
+@import "./themes.scss";
+
+@mixin sm-cta-primary {
+  text-decoration: none !important;
+  border-image: $sm-gradient-y 1;
+  border-width: 1px;
+  background-color: $sm-white !important;
+  border-radius: 0 !important;
+  color: $sm-indigo-dark !important;
+  font-weight: 300;
+
+  -webkit-transition: width 0.5s ease-in-out, height 0.5s ease-in-out;
+  -moz-transition: width 0.5s ease-in-out, height 0.5s ease-in-out;
+  -o-transition: width 0.5s ease-in-out, height 0.5s ease-in-out;
+  transition: width 0.5s ease-in-out, height 0.5s ease-in-out;
+
+  @include screen-size(large) {
+    border: 1px solid $sm-indigo-0-5;
+
+    &:not(:disabled):hover {
+      font-weight: 400;
+      border-image: $sm-gradient-y 1;
+      border-width: 1px;
+    }
+  }
+
+  &:hover, &:focus {
+    box-shadow: none !important;
+  }
+}
+
+@mixin sm-cta-secondary {
+  border: none;
+  text-decoration: none !important;
+  color: $sm-white;
+  background-color: $sm-blue-6 !important;
+  border-radius: 2px;
+
+  @include screen-size(large) {
+    &:not(:disabled):hover {
+      background-color: $sm-blue-7 !important;
+    }
+  }
+}
+
+@mixin sm-cta-tertiary {
+  color: $sm-white;
+  text-decoration: none !important;
+  border: 1px solid $sm-indigo-4;
+  border-radius: 0 !important;
+  background-color: $sm-indigo-4 !important;
+
+  @include screen-size(medium) {
+    color: $sm-indigo-dark;
+    border: 1px solid $sm-indigo-4;
+    background-color: $sm-white !important;
+  }
+
+  @include screen-size(large) {
+    &:not(:disabled):hover {
+      border: 1px solid transparent;
+      background-color: $sm-indigo-4 !important;
+      color: $sm-white;
+    }
+  } 
+}
+
+@mixin sm-cta-quaternary {
+  color: $sm-blue-6;
+  font-weight: 500;
+  text-decoration: none !important;
+  border: 1px solid $sm-indigo-0;
+  border-radius: 0 !important;
+  background-color: $sm-white !important;
+}
+
+@mixin sm-cta-link {
+  color: $sm-blue-6;
+  font-weight: 500;
+  text-decoration: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+
+  &:hover, &:focus {
+    color: $sm-blue-6 !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+}
+
+@mixin sm-cta-success {
+  color: $sm-white;
+  font-weight: 500;
+  text-decoration: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background-color: $sm-green !important;
+}
+
+@mixin sm-cta-error {
+  color: $sm-white;
+  font-weight: 500;
+  text-decoration: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background-color: $sm-red !important;
+}
+
+@mixin sm-cta-error-outline {
+  color: $sm-red;
+  font-weight: 500;
+  text-decoration: none !important;
+  border: 1px solid $sm-red;
+  border-radius: 0 !important;
+  background-color: $sm-white !important;
+}
+
+@mixin sm-cta-outline {
+  color: $sm-indigo-4;
+  font-weight: 500;
+  text-decoration: none !important;
+  background-color: transparent !important;
+  border: none;
+
+  &:hover, &:focus {
+    color: $sm-indigo-4 !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  @include screen-size(large) {
+    &:hover, &:focus {
+      color: $sm-blue-6 !important;
+    }
+  }
+}
+
+@mixin sm-cta-transparent {
+  text-decoration: none !important;
+  background-color: transparent !important;
+  border: none;
+
+  &:hover, &:focus {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+}
+
+@mixin sm-cta-size-large {
+  min-height: 60px;
+  font-size: 20px;
+  line-height: 24px;
+}
+
+@mixin sm-cta-size-medium {
+  min-height: 50px;
+  font-size: 20px;
+  line-height: 24px;
+}
+
+@mixin sm-cta-size-small {
+  min-height: 40px;
+  font-size: 18px;
+  line-height: 22px;
+}

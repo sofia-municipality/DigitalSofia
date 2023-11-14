@@ -1,0 +1,101 @@
+@import "./../../../../../assets/styles/mixins.scss";
+@import "./../../../../../assets/styles/themes.scss";
+@import "./../../../../../assets/styles/typography.scss";
+
+.addressWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #FAFAFA;
+}
+
+.addressContainer {
+  padding-top: 20px;
+  min-height: 100vh;
+
+  padding-inline: 10px;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.titleIcon {
+  color: $sm-blue-6;
+  width: 30px !important;
+  height: 30px !important;
+  align-self: flex-start;
+}
+
+.card {
+  padding: 30px !important;
+  background-color: #FCFCFC;
+  box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 2px 12px rgba(12, 14, 25, 0.12);
+  border-radius: 2px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-basis: auto !important;
+  height: 450px;
+  max-width: 600px;
+
+  @include screen-size(large) {
+    max-width: unset;
+    flex-basis: 0 !important;
+    &:hover {
+      box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 2px 12px rgba(12, 14, 25, 0.24);
+      background-color: $sm-white;
+    }
+  }
+}
+
+.title {
+  margin-bottom: 30px;
+  color: $sm-blue;
+
+  @include sm-heading-4;
+  @include screen-size(medium) {
+    font-weight: 500;
+    font-size: 32px;
+  }
+}
+
+.subtitle {
+  color: $sm-indigo-dark;
+  @include sm-body-medium;
+
+  @include screen-size(medium) {
+    font-weight: 500;
+    font-size: 19px;
+  }
+}
+
+.cardWrapper {
+  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  align-items: center;
+
+  @include screen-size(large) {
+    align-items: unset;
+    flex-direction: row;
+    margin-bottom: 0;
+  }
+}
+
+.cta {
+  width: 100% !important;
+  height: 60px !important;
+  
+  & ~ & {
+    margin-top: 20px;
+  }
+
+  font-weight: 500;
+
+  &:hover {
+    @include screen-size(large) {
+      font-weight: 600;
+    }
+  }
+}

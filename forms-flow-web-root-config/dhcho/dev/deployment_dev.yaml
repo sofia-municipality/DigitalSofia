@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-flow-web-root-config
+  namespace: forms-flow-web-root-config
+  labels:
+    name: formsflowwebroot
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      name: formsflowwebroot
+  template:
+    metadata:
+      labels:
+        name: formsflowwebroot
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: form-flow-web-root-config
+          image: sofiamunicipalitydigitall/forms-flow-web-root-config:latest
+#          lifecycle:
+#            postStart:
+#              exec:
+#                command: ["/bin/sh", "-c", "echo '192.168.201.46  smkeycloak-dev forms-flow-web-dev form-flow-forms-dev form-flow-analytics-dev form-flow-api-dev form-flow-bpm-dev form-flow-documents-dev' >> /etc/hosts"]
+          volumeMounts:
+                - name: js
+                  mountPath: /usr/share/nginx/html/mf
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          env:
+            - name: REACT_APP_ENV
+              value: "dhchodev"
+            - name: REACT_APP_DRAFT_ENABLED
+              value: "true"
+      volumes:
+        - name: js
+          nfs:
+            server: 172.23.230.140
+            path: /mnt

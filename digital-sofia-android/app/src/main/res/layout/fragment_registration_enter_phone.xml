@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_background"
+    android:fitsSystemWindows="true">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="100dp"
+                android:layout_height="64dp"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="@dimen/margin_32"
+                android:layout_marginTop="@dimen/margin_48"
+                app:srcCompat="@drawable/img_logo_big" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/TextStyle.20spRegularMainColor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_32"
+                android:layout_marginTop="@dimen/margin_36"
+                android:layout_marginEnd="@dimen/margin_32"
+                android:singleLine="false"
+                android:text="@string/registration_enter_phone_title" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/TextStyle.16spRegularMainColor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_32"
+                android:layout_marginTop="@dimen/margin_16"
+                android:layout_marginEnd="@dimen/margin_32"
+                android:singleLine="false"
+                android:text="@string/registration_enter_phone_description" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/TextStyle.16spRegularButtonGrayColor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_32"
+                android:layout_marginTop="@dimen/margin_16"
+                android:layout_marginEnd="@dimen/margin_32"
+                android:singleLine="false"
+                android:text="@string/registration_enter_phone_input_title" />
+
+            <com.digitall.digital_sofia.ui.view.CustomTextInputLayout
+                android:id="@+id/phoneInputLayout"
+                style="@style/DefaultTextInputLayoutStyle"
+                android:layout_marginStart="@dimen/margin_32"
+                android:layout_marginTop="@dimen/margin_16"
+                android:layout_marginEnd="@dimen/margin_32"
+                android:hint="@string/registration_enter_phone_input_hint"
+                app:endIconMode="none">
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/etPhone"
+                    style="@style/DefaultEditTextStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"
+                    android:maxLength="128" />
+
+            </com.digitall.digital_sofia.ui.view.CustomTextInputLayout>
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnNext"
+                style="@style/ButtonStyle.LightBlue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/margin_32"
+                android:layout_marginBottom="@dimen/margin_48"
+                android:enabled="false"
+                android:text="@string/next"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.core.widget.NestedScrollView>
+
+</FrameLayout>

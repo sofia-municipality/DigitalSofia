@@ -1,0 +1,4 @@
+com.bulpros.keycloak.phone.providers.spi.PinVerificationCodeSpi
+com.bulpros.keycloak.phone.providers.spi.PinSpi
+com.bulpros.keycloak.phone.providers.spi.MessageSenderServiceSpi
+com.bulpros.keycloak.phone.providers.spi.UserCheckSpi

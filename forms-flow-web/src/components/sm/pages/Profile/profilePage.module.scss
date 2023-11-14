@@ -1,0 +1,96 @@
+@import "./../../../../assets/styles/themes.scss";
+@import "./../../../../assets/styles/mixins.scss";
+@import "./../../../../assets/styles/typography.scss";
+
+.name {
+  @include sm-heading-3;
+  color: $sm-indigo-dark;
+  margin-bottom: 30px;
+
+  @include screen-size(medium) {
+    font-weight: 600;
+    font-size: 42px;
+  }
+}
+
+.profilePage {
+  min-height: 100vh;
+  padding-inline: 15px;
+
+  @include screen-size(medium) {
+    padding-inline: 30px;
+  }
+
+  @include screen-size(large) {
+    padding-inline: 40px;
+    display: flex;
+    justify-content: center;
+
+    & .pageContent {
+      width: 100%;
+      max-width: 1200px;
+    }
+  }
+}
+
+.profilePageTitleWrapper {
+  display: flex;
+  gap: 20px;
+  margin-top: 40px;
+  margin-bottom: 60px;
+  align-items: center;
+}
+
+.profilePageTitle {
+  @include sm-heading-4;
+  @include screen-size(medium) {
+    @include sm-heading-3;
+  }
+}
+
+.info {
+  @include screen-size(medium) {
+    width: 500px;
+  }
+
+  & > div {
+    margin-bottom: 30px !important;
+  }
+}
+
+.icon {
+  color: $sm-indigo-dark;
+}
+
+.cta {
+  background-color: unset !important;
+  border: none !important;
+  padding: 0 !important;
+
+  &:focus {
+    box-shadow: none !important;
+  }
+}
+
+.deleteCta {
+  padding-inline: 25px;
+}
+
+.deleteCtaWrapper {
+  margin-top: 60px;
+  display: flex;
+  justify-content: center;
+
+  @include screen-size(medium) {
+    justify-content: flex-start;
+  }
+}
+
+.profileText {
+  @include sm-heading-6;
+  word-break: break-word;
+
+  @include screen-size(medium) {
+    @include sm-heading-5;
+  }
+}

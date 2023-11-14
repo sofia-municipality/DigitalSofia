@@ -1,0 +1,42 @@
+@import "../../../assets/styles/themes.scss";
+@import "../../../assets/styles/typography.scss";
+
+.signDocumentModal {
+  background: rgba(255, 255, 255, 0.9);
+  padding-inline: 0 !important;
+  & .modal-dialog {
+    border: none !important;
+    background-color: #FAFAFA !important;
+    box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 2px 12px rgba(12, 14, 25, 0.24);
+
+    & .modal-content {
+      border-radius: 2px !important;
+      background-color: #FAFAFA;
+    }
+  }
+}
+
+.signDocumentModal-error {
+  & .modal-content {
+    border: 1px solid $sm-red !important;
+  }
+}
+
+.signDocumentModal-success, .signDocumentModal-nexu_instructions {
+  & .modal-content {
+    border: 1px solid $sm-green !important;
+  }
+}
+
+.signDocumentModal-loading {
+  & .modal-dialog {
+    margin-block: 0 !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+  }
+
+  & .modal-content {
+    border: none !important;
+    background-color: transparent !important;
+  }
+}

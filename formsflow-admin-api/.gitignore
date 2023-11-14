@@ -1,0 +1,11 @@
+
+.DS_Store
+.eggs/*
+.env.local
+.idea/*
+__pycache__/*
+*/__pycache__/*
+*.pyc
+venv/*
+.env
+admin_api/admin_api.egg-info/*

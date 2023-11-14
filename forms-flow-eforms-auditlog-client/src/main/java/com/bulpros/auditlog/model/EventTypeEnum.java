@@ -1,0 +1,28 @@
+
+package com.bulpros.auditlog.model;
+
+public enum EventTypeEnum {
+
+    PORTAL_ESERVICE_REQUESTED,
+    PORTAL_AUTHN_REQUEST_SENT,
+    PORTAL_AUTHN_RESPONSE_REDIRECTED,
+    AIS_AUTHN_RECEIVED,
+    AIS_ESERVICE_VALIDATION_FAILED,
+    AIS_ESERVICE_VALIDATION_SUCCEEDED,
+    AIS_EPAYMENT_REQUEST_SENT,
+    AIS_ESERVICE_DENIED,
+    AIS_ESERVICE_STARTED,
+    AIS_ESERVICE_RESULT_READY,
+    AIS_ESERVICE_RESULT_REGISTRATION_SENT,
+    AIS_ESERVICE_DOCUMENT_REGISTERED,
+    AIS_ESERVICE_CANCELED_BY_USER;
+
+    public String value() {
+        return name();
+    }
+
+    public static EventTypeEnum fromValue(String v) {
+        return valueOf(v);
+    }
+
+}

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: forms-flow-web-svc
+  namespace: forms-flow-web
+  labels:
+    name: formsflowweb
+spec:
+  selector:
+    name: formsflowweb
+  ports:
+    - name: forms-flow-web-port
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+    

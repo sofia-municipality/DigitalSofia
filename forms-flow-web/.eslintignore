@@ -1,0 +1,9 @@
+# Global ignores
+**/package-lock.json
+**/node_modules/**
+**/coverage/**
+**/*.min.js
+**/__snapshots__/**
+
+# Ignore built files except build/index.js
+build/*
