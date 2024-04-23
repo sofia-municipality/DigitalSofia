@@ -31,8 +31,10 @@ const Admin = React.memo(({ props }: any) => {
   const baseUrl = MULTITENANCY_ENABLED ? `/tenant/${tenantId}/` : "/";
   
   React.useEffect(() => {
-    publish("ES_ROUTE", { pathname: `${baseUrl}admin` });
-  }, []);
+    if(isAuth) {
+      publish("ES_ROUTE", { pathname: `${baseUrl}admin` });
+    }
+  }, [isAuth]);
 
   React.useEffect(()=>{
     StorageService.save("tenantKey", tenantId)

@@ -9,5 +9,5 @@ import Alamofire
 
 enum NetworkResponse<T> {
   case success(T)
-  case failure(Error)
+  case failure(NetworkError)
 }

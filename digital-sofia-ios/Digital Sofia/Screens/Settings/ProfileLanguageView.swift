@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct ProfileLanguageView: View {
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var networkMonitor: NetworkMonitor
+    
     @State private var isEnglish = LanguageProvider.shared.appLanguage == .english
     @State private var isBulgarian = LanguageProvider.shared.appLanguage == .bulgarian
-    @EnvironmentObject var appState: AppState
     
     var body: some View {
         VStack() {
@@ -47,8 +49,11 @@ struct ProfileLanguageView: View {
             Spacer()
             Spacer()
         }
-        .background(DSColors.background)
-        .navigationBarHidden(true)
+        .lockScreen()
+        .loginNotification()
+        .environmentObject(appState)
+        .environmentObject(networkMonitor)
+        .backgroundAndNavigation()
     }
     
     private func changeLanguage(new: Languages) {

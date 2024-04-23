@@ -74,6 +74,32 @@ class BaseBPMService:
             )
             # response.raise_for_status()
         return data
+    
+    @classmethod
+    def put_request(cls, url, token, payload=None, tenant_key=None):
+        """PUT Http request"""
+        headers = cls._get_headers_(token, tenant_key)
+        payload = json.dumps(payload)
+        response = requests.put(url, data=payload, headers=headers, timeout=120)
+        current_app.logger.debug(
+            "PUT URL : %s, Response Code : %s", url, response.status_code
+        )
+
+        data = None
+        if response.ok:
+            if response.text:
+                data = json.loads(response.text)
+            else:
+                data = True
+        else:
+            log_bpm_error(
+                "ERROR:Create - status_code: "
+                + str(response.status_code)
+                + ", "
+                + response.text
+            )
+            # response.raise_for_status()
+        return data
 
     @classmethod
     def _get_headers_(cls, token, tenant_key=None):

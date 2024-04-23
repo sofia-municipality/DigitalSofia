@@ -7,8 +7,11 @@ metadata:
     app.kubernetes.io/name: camunda
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
+  strategy: 
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: camunda
@@ -28,39 +31,39 @@ spec:
               protocol: TCP
           env:
             - name: KEYCLOAK_URL_REALM
-              value: "forms-flow-ai"
+              value: "eServices"
             - name: KEYCLOAK_URL
-              value: "http://identity-dev-eservices.egov.bg"
+              value: "https://identity-dev-eservices.egov.bg"
             - name: KEYCLOAK_CLIENTID
               value: "forms-flow-bpm"
             - name: KEYCLOAK_CLIENTSECRET
-              value: "Z9sjTpQ49vQidNpu1XyETT6Jsty1hbEL"
+              value: "SDi9yOoPH0wKncJw4fFlSkuZf6Ir5Lbc"
             - name: CAMUNDA_JDBC_URL
               value: "jdbc:postgresql://172.23.230.134:5432/camundadbdev"
             - name: CAMUNDA_JDBC_USER
-              value: ""
+              value: "camunda"
             - name: CAMUNDA_JDBC_PASSWORD
-              value: ""
+              value: "6GSTqk2WpP"
             - name: CAMUNDA_JDBC_DRIVER
               value: "org.postgresql.Driver"
             - name: CAMUNDA_APP_ROOT_LOG_FLAG
               value: "error"
             - name: FORMSFLOW_API_URL
-              value: "http://api-dev-eservices.egov.bg"
+              value: "https://api-dev-eservices.egov.bg"
             - name: FORMIO_URL
-              value: "http://forms-dev-eservices.egov.bg"
+              value: "https://forms-dev-eservices.egov.bg"
             - name: FORMIO_ROOT_EMAIL
-              value: ""
+              value: "iiliev@digitall.com"
             - name: FORMIO_ROOT_PASSWORD
-              value: ""
+              value: "fd1cnUW2Rp608S2"
             - name: APP_SECURITY_ORIGIN
               value: "*"
             - name: WEBSOCKET_SECURITY_ORIGIN
-              value: "http://dev-eservices.sofia.bg,http://dev-eservices.egov.bg"
+              value: "https://dev-eservices.sofia.bg,https://dev-eservices.egov.bg"
             - name: WEBSOCKET_MESSAGE_TYPE
               value: "TASK_EVENT"
             - name: WEBSOCKET_ENCRYPT_KEY
-              value: ""
+              value: "giert989jkwrgb@DR55"
             - name: DATA_BUFFER_SIZE
               value: "30"
             - name: IDENTITY_PROVIDER_MAX_RESULT_SIZE
@@ -68,7 +71,7 @@ spec:
             - name: KEYCLOAK_WEB_CLIENTID
               value: "forms-flow-web"
             - name: KEYCLOAK_ENABLE_CLIENT_AUTH
-              value: "false"
+              value: "true"
             - name: BPM_CLIENT_CONN_TIMEOUT
               value: "5000"
             - name: DATA_ANALYSIS_URL
@@ -78,9 +81,9 @@ spec:
             - name: CUSTOM_SUBMISSION_ENABLED
               value: "false"
             - name: MULTI_TENANCY_ENABLED
-              value: "false"
+              value: "true"
             - name: FORMSFLOW_ADMIN_URL
-              value: "http://admin-api-dev-eservices.egov.bg"
+              value: "https://admin-api-dev-eservices.egov.bg"
             - name: REDIS_ENABLED
               value: "false"
             - name: REDIS_HOST
@@ -88,7 +91,7 @@ spec:
             - name: REDIS_PORT
               value: "6379"
             - name: REDIS_PASSCODE
-              value: ""
+              value: "changeme"
             - name: SESSION_COOKIE_SECURE
               value: "false"
             - name: CAMUNDA_DEBUG
@@ -96,7 +99,7 @@ spec:
             - name: CAMUNDA_METRICS_FLAG
               value: "false"
             - name: WEB_URL
-              value: "http://dev-eservices.sofia.bg"
+              value: "https://dev-eservices.sofia.bg"
             - name: FORMS_FLOW_INTEGRATIONS_URL
               value: "http://forms-flow-eforms-integrations-svc.form-flow-eforms-integrations.svc.cluster.local:8002/integrations"
             - name: NOTIFICATION_PREFIX

@@ -59,12 +59,17 @@ import { usePageTitleRef, useEnrichForm } from "../../customHooks";
 import AutofillDataModal from "../Form/AutofillDataModal";
 import FormSuccessModal from "../Form/FormSuccessModal";
 import FormSignDocumentModal from "../Form/FormSignDocumentModal";
-import { useGetBaseUrl } from "../../customHooks";
+import FormErrorModal from "../Form/FormErrorModal";
+import { useGetBaseUrl, useFormRestrictionsCheck } from "../../customHooks";
 import { setFormStatusLoading } from "../../actions/processActions";
 import { getFormProcesses } from "../../apiManager/services/processServices";
 import { textTruncate } from "../../helper/helper";
 
 const View = React.memo((props) => {
+  const isWebView = localStorage.getItem("hideNav");
+  const showRequestServiceLink = sessionStorage.getItem(
+    "showRequestServiceLink"
+  );
   const { t } = useTranslation();
   const lang = useSelector((state) => state.user.lang);
   const isFormSubmissionLoading = useSelector(
@@ -106,8 +111,10 @@ const View = React.memo((props) => {
     errors,
     options,
     form: { form, isActive, url },
+    tenant,
   } = props;
   const dispatch = useDispatch();
+  useFormRestrictionsCheck(form?.path, tenant);
 
   const formSubmitCallback = useRef();
   const setFormSubmitCallback = (func) => (formSubmitCallback.current = func);
@@ -309,7 +316,13 @@ const View = React.memo((props) => {
                 type={SmCtaTypes.OUTLINE}
                 className="form-close-cta"
                 isLink
-                href={PAGE_ROUTES.ADDRESS_REGISTRATION}
+                href={
+                  isWebView
+                    ? showRequestServiceLink
+                      ? PAGE_ROUTES.ADDRESS_REGISTRATION
+                      : PAGE_ROUTES.MY_SERVICES_ADDRESS_REGISTRATION
+                    : PAGE_ROUTES.ADDRESS_REGISTRATION
+                }
                 disabled={isFormSubmissionLoading}
                 accessibilityProps={{
                   "aria-label": t("screen.reader.modal.close.cta"),
@@ -347,8 +360,11 @@ const View = React.memo((props) => {
           />
           {processData?.status === "active" ? (
             <>
-              <AutofillDataModal formRef={formRef} />
+              {formEmbeddedConstants.REACT_APP_SHOW_AUTO_FULFILLMENT_CHECKBOX ? (
+                <AutofillDataModal formRef={formRef} />
+              ) : null}
               <FormSuccessModal formRef={formRef} />
+              <FormErrorModal />
               <FormSignDocumentModal
                 formRef={formRef}
                 setFormSubmitCallback={setFormSubmitCallback}
@@ -387,7 +403,7 @@ const View = React.memo((props) => {
                 }}
                 onCustomEvent={(evt) => onCustomEvent(evt, redirectUrl)}
                 onNextPage={manuallySaveDraft}
-                onRender={(form) => {
+                formReady={(form) => {
                   formRef.current = form;
                   enrichForm(formRef, manuallySaveDraft, draftId);
                 }}
@@ -438,16 +454,17 @@ const doProcessActions = (submission, ownProps, formSubmitCallback) => {
       DRAFT_ENABLED
     );
     dispatch(
-      applicationCreateAPI(data, draft_id ? draft_id : null, (err) => {
+      applicationCreateAPI(data, draft_id ? draft_id : null, (err, res) => {
         dispatch(setFormSubmissionLoading(false));
         if (!err) {
           if (formSubmitCallback?.current) {
-            formSubmitCallback?.current();
+            formSubmitCallback?.current(null, res);
             dispatch(setFormSubmitted(true));
           } else {
-            toast.success(
-              <Translation>{(t) => t("Submission Saved")}</Translation>
-            );
+            FORM_ALERTS_ENABLED &&
+              toast.success(
+                <Translation>{(t) => t("Submission Saved")}</Translation>
+              );
             if (isAuth)
               dispatch(
                 push(

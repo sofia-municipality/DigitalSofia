@@ -59,6 +59,28 @@ export const MULTITENANCY_ENABLED =
     ? true
     : false;
 
+const TRANSLATE_BPMN_MODELER_VARIABLE =
+  (window._env_ && window._env_.REACT_APP_TRANSLATE_BPMN_MODELER) ||
+  process.env.REACT_APP_TRANSLATE_BPMN_MODELER ||
+  false;
+
+export const TRANSLATE_BPMN_MODELER =
+  TRANSLATE_BPMN_MODELER_VARIABLE === "true" ||
+  TRANSLATE_BPMN_MODELER_VARIABLE === true
+    ? true
+    : false;
+
+const TRANSLATE_FORM_BUILDER_VARIABLE =
+  (window._env_ && window._env_.REACT_APP_TRANSLATE_FORM_BUILDER) ||
+  process.env.REACT_APP_TRANSLATE_FORM_BUILDER ||
+  false;
+
+export const TRANSLATE_FORM_BUILDER =
+  TRANSLATE_FORM_BUILDER_VARIABLE === "true" ||
+  TRANSLATE_FORM_BUILDER_VARIABLE === true
+    ? true
+    : false;
+
 export const BASE_ROUTE = MULTITENANCY_ENABLED ? "/tenant/:tenantId/" : "/";
 
 export const Keycloak_Tenant_Client = "forms-flow-web";
@@ -75,6 +97,9 @@ export const KEYCLOAK_AUTH_URL = `${KEYCLOAK_URL}/auth`;
 export const CLIENT = "formsflow-client";
 export const STAFF_DESIGNER = "formsflow-designer";
 export const STAFF_REVIEWER = "formsflow-reviewer";
+export const ADMIN = "formsflow-admin";
+export const PAGE_ADMIN = "formsflow-page-admin";
+export const ANALYTICS_VIEWER = "formsflow-analytics-viewer";
 export const ANONYMOUS_USER = "anonymous";
 
 export const OPERATIONS = {

@@ -24,9 +24,9 @@ struct PendingDocumentsView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            if networkMonitor.isConnected {
-                logoView()
-                
+            logoView()
+            
+            NetworkStack {
                 navigation()
                 
                 if viewModel.isLoading {
@@ -42,11 +42,8 @@ struct PendingDocumentsView: View {
                         documentsList()
                     }
                 }
-            } else {
-                NoNetworkConnetionView() {
-                    viewModel.refreshData()
-                }
             }
+            .environmentObject(networkMonitor)
         }
         .onAppear {
             viewModel.successfullyFetchedDocuments = {
@@ -54,17 +51,15 @@ struct PendingDocumentsView: View {
             }
             
             openDocumentViewModel = OpenDocumentViewModel(openDocumentUserDecision: { decision in
-                switch decision {
-                case .approved:
+                if openDocument { openDocument = false }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    viewModel.isLoading = true
                     openDocumentViewModel?.sendDocumentStatus(transactionId: selectedDocument?.evrotrustTransactionId)
-                default:
-                    openDocument = false
                 }
             }, openDocumentErrorHandler: { error in
                 appState.alertItem = AlertProvider.errorAlertWithCompletion(message: error.description, completion: {
-                    if openDocument { openDocument = false }
+                    documentStatusCompletion()
                 })
-                
             }, checkUserStatusResult: { state in
                 switch state {
                 case .showDocument:
@@ -77,34 +72,48 @@ struct PendingDocumentsView: View {
                         openETSetup = true
                     })
                 }
-            }, successfullySignedDocument: {
-                appState.alertItem = AlertProvider.errorAlertWithCompletion(message: AppConfig.UI.Alert.successfullySignedDocumentAlertText.localized, completion: {
-                    if openDocument { openDocument = false }
+            }, receivedDocumentStatus: { response in
+                let status = DocumentStatus(rawValue: response?.status ?? "") ?? .unsigned
+                
+                switch status {
+                case .signed, .rejected:
+                    let alertMessage = status == .signed ? AppConfig.UI.Alert.successfullySignedDocumentAlertText.localized
+                    : AppConfig.UI.Alert.successfullyRejectedDocumentAlertText.localized
                     
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                        viewModel.refreshData()
-                    }
-                })
+                    appState.alertItem = AlertProvider.errorAlertWithCompletion(message: alertMessage, completion: {
+                        documentStatusCompletion()
+                    })
+                default:
+                    documentStatusCompletion()
+                }
+            }, verifyIdentityRequest: { _ in
+            }, userClosedDocumentView: {
+                documentStatusCompletion()
             })
         }
         .refreshable {
             viewModel.refreshData()
         }
         .onChange(of: viewModel.networkError) { newValue in
-            if let description = newValue {
-                appState.alertItem = AlertProvider.errorAlert(message: description)
-            }
-        }
-        .alert(item: $appState.alertItem) { alertItem in
-            AlertProvider.getAlertFor(alertItem: alertItem)
+            appState.alertItem = AlertProvider.errorAlert(message: newValue ?? "")
         }
         .onChange(of: viewModel.documents, perform: { newValue in
             appState.hasPendingDocuments = newValue.count > 0
         })
-        .background(DSColors.background)
+        .onChange(of: appState.refreshDocuments) { newValue in
+            if newValue {
+                viewModel.refreshData()
+                appState.refreshDocuments = false
+            }
+        }
         .task {
             viewModel.loadData()
         }
+        .log(view: self)
+        .alert()
+        .environmentObject(appState)
+        .environmentObject(networkMonitor)
+        .backgroundAndNavigation()
     }
     
     private func logoView() -> some View {
@@ -181,6 +190,15 @@ struct PendingDocumentsView: View {
             
             NavigationLink(destination: openDocumentViewModel?.openEditProfile(),
                            isActive: $openEditProfile) { EmptyView() }
+        }
+    }
+    
+    private func documentStatusCompletion() {
+        if openDocument { openDocument = false }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            if viewModel.isLoading { viewModel.isLoading = false }
+            viewModel.refreshData()
         }
     }
 }

@@ -8,7 +8,7 @@ import {
   useUpdateFAQ,
   useDeleteFAQ,
 } from "../../../../apiManager/apiHooks";
-import AdministrationContainer from "../../AdministrationContainer";
+import AdministrationContainer from "../../../AdministrationContainer";
 import FAQForm from "../FAQForm";
 import { useNavigateTo } from "../../../../customHooks";
 import { PAGE_ROUTES } from "../../../../constants/navigation";

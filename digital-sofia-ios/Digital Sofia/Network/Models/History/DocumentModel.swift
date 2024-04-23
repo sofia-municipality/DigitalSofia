@@ -40,7 +40,7 @@ struct DocumentModel: Codable, Hashable {
     var fileUrl: String?
     
     var pdfPath: String {
-        return NetworkConfig.Addresses.baseServer + NetworkConfig.EP.downloadPDF.format(formioId ?? "")
+        return NetworkConfig.Addresses.baseServer + NetworkConfig.EP.API.downloadPDF.format(formioId ?? "")
     }
     
     private enum CodingKeys: String, CodingKey {
@@ -89,8 +89,7 @@ enum DocumentStatus: String {
          signed = "signed",
          expired = "expired",
          rejected = "rejected",
-         failed = "failed",
-         withdrawn = "withdrawn"
+         failed = "failed"
     
     var localisedDescription: String {
         switch self {
@@ -106,8 +105,6 @@ enum DocumentStatus: String {
             return AppConfig.UI.Documents.rejected.localized
         case .failed:
             return AppConfig.UI.Documents.failed.localized
-        case .withdrawn:
-            return AppConfig.UI.Documents.withdrawn.localized
         }
     }
 }

@@ -75,11 +75,16 @@ import SubmissionError from "../../sm/components/Modal/SubmissionErrorModal";
 import AutofillDataModal from "../AutofillDataModal";
 import FormSuccessModal from "../FormSuccessModal";
 import FormSignDocumentModal from "../FormSignDocumentModal";
-import { useGetBaseUrl } from "../../../customHooks";
+import FormErrorModal from "../FormErrorModal";
+import { useGetBaseUrl, useFormRestrictionsCheck } from "../../../customHooks";
 //import NotFound from "../../NotFound/";
 import { renderPage } from "../../../helper/helper";
 
 const View = React.memo((props) => {
+  const isWebView = localStorage.getItem("hideNav");
+  const showRequestServiceLink = sessionStorage.getItem(
+    "showRequestServiceLink"
+  );
   const [formStatus, setFormStatus] = React.useState("");
   const { t } = useTranslation();
   const lang = useSelector((state) => state.user.lang);
@@ -136,7 +141,10 @@ const View = React.memo((props) => {
     errors,
     options,
     form: { form, isActive, url, error },
+    tenant,
   } = props;
+
+  useFormRestrictionsCheck(form?.path, tenant);
 
   const [isValidResource, setIsValidResource] = useState(false);
 
@@ -254,9 +262,9 @@ const View = React.memo((props) => {
   }, [isDraftCreated]);
 
   useEffect(() => {
-    if (draftSubmissionId && formRef.current?.component?.parent) {
-      formRef.current.component.parent.draftId = draftSubmissionId;
-      formRef.current.component.data.draftId = draftSubmissionId;
+    if (draftSubmissionId && formRef.current) {
+      formRef.current.draftId = draftSubmissionId;
+      formRef.current.data.draftId = draftSubmissionId;
     }
   }, [draftSubmissionId]);
 
@@ -456,7 +464,13 @@ const View = React.memo((props) => {
               type={SmCtaTypes.OUTLINE}
               className="form-close-cta"
               isLink
-              href={PAGE_ROUTES.ADDRESS_REGISTRATION}
+              href={
+                isWebView
+                  ? showRequestServiceLink
+                    ? PAGE_ROUTES.ADDRESS_REGISTRATION
+                    : PAGE_ROUTES.MY_SERVICES_ADDRESS_REGISTRATION
+                  : PAGE_ROUTES.ADDRESS_REGISTRATION
+              }
               disabled={isFormSubmissionLoading}
               accessibilityProps={{
                 "aria-label": t("screen.reader.modal.close.cta"),
@@ -481,8 +495,11 @@ const View = React.memo((props) => {
         <div>
           {isPublic || formStatus === "active" ? (
             <>
-              <AutofillDataModal formRef={formRef} />
+              {formEmbeddedConstants.REACT_APP_SHOW_AUTO_FULFILLMENT_CHECKBOX ? (
+                <AutofillDataModal formRef={formRef} />
+              ) : null}
               <FormSuccessModal formRef={formRef} />
+              <FormErrorModal />
               <FormSignDocumentModal
                 formRef={formRef}
                 setFormSubmitCallback={setFormSubmitCallback}
@@ -524,7 +541,7 @@ const View = React.memo((props) => {
                 }}
                 onCustomEvent={(evt) => onCustomEvent(evt, redirectUrl)}
                 onNextPage={manuallySaveDraft}
-                onRender={(form) => {
+                formReady={(form) => {
                   formRef.current = form;
                   enrichForm(formRef, manuallySaveDraft);
                 }}
@@ -565,15 +582,16 @@ const doProcessActions = (submission, ownProps, formSubmitCallback) => {
         dispatch(setFormSubmissionLoading(false));
         if (!err) {
           if (formSubmitCallback?.current) {
-            formSubmitCallback.current();
+            formSubmitCallback.current(null, res);
             dispatch(setFormSubmitted(true));
             if (isAuth) {
               dispatch(setMaintainBPMFormPagination(true));
             }
           } else {
-            toast.success(
-              <Translation>{(t) => t("Submission Saved")}</Translation>
-            );
+            FORM_ALERTS_ENABLED &&
+              toast.success(
+                <Translation>{(t) => t("Submission Saved")}</Translation>
+              );
             dispatch(setFormSubmitted(true));
             if (isAuth) {
               dispatch(setMaintainBPMFormPagination(true));

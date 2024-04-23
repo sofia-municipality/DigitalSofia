@@ -28,7 +28,7 @@ export default {
       title: "Местни данъци и такси",
       subtitle: "Прегледайте и платете местните данъци и такси бързо и сигурно",
       description:
-        "Преди да започнете да попълвате онлайн заявлението, моля, изберете вида на адресната регистрация, както и Вашия статут спрямо собствеността на имота, на чийто адрес ще се регистрирате.",
+        "С един клик можете да проверите и заплатите дължимите от Вас местни данъци и такси. Процесът е изцяло дигитален.",
       ctaText: "Справка и плашане",
     },
     [homePageBlogs.HIY_BLOCK]: {
@@ -104,7 +104,7 @@ export default {
     [homePageBlogs.MASTHEAD_BLOCK]: {
       title: "New e-services available in Sofia!",
       description:
-        "Address registration in Sofia is now just a few clicks away! The service is available for all administrative regions of the Metropolitan Municipality and is integrated with the payment system of the Ministry of e-Government.",
+        "Address registration in Sofia is now just a few clicks away! The service is available for all administrative regions of the Sofia Municipality and is integrated with the payment system of the Ministry of e-Government.",
       features: [
         "A new and secure electronic certificate",
         "Easier access",
@@ -124,8 +124,8 @@ export default {
       title: "Local taxes and fees",
       subtitle: "View and pay local taxes and fees quickly and securely",
       description:
-        "Before you start filling out the online application, please select the type of address registration, as well as your status in relation to the ownership of the property at whose address you will be registering.",
-      ctaText: "Reference and intimidation",
+        "Check and pay your local taxes and fees with a click. The process is fully digital.",
+      ctaText: "Reference and payment",
     },
     [homePageBlogs.HIY_BLOCK]: {
       title: "How does the service work?",

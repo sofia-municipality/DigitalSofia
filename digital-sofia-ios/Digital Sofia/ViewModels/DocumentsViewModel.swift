@@ -14,17 +14,18 @@ import SwiftUI
     @Published var networkError: String?
     
     var successfullyFetchedDocuments: (() -> ())?
-    private var statuses: [DocumentStatus]?
+    private var statuses: [DocumentStatus]
     private var pageInfo: PageInfo?
     private var counter = 0
     
-    init(statuses: [DocumentStatus]? = nil) {
+    init(statuses: [DocumentStatus]) {
         self.statuses = statuses
     }
     
     func refreshData() {
         pageInfo = nil
         isLoading = true
+        documents = []
         loadPage(cursor: nil)
     }
     
@@ -32,7 +33,6 @@ import SwiftUI
         guard let pageInfo = pageInfo else {
             isLoading = true
             loadPage(cursor: nil)
-            
             return
         }
         
@@ -61,13 +61,11 @@ import SwiftUI
                 self?.successfullyFetchedDocuments?()
                 
             case .failure(let error):
-                if let networkError = error as? NetworkError {
-                    self?.isLoading = false
-                    self?.isLoadingMore = false
-                    
-                    if networkError.description != NetworkError.tokenExpired.description {
-                        self?.networkError = networkError.description
-                    }
+                self?.isLoading = false
+                self?.isLoadingMore = false
+                
+                if error != NetworkError.tokenExpired && error != NetworkError.noInternetConnection {
+                    self?.networkError = error.description
                 }
             }
         }

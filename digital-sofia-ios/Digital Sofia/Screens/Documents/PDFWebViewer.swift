@@ -8,16 +8,21 @@
 import SwiftUI
 
 struct PDFWebViewer: View {
+    @EnvironmentObject var appState: AppState
+    
     @State private var shouldRefresh = false
     @State private var url: URL?
+    @State private var request: URLRequest?
+    @StateObject private var navigationState = WebViewNavigationState()
     
     init(url: URL?) {
         _url = State(initialValue: url)
+        if let url = _url.wrappedValue {
+            _request = State(initialValue: URLRequest(url: url))
+        }
     }
     
     var body: some View {
-        let webView = WebView(url: $url, shouldRefresh: $shouldRefresh, shouldAddAuth: true)
-        
         VStack(spacing: 0) {
             CustomNavigationBar()
             
@@ -26,10 +31,27 @@ struct PDFWebViewer: View {
                 .frame(height: 1)
                 .edgesIgnoringSafeArea(.horizontal)
             
-            webView
+            WebView(shouldRefresh: $shouldRefresh, request: request, shouldAddAuth: true, navigationState: navigationState)
         }
-        .navigationBarHidden(true)
-        .background(DSColors.background)
+        .onAppear {
+            loadUrl()
+        }
+        .onTokenRefresh(perform: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                shouldRefresh = false
+                loadUrl()
+            }
+        })
+        .environmentObject(appState)
+        .backgroundAndNavigation()
+        .log(view: self)
+    }
+    
+    private func loadUrl() {
+        if let url = url {
+            request = URLRequest(url: url)
+            shouldRefresh = true
+        }
     }
 }
 

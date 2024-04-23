@@ -11,7 +11,13 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius:3px;
+  border-radius: 3px;
+  max-height: 300px;
+  
+  @include screen-size(medium) {
+    max-width: 500px;
+    max-height: unset;
+  }
 }
 
 .taxSection {
@@ -32,13 +38,8 @@
   padding-inline: 30px;
   @include screen-size(medium) {
     margin-top: 0;
+    padding-inline: 15px;
   }
 
-  @include screen-size(extra-large) {
-    padding-inline: 50px;
-  }
 
-  @include screen-size(huge) {
-    padding-inline: 100px;
-  }
 }

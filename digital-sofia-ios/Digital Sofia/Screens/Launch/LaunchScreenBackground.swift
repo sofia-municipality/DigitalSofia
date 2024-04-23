@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct LaunchScreenBackground<Content>: View where Content: View {
+    var navigationItem: AnyView?
     let content: Content
     
     var body : some View {
@@ -18,6 +19,12 @@ struct LaunchScreenBackground<Content>: View where Content: View {
                 .ignoresSafeArea()
             
             VStack {
+                if let item = navigationItem {
+                    item
+                        .padding([.top], -40)
+                        .ignoresSafeArea()
+                }
+                
                 Image(ImageProvider.logo)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -28,6 +35,7 @@ struct LaunchScreenBackground<Content>: View where Content: View {
             .padding([.top, .bottom], UIScreen.main.bounds.width * 0.25)
         }
         .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
     }
 }
 

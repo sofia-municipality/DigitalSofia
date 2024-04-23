@@ -38,7 +38,7 @@ const ServiceFlowFilterListDropDown = React.memo(() => {
               key={index}
               onClick={() => changeFilterSelection(filter)}
             >
-              {filter?.name} {`(${filter.itemCount || 0})`}
+              {t(filter?.name)} {`(${filter.itemCount || 0})`}
             </NavDropdown.Item>
           ))}
         </>

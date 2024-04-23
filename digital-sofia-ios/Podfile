@@ -1,18 +1,15 @@
- platform :ios, '15.0'
+platform :ios, '15.0'
+use_frameworks!
 
 target 'Digital Sofia' do
-  use_frameworks!
-
-    pod 'Alamofire'
     pod "AFNetworking", "4.0.1"
-    pod 'DocumentReader', '6.3.2494'
-    pod 'DocumentReaderMRZRFID', '6.3.6217'
-
-# Add the pods for the Firebase products you want to use in your app
-# For example, to use Firebase Authentication and Cloud Firestore
+    pod 'DocumentReader', '6.9.3102'
+    pod 'DocumentReaderMRZRFID', '6.9.7951'
     pod 'Firebase/Core'
     pod 'Firebase/Messaging'
+    pod 'Firebase/Crashlytics'
 
+project 'Digital Sofia', 'Release-Dev' => :release, 'Debug-Dev' => :debug
 end
 
 post_install do |installer|

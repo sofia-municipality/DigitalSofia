@@ -10,6 +10,7 @@ from admin_api.constants import Role
 
 def get_import_json(tenant_key: str, bpm_secret: str,  # pylint:disable=too-many-arguments
                     web_url: str,
+                    admin_web_url: str,
                     camunda_url: str,
                     analytics_url: str,
                     roles: List[Dict],
@@ -19,6 +20,9 @@ def get_import_json(tenant_key: str, bpm_secret: str,  # pylint:disable=too-many
         "roles": {
             "client": {
                 f"{tenant_key}-forms-flow-web": [
+
+                ],
+                f"{tenant_key}-forms-flow-admin-web": [
 
                 ],
                 f"{tenant_key}-forms-flow-bpm": []
@@ -52,15 +56,15 @@ def get_import_json(tenant_key: str, bpm_secret: str,  # pylint:disable=too-many
         ],
         "clients": [
             {
-                "clientId": f"{analytics_url}/saml/callback?org_slug={tenant_key}",
+                "clientId": f"{analytics_url}/{tenant_key}/saml/callback",
                 "description": "Redash-Analytics",
-                "adminUrl": f"{analytics_url}/saml/callback?org_slug={tenant_key}",
+                "adminUrl": f"{analytics_url}/{tenant_key}/saml/callback",
                 "surrogateAuthRequired": False,
                 "enabled": True,
                 "alwaysDisplayInConsole": False,
                 "clientAuthenticatorType": "client-secret",
                 "redirectUris": [
-                    f"{analytics_url}/*"
+                    f"{analytics_url}/{tenant_key}/*"
                 ],
                 "webOrigins": [],
                 "notBefore": 0,
@@ -435,10 +439,10 @@ def get_import_json(tenant_key: str, bpm_secret: str,  # pylint:disable=too-many
                 "alwaysDisplayInConsole": False,
                 "clientAuthenticatorType": "client-secret",
                 "redirectUris": [
-                    f"{web_url}/*"
+                    f"{admin_web_url}/*"
                 ],
                 "webOrigins": [
-                    web_url
+                    admin_web_url
                 ],
                 "notBefore": 0,
                 "bearerOnly": False,
@@ -496,10 +500,10 @@ def get_import_json(tenant_key: str, bpm_secret: str,  # pylint:disable=too-many
                         "protocolMapper": "oidc-audience-mapper",
                         "consentRequired": False,
                         "config": {
-                            "included.client.audience": "forms-flow-admin-web",
+                            "included.client.audience": "forms-flow-web",
                             "id.token.claim": "false",
                             "access.token.claim": "true",
-                            "included.custom.audience": "forms-flow-admin-web",
+                            "included.custom.audience": "forms-flow-web",
                             "userinfo.token.claim": "false"
                         }
                     },
@@ -559,7 +563,15 @@ def get_import_json(tenant_key: str, bpm_secret: str,  # pylint:disable=too-many
                 "clientRole": True,
                 "attributes": {}
             })
-        if role['name'] not in (Role.REVIEWER.value, Role.DESIGNER.value, Role.CLIENT.value):
+        partial_import_json["roles"]["client"][f"{tenant_key}-forms-flow-admin-web"].append(
+            {
+                "name": role['name'],
+                "description": role.get('description', 'Formsflow custom role.'),
+                "composite": False,
+                "clientRole": True,
+                "attributes": {}
+            })
+        if role['name'] not in (Role.REVIEWER.value, Role.DESIGNER.value, Role.CLIENT.value, Role.PAGE_ADMIN.value, Role.ANALYTICS_VIEWER.value, Role.ADMIN.value):
             custom_roles.append(role['name'])
     if create_default_users:
         for user in ('designer', 'client', 'reviewer'):

@@ -126,6 +126,8 @@ export const loadTranslations = async (tenantKey, isMultitenancyEnabled, callbac
   }
 };
 
+export const areTranslationsLoaded = () => !!i18n.options.resources;
+
 export const changeLanguage = (language) => i18n.changeLanguage(language);
 
 export const getFormTranslations = () =>

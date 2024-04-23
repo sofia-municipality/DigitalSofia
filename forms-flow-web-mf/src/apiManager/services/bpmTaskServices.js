@@ -89,7 +89,10 @@ export const fetchServiceTaskList = (
                     return Promise.resolve(task);
                   }
                   const submissionData = await getFormSubmissionByUrl(submissionUrl);
-                  return Object.assign({}, task, { submissionData: submissionData?.data });
+                  return Object.assign({}, task, { 
+                    submissionData: submissionData?.data,
+                    variables: vars
+                  });
                 } catch(_) {
                   return task;
                 } 
@@ -214,6 +217,22 @@ export const fetchUserListWithSearch = ({ searchType, query }, ...rest) => {
   };
 };
 
+const excludeRestrictedFilters  = (data = []) => {
+  const userRoles = JSON.parse(StorageService.get(StorageService.User.USER_ROLE));
+
+  const availableFilters = data.filter(item => {
+    const variables = item.properties?.variables;
+    const allowedRolesVar = variables?.find(e => e.name === 'allowedRoles');
+    if(allowedRolesVar) {
+      const allowedRoles = allowedRolesVar.label.split(/,\s*/g);
+      return userRoles.some(e => allowedRoles.includes(e));
+    }
+
+    return true;
+  });
+  return availableFilters;
+};
+
 export const fetchFilterList = (...rest) => {
   const done = rest.length ? rest[0] : () => {};
   const getTaskFiltersAPI = `${API.GET_BPM_FILTERS}?resourceType=Task&itemCount=true`;
@@ -225,7 +244,7 @@ export const fetchFilterList = (...rest) => {
     )
       .then((res) => {
         if (res.data) {
-          dispatch(setBPMFilterList(res.data));
+          dispatch(setBPMFilterList(excludeRestrictedFilters(res.data)));
           dispatch(setBPMFilterLoader(false));
           //dispatch(setBPMLoader(false));
           done(null, res.data);

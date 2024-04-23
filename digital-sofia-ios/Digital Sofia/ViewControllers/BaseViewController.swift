@@ -14,7 +14,9 @@ class BaseViewController: UIViewController {
     @ObservedObject var appState = AppState()
     @ObservedObject var networkMonitor = NetworkMonitor()
     
-    let user = UserProvider.shared.getUser()
+    var user: User? {
+        return UserProvider.currentUser
+    }
     
     var initialVC: ViewController? {
         return navigationController?.viewControllers.first as? ViewController
@@ -27,47 +29,44 @@ class BaseViewController: UIViewController {
     }
     
     func showLoginScreen(user: User) {
-        if user.useBiometrics {
-            addSwiftUI(someView: LoginWithBiometricsView()
-                .environmentObject(appState)
-                .environmentObject(networkMonitor))
-        } else {
-            addSwiftUI(someView: LoginPINView()
-                .environmentObject(appState)
-                .environmentObject(networkMonitor))
-        }
+        addSwiftUI(someView: LoginScreenHelper.loginScreen
+            .environmentObject(appState)
+            .environmentObject(networkMonitor))
     }
     
     func showLaunchScreen() {
         addSwiftUI(someView: LaunchScreen(appState: appState).environmentObject(networkMonitor))
     }
     
-    func showHomeScreen() {
-        addSwiftUI(someView: TabbarView(appState: appState).environmentObject(networkMonitor))
-    }
-    
     func showLoginScreen() {
         addSwiftUI(someView: InitialView(appState: appState).environmentObject(networkMonitor))
     }
     
+    func showUIAlertView(message: String, completion: @escaping () -> ()) {
+        let alert = UIAlertController(title: AppConfig.UI.Alert.generalAlertTitle.localized, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: AppConfig.UI.Titles.Button.ok, style: .default, handler: { _ in
+            completion()
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+    
     func navigateToTabbarView() {
-        let tabbarView = TabbarView(appState: appState).environmentObject(networkMonitor)
+        let tabbarView = TabbarView()
+            .environmentObject(appState)
+            .environmentObject(networkMonitor)
+        
         let hostingController = UIHostingController(rootView: tabbarView)
         navigationController?.pushViewController(hostingController, animated: true)
     }
     
-    func checkPendingDocuments(completion: ((String?, NetworkError?) -> ())? = nil) {
+    func checkPendingDocuments() {
         let parameters = DocumentsParameters(statuses: [.signing], cursor: nil)
         
         NetworkManager.getDocuments(parameters: parameters) { [weak self] response in
             switch response {
             case .success(let documentsResponse):
                 self?.appState.hasPendingDocuments = documentsResponse.documents.count > 0
-                completion?(documentsResponse.documents.first?.evrotrustTransactionId, nil)
-            case .failure(let error):
-                if let networkError = error as? NetworkError {
-                    completion?(nil, networkError)
-                }
+            default: break
             }
         }
     }
@@ -93,10 +92,6 @@ class BaseViewController: UIViewController {
             
             navigationController?.setViewControllers(filtered, animated: true)
         }
-    }
-    
-    func logout() {
-        UserProvider.shared.logout()
     }
     
     func getEditETUserViewController() -> EvrotrustEditAndIdentifyViewController? {

@@ -12,9 +12,9 @@ public class PaidDebts {
     private int debtInstalmentId;
     private String kindDebtRegId;
     private String kindDebtRegName;
-    private int payInstSum;
-    private int payInterestSum;
-    private int payDiscSum;
-    private int balInstSum;
-    private int balInterestSum;
+    private float payInstSum;
+    private float payInterestSum;
+    private float payDiscSum;
+    private float balInstSum;
+    private float balInterestSum;
 }

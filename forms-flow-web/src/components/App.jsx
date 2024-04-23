@@ -16,6 +16,7 @@ import { SmContextProvider } from "./sm/context";
 import {
   useInitKeycloak,
   useSetInitialLanguageTranslations,
+  useSyncEnvVars,
 } from "../customHooks";
 import Loading from "../containers/Loading";
 
@@ -26,6 +27,10 @@ const App = React.memo((props) => {
     <div>
       <Helmet>
         {KEYCLOAK_URL ? <link rel="preconnect" href={KEYCLOAK_URL} /> : null}
+        <meta
+          name="viewport"
+          content="width=device-width,initial-scale=1.0, user-scalable=yes, maximum-scale=5"
+        />
       </Helmet>
       <Provider store={store}>
         <ConnectedRouter history={history}>
@@ -44,6 +49,7 @@ const LanguageProvider = ({ children }) => {
 };
 
 const AppContent = ({ store }) => {
+  useSyncEnvVars();
   const { pathname } = useLocation();
   const [isInitiated] = useInitKeycloak();
 

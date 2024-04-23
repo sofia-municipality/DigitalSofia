@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-flow-eforms-integrations
+  namespace : form-flow-eforms-integrations
+  labels:
+    app.kubernetes.io/name: integrations
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: integrations
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: integrations
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: form-flow-eforms-integrations
+          image: sofiamunicipalitydigitall/forms-flow-eforms-integrations:latest
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c",  "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf " ]
+          ports:
+            - containerPort: 8002
+              name: http
+              protocol: TCP
+          env:
+            - name: AGENTWS_KEYSTORE_LOCATION
+              value: "/cert/agentWS-certificate.p12"
+            - name: EDELIVERY_KEYSTORE_LOCATION
+              value: "/cert/eDelivery-BulprosTest.pfx"
+            - name: REGIX_KEYSTORE_LOCATION
+              value: "/cert/regix-test.server.p12"
+            - name: BORICA_KEYSTORE_LOCATION
+              value: "/cert/test.bulpros.cer.pfx"
+            - name: EVROTRUST_PUBLIC_KEY
+              value: "/cert/evrotrust-public-key.pem"
+            - name: EVROTRUST_PRIVATE_KEY
+              value: "/cert/evrotrust-private-key.pem"
+            - name: ESB_KEYSTORE_LOCATION
+              value: "/cert/test_SO_client_eUslugi_Za_administraciqta_Digital.pfx"
+            - name: MALWARESCAN_KEYSTORE_LOCATION
+              value: "/cert/malwareScanKeystore.p12"
+            - name: EVROTRUST_VENDOR_API_KEY
+              value: "33c236eb-cbbe-46b3-93fb-g378b554g4g3"
+            - name: EVROTRUST_VENDOR_NUMBER
+              value: "fAqWz8DrTCRbdKQ7"
+            - name: AGENTWS_OBLIGATIONS_URL
+              value: "https://ltf.is-bg.net/AgentWS-SOF46/obligations"
+            - name: AGENTWS_PAYMENT_URL
+              value: "https://ltf.is-bg.net/AgentWS-SOF46/payment/pay"
+            - name: AGENTWS_PAYMENT_INFO_URL
+              value: "https://ltf.is-bg.net/AgentWS-SOF46/payment/transactioninfo"
+            - name: AGENTWS_REVERSAL_URL
+              value: "https://ltf.is-bg.net/AgentWS-SOF46/reversal"
+            - name: MAIL_HOST
+              value: "sandbox.smtp.mailtrap.io"
+            - name: MAIL_PORT
+              value: "2525"
+            - name: MAIL_USERNAME
+              value: "769b3912c73663"
+            - name: MAIL_PASSWORD
+              value: "3c42f3720e2814"

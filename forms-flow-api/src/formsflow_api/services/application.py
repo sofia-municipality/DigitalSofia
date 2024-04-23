@@ -20,6 +20,8 @@ from formsflow_api.models import (
     AuthType,
     Draft,
     FormProcessMapper,
+    DocumentStatus,
+    DocumentTransaction
 )
 from formsflow_api.schemas import (
     AggregatedApplicationSchema,
@@ -116,6 +118,10 @@ class ApplicationService:  # pylint: disable=too-many-public-methods
             payload = ApplicationService.get_start_task_payload(
                 application, mapper, form_url, web_form_url
             )
+
+            current_app.logger.debug("BPM start_task payload")
+            current_app.logger.debug(payload)
+
             ApplicationService.start_task(mapper, payload, token, application)
         return application, HTTPStatus.CREATED
 
@@ -356,6 +362,157 @@ class ApplicationService:  # pylint: disable=too-many-public-methods
             application.update(data)
         else:
             raise BusinessException("Invalid application", HTTPStatus.BAD_REQUEST)
+
+    @staticmethod
+    def get_application_process_variables(
+        application_id,
+        token=None
+    ):
+        application = Application.query.filter_by(
+            id=application_id
+        ).first()
+
+        
+        if not application or not application.process_instance_id:
+            current_app.logger.debug(f"Couldn't find application {application_id} or has no assigned process instance")
+            return False
+
+        return BPMService.get_process_variables(
+            application.process_instance_id, 
+            token=token
+        )
+    
+    @staticmethod
+    def update_message_for_application_by_status(
+        status: DocumentStatus,
+        transaction: DocumentTransaction
+    ):
+        from formsflow_api.services import FormioServiceExtended
+        current_app.logger.debug("ApplicationService@update_message_for_application_by_status")
+        current_app.logger.debug("1. Generate formio access token")
+        form_formio_id = transaction.origin_form_formio_id
+        formio_service = FormioServiceExtended()
+        formio_token = formio_service.get_formio_access_token()
+
+        current_app.logger.debug(f"2. Get transaction path for form {form_formio_id}")
+        formio_form = formio_service.get_form(
+            data={"form_id": form_formio_id}, 
+            formio_token=formio_token
+        )
+
+        path = formio_form.get("path")
+        current_app.logger.debug(f"3. Get full path - {path}")
+
+        if not path:
+            return False
+        
+        form_path = path.split("-", 1)[-1]
+        current_app.logger.debug(f"4. Get path without the tenant_key suffix - {form_path}")
+
+        form_path_to_message_suffix = {
+            "ownersignform": "owner",
+            "trusteesignform": "trustee"
+        }
+        
+
+        ### If we recognize the form, a corresponding "{message_suffix}-" key will be generated
+        message_suffix = form_path_to_message_suffix.get(form_path, "")
+        ### AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        if message_suffix:
+            message_suffix = message_suffix + ("_" if status.title == "Expired" else "-")
+        # message_suffix = message_suffix + "-" if message_suffix else None
+        current_app.logger.debug(f"5. Message suffix will be {message_suffix}")
+        
+        ### Get the correct message name, depending on status
+        status_to_message_name = {
+            "Rejected": "document-update",
+            "Signed": "document-update",
+            "Expired": "invitation_expired"
+        }
+
+        message_name = status_to_message_name.get(status.title, None)
+        current_app.logger.debug(f"6. Message name will be - {message_name} - if no message name, we won't continue")
+
+        if not message_name:
+            return False
+        
+        status_expecting_variables = ["Rejected", "Signed"]
+        form_variables = {
+            "ownersignform": {
+                "propertyOwnerDocumentRejected": {
+                    "value": status.title == "Rejected"
+                }
+            }, 
+            "trusteesignform": {
+                "trusteeDocumentRejected": {
+                    "value": status.title == "Rejected"
+                }
+            },
+            "changeofpernamentaddress": {
+                "documentRejected": {
+                    "value": status.title == "Rejected"
+                }
+            },
+            "changeofcurrentaddress": {
+                "documentRejected": {
+                    "value": status.title == "Rejected"
+                }
+            }
+        }
+        process_variables = {}
+        if status.title in status_expecting_variables and form_path in form_variables.keys():
+            process_variables = form_variables.get(form_path)
+        
+        current_app.logger.debug(f"7. Process variables")
+        current_app.logger.debug(process_variables)
+        
+        current_app.logger.debug(f"8. Sending application message")
+        response = ApplicationService.send_application_message(
+            application_id=transaction.application_id,
+            message_name=message_suffix + message_name,
+            process_variables=process_variables
+        )
+        
+        
+        current_app.logger.debug(f"9. Was message sent - {response}")
+        return response
+
+
+    @staticmethod
+    def send_application_message(
+            application_id, 
+            message_name: str, 
+            process_variables: {} = None,
+            **kwargs
+        ):
+        application = Application.query.filter_by(
+            id=application_id
+        ).first()
+
+        if not application or not application.process_instance_id:
+            current_app.logger.debug(f"Couldn't find application {application_id} or has no assigned process instance")
+            return False
+    
+        data = {
+            "messageName": message_name,
+            "processInstanceId": application.process_instance_id
+        }
+        
+        if process_variables:
+            data["processVariables"] = process_variables
+
+        response = BPMService.send_message(
+            data=data,
+            token=None
+        )
+        
+        if response != True:
+            current_app.logger.error(f"Couldn't send message to {application_id}")
+            current_app.logger.debug(f"Message - {data}")
+            return False
+
+        current_app.logger.debug(response)
+        return True
 
     @staticmethod
     def get_aggregated_applications(  # pylint: disable=too-many-arguments

@@ -19,6 +19,18 @@ jest.mock("react-formio", () => ({
   ...jest.requireActual("react-formio"),
 }));
 
+jest.mock("react-responsive", () => ({
+  ...jest.requireActual("react-responsive"),
+  useMediaQuery: () => ({}),
+}));
+
+jest.mock("i18next", () => ({
+  ...jest.requireActual("i18next"),
+  options: {
+    resources: {},
+  },
+}));
+
 const middlewares = [thunk];
 let store;
 let mockStore = configureStore(middlewares);
@@ -66,8 +78,8 @@ it("should render the View component without breaking", async () => {
       draft: { draftSubmission: {}, lastUpdated: {} },
       pubSub: {
         publish: jest.fn,
-        subscribe: jest.fn
-      }
+        subscribe: jest.fn,
+      },
     })
   );
 
@@ -98,8 +110,8 @@ it("should render the public View component without breaking ", async () => {
       draft: { draftSubmission: {}, lastUpdated: {} },
       pubSub: {
         publish: jest.fn,
-        subscribe: jest.fn
-      }
+        subscribe: jest.fn,
+      },
     })
   );
 
@@ -132,8 +144,8 @@ it("should call the custom submission when custom submission is on ", () => {
       draft: { draftSubmission: {}, lastUpdated: {} },
       pubSub: {
         publish: jest.fn,
-        subscribe: jest.fn
-      }
+        subscribe: jest.fn,
+      },
     })
   );
   customSubmission.postCustomSubmission = jest.fn();
@@ -156,6 +168,7 @@ it("should call the custom submission when custom submission is on ", () => {
 
 it("Should call the draft create when draft mode is on", () => {
   constants.DRAFT_ENABLED = true;
+  constants.DRAFT_CREATE_ON_INIT_ENABLED = true;
   const setState = jest.fn();
   draftService.draftCreate = jest.fn();
 
@@ -173,8 +186,8 @@ it("Should call the draft create when draft mode is on", () => {
       draft: { draftSubmission: {}, lastUpdated: {} },
       pubSub: {
         publish: jest.fn,
-        subscribe: jest.fn
-      }
+        subscribe: jest.fn,
+      },
     })
   );
   serviceSpy.mockImplementation((callback) => callback);
@@ -189,6 +202,40 @@ it("Should call the draft create when draft mode is on", () => {
     { data: {}, formId: "123" },
     expect.anything()
   );
+});
+
+it("Should not call the draft create when draft create on init is off", () => {
+  constants.DRAFT_ENABLED = true;
+  constants.DRAFT_CREATE_ON_INIT_ENABLED = false;
+  const setState = jest.fn();
+  draftService.draftCreate = jest.fn();
+
+  const spy = jest.spyOn(redux, "useSelector");
+  const serviceSpy = jest.spyOn(draftService, "draftCreate");
+  const useStateSpy = jest.spyOn(React, "useState");
+
+  spy.mockImplementation((callback) =>
+    callback({
+      applications: { isPublicStatusLoading: false },
+      process: { formStatusLoading: false },
+      form: { isActive: false },
+      formDelete: { isFormSubmissionLoading: false },
+      user: { lang: "", isAuthenticated: true },
+      draft: { draftSubmission: {}, lastUpdated: {} },
+      pubSub: {
+        publish: jest.fn,
+        subscribe: jest.fn,
+      },
+    })
+  );
+  serviceSpy.mockImplementation((callback) => callback);
+  useStateSpy.mockImplementation(() => ["active", setState]);
+
+  renderWithRouterMatch(View, {
+    path: "/form/:formId",
+    route: "/form/123",
+  });
+  expect(serviceSpy).not.toHaveBeenCalled();
 });
 
 it("Should not call the draft create when draft mode is off", () => {
@@ -210,8 +257,8 @@ it("Should not call the draft create when draft mode is off", () => {
       draft: { draftSubmission: {}, lastUpdated: {} },
       pubSub: {
         publish: jest.fn,
-        subscribe: jest.fn
-      }
+        subscribe: jest.fn,
+      },
     })
   );
   serviceSpy.mockImplementation((callback) => callback);
@@ -243,8 +290,8 @@ it("Should not call the draft create when form status is not active", () => {
       draft: { draftSubmission: {}, lastUpdated: {} },
       pubSub: {
         publish: jest.fn,
-        subscribe: jest.fn
-      }
+        subscribe: jest.fn,
+      },
     })
   );
   serviceSpy.mockImplementation((callback) => callback);

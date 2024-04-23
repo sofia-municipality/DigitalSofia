@@ -8,6 +8,7 @@
 import Foundation
 
 final class JSONUtilities {
+    private init() { }
     static let shared = JSONUtilities()
     
     func encode<T: Codable>(object: T) -> String? {
@@ -16,9 +17,7 @@ final class JSONUtilities {
             let jsonData = try encoder.encode(object)
             return String(data: jsonData, encoding: .utf8)
         } catch let error {
-#if DEBUG
             print(error.localizedDescription)
-#endif
         }
         return nil
     }
@@ -31,9 +30,7 @@ final class JSONUtilities {
                 return decodedObject
             }
         } catch {
-#if DEBUG
             print("An error occurred while parsing JSON")
-#endif
         }
         
         return nil

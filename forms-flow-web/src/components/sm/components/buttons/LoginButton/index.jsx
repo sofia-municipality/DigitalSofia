@@ -20,13 +20,13 @@ const LoginButton = ({ children, className = null }) => {
     tenantId
   );
 
-  const redirectUrl = isHome ? fallbackUrl : undefined;
+  const redirectUri = isHome ? fallbackUrl : undefined;
   const login = useLogin();
 
   return !isAuth ? (
     <SmCta
       className={`${styles.loginCta} ${className}`}
-      onClick={() => login(redirectUrl)}
+      onClick={() => login({ redirectUri })}
     >
       {children}
     </SmCta>

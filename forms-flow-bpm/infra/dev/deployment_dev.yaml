@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-flow-bpm
+  namespace : forms-flow-bpm
+  labels:
+    app.kubernetes.io/name: camunda
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: camunda
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: camunda
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: form-flow-bpm
+          image: sofiamunicipalitydigitall/forms-flow-bpm:latest
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "echo '212.73.136.24 digital-idm.digitalsofia.digital digital-api.digitalsofia.digital digital.digitalsofia.digital digital-formio.digitalsofia.digital digital-admin-api.digitalsofia.digital' >> /etc/hosts"]
+          #command: [ "/bin/sh", "-c", "--" ]
+          #args: [ "while true; do sleep 3600; done;" ]
+          ports:
+            - containerPort: 8080
+              name: http-camunda
+              protocol: TCP
+          env:
+            - name: KEYCLOAK_URL_REALM
+              value: "eServices"
+            - name: KEYCLOAK_URL
+              value: "http://digital-idm.digitalsofia.digital"
+            - name: KEYCLOAK_CLIENTID
+              value: "forms-flow-bpm"
+            - name: KEYCLOAK_CLIENTSECRET
+              value: "FNh1NUDoBQDNoZvMJWsJyjBlbC3dKuGV"
+            - name: CAMUNDA_JDBC_URL
+              value: "jdbc:postgresql://192.168.201.46:5432/camundadbdev"
+            - name: CAMUNDA_JDBC_USER
+              value: "camunda"
+            - name: CAMUNDA_JDBC_PASSWORD
+              value: "jw8s0F4"
+            - name: CAMUNDA_JDBC_DRIVER
+              value: "org.postgresql.Driver"
+            - name: CAMUNDA_APP_ROOT_LOG_FLAG
+              value: "error"
+            - name: FORMSFLOW_API_URL
+              value: "http://digital-api.digitalsofia.digital"
+            - name: FORMIO_URL
+              value: "http://digital-formio.digitalsofia.digital"
+            - name: FORMIO_ROOT_EMAIL
+              value: "admin@example.com"
+            - name: FORMIO_ROOT_PASSWORD
+              value: "changeme"
+            - name: APP_SECURITY_ORIGIN
+              value: "*"
+            - name: WEBSOCKET_SECURITY_ORIGIN
+              value: "http://digital.digitalsofia.digital,http://digital-admin.digitalsofia.digital"
+            - name: WEBSOCKET_MESSAGE_TYPE
+              value: "TASK_EVENT"
+            - name: WEBSOCKET_ENCRYPT_KEY
+              value: "giert989jkwrgb@DR55"
+            - name: DATA_BUFFER_SIZE
+              value: "30"
+            - name: IDENTITY_PROVIDER_MAX_RESULT_SIZE
+              value: "250"
+            - name: KEYCLOAK_WEB_CLIENTID
+              value: "forms-flow-web"
+            - name: KEYCLOAK_ENABLE_CLIENT_AUTH
+              value: "true"
+            - name: BPM_CLIENT_CONN_TIMEOUT
+              value: "5000"
+            - name: DATA_ANALYSIS_URL
+              value: "http://localhost:6000/analysis"
+            - name: CUSTOM_SUBMISSION_URL
+              value: ""
+            - name: CUSTOM_SUBMISSION_ENABLED
+              value: "false"
+            - name: MULTI_TENANCY_ENABLED
+              value: "true"
+            - name: FORMSFLOW_ADMIN_URL
+              value: "http://digital-admin-api.digitalsofia.digital/api/v1"
+            - name: REDIS_ENABLED
+              value: "false"
+            - name: REDIS_HOST
+              value: ""
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASSCODE
+              value: "changeme"
+            - name: SESSION_COOKIE_SECURE
+              value: "false"
+            - name: CAMUNDA_DEBUG
+              value: "false"
+            - name: CAMUNDA_METRICS_FLAG
+              value: "false"
+            - name: WEB_URL
+              value: "http://digital.digitalsofia.digital"
+            - name: FORMS_FLOW_INTEGRATIONS_URL
+              value: "http://forms-flow-eforms-integrations-svc.form-flow-eforms-integrations.svc.cluster.local:8002/integrations"
+            - name: NOTIFICATION_PREFIX
+              value: "/notifications"

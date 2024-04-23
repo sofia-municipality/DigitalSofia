@@ -337,3 +337,14 @@ export const withdrawApplication = ({ applicationId, role }) => {
 
   return httpPOSTRequest(url);
 };
+
+export const getApplicationDetails = async (applicationId) => {
+  const url = replaceUrl(
+    API.GET_APPLICATION,
+    "<application_id>",
+    applicationId
+  );
+
+  const res = await httpGETRequest(url);
+  return res.data;
+};

@@ -1,0 +1,27 @@
+@import "./../../../../../../../assets/styles/mixins.scss";
+@import "./../../../../../../../assets/styles/themes.scss";
+@import "./../../../../../../../assets/styles/typography.scss";
+
+.paySumTotalLabel {
+  display: inline-block;
+}
+
+.paySumTotal {
+  font-family: Sofia Sans;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 34px;
+  letter-spacing: 0px;
+  text-align: right;
+  color: $sm-red-6;
+}
+
+.currency {
+  font-family: 'Sofia Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 140%;
+  color: $sm-indigo-dark;
+  margin-left: 2px;
+}

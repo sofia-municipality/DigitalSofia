@@ -51,10 +51,10 @@
   width: 0;
   position: absolute;
   right: 100%;
-  -webkit-transition: all 0.5s ease-in-out;
-  -moz-transition: all 0.5s ease-in-out;
-  -o-transition: all 0.5s ease-in-out;
-  transition: all 0.5s ease-in-out;
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 
   &.left {
     right: 100%;
@@ -62,6 +62,10 @@
   &.right {
     left: 100%;
   }
+}
+
+.btnLineNewDesign {
+  background: $sm-blue-6;
 }
 
 .circle {
@@ -73,10 +77,10 @@
   position: absolute;
   z-index: 1;
 
-  -webkit-transition: all 0.5s ease-in-out;
-  -moz-transition: all 0.5s ease-in-out;
-  -o-transition: all 0.5s ease-in-out;
-  transition: all 0.5s ease-in-out;
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 
   &.left {
     left: -3px;
@@ -99,10 +103,14 @@
   .btnContainer:hover > .btn {
     background-color: $sm-indigo-dark;
     text-decoration: none;
-    color: $sm-white;
+    color: $sm-white !important;
   
     border-image: none;
     border: none; 
+  }
+
+  .btnContainer:hover > .btnNewDesign {
+    background-color: $sm-blue-6;
   }
   
   .btnContainer:hover > .circle {
@@ -114,6 +122,10 @@
     &.right {
       right: -16px;
     }
+  }
+
+  .btnContainer:hover > .circleNewDesign {
+    border: 2px solid $sm-blue-6;
   }
 }
 

@@ -9,18 +9,11 @@ import configureStore from "redux-mock-store";
 import { mockstate } from "./constatnts-edit";
 import thunk from "redux-thunk";
 import * as Formservice from "../../../../apiManager/services/FormServices";
-jest.mock("@formsflow/service", () => ({
-  __esModule: true,
-  default: jest.fn(() => ({})),
-  RequestService: {
-    httpGETRequest: () => Promise.resolve(jest.fn(() => ({ data: {} }))),
-    httpPUTRequest: () => Promise.resolve(jest.fn(() => ({ data: {} }))),
-  },
-  StorageService: {
-    get: () => jest.fn(() => {}),
-    User: {
-      AUTH_TOKEN: "",
-    },
+
+jest.mock("i18next", () => ({
+  ...jest.requireActual("i18next"),
+  options: {
+    resources: {},
   },
 }));
 

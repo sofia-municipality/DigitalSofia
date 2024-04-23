@@ -12,10 +12,10 @@ from formsflow_api_utils.utils import (
     cache,
     profiletime
 )
-from formsflow_api.services.external import EurotrustIntegrationsService
-from formsflow_api.services import FormioServiceExtended, DocumentsService
+from formsflow_api.services.external import EurotrustIntegrationsService, FirebaseService, KeycloakAdminAPIService
+from formsflow_api.services import FormioServiceExtended, DocumentsService, ApplicationService
 from formsflow_api.schemas import DocumentSignRequest, DocumentSignCallback
-from formsflow_api.models import DocumentTransaction, DocumentStatus
+from formsflow_api.models import DocumentTransaction, DocumentStatus, Application
 from formsflow_api.models.db import db
 from formsflow_api.exceptions import EurotrustException
 
@@ -29,7 +29,8 @@ sign_request = API.model(
         "formioId": fields.String(),
         "content": fields.String(),
         "contentType": fields.String(),
-        "fileName": fields.String()
+        "fileName": fields.String(),
+        "originFormFormioId": fields.String()
     },
 )
 
@@ -86,34 +87,56 @@ class EurotrustSignResource(Resource):
                     "Invalid Personal Identifier bound to user.", HTTPStatus.BAD_REQUEST
                 )
             
+            person_identifier = match[0]
             document_json = request.get_json()
             document_schema = DocumentSignRequest()
 
             data = document_schema.load(document_json)
-            current_app.logger.debug(data)
+            current_app.logger.debug("-------------- Document json sing --------------")
+            current_app.logger.debug(document_json.get("originFormFormioId"))
+            current_app.logger.debug(data.get("origin_form_formio_id"))
 
             document_service_client = DocumentsService()
 
-            document_timeout = current_app.config.get("CRON_DOCUMENT_TRANSACTION_TIMEOUT")
+            document_timeout = current_app.config.get("EUROTRUST_EXPIRE_TIMEOUT")
             valid_untill = (datetime.now() + timedelta(minutes=int(document_timeout)))
             response = document_service_client.send_document_to_sign_eurotrust(
                 tenant_key=tenant_key,
                 content=data["content"],
                 content_type=data["content_type"],
                 filename=data["file_name"],
-                user_identifier=match[0],
+                user_identifier=person_identifier,
                 expire_at=valid_untill
             )
 
             eurotrust_response = response.get('response') 
             transactions = eurotrust_response.get('transactions')
-            current_app.logger.debug(eurotrust_response)
+            current_app.logger.debug(transactions)
 
             # Get pending status
             pending_status = document_service_client.get_document_status("Pending")
 
+            
+            keycloak_client = KeycloakAdminAPIService()
+            url_path = f"users?username=pnobg-{person_identifier}&exact={True}"
+            keycloak_users = keycloak_client.get_request(url_path)
+
+            firebase_user_registration_token = None
+            if keycloak_users:
+                keycloak_user = keycloak_users[0]    
+
+                keycloak_user_attributes = keycloak_user.get("attributes")
+                firebase_user_registration_attribute = keycloak_user_attributes.get("fcm", None)
+                if firebase_user_registration_attribute:
+                    firebase_user_registration_token = firebase_user_registration_attribute[0]
+                    current_app.logger.debug(f"User has fcm - {firebase_user_registration_token}")    
+                
+                firebase_client = FirebaseService()
+
+            signature_source = data.get("signature_source", None)
             # create Transactions in DB
             for transaction in transactions:
+                current_app.logger.debug(f"Creating transaction with {transaction['transactionID']} - {data.get('origin_form_formio_id', None)}")
                 document_transaction = document_service_client.create_document_transaction(
                     transaction_id=transaction['transactionID'],
                     thread_id=eurotrust_response["threadID"],
@@ -121,8 +144,20 @@ class EurotrustSignResource(Resource):
                     status_id=pending_status.id,
                     application_id=data.get('application_id', None),
                     formio_id=data['formio_id'],
-                    user_email=user.user_name
+                    user_email=user.user_name,
+                    origin_form_formio_id=data.get("origin_form_formio_id", None),
+                    signature_source=signature_source
                 )
+                
+
+                current_app.logger.debug(f"Signature Source - |{signature_source}|")
+                current_app.logger.debug(f"FCM TOken - |{firebase_user_registration_token}|")
+                if firebase_user_registration_token and signature_source in ["digitalSofia"]:
+                    firebase_client.send_status_change_message(
+                        transaction=document_transaction, 
+                        firebase_user_registration_token=firebase_user_registration_token
+                    )
+
                 db.session.add(document_transaction)
 
             # Update status in formio
@@ -131,7 +166,8 @@ class EurotrustSignResource(Resource):
                 formio_client.generate_rfc6902_object("/data/status",pending_status.formio_status),
                 formio_client.generate_rfc6902_object("/data/evrotrustTransactionId", transactions[0]['transactionID']),
                 formio_client.generate_rfc6902_object("/data/evrotrustThreadId", eurotrust_response["threadID"]),
-                formio_client.generate_rfc6902_object("/data/validUntill", valid_untill.isoformat())
+                formio_client.generate_rfc6902_object("/data/validUntill", valid_untill.isoformat()),
+                formio_client.generate_rfc6902_object("/data/signatureSource", data.get("signature_source"))
             ]
             document_service_client.update_document_in_formio(
                 tenant_key=tenant_key, 
@@ -186,34 +222,56 @@ class EurotrustDocumentStatusResource(Resource):
                 raise BusinessException("Can't find transaction with specified transaction id", HTTPStatus.NOT_FOUND)
 
             document_service = DocumentsService()
-            status = document_service.get_document_transaction_status_in_eurotrust(transaction_id=transaction_id)
+            new_status = document_service.get_document_transaction_status_in_eurotrust(transaction_id=transaction_id)
 
-            if not status:
+            if not new_status:
                 raise BusinessException(
                     f"No status found {response['status']}", 
                     HTTPStatus.NOT_FOUND
                 )
+            
+            
+            if new_status.title == "Signed":
+                client = DocumentsService()
+                response = client.set_signed_file_from_eurotrust(transaction=transaction)
 
             # If the transaciton exists, update it 
             if transaction:
-                transaction.update_status(status)
-                db.session.commit()
-                document_service.update_document_status_in_formio(
-                    formio_id=transaction.formio_id,
-                    tenant_key=tenant_key, 
-                    status=status
-                )
+                transaction.update_status_send_notification(new_status=new_status)
 
-                if status.title == "Signed":
-                    client = DocumentsService()
-                    client.set_signed_file_from_eurotrust(transaction=transaction)
+                ### Updating status for application in camunda
+                is_status_pending = new_status.title == "Pending"
+                current_app.logger.debug(f"Should we generate a message for camunda - {is_status_pending}")
+                if not is_status_pending:
+                    ApplicationService.update_message_for_application_by_status(
+                        status=new_status,
+                        transaction=transaction
+                    )
 
             return (
                 {
-                    "status": status.formio_status
+                    "status": new_status.formio_status
                 }, 
                 HTTPStatus.OK
             )
+        except EurotrustException as err:
+            current_app.logger.debug("EurotrustException found")
+            current_app.logger.debug(f"Error error - {err.error}")
+            current_app.logger.debug(f"Error code - {err.status_code}")
+            current_app.logger.debug(f"Error data - {err.data}")
+
+            if err.data == "443 unknown status: [Document not found]":
+                return (
+                    {
+                        "status": "signing"
+                    },
+                    200
+                )
+
+            return {
+                "type": "Bad request error",
+                "message": err.error,
+            }, err.status_code
         except BusinessException as err:
             current_app.logger.warning(err.error)            
             response, status = {
@@ -221,7 +279,7 @@ class EurotrustDocumentStatusResource(Resource):
                 "message": err.error,
             }, err.status_code
 
-            return response, status
+            return response, new_status
 
 
 @cors_preflight("POST,OPTIONS")
@@ -233,14 +291,17 @@ class EurotrustCallbackResource(Resource):
     @API.response(200, "OK:- Successful request.")
     def post(**kwargs):
         try:
+            ### 1. Receive callback
             callback_json = request.get_json()
 
             current_app.logger.debug("Showing callback request")
             current_app.logger.debug(request.json)
 
+            ### 2. Verify callback data
             document_callback_schema = DocumentSignCallback()
             data = document_callback_schema.load(callback_json)
 
+            ### 3. Get transaction
             transaction = DocumentTransaction.query.filter(
                 DocumentTransaction.transaction_id == data["transaction_id"]
             ).first()
@@ -253,29 +314,39 @@ class EurotrustCallbackResource(Resource):
                 )
             
 
-            # Get status throw exception if not found
-            status = DocumentStatus.query.filter_by(eurotrust_status=data["status"]).first()
-            if not status:
+            ### 4. Is it a valid status
+            ### Get status throw exception if not found
+            new_status = DocumentStatus.query.filter_by(eurotrust_status=data["status"]).first()
+            if not new_status:
                 raise BusinessException(
                     f"No status found {data['status']}", 
                     HTTPStatus.NOT_FOUND
                 )
 
-            # Update transaction status
-            transaction.update_status(status)
-            db.session.commit()
-
-            # Update formio status
+            ### 5. Update formio status
             document_service = DocumentsService()
             document_service.update_document_status_in_formio(
                     transaction.formio_id, 
                     tenant_key=transaction.tenant_key,
-                    status=status
+                    status=new_status
                 )
             
-            if status.title == "Signed":
+            ### 6. The new status is signed, update 
+            if new_status.title == "Signed":
                 client = DocumentsService()
                 client.set_signed_file_from_eurotrust(transaction=transaction)
+            
+            ### 7. Update transaction 
+            transaction.update_status_send_notification(new_status=new_status)
+            
+            ### 8. Updating status for application in camunda
+            is_status_pending = new_status.title == "Pending"
+            current_app.logger.debug(f"Should we generate a message for camunda - {is_status_pending}")
+            if not is_status_pending:
+                ApplicationService.update_message_for_application_by_status(
+                    status=new_status,
+                    transaction=transaction
+                )
 
             return ({"response": "Callback received"}, HTTPStatus.OK)
         except BusinessException as err:

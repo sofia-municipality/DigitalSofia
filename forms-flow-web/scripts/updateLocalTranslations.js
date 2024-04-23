@@ -2,6 +2,13 @@ const axios = require("axios");
 const readline = require("readline");
 const fs = require("fs");
 const path = require("path");
+const https = require("https");
+
+const httpHandler = axios.create({
+  httpsAgent: new https.Agent({
+    rejectUnauthorized: false,
+  }),
+});
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -14,7 +21,7 @@ let SUBMISSION_PATH = "/form/64366811e463c6d8ef79b06c/submission";
 const LOGIN_PATH = "/user/login/submission";
 
 const login = async (email, password) => {
-  return await axios
+  return await httpHandler
     .post(`${API_URL}${LOGIN_PATH}`, {
       data: {
         email,
@@ -33,7 +40,7 @@ const login = async (email, password) => {
 };
 
 const getSubmissions = async (jwt) => {
-  const res = await axios.get(
+  const res = await httpHandler.get(
     `${API_URL}${SUBMISSION_PATH}?limit=99999&skip=0`,
     {
       headers: {

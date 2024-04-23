@@ -30,8 +30,11 @@ const FormSignDocumentModal = ({ formRef }) => {
       closeModal={() => setIsSignDocumentTriggered(false)}
       onSuccess={(signedDocument) => {
         return new Promise((resolve) => {
-          if (formRef?.current?.component?.data && signedDocument) {
-            formRef.current.component.data["pdfData"]["url"] = signedDocument;
+          if (formRef?.current?.data && signedDocument) {
+            formRef.current.data["pdfData"]["url"] = signedDocument;
+            formRef.current.data["isSigned"] = true;
+            formRef.current.triggerChange();
+            formRef.current.triggerRedraw();
           }
 
           resolve();

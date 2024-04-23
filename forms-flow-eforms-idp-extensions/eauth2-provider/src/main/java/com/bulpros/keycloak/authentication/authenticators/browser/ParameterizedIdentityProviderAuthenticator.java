@@ -13,16 +13,12 @@
  *    Pavel Koev
  *    Igor Radomirov
  *******************************************************************************/
-        package com.bulpros.keycloak.authentication.authenticators.browser;
+package com.bulpros.keycloak.authentication.authenticators.browser;
 
-import java.net.URI;
-import java.util.Objects;
-import java.util.Optional;
-
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.authentication.AuthenticationProcessor;
@@ -36,13 +32,15 @@ import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 import org.keycloak.services.Urls;
 import org.keycloak.services.managers.ClientSessionCode;
 
-import lombok.extern.slf4j.Slf4j;
+import java.net.URI;
+import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 public class ParameterizedIdentityProviderAuthenticator implements Authenticator {
-    
+
     protected static final String ACCEPTS_PROMPT_NONE = "acceptsPromptNoneForwardFromClient";
-    
+
     @Override
     public void authenticate(AuthenticationFlowContext context) {
         if (context.getUriInfo().getQueryParameters().containsKey(AdapterConstants.KC_IDP_HINT)) {
@@ -54,27 +52,30 @@ public class ParameterizedIdentityProviderAuthenticator implements Authenticator
                 log.trace("Redirecting: %s set to %s", AdapterConstants.KC_IDP_HINT, providerId);
                 redirect(context, providerId);
             }
-        } else if (context.getAuthenticatorConfig() != null && context.getAuthenticatorConfig().getConfig().containsKey(ParameterizedIdentityProviderAuthenticatorFactory.DEFAULT_PROVIDER)) {
-            String defaultProvider = context.getAuthenticatorConfig().getConfig().get(ParameterizedIdentityProviderAuthenticatorFactory.DEFAULT_PROVIDER);
+        } else if (context.getAuthenticatorConfig() != null && context.getAuthenticatorConfig().getConfig()
+                .containsKey(ParameterizedIdentityProviderAuthenticatorFactory.DEFAULT_PROVIDER)) {
+            String defaultProvider = context.getAuthenticatorConfig().getConfig()
+                    .get(ParameterizedIdentityProviderAuthenticatorFactory.DEFAULT_PROVIDER);
             log.trace("Redirecting: default provider set to %s", defaultProvider);
             redirect(context, defaultProvider);
         } else {
             log.trace("No default provider set or %s query parameter provided", AdapterConstants.KC_IDP_HINT);
             context.attempted();
         }
-        
+
     }
-    
+
     protected void redirect(AuthenticationFlowContext context, String providerId) {
         Optional<IdentityProviderModel> idp = context.getRealm().getIdentityProvidersStream()
                 .filter(IdentityProviderModel::isEnabled)
-                .filter(identityProvider -> Objects.equals(providerId, identityProvider.getAlias()))
-                .findFirst();
+                .filter(identityProvider -> Objects.equals(providerId, identityProvider.getAlias())).findFirst();
         if (idp.isPresent()) {
-            String accessCode = new ClientSessionCode<>(context.getSession(), context.getRealm(), context.getAuthenticationSession()).getOrGenerateCode();
+            String accessCode = new ClientSessionCode<>(context.getSession(), context.getRealm(),
+                    context.getAuthenticationSession()).getOrGenerateCode();
             String clientId = context.getAuthenticationSession().getClient().getClientId();
             String tabId = context.getAuthenticationSession().getTabId();
-            URI location = Urls.identityProviderAuthnRequest(context.getUriInfo().getBaseUri(), providerId, context.getRealm().getName(), accessCode, clientId, tabId);
+            URI location = Urls.identityProviderAuthnRequest(context.getUriInfo().getBaseUri(), providerId,
+                    context.getRealm().getName(), accessCode, clientId, tabId);
             MultivaluedMap<String, String> queryParameters = context.getUriInfo().getQueryParameters();
             UriBuilder uriBuilder = UriBuilder.fromUri(location);
             log.trace("Read query parameters");
@@ -85,13 +86,14 @@ public class ParameterizedIdentityProviderAuthenticator implements Authenticator
             }
             location = uriBuilder.build();
             if (context.getAuthenticationSession().getClientNote(OAuth2Constants.DISPLAY) != null) {
-                location = UriBuilder.fromUri(location).queryParam(OAuth2Constants.DISPLAY, context.getAuthenticationSession().getClientNote(OAuth2Constants.DISPLAY)).build();
+                location = UriBuilder.fromUri(location).queryParam(OAuth2Constants.DISPLAY,
+                        context.getAuthenticationSession().getClientNote(OAuth2Constants.DISPLAY)).build();
             }
-            Response response = Response.seeOther(location)
-                    .build();
+            Response response = Response.seeOther(location).build();
             // will forward the request to the IDP with prompt=none if the IDP accepts forwards with prompt=none.
-            if ("none".equals(context.getAuthenticationSession().getClientNote(OIDCLoginProtocol.PROMPT_PARAM)) &&
-                    Boolean.valueOf(idp.get().getConfig().get(ACCEPTS_PROMPT_NONE))) {
+            if ("none".equals(context.getAuthenticationSession()
+                    .getClientNote(OIDCLoginProtocol.PROMPT_PARAM)) && Boolean.valueOf(
+                    idp.get().getConfig().get(ACCEPTS_PROMPT_NONE))) {
                 context.getAuthenticationSession().setAuthNote(AuthenticationProcessor.FORWARDED_PASSIVE_LOGIN, "true");
             }
             log.debug("Redirecting to %s", providerId);
@@ -102,15 +104,15 @@ public class ParameterizedIdentityProviderAuthenticator implements Authenticator
         log.warn("Provider not found or not enabled for realm %s", providerId);
         context.attempted();
     }
-    
+
     @Override
     public void close() {
-        
+
     }
 
     @Override
     public void action(AuthenticationFlowContext context) {
-        
+
     }
 
     @Override
@@ -125,6 +127,6 @@ public class ParameterizedIdentityProviderAuthenticator implements Authenticator
 
     @Override
     public void setRequiredActions(KeycloakSession session, RealmModel realm, UserModel user) {
-        
+
     }
 }

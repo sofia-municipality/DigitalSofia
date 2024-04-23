@@ -32,8 +32,8 @@ const FormSuccessModal = ({ formRef, onInit = () => {} }) => {
   }, []);
 
   const onFormSuccessModalClose = async () => {
-    if (formRef.current?.component) {
-      formRef.current.component.emit("submitButton");
+    if (formRef.current) {
+      formRef.current.emit("submitButton");
     }
 
     setIsFormSuccessModalTriggered(false);

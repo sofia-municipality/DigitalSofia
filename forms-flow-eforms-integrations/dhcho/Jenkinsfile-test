@@ -1,0 +1,60 @@
+pipeline {
+    environment {
+        DEPLOY = "${env.BRANCH_NAME == "test" ? "true" : "false"}"
+        NAME = "${env.BRANCH_NAME == "test" ? "example" : "example-staging"}"
+        gitCredentialId = 'bitbucket-password' //defined in credentials area
+        gitUrl = 'https://bitbucket.org/intracol/forms-flow-eforms-integrations.git'
+        deployBranch = "test"
+    }
+    
+    agent any
+    
+     stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm: [$class: 'GitSCM', userRemoteConfigs: [[url: gitUrl, credentialsId: gitCredentialId ]], branches: [[name: deployBranch ]]], poll: false
+  }
+}
+
+
+        
+
+        stage('Build forms-flow-eforms-integrations') {
+            when {
+                environment name: 'DEPLOY', value: 'true'
+            }
+            steps {
+                sh 'sudo docker build -t sofiamunicipalitydigitall/forms-flow-eforms-integrations:test-$BUILD_NUMBER .'
+            }
+        }
+
+        stage('Push Image') {
+            when {
+                environment name: 'DEPLOY', value: 'true'
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh 'sudo docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                    sh 'sudo docker push $DOCKER_USERNAME/forms-flow-eforms-integrations:test-$BUILD_NUMBER'
+                }
+            }
+        }
+
+        stage('Deploy TEST') {
+            when {
+                environment name: 'DEPLOY', value: 'true'
+            }
+            steps {
+                withKubeConfig([credentialsId: 'kubeconfig-test', serverUrl: 'https://172.23.230.136:6443']) {
+                   sh """ 
+                  sed -i 's+image: sofiamunicipalitydigitall/forms-flow-eforms-integrations:.*+image: sofiamunicipalitydigitall/forms-flow-eforms-integrations:test-${env.BUILD_NUMBER}+g' ./dhcho/test/deployment_test.yaml 
+                  """
+                   sh 'kubectl apply -f ./dhcho/test/deployment_test.yaml '
+                   sh 'kubectl apply -f ./dhcho/test/service_test.yaml '
+                    }
+                }
+            }
+         
+    }
+}

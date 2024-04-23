@@ -34,6 +34,10 @@
   margin-bottom: 25px;
 }
 
+.breadcrumbsWrapperNewDesign {
+  margin-left: 40px;
+}
+
 .pageTitle {
   @include sm-heading-4;
   color: $sm-indigo-4;
@@ -46,7 +50,6 @@
 }
 
 .backLink {
-  margin-top: 20px;
   color: $sm-indigo-4;
   font-family: 'Sofia Sans';
   font-weight: 500;
@@ -56,4 +59,26 @@
     text-decoration: none;
     color: $sm-indigo-4;
   }
+}
+
+.backLinkNewDesign {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  width: fit-content;
+}
+
+.backIconWrapper {
+  border-radius: 50% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  width: 30px;
+  background-color: $sm-white;
+  box-shadow: 0px 2px 6px 0px #11183D14;
+}
+
+.backIcon {
+  color: $sm-indigo-4;
 }

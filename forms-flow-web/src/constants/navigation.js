@@ -1,4 +1,4 @@
-import { BASE_ROUTE } from "./constants";
+import { BASE_ROUTE, SERVICES_NAMES } from "./constants";
 
 export const NavLinksSections = {
   ADDRESS_SECTION: "addressSection",
@@ -27,6 +27,8 @@ export const SM_ROUTES = {
   FAQ: `${BASE_ROUTE}sm-faq`,
   ADDRESS_REGISTRATION: `${BASE_ROUTE}sm-address-registration`,
   MY_SERVICES_ADDRESS_REGISTRATION: `${BASE_ROUTE}my-services/address-registration`,
+  MY_SERVICES_LOCAL_TAXES_AND_FEES: `${BASE_ROUTE}my-services/local-taxes-fees`,
+  MY_SERVICES_LOCAL_TAXES_AND_FEES_DETAILS: `${BASE_ROUTE}my-services/local-taxes-fees/:paymentId`,
   CONTACTS: `${BASE_ROUTE}contacts`,
   TERMS_AND_CONDITIONS: `${BASE_ROUTE}terms-and-conditions`,
   COOKIE_POLICY: `${BASE_ROUTE}cookie-policy`,
@@ -35,6 +37,16 @@ export const SM_ROUTES = {
   PROFILE: `${BASE_ROUTE}profile`,
   NOT_FOUND: "/404",
   ...ROUTES_WITHOUT_NAV,
+};
+
+export const ROUTES_WITH_ASSURANCE_PROTECTION = [
+  SM_ROUTES.LOCAL_TAXES_AND_FEES_REFERENCE,
+  SM_ROUTES.LOCAL_TAXES_AND_FEES_PAYMENT,
+];
+
+export const ROUTES_ASSURANCE_PROTECTION_SERVICE_NAMES = {
+  [SM_ROUTES.LOCAL_TAXES_AND_FEES_REFERENCE]: SERVICES_NAMES.LOCAL_TAXES,
+  [SM_ROUTES.LOCAL_TAXES_AND_FEES_PAYMENT]: SERVICES_NAMES.LOCAL_TAXES,
 };
 
 export const ADMIN_ROUTES = {
@@ -46,6 +58,7 @@ export const ADMIN_ROUTES = {
   BLOCKS_ADMINISTRATION: `${BASE_ROUTE}so-administration/pages/:page`,
   BLOCKS_ADMINISTRATION_EDIT: `${BASE_ROUTE}so-administration/pages/:page/:block`,
   TRANSLATION_ADMINISTRATION: `${BASE_ROUTE}so-administration/translations`,
+  ADMIN_PANEL: `${BASE_ROUTE}so-admin-panel`,
 };
 
 export const PAGE_ROUTES = { ...SM_ROUTES, ...ADMIN_ROUTES };
@@ -63,6 +76,8 @@ export const PAGE_TITLES = {
     "Digital Sofia - Заявяне на услуга - Адресна регистрация - Digital Sofia - Request Service - Address Registration",
   [PAGE_ROUTES.MY_SERVICES_ADDRESS_REGISTRATION]:
     "Digital Sofia - Моите услуги - Адресна регистрация - Digital Sofia - My services - Address Registration",
+  [PAGE_ROUTES.MY_SERVICES_LOCAL_TAXES_AND_FEES]:
+    "Digital Sofia - Моите услуги - Местни данъци и такси - Digital Sofia - My services - Local taxes and fees",
   [PAGE_ROUTES.CONTACTS]: "Digital Sofia - Контакти - Digital Sofia - Contacts",
   [PAGE_ROUTES.TERMS_AND_CONDITIONS]:
     "Digital Sofia - Общи условия - Digital Sofia - Terms and conditions",

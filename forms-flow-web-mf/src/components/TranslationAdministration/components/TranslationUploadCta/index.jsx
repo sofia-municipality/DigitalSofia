@@ -193,6 +193,8 @@ const TranslationUploadCta = ({ total, onClose, className = "" }) => {
           onClose={() => {
             setIsUploadTranslationsModalOpen(false);
             setErrosCount(null);
+            setTotalTranslationsCount(0);
+            setUploadedFilesCount(0);
             onClose();
           }}
         />

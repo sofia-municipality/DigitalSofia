@@ -7,8 +7,9 @@
 
 import UIKit
 import EvrotrustSDK
-import Firebase
+import FirebaseCore
 import FirebaseMessaging
+import Alamofire
 
 //Изпращам линк за сваляне на SDK за iOS и Android с разрешени изпратените по-долу App IDs: https://we.tl/t-pGidKOqvkX
 //Уникален номер на SDK: nDvKBf2Jb2nEVPmP
@@ -17,47 +18,59 @@ import FirebaseMessaging
 //Vendor №: fAqWz8DrTCRbdKQ7
 //Vendor API key: 33c236eb-cbbe-46b3-93fb-g378b554g4g3
 
-@main
 class AppDelegate: UIResponder, UIApplicationDelegate, EvrotrustSetupSDKDelegate {
     
     var window: UIWindow?
-    let applicationNumber = "nDvKBf2Jb2nEVPmP"
     var fcmToken: String?
     
     func evrotrustSetupSDKDidFinish(_ result: EvrotrustSetupSDKResult!) {
         switch result.status {
         case EvrotrustResultStatus.OK:
-            NotificationCenter.default.post(name: NSNotification.Name.evrotrustSDKSetupReceivedNotification,
-                                            object: nil,
-                                            userInfo: [AppConfig.Notifications.UserInfoKeys.evrotrustSDKSetup: result.isSetUp])
-            
-#if DEBUG
             print("is SDK setUP -> \(result.isSetUp)")
             print("is there a new version -> \(result.hasNewVersion)")
             print("is in maintenance -> \(result.isInMaintenance)")
-#endif
+            LoggingHelper.logSDKSetupResult(result)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                NotificationCenter.default.post(name: NSNotification.Name.evrotrustSDKSetupReceivedNotification,
+                                                object: nil,
+                                                userInfo: [AppConfig.Notifications.UserInfoKeys.evrotrustSDKSetup: result.isSetUp])
+            }
+            
         default:
             break
         }
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
-        Evrotrust.sdk().setupSDKWhitAppNumber(applicationNumber, environment: EvrotrustEnvironment.test, andDelegate: self)
-        FirebaseApp.configure()
+        if UserDefaults.standard.object(forKey: AppConfig.UserDefaultsKeys.forceRefreshKeychainUser) == nil {
+            UserProvider.shared.updateKeychainUser()
+            UserDefaults.standard.set(true, forKey: AppConfig.UserDefaultsKeys.forceRefreshKeychainUser)
+        }
+        
+        if let filePath = Bundle.main.path(forResource: BuildConfiguration.plistName, ofType: "plist"),
+           let fileopts = FirebaseOptions(contentsOfFile: filePath) {
+            FirebaseApp.configure(options: fileopts)
+        } else {
+            FirebaseApp.configure()
+        }
+        
+        LoggingHelper.logSDKSetupStart()
+        Evrotrust.sdk().setupSDKWhitAppNumber(EvrotrustConfig.appNumber,
+                                              environment: EvrotrustConfig.environment,
+                                              andDelegate: self)
         
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
+        
+        PermissionProvider.getNotificationsPermission()
         
         let standardAppearance = UITabBarAppearance()
         UITabBar.appearance().scrollEdgeAppearance = standardAppearance
         UITabBar.appearance().barTintColor = UIColor.white
         
-        PermissionProvider.getNotificationsPermission { success in
-#if DEBUG
-            print("notifications permitted: \(success)")
-#endif
-        }
+        DocumentsNotificationHelper.resetTab()
+        AF.sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
         
         return true
     }
@@ -78,38 +91,52 @@ class AppDelegate: UIResponder, UIApplicationDelegate, EvrotrustSetupSDKDelegate
 }
 
 extension AppDelegate : UNUserNotificationCenterDelegate {
-    func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                willPresent notification: UNNotification,
-                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        let userInfo = notification.request.content.userInfo
-        handleNotification(userInfo: userInfo)
-        
-        // Change this to your preferred presentation option
-        completionHandler(UNNotificationPresentationOptions.banner)
+    func application(application: UIApplication,
+                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        Messaging.messaging().apnsToken = deviceToken
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                didReceive response: UNNotificationResponse,
-                                withCompletionHandler completionHandler: @escaping () -> Void) {
+                                willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
+        let userInfo = notification.request.content.userInfo
+        handleNotification(userInfo: userInfo)
+        return [[.sound, .banner, .badge]]
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse) async {
         let userInfo = response.notification.request.content.userInfo
         handleNotification(userInfo: userInfo)
-        completionHandler()
+    }
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
+        handleNotification(userInfo: userInfo)
+        return UIBackgroundFetchResult.newData
     }
     
     private func handleNotification(userInfo: [AnyHashable : Any]) {
-        NotificationCenter.default.post(name: NSNotification.Name.openDocumentNotification,
-                                        object: nil,
-                                        userInfo: [AppConfig.Notifications.UserInfoKeys.evrotrustTransactionId: ""])
+        print(userInfo as NSDictionary)
         
-        if let apsDict = userInfo["aps"] as? NSDictionary {
-            if let alertInfo = apsDict["alert"] as? NSDictionary {
-                if let data = try? JSONSerialization.data(withJSONObject: alertInfo, options: .prettyPrinted) {
-                    do {
-                        let customer = try JSONDecoder().decode(DocumentNotificationModel.self, from: data)
-                        print(customer.body)
-                    } catch {
-                        print(error.localizedDescription)
+        if let data = try? JSONSerialization.data(withJSONObject: userInfo, options: .prettyPrinted) {
+            do {
+                if let loginPayload = try? JSONDecoder().decode(LoginCodeNotificationModel.self, from: data) {
+                    FirebaseNotificationHelper.sendNotifiactionFor(type: .login, payload: loginPayload.code)
+                } else if let documentPayload = try? JSONDecoder().decode(DocumentNotificationModel.self, from: data) {
+                    var notificationType: FirebaseNotificationType = .pendingDocument
+                    
+                    switch documentPayload.docStatus {
+                    case .signing:
+                        notificationType = .pendingDocument
+                    case .signed:
+                        notificationType = .signedDocument
+                    case .expired:
+                        notificationType = .expiredDocument
+                    default: break
                     }
+                    
+                    FirebaseNotificationHelper.sendNotifiactionFor(type: notificationType, payload: documentPayload.transactionId)
+                } else if let payload = try? JSONDecoder().decode(FirebaseConsoleNotificationModel.self, from: data) {
+                    print(payload)
                 }
             }
         }
@@ -119,9 +146,24 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
 extension AppDelegate: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         self.fcmToken = fcmToken
-        
-#if DEBUG
         print("Firebase registration token: \(fcmToken ?? "")")
-#endif
+        
+        if let user = UserProvider.currentUser {
+            if let fcm = user.firebaseToken {
+                if fcm != fcmToken {
+                    print("try to update keycloak fcm")
+                    NetworkManager.changeFCM(completion: { response in
+                        switch response {
+                        case .success(_):
+                            print("successfully updated fcm in keycloak")
+                            UserProvider.shared.updateFirebaseToken()
+                        default: break
+                        }
+                    })
+                }
+            } else {
+                UserProvider.shared.updateFirebaseToken()
+            }
+        }
     }
 }

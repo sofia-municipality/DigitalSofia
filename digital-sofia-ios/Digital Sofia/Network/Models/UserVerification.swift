@@ -10,16 +10,10 @@ import Foundation
 struct UserVerification: Codable {
     var exists: Bool
     var hasPin: Bool
+    var isVerified: Bool
+    var hasContactInfo: Bool
     
     private enum CodingKeys: String, CodingKey {
-        case exists = "userExist", hasPin
-    }
-}
-
-struct PINVerification: Codable {
-    var matches: Bool
-    
-    private enum CodingKeys: String, CodingKey {
-        case matches
+        case exists = "userExist", hasPin, isVerified, hasContactInfo
     }
 }

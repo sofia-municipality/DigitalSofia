@@ -222,12 +222,11 @@ export const columns = (
   ];
 };
 
-const customTotal = (from, to, size) => (
+const customTotal = (from, to, total) => (
   <span className="react-bootstrap-table-pagination-total">
-    <Translation>{(t) => t("Showing")}</Translation> {from}{" "}
-    <Translation>{(t) => t("to")}</Translation> {to}{" "}
-    <Translation>{(t) => t("of")}</Translation> {size}{" "}
-    <Translation>{(t) => t("results")}</Translation>
+    <Translation>
+      {(t) => t("so.translations.table.total.text", { from, to, total })}
+    </Translation>
   </span>
 );
 export const customDropUp = ({

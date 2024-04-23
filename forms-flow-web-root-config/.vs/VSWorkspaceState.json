@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\dhcho",
+    "\\dhcho\\prod",
+    "\\dhcho\\stage"
   ],
-  "SelectedNode": "\\C:\\Digitall\\Project\\Sofia_Municipality\\forms-flow-web-root-config",
+  "SelectedNode": "\\dhcho\\prod\\deployment_prod.yaml",
   "PreviewInSolutionExplorer": false
 }

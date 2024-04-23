@@ -1,0 +1,11 @@
+//
+//  Release-Dev.xcconfig
+//  Digital Sofia
+//
+//  Created by Teodora Georgieva on 16.11.23.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "Pods/Target Support Files/Pods-Digital Sofia/Pods-Digital Sofia.release-dev.xcconfig"

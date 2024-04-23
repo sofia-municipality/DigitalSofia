@@ -1,0 +1,58 @@
+pipeline {
+    environment {
+        DEPLOY = "${env.BRANCH_NAME == "master" ? "true" : "false"}"
+        NAME = "${env.BRANCH_NAME == "master" ? "example" : "example-staging"}"
+        gitCredentialId = 'bitbucket-password' //defined in credentials area
+        gitUrl = 'https://bitbucket.org/intracol/forms-flow-eforms-signature-services.git'
+        deployBranch = "refs/tags/$TAG_NAME"
+    }
+    
+    agent any
+    
+     stages {
+        stage('Checkout') {
+            steps {
+                checkout scm: [$class: 'GitSCM', userRemoteConfigs: [[url: gitUrl, credentialsId: gitCredentialId ]], branches: [[name: deployBranch ]]], poll: false
+  }
+}
+        
+
+
+        stage('Build eForms-signature-services') {
+            when {
+                tag "release-prod-*"
+            }
+            steps {
+                sh 'sudo docker build -t sofiamunicipalitydigitall/eforms-signature-services:prod-$TAG_NAME .'
+            }
+        }
+
+        stage('Push Image') {
+           when {
+                tag "release-prod-*"
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh 'sudo docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                    sh 'sudo docker push $DOCKER_USERNAME/eforms-signature-services:prod-$TAG_NAME'
+                }
+            }
+        }
+
+        stage('Deploy PROD') {
+            when {
+                tag "release-prod-*"
+            }
+            steps {
+                withKubeConfig([credentialsId: 'kubeconfig-prod', serverUrl: 'https://172.23.230.120:6443']) {
+                   sh """ 
+                  sed -i 's+image: sofiamunicipalitydigitall/eforms-signature-services:.*+image: sofiamunicipalitydigitall/eforms-signature-services:prod-${env.TAG_NAME}+g' ./dhcho/prod/deployment_prod.yaml 
+                  """
+                   sh 'kubectl apply -f ./dhcho/prod/deployment_prod.yaml '
+                   sh 'kubectl apply -f ./dhcho/prod/service_prod.yaml '
+                    }
+                }
+            }
+         
+    }
+}

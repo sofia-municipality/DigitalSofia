@@ -12,7 +12,7 @@ import java.util.Base64;
 import org.apache.commons.validator.routines.UrlValidator;
 
 import com.bulpros.eforms.signature.exception.SignatureRequestException;
-import com.ctc.wstx.util.URLUtil;
+
 
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.model.DSSDocument;
@@ -54,7 +54,7 @@ public final class DocumentUtils {
         InputStream is = null;
         try {
             final URL url = new URL(fileUrl);
-            is = URLUtil.inputStreamFromURL(url);
+            is = url.openStream();
             digestDocument = toDigestDocument(is, digestAlgorithm);
         } catch (MalformedURLException e) {
             log.error(String.format("URL %1$s seems to be malformed. %2$s", fileUrl, e.getMessage()));
@@ -81,7 +81,7 @@ public final class DocumentUtils {
         InputStream is = null;
         try {
             final URL url = new URL(fileUrl);
-            is = URLUtil.inputStreamFromURL(url);
+            is = url.openStream();
             inMemoryDocument = toInMemoryDocument(is.readAllBytes(), originalFileName);
         } catch (MalformedURLException e) {
             log.error(String.format("URL %1$s seems to be malformed. %2$s", fileUrl, e.getMessage()));

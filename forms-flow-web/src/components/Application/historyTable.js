@@ -57,12 +57,11 @@ export const columns_history = (redirectUrl) => [
     formatter: (cell, row) => linkSubmision(row, redirectUrl),
   },
 ];
-const customTotal = (from, to, size) => (
+const customTotal = (from, to, total) => (
   <span className="react-bootstrap-table-pagination-total" role="main">
-    <Translation>{(t) => t("Showing")}</Translation> {from}{" "}
-    <Translation>{(t) => t("to")}</Translation> {to}{" "}
-    <Translation>{(t) => t("of")}</Translation> {size}{" "}
-    <Translation>{(t) => t("Results")}</Translation>
+    <Translation>
+      {(t) => t("so.translations.table.total.text", { from, to, total })}
+    </Translation>
   </span>
 );
 

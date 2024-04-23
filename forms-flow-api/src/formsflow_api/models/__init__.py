@@ -18,6 +18,9 @@ from .address_kra import AddressKRA
 from .address_kad import AddressKAD
 from .payment_request import PaymentRequest
 from .identity_request import IdentityRequest
+from .other_file import OtherFile
+from .mateus_payment_group import MateusPaymentGroup
+from .mateus_payment_request import MateusPaymentRequest
 
 __all__ = [
     "db",
@@ -29,7 +32,7 @@ __all__ = [
     "Draft",
     "DocumentTransaction",
     "DocumentStatus",
-    "SigningStatus"
+    "SigningStatus",
     "FAQ",
     "AuthType",
     "Authorization",
@@ -40,5 +43,8 @@ __all__ = [
     "AddressKRA",
     "AddressKAD",
     "PaymentRequest",
-    "IdentityRequest"
+    "IdentityRequest",
+    "OtherFile",
+    "MateusPaymentGroup",
+    "MateusPaymentRequest"
 ]

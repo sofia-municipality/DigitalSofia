@@ -5,4 +5,5 @@ export const CUSTOM_EVENT_TYPE = {
   ACTION_COMPLETE: "actionComplete",
   CANCEL_SUBMISSION: "cancelSubmission",
   SIGN_DOCUMENT: "signDocument",
+  OPEN_FORM_ERROR_MODAL: "openFormErrorModal",
 };

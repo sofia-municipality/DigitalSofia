@@ -1,0 +1,7 @@
+@Library('eforms-shared-lib') _
+
+eFormsBuildAnyApp {
+    ENVIRONMENT = "dev"
+    EFORMS_APP = "eforms-integrations"
+    DEPLOY_JOB = "deploy-integrations"
+}

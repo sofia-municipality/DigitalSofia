@@ -19,7 +19,7 @@ const PageContainer = ({ children }) => {
   useEffect(() => {
     if (hash === "") {
       const element = document.getElementById("app");
-      element.scrollTo(0, 0);
+      element?.scrollTo(0, 0);
     } else {
       if (action === "POP") {
         window.history.replaceState(

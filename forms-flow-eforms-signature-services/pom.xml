@@ -14,7 +14,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <spring-boot.version>2.4.3</spring-boot.version>
         <swagger.version>3.0.0</swagger.version>
-        <dss.version>5.8</dss.version>
+        <dss.version>5.12.1</dss.version>
         <dss-mock-tsa.version>5.8.2</dss-mock-tsa.version>
         <lombock.version>1.18.20</lombock.version>
         <commons.validator.version>1.7</commons.validator.version>
@@ -24,46 +24,9 @@
     <repositories>
         <repository>
             <id>bulpros-nexus</id>
-            <url>http://212.73.136.25:8081/repository/sofmun/</url>
+            <url>http://10.191.35.200:8081/repository/maven-public/</url>
         </repository>
     </repositories>
-
-	<profiles>
-        <profile>
-			<id>local</id>
-			<repositories>
-				<repository>
-					<id>central-repository</id>
-					<name>Central Repository</name>
-					<url>https://repo.maven.apache.org/maven2</url>
-			</repository>
-			<repository>
-				<id>bulpros-nexus</id>
-				<url>http://212.73.136.25:8081/repository/sofmun/</url>
-				</repository>
-			</repositories>
-		<properties>
-			<spring.profiles.active>local</spring.profiles.active>
-		</properties>
-        </profile>
-        <profile>
-			<id>prod</id>
-			<repositories>
-				<repository>
-					<id>central-repository</id>
-					<name>Central Repository</name>
-					<url>https://repo.maven.apache.org/maven2</url>
-				</repository>
-				<repository>
-					<id>bulpros-nexus</id>
-					<url>http://212.73.136.25:8081/repository/sofmun/</url>
-				</repository>
-			</repositories>
-		<properties>
-			<spring.profiles.active>prod</spring.profiles.active>
-		</properties>
-       </profile>
-	</profiles>
 
     <dependencyManagement>
         <dependencies>

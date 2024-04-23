@@ -42,3 +42,4 @@ six==1.16.0
 urllib3==1.26.11
 zipp==3.8.1
 nested-lookup==0.2.25
+git+https://MihailStefanov:ATBBNbJZnqewR5NzBUmTFFt4C3uRC8D7397D@bitbucket.org/intracol/forms-flow-api-utils.git@develop

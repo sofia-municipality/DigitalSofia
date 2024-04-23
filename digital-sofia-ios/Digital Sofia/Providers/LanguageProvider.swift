@@ -9,19 +9,22 @@ import Foundation
 import EvrotrustSDK
 
 class LanguageProvider {
+    private init() { }
+    
     public static let shared = LanguageProvider()
     
     open var appLanguage: Languages? = Languages(rawValue: UserDefaults.standard.string(forKey: AppConfig.UserDefaultsKeys.language) ?? "") {
         didSet {
-            Evrotrust.sdk()?.setLanguage(appLanguage?.short)
             UserDefaults.standard.set(appLanguage?.rawValue, forKey: AppConfig.UserDefaultsKeys.language)
+            Evrotrust.sdk()?.setLanguage(appLanguage?.short)
+            LoggingHelper.logSDKSetLanguage()
         }
     }
 }
 
 enum Languages: String, CaseIterable {
     case english   = "en",
-         bulgarian = "bg-BG"
+         bulgarian = "bg"
     
     var description: String {
         switch self {

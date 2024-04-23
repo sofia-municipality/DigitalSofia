@@ -1,5 +1,11 @@
+
+import base64
+import os
+import json
 from flask import current_app, request
 from flask_restx import Namespace, Resource, fields
+from io import BytesIO
+from werkzeug.datastructures import FileStorage
 from formsflow_api_utils.utils import (
     cors_preflight,
     auth,
@@ -8,9 +14,9 @@ from formsflow_api_utils.utils import (
 from formsflow_api_utils.utils.user_context import UserContext, user_context
 from formsflow_api_utils.exceptions import BusinessException
 from formsflow_api.exceptions import KEPException
-from formsflow_api.models import DocumentStatus
-from formsflow_api.services.external.signature_services_integration import SignatureServicesIntegrationService
-from formsflow_api.services import FormioServiceExtended
+from formsflow_api.models import DocumentStatus, Application
+from formsflow_api.services.external import BPMService, SignatureServicesIntegrationService
+from formsflow_api.services import FormioServiceExtended, OtherFileService, AcstreService, DocumentsService
 
 API = Namespace("KEP_API", description="KEP Signature")
 
@@ -88,12 +94,18 @@ class KEPSignResource(Resource):
     )
     def post(**kwargs):
         """Retrieve regions"""
+        current_app.logger.info("KEPSignResource@post")
+        current_app.logger.debug("Init SignatureServicesIntegrationService")
         service = SignatureServicesIntegrationService()
+        
+        document_service_client = DocumentsService()
         try:
             user: UserContext = kwargs["user"]
             tenant_key = user.tenant_key
             data = request.get_json()
             response = service.sign_document(data=data)
+            current_app.logger.debug("/signature/document/sign Response mimeTpye")
+            current_app.logger.debug(response.get("mimeType"))
             
             ### Find document in formio
             formio_client = FormioServiceExtended()
@@ -107,24 +119,87 @@ class KEPSignResource(Resource):
             if tenant_key:
                 form_path = f"{tenant_key}-{form_path}"
 
-            formio_client.update_resource_formio_status(
-                formio_form_path=form_path,
-                formio_resource_id=formio_resource_id,
-                formio_status=status.formio_status
+            document_service_client.update_document_status_in_formio(
+                formio_id=formio_resource_id, 
+                tenant_key=tenant_key,
+                status=status,
             )
 
-            formio_client.update_resource_formio_file(
+            mime_type = response.get("mimeType")
+            mime_type_variable_type = type(mime_type)
+            if mime_type_variable_type is str:           
+                if mime_type == "PDF":
+                    mime_type = "application/pdf"
+                else:
+                    mime_type = mime_type
+
+            elif mime_type_variable_type is dict:
+                mime_type = mime_type.get("mimeTypeString", "application/pdf")
+            else:
+                mime_type = "application/pdf"
+
+            ### Although it is bytes response.get("bytes") this is a base64 encoding
+            ### Dump the Response to a file just to check
+            # file_path = os.path.join(current_app.static_folder, 'data', 'logs')
+            # os.makedirs(name=file_path, exist_ok=True)
+            # with open(file_path + "error-log.json", "w") as problem_file:
+            #     problem_file.write(json.dumps(response))
+                
+
+            # current_app.logger.debug("Update Resource Formio File")
+            # current_app.logger.debug(response.keys())
+            # current_app.logger.debug(response.get("name"))
+            # current_app.logger.debug(data.get("documentName"))
+            # current_app.logger.debug(mime_type)
+
+            formio_response = formio_client.update_resource_formio_file(
                     form_path=form_path,
                     formio_resource_id=formio_resource_id,
-                    type=response.get("mimeType").get("mimeTypeString"),
+                    type=mime_type,
                     name=data.get("documentName"),
-                    content=response.get("bytes")
+                    content=response.get("bytes"),
+                    signature_source="kep"
                 )
+
+            ### Add signed files to acstre application
+            should_save_file = data.get("shouldSave")
+            current_app.logger.debug(f"Should save - {should_save_file}")
+            if should_save_file:
+                application_id = data.get("originalApplicationId")
+                if application_id:
+                    other_file_service = OtherFileService()
+                    additional_path = f"{application_id}/"
+                        
+                    base64_string = response.get("bytes")
+                    binary_data = base64.b64decode(base64_string)
+
+                    stream = BytesIO(binary_data)
+
+                    file = FileStorage(
+                        stream=stream, 
+                        filename=data.get("documentName"), 
+                        content_type=mime_type
+                    )
+                    other_file_model = other_file_service.save_file(
+                        user_id=user.user_name,
+                        file=file,
+                        application_id=application_id,
+                        additional_path=additional_path
+                    )
+                    acstre_client = AcstreService()
+                    other_files = acstre_client.get_application_files(application_id=application_id)
+                    other_files.append({
+                        "url": other_file_model.file_url,
+                        "name": other_file_model.file_name,
+                        "size": other_file_model.file_size
+                    })
+                    acstre_client.add_other_files_to_application(application_id=application_id, other_files=other_files)
 
             ### Return original response
             return response
         except BusinessException as err:
-            current_app.logger.warning(err.error)
+
+            current_app.logger.warning(err.status_code)
             return err.error, err.status_code
         except KEPException as err:
             current_app.logger.warning(err.error)

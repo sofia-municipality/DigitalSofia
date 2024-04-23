@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-flow-forms
+  namespace : forms-flow-forms
+  labels:
+    app.kubernetes.io/name: forms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: forms
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: forms
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: form-flow-forms
+          image: formsflow/forms-flow-forms:v5.1.0
+          ports:
+            - containerPort: 3001
+              name: http
+              protocol: TCP
+          env:
+            - name: DEBUG
+              value: "*"
+            - name: FORMIO_DB_USERNAME
+              value: "formsio"
+            - name: FORMIO_DB_PASSWORD
+              value: "P@ssw0rd"
+            - name: FORMIO_DB_DATABASE
+              value: "formsiodbdev"
+            - name: FORMIO_ROOT_EMAIL
+              value: "admin@example.com"
+            - name: FORMIO_ROOT_PASSWORD
+              value: "changeme"
+            - name: FORMIO_CLIENT_UI
+              value: "false" 
+            - name: FORMIO_DEFAULT_PROJECT_URL
+              value: "http://localhost:3001"
+            - name: MULTI_TENANCY_ENABLED
+              value: "false"
+            - name: NODE_CONFIG
+              value: "{\"mongo\":\"mongodb://formsio:formsiotest123@192.168.201.46:27017/formsiodbdev\"}"

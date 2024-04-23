@@ -24,6 +24,20 @@ struct AlertProvider {
         })
     }
     
+    static func generalAlert() -> DismissAlertItem {
+        return DismissAlertItem(title: Text(AppConfig.UI.Alert.generalAlertTitle.localized),
+                                message: Text(AppConfig.UI.Text.somethingWentWrongErrorText.localized),
+                                dismissButton: .default(Text(okButtonTitle)))
+    }
+    
+    static func generalAlertWithCompletion(completion: @escaping () -> ()) -> DismissAlertItem {
+        return DismissAlertItem(title: Text(AppConfig.UI.Alert.generalAlertTitle.localized),
+                                message: Text(AppConfig.UI.Text.somethingWentWrongErrorText.localized),
+                                dismissButton: .default(Text(okButtonTitle)) {
+            completion()
+        })
+    }
+    
     static func mismatchPINAlert() -> DismissAlertItem {
         return DismissAlertItem(title: Text(AppConfig.UI.Alert.pinMismatchAlertTitle.localized),
                                 message: Text(AppConfig.UI.Alert.pinMismatchAlertDetails.localized),
@@ -36,9 +50,9 @@ struct AlertProvider {
                                 dismissButton: .default(Text(okButtonTitle)))
     }
     
-    static func pinBlockAlert(seconds: Int) -> DismissAlertItem {
+    static func pinBlockAlert(message: String) -> DismissAlertItem {
         return DismissAlertItem(title: Text(AppConfig.UI.Alert.generalAlertTitle.localized),
-                                message: Text(AppConfig.UI.Alert.blockPinAlertText.localized.format("\(seconds)")),
+                                message: Text(message),
                                 dismissButton: .default(Text(okButtonTitle)))
     }
     

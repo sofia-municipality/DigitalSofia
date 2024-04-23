@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 
-import { usePageTitleRef } from "../../../../customHooks";
+import { usePageTitleRef, useOpenCloseAllItems } from "../../../../customHooks";
 import SmCta, { SmCtaTypes, SmCtaSizes } from "../../components/buttons/SmCta";
 import PageContainer from "../../components/PageContainer";
 import styles from "./faq.module.scss";
@@ -16,11 +16,17 @@ const FAQ = () => {
   const { t } = useTranslation();
   const headingRef = usePageTitleRef();
   const userLanguage = useSelector((state) => state.user.lang);
-  const [openCloseAll, setOpenCloseAll] = useState("");
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(1);
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const {
+    onOpenCloseAllClick,
+    onExpand,
+    openCloseAll,
+    shouldOpenCloseAll,
+    forceCloseAll,
+  } = useOpenCloseAllItems(faqs.length);
 
   useEffect(() => {
     setLoading(true);
@@ -32,7 +38,7 @@ const FAQ = () => {
   }, [page, userLanguage]);
 
   const setPaginationPage = (index) => {
-    setOpenCloseAll("close");
+    forceCloseAll();
     setPage(index);
     document.getElementById("app").scrollTo(0, 0);
   };
@@ -70,17 +76,14 @@ const FAQ = () => {
                 type={SmCtaTypes.OUTLINE}
                 size={SmCtaSizes.SMALL}
                 accessibilityProps={{
-                  "aria-expanded": openCloseAll !== "open" ? "false" : "true",
+                  "aria-expanded":
+                    shouldOpenCloseAll !== "open" ? "false" : "true",
                 }}
-                onClick={() => {
-                  openCloseAll !== "open"
-                    ? setOpenCloseAll("open")
-                    : setOpenCloseAll("close");
-                }}
+                onClick={onOpenCloseAllClick}
               >
                 <span className="sm-cta-outline-underline">
                   {t(
-                    openCloseAll !== "open"
+                    shouldOpenCloseAll !== "open"
                       ? "faqs.openAll.cta.text"
                       : "faqs.closeAll.cta.text"
                   )}
@@ -96,6 +99,7 @@ const FAQ = () => {
                 <SmAccordion
                   cards={faqs}
                   openCloseAll={openCloseAll}
+                  onExpand={onExpand}
                 ></SmAccordion>
               )}
             </div>

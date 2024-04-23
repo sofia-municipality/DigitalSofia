@@ -8,16 +8,14 @@
 import UIKit
 
 struct PermissionProvider {
-    static func getNotificationsPermission(completion: @escaping (Bool)->Void) {
+    static func getNotificationsPermission(completion: ((Bool)->Void)? = nil) {
         let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
         UNUserNotificationCenter.current().requestAuthorization(options: authOptions) { (success, error) in
-            guard success else {
-                completion(false)
-                return
-            }
+            print("notifications permitted: \(success)")
+            
             DispatchQueue.main.async {
                 UIApplication.shared.registerForRemoteNotifications()
-                completion(success)
+                completion?(success)
             }
         }
     }

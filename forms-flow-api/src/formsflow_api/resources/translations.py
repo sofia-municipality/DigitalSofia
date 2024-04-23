@@ -80,7 +80,7 @@ class LanguageResource(Resource):
     def get():
         try:
             current_app.logger.debug("1. Getting user info")
-            current_app.logger.debug(request.headers)
+            # current_app.logger.debug(request.headers)
             headers_data = TenantSchema().load(dict(request.headers))
             tenant_key = headers_data.get("tenant_key")
             

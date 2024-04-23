@@ -82,7 +82,6 @@ test("Should render the table with the data after data fetch is over with result
   expect(screen.getAllByText(/Application Name/i).length).toBe(2);
   expect(screen.getByText("5434")).toBeInTheDocument();
   expect(screen.getAllByText(/Sample Form/i).length).toBe(3);
-  expect(screen.getByText(/Showing 1 to 3 of 3 Results/i)).toBeInTheDocument();
 });
 
 test("Should render No results found when providing a filter value which is not in db", async () => {

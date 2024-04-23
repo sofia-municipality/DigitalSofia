@@ -7,6 +7,7 @@
 
 import Combine
 import Alamofire
+import Foundation
 
 protocol ProviderProtocol {
     

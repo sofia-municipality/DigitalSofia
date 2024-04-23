@@ -23,16 +23,17 @@ enum SettingsType: CaseIterable {
         }
     }
     
+    @ViewBuilder
     var destination: some View {
         switch self {
         case .profile:
-            return AnyView(ProfileView())
+            ProfileView()
         case .language:
-            return AnyView(ProfileLanguageView())
+            ProfileLanguageView()
         case .security:
-            return AnyView(BiometricAuthenticationView())
+            BiometricAuthenticationView()
         case .pin:
-            return AnyView(ChangePINView(state: .old, shouldGoToHome: false))
+            ChangePINView(state: .old)
         }
     }
 }
@@ -51,10 +52,11 @@ struct SettingsView: View {
             NavigationLink(destination: selectedItem?.destination.environmentObject(appState).environmentObject(networkMonitor),
                            isActive: $showProfileOptionView) { EmptyView() }
             
-            NavigationLink(destination: ProfileDeleteView(),
+            NavigationLink(destination: ProfileDeleteView().environmentObject(appState).environmentObject(networkMonitor),
                            isActive: $showProfileDeleteView) { EmptyView() }
             
             CustomNavigationBar()
+            CustomNavigationBar(title: AppConfig.UI.Titles.Screens.settings.localized, image: ImageProvider.settings)
             
             Spacer()
             Spacer()
@@ -86,8 +88,11 @@ struct SettingsView: View {
             .padding([.leading, .trailing], AppConfig.Dimensions.Padding.standart + AppConfig.Dimensions.Padding.large)
             .padding(.bottom, AppConfig.Dimensions.Padding.XXXL)
         }
-        .background(DSColors.background)
-        .navigationBarHidden(true)
+        .lockScreen()
+        .loginNotification()
+        .environmentObject(appState)
+        .environmentObject(networkMonitor)
+        .backgroundAndNavigation()
     }
     
     private func createListRow(item: SettingsType) -> some View {

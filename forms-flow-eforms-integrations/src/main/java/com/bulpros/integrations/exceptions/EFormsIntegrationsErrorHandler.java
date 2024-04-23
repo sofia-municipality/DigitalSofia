@@ -41,7 +41,12 @@ public class EFormsIntegrationsErrorHandler {
                     .error(exception.getStatusCode().getReasonPhrase())
                     .message(prepareExceptionMessageCode(routeGroup, IntegrationsExCauseType.COMMUNICATION))
                     .data(exception.getResponseBodyAsString()).build();
-
+            if(exception.getStatusCode().value() == 404) {
+                msg.setHeader(Exchange.HTTP_RESPONSE_CODE, "404");
+            }
+            else {
+                msg.setHeader(Exchange.HTTP_RESPONSE_CODE, "500");
+            }
         } else if (throwable instanceof RestClientException) {
             RestClientException exception = ((RestClientException) throwable);
             exceptionBody = ExceptionBody.builder()
@@ -49,6 +54,7 @@ public class EFormsIntegrationsErrorHandler {
                     .error(HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase())
                     .message(prepareExceptionMessageCode(routeGroup, IntegrationsExCauseType.UNAVAILABLE))
                     .data(exception.getMessage()).build();
+            msg.setHeader(Exchange.HTTP_RESPONSE_CODE, "500");
         } else if (throwable instanceof SOAPFaultException) {
             SOAPFaultException exception = ((SOAPFaultException) throwable);
             exceptionBody = ExceptionBody.builder()
@@ -56,6 +62,7 @@ public class EFormsIntegrationsErrorHandler {
                     .error(exception.getMessage())
                     .message(prepareExceptionMessageCode(routeGroup, IntegrationsExCauseType.COMMUNICATION))
                     .data(exception.getMessage()).build();
+            msg.setHeader(Exchange.HTTP_RESPONSE_CODE, "500");
         } else if (throwable instanceof UnknownHostException) {
             UnknownHostException exception = ((UnknownHostException) throwable);
             exceptionBody = ExceptionBody.builder()
@@ -63,15 +70,17 @@ public class EFormsIntegrationsErrorHandler {
                     .error(HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase())
                     .message(prepareExceptionMessageCode(routeGroup, IntegrationsExCauseType.UNAVAILABLE))
                     .data(exception.getMessage()).build();
+            msg.setHeader(Exchange.HTTP_RESPONSE_CODE, "500");
         } else {
             exceptionBody = ExceptionBody.builder()
                     .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                     .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
                     .message(prepareExceptionMessageCode(routeGroup, null))
                     .data(throwable.getMessage()).build();
+            msg.setHeader(Exchange.HTTP_RESPONSE_CODE, "500");
         }
 
-        msg.setHeader(Exchange.HTTP_RESPONSE_CODE, "500");
+
         msg.setBody(exceptionBody);
     }
 

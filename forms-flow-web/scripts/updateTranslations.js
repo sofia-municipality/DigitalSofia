@@ -1,10 +1,17 @@
 const axios = require("axios");
 const translations = require("../src/resourceBundles");
 const readline = require("readline");
+const https = require("https");
 
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
+});
+
+const httpHandler = axios.create({
+  httpsAgent: new https.Agent({
+    rejectUnauthorized: false,
+  }),
 });
 
 const bgTranslations = translations.bg;
@@ -15,7 +22,7 @@ let SUBMISSION_PATH = "/form/64366811e463c6d8ef79b06c/submission";
 const LOGIN_PATH = "/user/login/submission";
 
 const login = async (email, password) => {
-  return await axios
+  return await httpHandler
     .post(`${API_URL}${LOGIN_PATH}`, {
       data: {
         email,
@@ -34,7 +41,7 @@ const login = async (email, password) => {
 };
 
 const saveTranslation = (key, value, jwt, language) => {
-  return axios
+  return httpHandler
     .post(
       `${API_URL}${SUBMISSION_PATH}`,
       {
@@ -63,7 +70,7 @@ const saveTranslation = (key, value, jwt, language) => {
 };
 
 const updateTranslation = (key, value, jwt, language, translationId) => {
-  return axios
+  return httpHandler
     .put(
       `${API_URL}${SUBMISSION_PATH}/${translationId}`,
       {
@@ -92,7 +99,7 @@ const updateTranslation = (key, value, jwt, language, translationId) => {
 };
 
 const getSubmissions = async (jwt) => {
-  const res = await axios.get(
+  const res = await httpHandler.get(
     `${API_URL}${SUBMISSION_PATH}?limit=99999&skip=0`,
     {
       headers: {

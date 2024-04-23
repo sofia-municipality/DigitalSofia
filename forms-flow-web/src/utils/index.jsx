@@ -1,5 +1,6 @@
 import i18n from "i18next";
 import moment from "moment";
+import { saveAs } from "file-saver";
 
 export const getFormTranslations = () =>
   Object.entries(i18n.options.resources).reduce((acc, [key, value]) => {
@@ -61,4 +62,102 @@ export const validatePersonalIdentifier = (value, type = "egn") => {
   }
   const last = sum % divisor == 10 ? 0 : sum % divisor;
   return last == parseInt(value.substr(9, 1));
+};
+
+export const capitalizeFirstLetter = (string) => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+export const convertToDecimal = (value, fractionDigits = 2) =>
+  Number(value.toFixed(fractionDigits));
+
+export const MOBILE_APP_TYPES = {
+  BOTH: "BOTH",
+  ANDROID: "ANDROID",
+  IOS: "IOS",
+};
+
+export const sendMobleAppMessage = (
+  mobileAppInterface,
+  method,
+  data,
+  os = MOBILE_APP_TYPES.BOTH
+) => {
+  const message = typeof data === "string" ? data : JSON.stringify(data);
+  try {
+    if (os !== MOBILE_APP_TYPES.IOS && window[mobileAppInterface]) {
+      // Call Android interface
+      window[mobileAppInterface]?.[method]?.(message);
+    } else if (
+      os !== MOBILE_APP_TYPES.ANDROID &&
+      window.webkit &&
+      window.webkit.messageHandlers
+    ) {
+      // Call iOS interface
+      window.webkit.messageHandlers[mobileAppInterface]?.[method]?.(message);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const forceDownload = (url, fileName) => {
+  const element = document.createElement("a");
+  const clearUrl = url.replace(/^data:.+,/, "");
+
+  element.setAttribute(
+    "href",
+    "data:application/octet-stream;base64," + encodeURIComponent(clearUrl)
+  );
+  element.setAttribute("download", fileName);
+  document.body.appendChild(element);
+  element.click();
+  document.body.removeChild(element);
+};
+
+export const getIsSafari = () => {
+  let isSafari = false;
+  const browser = window.navigator.userAgent.toLowerCase();
+  if (browser.includes("iphone")) {
+    if (!browser.includes("fxios") && !browser.includes("crios")) {
+      isSafari = true;
+    }
+  }
+
+  return isSafari;
+};
+
+export const downloadBase64File = (
+  base64Url,
+  fileName,
+  sendMobileAppEvent = false
+) => {
+  if (sendMobileAppEvent) {
+    sendMobleAppMessage(
+      "download_files_android",
+      "sendFilename",
+      fileName,
+      MOBILE_APP_TYPES.ANDROID
+    );
+  }
+  const isSafari = getIsSafari();
+  if (isSafari) {
+    forceDownload(base64Url, fileName);
+  } else {
+    saveAs(base64Url, fileName);
+  }
+};
+
+export const downloadFile = async (
+  url,
+  fileName,
+  sendMobileAppEvent = true
+) => {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  var reader = new FileReader();
+  reader.onload = function () {
+    downloadBase64File(this.result, fileName, sendMobileAppEvent);
+  };
+  reader.readAsDataURL(blob);
 };

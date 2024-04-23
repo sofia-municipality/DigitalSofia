@@ -7,8 +7,11 @@ metadata:
     app.kubernetes.io/name: formsflowapi
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
+  strategy: 
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: formsflowapi
@@ -25,62 +28,69 @@ spec:
           lifecycle:
             postStart:
               exec:
-                command: ["/bin/sh", "-c",  "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf && apt update && apt -y install cron vim  && env >> /etc/environment && crontab -l | { cat; echo '*/1 * * * * (FLASK_APP=/forms-flow-api/app/manage.py bash -c \"/venv/bin/flask cron expire-documents\") >> /var/log/syslog 2>&1'; } | crontab - && service cron start " ]
+                command: ["/bin/sh", "-c",  "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf && apt update && apt -y install cron vim  && env >> /etc/environment && crontab -l | { cat; echo '*/1 * * * * (FLASK_APP=/forms-flow-api/app/manage.py bash -c \"/venv/bin/flask cron expire-documents\") >> /var/log/syslog 2>&1'; echo '*/5 * * * * (FLASK_APP=/forms-flow-api/app/manage.py bash -c \"/venv/bin/flask cron update_obligation_payments_statuses\") >> /var/log/syslog 2>&1'; } | crontab - && service cron start "]
           ports:
             - containerPort: 5000
               name: http-api
               protocol: TCP
+          volumeMounts:
+            - mountPath: /mnt/external-services/acstre/documents
+              name: documents
+            - name: firebase
+              mountPath: /opt/keycloak/firebase
+            - name: logs
+              mountPath: /mnt/mobile/logs
           env:
             - name: INSIGHT_API_KEY
-              value: "{API Key from Redash}"
+              value: "MxlZK65GyqWuVM3ncZBLHTgNrgKr777w0vHxMdcG"
             - name: INSIGHT_API_URL
-              value: "http://forms-flow-analytics-svc.forms-flow-analytics.svc.cluster.local:5000"
+              value: "https://redash-dev-eservices.egov.bg"
             - name: DATABASE_URL
-              value: ""
+              value: "postgresql://api:YkKnskzt7B@172.23.230.134:5432/apidbdev"
             - name: BPM_TOKEN_API
-              value: "http://identity-dev-eservices.egov.bg/auth/realms/forms-flow-ai/protocol/openid-connect/token"
+              value: "https://identity-dev-eservices.egov.bg/auth/realms/eServices/protocol/openid-connect/token"
             - name: BPM_CLIENT_ID
               value: "forms-flow-bpm"
             - name: BPM_CLIENT_SECRET
-              value: ""
+              value: "SDi9yOoPH0wKncJw4fFlSkuZf6Ir5Lbc"
             - name: BPM_API_URL
               value: "http://forms-flow-bpm-svc.forms-flow-bpm.svc.cluster.local:8080/camunda"
             - name: FORMSFLOW_API_CORS_ORIGINS
               value: "*"
             - name: JWT_OIDC_WELL_KNOWN_CONFIG
-              value: "http://identity-dev-eservices.egov.bg/auth/realms/forms-flow-ai/.well-known/openid-configuration"
+              value: "https://identity-dev-eservices.egov.bg/auth/realms/eServices/.well-known/openid-configuration"
             - name: JWT_OIDC_JWKS_URI
-              value: "http://identity-dev-eservices.egov.bg/auth/realms/forms-flow-ai/protocol/openid-connect/certs"
+              value: "https://identity-dev-eservices.egov.bg/auth/realms/eServices/protocol/openid-connect/certs"
             - name: JWT_OIDC_ISSUER
-              value: "http://identity-dev-eservices.egov.bg/auth/realms/forms-flow-ai"
+              value: "https://identity-dev-eservices.egov.bg/auth/realms/eServices"
             - name: JWT_OIDC_AUDIENCE
               value: "forms-flow-web"
             - name: JWT_OIDC_CACHING_ENABLED
               value: "True"
             - name: KEYCLOAK_URL
-              value: "http://identity-dev-eservices.egov.bg"
+              value: "https://identity-dev-eservices.egov.bg"
             - name: KEYCLOAK_URL_REALM
-              value: "forms-flow-ai"
+              value: "eServices"
             - name: WEB_API_BASE_URL
-              value: "http://api-dev-eservices.egov.bg"
+              value: "https://api-dev-eservices.egov.bg"
             - name: WEB_BASE_URL
-              value: "http://dev-eservices.sofia.bg"
+              value: "https://dev-eservices.sofia.bg"
             - name: FORMIO_WEB_URL
-              value: "http://forms-dev-eservices.egov.bg"
+              value: "https://forms-dev-eservices.egov.bg"
             - name: FORMIO_URL
               value: "http://forms-flow-forms-svc.forms-flow-forms.svc.cluster.local:3001"
             - name: MULTI_TENANCY_ENABLED
-              value: "false"
+              value: "true"
             - name: KEYCLOAK_ENABLE_CLIENT_AUTH
-              value: "false"
+              value: "true"
             - name: FORM_EMBED_JWT_SECRET
-              value: ""
+              value: "f6a69a42-7f8a-11ed-a1eb-0242ac120002"
             - name: FORMIO_ROOT_EMAIL
-              value: ""
+              value: "iiliev@digitall.com"
             - name: FORMIO_ROOT_PASSWORD
-              value: ""
+              value: "fd1cnUW2Rp608S2"
             - name: FORMIO_JWT_SECRET
-              value: ""
+              value: "test-secret"
             - name: FORMIO_FILE_RESOURCE_PATH
               value: "generated-files"
             - name: CRON_DOCUMENT_TRANSACTION_TIMEOUT
@@ -93,3 +103,36 @@ spec:
               value: "http://forms-flow-documents-svc.forms-flow-documents.svc.cluster.local:5006"
             - name: SIGN_SERVICE_API_URL
               value: "http://signature-services-svc.forms-flow-eforms-signature-services.svc.cluster.local:8004/api"
+            - name: EUROTRUST_IDENTITY_TIMEOUT
+              value: "30"
+            - name: EVROTRUST_IDENTITY_REQUESTS_MAX_RETRIES
+              value: "15"
+            - name: EVROTRUST_IDENTITY_AUTHENTICATE_TIMEOUT
+              value: "3"
+            - name: FIREBASE_CREDENTIALS_PATH
+              value: "/opt/keycloak/firebase/firebase-service-account.json"
+            - name: OTHER_FILE_DESTINATION
+              value: "/mnt/external-services/acstre/documents/"
+            - name: MOBILE_LOGS_FILE_DESTINATION
+              value: "/mnt/mobile/logs/"
+            - name: MATEUS_COMPANY_ID
+              value: "999"
+            - name: CAMUNDA_CHANGE_ADDRESS_PROCESS
+              value: "Process_sofiade:66:ab532399-cf36-11ee-80ed-e20c45ea0eb8"
+            - name: REDIS_CONNECTION
+              value: "redis://host.docker.internal:6379/0"
+            - name: EPAYMENT_SECRET_KEY
+              value: "8F70C29ACBB38F39B0900C26B3A20B0683E62C97A4E578358904686D0023988D0C9873AD23EE87003B36EE5221617FEC0345E3B1138FE1B57EF5DE4771E3CF42"
+      volumes:
+        - name: documents
+          nfs:
+            path: /pvc/documents
+            server: 172.23.230.140
+        - name: firebase
+          nfs:
+            server: 172.23.230.140
+            path: /pvc/keycloak/firebase
+        - name: logs
+          nfs:
+            server: 172.23.230.140
+            path: /pvc/logs

@@ -182,6 +182,20 @@ export const fetchUserListWithSearch = ({ searchType, query }, ...rest) => {
   };
 };
 
+const excludeRestrictedFilters = (data = []) => {
+  const userRoles = JSON.parse(localStorage.getItem("USER_ROLES"));
+  const availableFilters = data.filter((item) => {
+    const variables = item.properties?.variables;
+    const allowedRolesVar = variables?.find((e) => e.name === "allowedRoles");
+    if (allowedRolesVar) {
+      const allowedRoles = allowedRolesVar.label.split(/,\s*/g);
+      return userRoles.some((e) => allowedRoles.includes(e));
+    }
+    return true;
+  });
+  return availableFilters;
+};
+
 export const fetchFilterList = (...rest) => {
   const done = rest.length ? rest[0] : () => {};
   const getTaskFiltersAPI = `${API.GET_BPM_FILTERS}?resourceType=Task&itemCount=true`;
@@ -189,7 +203,7 @@ export const fetchFilterList = (...rest) => {
     httpGETRequest(getTaskFiltersAPI, {}, UserService.getToken())
       .then((res) => {
         if (res.data) {
-          dispatch(setBPMFilterList(res.data));
+          dispatch(setBPMFilterList(excludeRestrictedFilters(res.data)));
           dispatch(setBPMFilterLoader(false));
           //dispatch(setBPMLoader(false));
           done(null, res.data);

@@ -173,6 +173,24 @@ class TenantService:
             })
         payload['details']['roles'].append(
             {
+                'name': 'formsflow-page-admin',
+                'description': 'Provides access to use the formsflow.ai solution. '
+                               'Access to managing translations and page blocks'
+            })
+        payload['details']['roles'].append(
+            {
+                'name': 'formsflow-analytics-viewer',
+                'description': 'Provides access to use the formsflow.ai solution. '
+                               'Access to viewing metrics and analytics dashboards'
+            })
+        payload['details']['roles'].append(
+            {
+                'name': 'formsflow-admin',
+                'description': 'Provides access to use the formsflow.ai solution. '
+                               'Access to viewing all submitted applications and access to assign roles to users'
+            })
+        payload['details']['roles'].append(
+            {
                 'name': 'camunda-admin',
                 'description': 'Camunda administrator for the tenant.'
             })

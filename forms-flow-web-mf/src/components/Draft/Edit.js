@@ -51,6 +51,7 @@ import { getFormProcesses } from "../../apiManager/services/processServices";
 import { textTruncate } from "../../helper/helper";
 import { useEnrichForm } from "../../customHooks";
 import FormSignDocumentModal from '../Modals/FormSignDocumentModal';
+import FormErrorModal from "../Modals/FormErrorModal";
 
 const View = React.memo((props) => {
   const { t } = useTranslation();
@@ -308,6 +309,7 @@ const View = React.memo((props) => {
               onYes(e);
             }}
           />
+          <FormErrorModal />
           <FormSignDocumentModal
             formRef={formRef}
           />
@@ -333,7 +335,7 @@ const View = React.memo((props) => {
                   onSubmit(data, form._id, isPublic);
                 }}
                 onCustomEvent={(evt) => onCustomEvent(evt, redirectUrl)}
-                onRender={(form) => {
+                formReady={(form) => {
                   formRef.current = form;
                   enrichForm(formRef, manuallySaveDraft, draftId);
                 }}

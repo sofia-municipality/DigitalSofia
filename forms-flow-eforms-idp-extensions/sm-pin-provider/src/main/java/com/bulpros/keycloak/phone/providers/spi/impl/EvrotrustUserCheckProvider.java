@@ -5,9 +5,8 @@ import com.bulpros.keycloak.phone.providers.exception.CustomProviderException;
 import com.bulpros.keycloak.phone.providers.model.UserCheckModel;
 import com.bulpros.keycloak.phone.providers.model.UserExtendedModel;
 import com.bulpros.keycloak.phone.providers.spi.UserCheckProvider;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.jboss.logging.Logger;
+import org.keycloak.Config.Scope;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 
@@ -17,7 +16,6 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import org.keycloak.Config.Scope;
 
 public class EvrotrustUserCheckProvider implements UserCheckProvider {
     private static final Logger logger = Logger.getLogger(EvrotrustUserCheckProvider.class);
@@ -28,7 +26,7 @@ public class EvrotrustUserCheckProvider implements UserCheckProvider {
 
     private final String integrationsUrl;
 
-    EvrotrustUserCheckProvider(KeycloakSession session,Scope config) {
+    EvrotrustUserCheckProvider(KeycloakSession session, Scope config) {
         this.session = session;
         this.config = config;
         this.integrationsUrl = config.get("integrationsUrl", "");
@@ -44,21 +42,24 @@ public class EvrotrustUserCheckProvider implements UserCheckProvider {
 
     @Override
     public UserExtendedModel getEvrotrustUser(UserCheckModel userCheckModel) throws CustomProviderException {
-       try {
+        try {
             String body = CommonUtils.ObjMapper().writeValueAsString(userCheckModel);
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(this.integrationsUrl))
-                    .POST(HttpRequest.BodyPublishers.ofString(body))
-                    .build();
+            HttpRequest request = HttpRequest.newBuilder().uri(new URI(this.integrationsUrl))
+                    .POST(HttpRequest.BodyPublishers.ofString(body)).build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if(response.statusCode() == 200) {
-               String responseBody = response.body();
-               return CommonUtils.ObjMapper().readValue(responseBody,UserExtendedModel.class);
-            }
-            else throw new CustomProviderException("Evrotrust User Check Provider could not read user data! " +
-                   "Request status: " + response.statusCode() + response.body());
-       } catch (URISyntaxException | IOException | InterruptedException e) {
-            throw new CustomProviderException("Evrotrust User Check Provider error: " + e.getMessage(), e);
+            if (response.statusCode() == 200) {
+                String responseBody = response.body();
+                return CommonUtils.ObjMapper().readValue(responseBody, UserExtendedModel.class);
+            } else
+                throw new CustomProviderException(
+                        "Evrotrust User Check Provider could not read user data! " + "Request status: " + response.statusCode() + response.body());
+        } catch (URISyntaxException e) {
+            throw new CustomProviderException("UIR to evrotrust API could not be parsed. Reason: " + e.getMessage(), e);
+        } catch (IOException e) {
+            throw new CustomProviderException("Evrotrust API is not available. Reason: " + e.getMessage(), e);
+        } catch (InterruptedException e) {
+            throw new CustomProviderException("Evrotrust User Check response could not be parsed! " + e.getMessage(),
+                    e);
         }
     }
 

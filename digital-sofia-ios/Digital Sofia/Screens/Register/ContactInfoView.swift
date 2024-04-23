@@ -10,6 +10,7 @@ import SwiftUI
 struct ContactInfoView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var networkMonitor: NetworkMonitor
+    @EnvironmentObject var config: KeyboardInactivityHandlerConfig
     
     @FocusState private var phoneIsFocused: Bool
     @State private var email = ""
@@ -23,44 +24,49 @@ struct ContactInfoView: View {
     private let allowedCharacters = "+0123456789"
     
     private var emailIsValid: Bool {
-        return email.isValidEmail
+        return email.isValid(rules: [ValidEmailRule()])
     }
     
     private var phoneIsValid: Bool {
-        return phone.isValidPhone
+        return phone.isValid(rules: [ValidPhoneRule()])
     }
     
     var body: some View {
-        VStack {
-            LogoHeaderView()
-            
-            navigation()
-            
-            Text(AppConfig.UI.Register.contactInformation.localized)
-                .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.medium))
-                .foregroundColor(DSColors.Text.indigoDark)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.bottom, AppConfig.Dimensions.Padding.XXL)
-            
-            addEmail()
-            addPhone()
-            
-            Spacer()
-            
-            let buttonIsDisabled = email.isEmpty || phone.isEmpty
-            BlueBackgroundButton(title: AppConfig.UI.Titles.Button.forward.localized, disabled: buttonIsDisabled) {
-                forward()
+        KeyboardInactivityHandler {
+            VStack {
+                LogoHeaderView()
+                
+                navigation()
+                
+                Text(AppConfig.UI.Register.contactInformation.localized)
+                    .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.medium))
+                    .foregroundColor(DSColors.Text.indigoDark)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.bottom, AppConfig.Dimensions.Padding.XXL)
+                
+                addEmail()
+                addPhone()
+                
+                Spacer()
+                
+                let buttonIsDisabled = email.isEmpty || phone.isEmpty
+                BlueBackgroundButton(title: AppConfig.UI.Titles.Button.forward.localized, disabled: buttonIsDisabled) {
+                    forward()
+                }
             }
         }
+        .environmentObject(config)
         .contentShape(Rectangle())
         .onTapGesture {
+            config.stopTimer = true
             hideKeyboard()
         }
-        .alert(item: $appState.alertItem) { alertItem in
-            AlertProvider.getAlertFor(alertItem: alertItem)
-        }
+        .log(view: self)
+        .alert()
+        .environmentObject(appState)
+        .environmentObject(networkMonitor)
         .padding([.leading, .trailing], RegisterFlowConstants.padding)
-        .background(DSColors.background)
+        .backgroundAndNavigation()
         .ignoresSafeArea(.keyboard)
     }
     
@@ -81,10 +87,13 @@ struct ContactInfoView: View {
                         .font(RegisterFlowConstants.placeholderFont)
                         .foregroundColor(RegisterFlowConstants.placeholderColor)
                 }
+                .onChange(of: email, perform: { newValue in
+                    handleKeyboardInactivity(for: newValue, type: .email)
+                })
                 .padding(.all, AppConfig.Dimensions.Padding.medium)
                 .overlay(
                     RoundedRectangle(cornerRadius: AppConfig.Dimensions.CornerRadius.mini)
-                        .stroke(DSColors.indigo.opacity(0.2), lineWidth: AppConfig.Dimensions.Standart.lineHeight / 2)
+                        .stroke(DSColors.Indigo.regular.opacity(0.2), lineWidth: AppConfig.Dimensions.Standart.lineHeight / 2)
                 )
                 .frame(width: RegisterFlowConstants.fieldWidth)
                 .padding(.bottom, AppConfig.Dimensions.Padding.XL)
@@ -110,7 +119,8 @@ struct ContactInfoView: View {
                     }
                 }
                 .onChange(of: phone, perform: { newValue in
-                    let filtered = newValue.filter { allowedCharacters.contains($0) } 
+                    handleKeyboardInactivity(for: newValue, type: .phone)
+                    let filtered = newValue.filter { allowedCharacters.contains($0) }
                     if filtered != newValue {
                         phone = filtered
                     }
@@ -119,6 +129,10 @@ struct ContactInfoView: View {
                         phone = bgPhoneCode
                     } else if newValue.count > phoneLength {
                         phone = String(phone.prefix(phoneLength))
+                    } else if newValue.count == phoneCodeLength + 1 {
+                        if newValue.contains("0") {
+                            phone = bgPhoneCode
+                        }
                     }
                 })
                 .placeholder(when: phone.isEmpty) {
@@ -129,7 +143,7 @@ struct ContactInfoView: View {
                 .padding(.all, AppConfig.Dimensions.Padding.medium)
                 .overlay(
                     RoundedRectangle(cornerRadius: AppConfig.Dimensions.CornerRadius.mini)
-                        .stroke(DSColors.indigo.opacity(0.2), lineWidth: AppConfig.Dimensions.Standart.lineHeight / 2)
+                        .stroke(DSColors.Indigo.regular.opacity(0.2), lineWidth: AppConfig.Dimensions.Standart.lineHeight / 2)
                 )
                 .frame(width: RegisterFlowConstants.fieldWidth)
                 .padding(.bottom, AppConfig.Dimensions.Padding.XL)
@@ -144,12 +158,35 @@ struct ContactInfoView: View {
         } else if phoneIsValid == false {
             appState.alertItem = AlertProvider.errorAlert(message: AppConfig.UI.Alert.enterValidPhoneAlertText.localized)
         } else {
-            var user = UserProvider.shared.getUser()
+            var user = UserProvider.currentUser
             user?.email = email
             user?.phone = phone
             UserProvider.shared.save(user: user)
             
             showPIN = true
+        }
+    }
+    
+    private func handleKeyboardInactivity(for text: String, type: TextFieldType) {
+        switch type {
+        case .email:
+            if text.count > 20 {
+                config.startTimer = true
+            } else {
+                config.stopTimer = true
+            }
+        case .phone:
+            if text.count > 11 {
+                config.startTimer = true
+            } else {
+                config.stopTimer = true
+            }
+            
+            if text.count == 13 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    hideKeyboard()
+                }
+            }
         }
     }
     
@@ -165,4 +202,8 @@ struct ContactInfoView: View {
 
 #Preview {
     ContactInfoView()
+}
+
+enum TextFieldType {
+    case email, phone
 }

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-flow-web
+  namespace: forms-flow-web
+  labels:
+    name: formsflowweb
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      name: formsflowweb
+  template:
+    metadata:
+      labels:
+        name: formsflowweb
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: form-flow-web
+          image: sofiamunicipalitydigitall/forms-flow-web:releasetest
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "echo '192.168.201.46  smkeycloak-test forms-flow-web-test form-flow-forms-test form-flow-analytics-test form-flow-api-test form-flow-bpm-test form-flow-documents-test' >> /etc/hosts"]
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          env:
+            - name: REACT_APP_ENV
+              value: "test"

@@ -9,6 +9,13 @@ import { createMemoryHistory } from "history";
 import * as redux from "react-redux";
 import { mockstate } from "./constants";
 
+jest.mock("i18next", () => ({
+  ...jest.requireActual("i18next"),
+  options: {
+    resources: {},
+  },
+}));
+
 let store;
 let mockStore = configureStore([]);
 
@@ -45,8 +52,8 @@ it("should render the list component without breaking", () => {
   expect(screen.getByText("Test Form 007")).toBeInTheDocument();
   expect(screen.getByText("Create Form")).toBeInTheDocument();
   expect(screen.getByText("Upload Form")).toBeInTheDocument();
-  const downloadFormText = screen.queryByText('Download Form'); 
-  downloadFormText ? expect(downloadFormText).toBeNull() : ''; 
+  const downloadFormText = screen.queryByText("Download Form");
+  downloadFormText ? expect(downloadFormText).toBeNull() : "";
 });
 
 it("Should dispatch the file upload hanlder with an empty list when clicking upload button", async () => {

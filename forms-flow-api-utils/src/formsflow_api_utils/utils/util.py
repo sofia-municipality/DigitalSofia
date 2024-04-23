@@ -35,7 +35,7 @@ def cors_preflight(methods: str = "GET"):
                 {
                     "Access-Control-Allow-Origin": ALLOW_ALL_ORIGINS,
                     "Access-Control-Allow-Methods": methods,
-                    "Access-Control-Allow-Headers": "Authorization, Content-Type, X-Tenant-Key",
+                    "Access-Control-Allow-Headers": "Authorization, Content-Type",
                 },
             )
 

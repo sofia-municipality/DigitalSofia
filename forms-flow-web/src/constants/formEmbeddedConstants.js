@@ -14,11 +14,17 @@ export const APPLICATION_STATUS = {
   PAID: "paid",
   COMPLETED: "Completed",
   CANCELED: "canceled",
+  CANCELLED_PAYMENT: "cancelledPayment",
   // formsflow default statuses
   NEW: "New",
   DRAFT: "Draft",
   SUBMISSION_ERROR: "submissionError",
+  EDELIVERY_ERROR: "edeliveryError",
 };
+
+export const APPLICATION_STATUS_FORCED_ERROR = [
+  APPLICATION_STATUS.EDELIVERY_ERROR,
+];
 
 export const APPLICATION_STATUS_LABEL = {
   [APPLICATION_STATUS.DRAFT_IN_PROGRESS]:
@@ -44,9 +50,24 @@ export const APPLICATION_STATUS_LABEL = {
     "myServices.status.waitingForPayment.label",
   [APPLICATION_STATUS.PAID]: "myServices.status.paid.label",
   [APPLICATION_STATUS.COMPLETED]: "myServices.status.completed.label",
-  [APPLICATION_STATUS.CANCELED]: "myServices.status.cancelled.label",
+  [APPLICATION_STATUS.CANCELED]: "myServices.status.draftFilled.label",
   [APPLICATION_STATUS.NEW]: "myServices.status.formSubmitted.label",
   [APPLICATION_STATUS.DRAFT]: "myServices.status.draftInProgress.label",
   [APPLICATION_STATUS.SUBMISSION_ERROR]:
     "myServices.status.submissionError.label",
+  [APPLICATION_STATUS.EDELIVERY_ERROR]:
+    "myServices.status.submissionError.label",
+  [APPLICATION_STATUS.CANCELLED_PAYMENT]:
+    "myServices.status.formSubmitted.label",
 };
+
+const REACT_APP_SHOW_AUTO_FULFILLMENT_CHECKBOX_VARIABLE =
+  (window._env_ && window._env_.REACT_APP_SHOW_AUTO_FULFILLMENT_CHECKBOX) ||
+  process.env.REACT_APP_SHOW_AUTO_FULFILLMENT_CHECKBOX ||
+  false;
+
+export const REACT_APP_SHOW_AUTO_FULFILLMENT_CHECKBOX =
+  REACT_APP_SHOW_AUTO_FULFILLMENT_CHECKBOX_VARIABLE === "true" ||
+  REACT_APP_SHOW_AUTO_FULFILLMENT_CHECKBOX_VARIABLE === true
+    ? true
+    : false;

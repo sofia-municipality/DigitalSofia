@@ -10,13 +10,20 @@ import styles from "../signDocumentModal.module.scss";
 import "../signDocumentModal.scss";
 
 const SignDocumentSent = React.memo(
-  ({ signitureType, onSuccess, onReject, onFormSubmissionError }) => {
+  ({
+    signitureType,
+    onSuccess,
+    onReject,
+    onFormSubmissionError,
+    redirectUrl,
+  }) => {
     const { t } = useTranslation();
     const { checkDocumentStatus, isLoading } = useCheckDocumentStatus({
       signitureType,
       onSuccess,
       onReject,
       onFormSubmissionError,
+      redirectUrl,
     });
 
     return (

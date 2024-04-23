@@ -14,6 +14,8 @@ struct LaunchScreen: View {
     @State private var hideProgressView = false
     @State private var showInitialScreen = false
     @State private var showHomeScreen = false
+    @State private var showLockScreen = false
+    @State private var showPINLockScreen = false
     
     var body: some View {
         LaunchScreenBackground(content: VStack {
@@ -22,28 +24,32 @@ struct LaunchScreen: View {
             Spacer()
             
             HStack(alignment: .center) {
-               ProgressView().opacity(hideProgressView ? 0 : 1)
+                ProgressView().opacity(hideProgressView ? 0 : 1)
             }
             
             Spacer()
         })
         .onChange(of: appState.state) { newValue in
             hideProgressView = true
-            
             switch newValue {
             case .initial:
                 showInitialScreen = true
+            case .lockScreen:
+                let useBiometrics = UserProvider.biometricsAvailable
+                showLockScreen = useBiometrics
+                showPINLockScreen = !useBiometrics
             case .home:
                 showHomeScreen = true
             case .wasLoggedOut, .tokenExpired:
-                showInitialScreen = false
-                showHomeScreen = false
-            default: break
+                deinitNavugation()
+            default:
+                deinitNavugation()
             }
         }
-        .alert(item: $appState.alertItem) { alertItem in
-            AlertProvider.getAlertFor(alertItem: alertItem)
-        }
+        .log(view: self)
+        .alert()
+        .environmentObject(appState)
+        .environmentObject(networkMonitor)
     }
     
     private func navigation() -> some View {
@@ -51,9 +57,28 @@ struct LaunchScreen: View {
             NavigationLink(destination: InitialView(appState: appState).environmentObject(networkMonitor),
                            isActive: $showInitialScreen) { EmptyView() }
             
-            NavigationLink(destination: TabbarView(appState: appState).environmentObject(networkMonitor),
+            NavigationLink(destination: TabbarView()
+                .environmentObject(appState)
+                .environmentObject(networkMonitor),
                            isActive: $showHomeScreen) { EmptyView() }
+            
+            NavigationLink(destination: LoginPINView()
+                .environmentObject(networkMonitor)
+                .environmentObject(appState),
+                           isActive: $showPINLockScreen) { EmptyView() }
+            
+            NavigationLink(destination: LoginWithBiometricsView()
+                .environmentObject(networkMonitor)
+                .environmentObject(appState),
+                           isActive: $showLockScreen) { EmptyView() }
         }
+    }
+    
+    private func deinitNavugation() {
+        showInitialScreen = false
+        showHomeScreen = false
+        showLockScreen = false
+        showPINLockScreen = false
     }
 }
 

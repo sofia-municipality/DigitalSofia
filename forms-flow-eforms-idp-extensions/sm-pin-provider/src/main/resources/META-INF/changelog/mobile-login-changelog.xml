@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet author="aleksandra.geleva@digitall.com" id="mobile-login-1.0">
+
+        <createTable tableName="MOBILE_LOGIN">
+            <column name="ID" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REALM_ID" type="VARCHAR(36)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PERSON_IDENTIFIER" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SUM_LOGIN_COUNT" type="int"/>
+            <column name="GRANT_TYPE" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CLIENT_ID" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SCOPE" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey constraintName="PK_MOBILE_LOGIN"
+                       tableName="MOBILE_LOGIN"
+                       columnNames="ID"/>
+
+        <createIndex indexName="MOBILE_LOGIN_PIN" tableName="MOBILE_LOGIN">
+            <column name="REALM_ID" type="VARCHAR(36)"/>
+            <column name="PERSON_IDENTIFIER" type="VARCHAR(20)"/>
+        </createIndex>
+
+    </changeSet>
+</databaseChangeLog>

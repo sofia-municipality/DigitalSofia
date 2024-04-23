@@ -47,6 +47,11 @@ class Draft(AuditDateTimeMixin, BaseModel, db.Model):
             draft.status = DraftStatus.ACTIVE.value
             draft.application_id = draft_info["application_id"]
             draft.data = draft_info["data"]
+
+            # ['caseDataSource']['data']['serviceId']
+            # system_dict["serviceSupplierId"]
+            # system_dict["serviceSupplierName"]
+
             draft.save()
             return draft
         return None
@@ -244,29 +249,79 @@ class Draft(AuditDateTimeMixin, BaseModel, db.Model):
     def get_application(self):
         return Application.query.get(self.application_id)
     
+    def generate_application_json_submission_dict(self, requestorName: str, service: dict) -> dict:
+        current_app.logger.info("Draft@generate_application_json_submission_dict")
+        to_return = self.data
+
+        current_app.logger.debug("Do we have an already supplied caseDataSource")
+        if to_return.get("caseDataSource"):
+            return to_return
+
+        data = {}
+
+        region = self.data.get("region")
+        additional_region_data = ADDITIONAL_REGION_DATA.get(region.get("city_are_code"))
+        
+        current_app.logger.debug(f"Setup region - {additional_region_data}")
+        if additional_region_data:
+            data["serviceSupplierId"] = additional_region_data.get("id")
+            data["serviceSupplierName"] = additional_region_data.get("title")
+
+        
+        application = self.get_application()
+        formio_path_name = application.form_process_mapper.form_path
+        matches = re.match(r"(\w+)-(.+)",formio_path_name)
+        relevant_path_name = matches[2]
+        current_app.logger.debug(f"Set serviceId and serviceName - {relevant_path_name}")
+        data["serviceId"] = service["serviceId"]
+        data["serviceName"] = service["serviceName"]
+        data["requestorName"] = requestorName
+
+        ### Set process Instance ID
+        current_app.logger.debug(f"Generation Source - digitallSofia")
+        data["generationSource"] = "digitalSofia"
+        current_app.logger.debug(f"Process Key - {application.form_process_mapper.process_key}")
+        data["processKey"] = application.form_process_mapper.process_key
+
+        current_app.logger.debug(f"Application ID - {application.id}")
+        data["applicationId"] = application.id
+        current_app.logger.debug(f"Process Instance ID - {application.process_instance_id}")
+        data["processInstanceId"] = application.process_instance_id
+
+        to_return["caseDataSource"] = {
+            "data": data
+        }
+
+        return to_return
+
     def generate_metadata_dict(self, user: UserContext = None) -> dict:
-        current_app.logger.debug("issueDateCaseIdentifier")
+        current_app.logger.info("Draft@generate_metadata_dict")
         ### Generated values
+        current_app.logger.debug(f"issueDateCaseIdentifier - {datetime.now()}")
         system_dict = {
             "issueDateCaseIdentifier": datetime.now()
         }
 
         ### Values based on region
-        current_app.logger.debug("Region")
         region = self.data.get("region")
+        current_app.logger.debug(f"Region - {region}")
         if region and region.get("city_are_code"):
-            current_app.logger.debug(region.get("city_are_code"))
             additional_region_data = ADDITIONAL_REGION_DATA.get(region.get("city_are_code"))
             current_app.logger.debug(additional_region_data)
             if additional_region_data:
                 system_dict["serviceSupplierId"] = additional_region_data.get("id")
                 system_dict["serviceSupplierName"] = additional_region_data.get("title")
+                current_app.logger.debug(f'serviceSupplierId - {additional_region_data.get("id")}')
+                current_app.logger.debug(f'serviceSupplierName - {additional_region_data.get("title")}')
+
 
         ### Values based on form_path
         application = self.get_application()
         formio_path_name = application.form_process_mapper.form_path
         matches = re.match(r"(\w+)-(.+)",formio_path_name)
         relevant_path_name = matches[2]
+        current_app.logger.debug(f"Matches - {matches}")
+        current_app.logger.debug(f"relevant_path_name - {relevant_path_name}")
         if relevant_path_name.startswith("changeofpernamentaddress"):
             system_dict["serviceId"] = 2079
             system_dict["serviceName"] = "Издаване на удостоверение за постоянен адрес след подаване на заявление за промяна на постоянен адрес"
@@ -280,15 +335,23 @@ class Draft(AuditDateTimeMixin, BaseModel, db.Model):
         if user:
             user_dict["email"] = user.user_name
             user_dict["fullNameLatin"] = user.token_info.get("name", None)
+            current_app.logger.debug(f"email - {user.user_name}")
+            current_app.logger.debug(f'fullNameLatin - {user.token_info.get("name", None)}')
             if user_dict["fullNameLatin"]:
                 split_name_array = user_dict["fullNameLatin"].split(" ")
-                user_dict["applicantPhysicalFirstNameLatin"] = split_name_array[0]
-                user_dict["applicantPhysicalMiddleNameLatin"] = split_name_array[1]
-                user_dict["applicantPhysicalFamilyNameLatin"] = split_name_array[2]
+                if len(split_name_array) == 1:
+                    user_dict["applicantPhysicalFirstNameLatin"] = split_name_array[0]
+                elif len(split_name_array) == 2:
+                    user_dict["applicantPhysicalFirstNameLatin"] = split_name_array[0]
+                    user_dict["applicantPhysicalFamilyNameLatin"] = split_name_array[1]
+                elif len(split_name_array) == 3:
+                    user_dict["applicantPhysicalFirstNameLatin"] = split_name_array[0]
+                    user_dict["applicantPhysicalMiddleNameLatin"] = split_name_array[1]
+                    user_dict["applicantPhysicalFamilyNameLatin"] = split_name_array[2]
 
 
             user_dict["fullName"] = f"{self.data.get('firstName')} {self.data.get('middleName')} {self.data.get('lastName')}"
-
+            current_app.logger.debug(f"fullName - {self.data.get('firstName')} {self.data.get('middleName')} {self.data.get('lastName')}")
 
         return {
             "data": self.data,

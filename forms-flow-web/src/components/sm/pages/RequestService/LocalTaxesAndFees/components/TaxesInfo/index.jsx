@@ -6,7 +6,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { usePageTitleRef } from "../../../../../../../customHooks";
 import { PAGE_ROUTES } from "../../../../../../../constants/navigation";
 import SmCta, { SmCtaTypes } from "../../../../../components/buttons/SmCta";
-import { useGetFormatters } from "../TaxesAccordion/hooks";
+import { useGetFormatters } from "../../../../../components/Taxes/TaxesAccordion/hooks";
 
 import styles from "./taxesInfo.module.scss";
 

@@ -3,27 +3,34 @@ package com.bulpros.keycloak.phone.authentication.authenticators.directgrant;
 import com.bulpros.keycloak.phone.Utils;
 import com.bulpros.keycloak.phone.providers.constants.SpiConstants;
 import com.bulpros.keycloak.phone.providers.exception.CustomProviderException;
-import com.bulpros.keycloak.phone.providers.exception.PhoneNumberInvalidException;
 import com.bulpros.keycloak.phone.providers.model.UserCheckModel;
 import com.bulpros.keycloak.phone.providers.model.UserExtendedModel;
+import com.bulpros.keycloak.phone.providers.representations.MobileLoginRepresentation;
+import com.bulpros.keycloak.phone.providers.spi.MobileLoginProvider;
 import com.bulpros.keycloak.phone.providers.spi.UserCheckProvider;
+import com.google.common.base.Strings;
+import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
+import org.keycloak.Config;
 import org.keycloak.authentication.AuthenticationFlowContext;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
-import org.keycloak.protocol.oidc.OIDCLoginProtocol;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.core.Response;
-import java.util.Objects;
+import java.time.Instant;
+import java.util.Date;
 import java.util.Optional;
 
 public class EvrotrustAuthenticator extends BaseDirectGrantAuthenticator {
 
     private static final Logger logger = Logger.getLogger(EvrotrustAuthenticator.class);
+    private final KeycloakSession session;
+    private final Config.Scope config;
 
-    public EvrotrustAuthenticator(KeycloakSession session) {
+    public EvrotrustAuthenticator(KeycloakSession session, Config.Scope config) {
+        this.session = session;
+        this.config = config;
+
         if (session.getContext().getRealm() == null) {
             throw new IllegalStateException("The service cannot accept a session without a realm in its context.");
         }
@@ -39,45 +46,32 @@ public class EvrotrustAuthenticator extends BaseDirectGrantAuthenticator {
 
     }
 
+    private MobileLoginProvider getMobileLoginService() {
+        return session.getProvider(MobileLoginProvider.class);
+    }
+
     @Override
     public void authenticate(AuthenticationFlowContext context) {
-        String phoneNumber = getUserPhoneNumber(context);
-        String userEmail = getEmail(context);
-        String userFcm = getFcm(context);
-        String pin = getPinNumber(context);
         String egn = getEgn(context);
 
-        if (Objects.isNull(pin) || Objects.isNull(egn)) {
+        if (Strings.isNullOrEmpty(egn)) {
             invalidCredentials(context);
             return;
         }
-        authToUser(context, userEmail, pin, egn, phoneNumber, userFcm);
+        authToUser(context, egn);
     }
 
-    private String getUserPhoneNumber(AuthenticationFlowContext context) {
-        String phoneNumber;
-        try {
-            phoneNumber = getPhoneNumber(context);
-            if (Objects.isNull(phoneNumber))
-                return null;
-            Utils.canonicalizePhoneNumber(context.getSession(), phoneNumber);
-        } catch (PhoneNumberInvalidException e) {
-            throw new BadRequestException("Phone number is invalid!");
-        }
-        return phoneNumber;
-    }
-
-    private void authToUser(AuthenticationFlowContext context, String email, String pin, String egn, String phoneNumber,
-            String fcm) {
+    private void authToUser(AuthenticationFlowContext context, String egn) {
         UserCheckProvider userCheckProvider = context.getSession().getProvider(UserCheckProvider.class);
 
         UserCheckModel userCheck = new UserCheckModel();
         userCheck.setIdentificationNumber(egn);
         userCheck.setCountry("BG");
-        UserExtendedModel evrotrustUser;
         try {
-            evrotrustUser = userCheckProvider.getEvrotrustUser(userCheck);
-            if (!evrotrustUser.getIsRegistered()) {
+            UserExtendedModel userExtendedModel = userCheckProvider.getEvrotrustUser(userCheck);
+            if (Boolean.FALSE.equals(userExtendedModel.getIsIdentified()) || //
+                    Boolean.FALSE.equals(userExtendedModel.getIsRegistered()) || //
+                    Boolean.FALSE.equals(userExtendedModel.getIsReadyToSign())) { //
                 invalidCredentials(context, Response.Status.FORBIDDEN, "invalid evrotrust user",
                         "User does not have active evrotrust profile!");
                 return;
@@ -87,43 +81,103 @@ public class EvrotrustAuthenticator extends BaseDirectGrantAuthenticator {
             invalidCredentials(context, Response.Status.FORBIDDEN, "evrotrust service error", e.getMessage());
             return;
         }
+
         String personIdentifier = SpiConstants.PNOBG_PREFIX + egn;
 
         Optional<UserModel> userModel = Utils.findUserByPersonIdentifier(context.getSession(), context.getRealm(),
                 personIdentifier);
         if (userModel.isEmpty()) {
-            createNewUser(context, email, pin, phoneNumber, fcm, personIdentifier);
+            invalidCredentials(context, Response.Status.FORBIDDEN, "Invalid user.", "User does not exist!");
             return;
         }
+
         UserModel user = userModel.get();
-        if (Objects.isNull(getVerifiedAttribute(user))) {
-            updateUserData(context, email, pin, phoneNumber, fcm, user);
-            return;
-        }
-
-        if (isUserVerified(user)) {
-            if (!evrotrustUser.getIsIdentified()) {
-                user.setSingleAttribute(SpiConstants.VERIFIED, Boolean.FALSE.toString());
-            }
-        }
-
-        if (!isUserDataCorrect(user, pin, personIdentifier)) {
+        if (!isUserVerified(user)) {
             invalidCredentials(context, Response.Status.FORBIDDEN, "invalid user data", "User data is incorrect!");
             return;
         }
+        if (!isUserDataCorrect(user, getPinNumber(context), personIdentifier)) {
+            if (!checkIfUserIsAllowedToLogin(context, true)) {
+                invalidCredentials(context, Response.Status.FORBIDDEN, "Login count exceeded!",
+                        "Login count exceeded!");
+            } else {
+                invalidCredentials(context, Response.Status.FORBIDDEN, "invalid user data", "User data is incorrect!");
+            }
+            return;
+        }
+        if (!checkIfUserIsAllowedToLogin(context, false)) {
+            invalidCredentials(context, Response.Status.FORBIDDEN, "Login count exceeded!", "Login count exceeded!");
+            return;
+        }
+        ;
+        updateFcm(getFcm(context), user);
         context.setUser(user);
         context.success();
     }
 
-    private static void updateUserData(AuthenticationFlowContext context, String email, String pin, String phoneNumber,
-            String fcm, UserModel user) {
-        user.setSingleAttribute(SpiConstants.VERIFIED, Boolean.FALSE.toString());
-        user.setSingleAttribute(SpiConstants.PIN, pin);
-        user.setSingleAttribute(SpiConstants.PHONE_NUMBER, phoneNumber);
-        user.setSingleAttribute(SpiConstants.FCM, fcm);
-        user.setSingleAttribute(SpiConstants.EVROTRUST_EMAIL, email);
-        context.setUser(user);
-        context.success();
+    private boolean checkIfUserIsAllowedToLogin(AuthenticationFlowContext context, boolean falseCredentialDetect) {
+        MobileLoginProvider loginProvider = getMobileLoginService();
+        int loginExpiresIn = loginProvider.getLoginExpiresIn();
+        MobileLoginRepresentation ongoingMobileLogin = loginProvider.ongoingMobileLogin(//
+                getEgn(context), //
+                getClientId(context), //
+                getGrantType(context), //
+                getScope(context) //
+        );
+
+        if (ongoingMobileLogin != null) {
+            Date expiresAt = new Date(ongoingMobileLogin.getCreatedAt().getTime() + loginExpiresIn * 1000L);
+            boolean isExpired = Date.from(Instant.now()).after(expiresAt);
+            int ongoingSumLoginCount = ongoingMobileLogin.getSumLoginCount();
+
+            if (isExpired) {
+                loginProvider.deleteMobileLogin(getEgn(context));
+                if (falseCredentialDetect) {
+                    MobileLoginRepresentation mobileLoginRepresentation = MobileLoginRepresentation.forMobileLogin(//
+                            getEgn(context), //
+                            getGrantType(context), //
+                            getClientId(context), //
+                            getScope(context) //
+                    );
+                    loginProvider.persistCode(mobileLoginRepresentation);
+                }
+            } else {
+                int maxLoginCount = loginProvider.getMaxLoginCount();
+                if (ongoingSumLoginCount < maxLoginCount) {
+                    if (falseCredentialDetect) {
+                        int newSumLoginCount = ++ongoingSumLoginCount;
+                        loginProvider.changeSumLoginCount(//
+                                ongoingMobileLogin.getPersonIdentifier(), //
+                                ongoingMobileLogin.getClientId(), //
+                                ongoingMobileLogin.getGrantType(), //
+                                ongoingMobileLogin.getScope(), //
+                                newSumLoginCount //
+                        );
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        } else {
+            if (falseCredentialDetect) {
+                MobileLoginRepresentation mobileLoginRepresentation = MobileLoginRepresentation.forMobileLogin(//
+                        getEgn(context), //
+                        getGrantType(context), //
+                        getClientId(context), //
+                        getScope(context) //
+                );
+                mobileLoginRepresentation.setSumLoginCount(1);
+                loginProvider.persistCode(mobileLoginRepresentation);
+            }
+        }
+        return true;
+    }
+
+    private static void updateFcm(String fcm, UserModel user) {
+        if (!Strings.isNullOrEmpty(fcm)) {
+            user.setSingleAttribute(SpiConstants.FCM, fcm);
+        }
     }
 
     private boolean isUserVerified(UserModel user) {
@@ -136,32 +190,8 @@ public class EvrotrustAuthenticator extends BaseDirectGrantAuthenticator {
     }
 
     private boolean isUserDataCorrect(UserModel user, String pin, String personIdentifier) {
-        return pin.equals(user.getFirstAttribute(SpiConstants.PIN)) && personIdentifier.equals(
-                user.getFirstAttribute(SpiConstants.PERSON_IDENTIFIER));
+        return pin.equals(user.getFirstAttribute(SpiConstants.PIN)) //
+                && personIdentifier.equals(user.getFirstAttribute(SpiConstants.PERSON_IDENTIFIER) //
+        );
     }
-
-    private void createNewUser(AuthenticationFlowContext context, String email, String pin, String phoneNumber,
-            String fcm, String personIdentifier) {
-
-        if (Objects.isNull(email) || Objects.isNull(phoneNumber)) {
-            invalidCredentials(context, Response.Status.FORBIDDEN, "invalid user data",
-                    "User data is incorrect or missing!");
-            return;
-        }
-
-        UserModel newUser = context.getSession().users().addUser(context.getRealm(), email);
-        newUser.setEnabled(true);
-        context.getAuthenticationSession().setClientNote(OIDCLoginProtocol.LOGIN_HINT_PARAM, email);
-
-        newUser.setUsername(personIdentifier);
-        newUser.setSingleAttribute(SpiConstants.VERIFIED, Boolean.FALSE.toString());
-        newUser.setSingleAttribute(SpiConstants.PIN, pin);
-        newUser.setSingleAttribute(SpiConstants.PHONE_NUMBER, phoneNumber);
-        newUser.setSingleAttribute(SpiConstants.PERSON_IDENTIFIER, personIdentifier);
-        newUser.setSingleAttribute(SpiConstants.FCM, fcm);
-        newUser.setSingleAttribute(SpiConstants.EVROTRUST_EMAIL, email);
-        context.setUser(newUser);
-        context.success();
-    }
-
 }

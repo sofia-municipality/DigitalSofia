@@ -13,44 +13,58 @@ struct InitialView: View {
     
     @State private var showRegister = false
     @State private var showHome = false
+    @State private var showTagAlert = false
     
     var body: some View {
-        LaunchScreenBackground(content: VStack {
-            Text(AppConfig.UI.Text.welcomeToDigitalSofiaText.localized)
-                .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.XXXL))
-                .foregroundColor(DSColors.Text.indigoDark)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding([.top, .bottom], AppConfig.Dimensions.Padding.XXXL)
-            
-            Text(AppConfig.UI.Titles.Screens.login.localized)
-                .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.XL))
-                .foregroundColor(DSColors.Text.indigoDark)
-                .lineSpacing(6)
-                .frame(maxWidth: .infinity, alignment: .center)
-            
-            Spacer()
-            
-            navigation()
-            
-            HStack {
-                BlueBackgroundButton(title: AppConfig.UI.Titles.Button.forward.localized) {
-                    showRegister = true
-                }
-            }
-        })
-        .alert(item: $appState.alertItem) { alertItem in
-            AlertProvider.getAlertFor(alertItem: alertItem)
+        BetaTagScreenCover(isPresented: $showTagAlert) {
+            LaunchScreenBackground(
+                navigationItem: AnyView(BetaTagView {
+                    showTagAlert = true
+                }),
+                content: VStack {
+                    Text(AppConfig.UI.Text.welcomeToDigitalSofiaText.localized)
+                        .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.XXXL))
+                        .foregroundColor(DSColors.Text.indigoDark)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding([.top, .bottom], AppConfig.Dimensions.Padding.XXXL)
+                    
+                    Text(AppConfig.UI.Titles.Screens.login.localized)
+                        .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.XL))
+                        .foregroundColor(DSColors.Text.indigoDark)
+                        .lineSpacing(6)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                    
+                    Spacer()
+                    
+                    navigation()
+                    
+                    HStack {
+                        GradientBorderButton(title: AppConfig.UI.Titles.Button.enter.localized) {
+                            showRegister = true
+                        }
+                    }
+                })
         }
+        .onAppear {
+            DocumentsNotificationHelper.resetTab()
+        }
+        .log(view: self)
+        .alert()
+        .environmentObject(appState)
+        .environmentObject(networkMonitor)
     }
     
     private func navigation() -> some View {
         VStack {
             NavigationLink(destination: RegisterView()
                 .environmentObject(networkMonitor)
-                .environmentObject(appState),
+                .environmentObject(appState)
+                .environmentObject(KeyboardInactivityHandlerConfig()),
                            isActive: $showRegister) { EmptyView() }
             
-            NavigationLink(destination: TabbarView(appState: appState).environmentObject(networkMonitor),
+            NavigationLink(destination: TabbarView()
+                .environmentObject(appState)
+                .environmentObject(networkMonitor),
                            isActive: $showHome) { EmptyView() }
         }
     }

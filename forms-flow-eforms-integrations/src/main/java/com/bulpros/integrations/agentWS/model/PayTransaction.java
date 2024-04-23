@@ -13,9 +13,10 @@ import java.util.Date;
 public class PayTransaction {
 
     private int payTransactionId;
-    private int paidSum;
+    private float paidSum;
     private String authorizationCode;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date transactionTime;
-    private int agentTransactionId;
+    private String agentTransactionId;
+    private long operatorId;
 }

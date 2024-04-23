@@ -1,7 +1,143 @@
-/* 
-  Localizable.strings
-  Digital Sofia
+/*
+ Localizable.strings
+ Digital Sofia
+ 
+ Created by Mehmed Kadir on 25.01.23.
+ 
+ */
 
-  Created by Mehmed Kadir on 25.01.23.
-  
-*/
+"continue_button_title"                  =  "Напред";
+"id_number_placeholder"                  =  "Въведете ЕГН";
+"id_number_label"                        =  "ЕГН";
+"tab_bar_home_title"                     =  "Подписване";
+"tab_bar_services_title"                 =  "Заяви услуга";
+"tab_bar_docs_title"                     =  "Документи";
+"tab_bar_my_services_title"              =  "Моите услуги";
+"home_view_table_title"                  =  "Чакащи документи";
+"sofia_municipality"                     =  "Столична община";
+"created_on_date"                        =  "Създаден на";
+"signed_on_date"                         =  "Подписан на";
+"expired_on_date"                        =  "Изтекъл на";
+"rejected_on_date"                       =  "Отказан на";
+"open_file"                              =  "Виж файл";
+"download_file"                          =  "Изтегли";
+"settings_title"                         =  "Настройки";
+"delete_profile"                         =  "Изтриване на профил";
+"profile_option_profile"                 =  "Профил";
+"profile_option_language"                =  "Език на приложението";
+"profile_option_security"                =  "Защита при вход";
+"profile_option_PIN"                     =  "Промяна на ПИН";
+"security_face_id"                       =  "Лицево разпознаване";
+"security_touch_id"                      =  "Пръстов отпечатък";
+"security_pin"                           =  "ПИН";
+"back_button_title"                      =  "Назад";
+"english_language_text"                  =  "Английски";
+"bulgarian_language_text"                =  "Български";
+"menu_faq_title"                         =  "Често задавани въпроси";
+"menu_contacts_title"                    =  "Контакти";
+"menu_exit_title"                        =  "Изход";
+"menu_pp_title"                          =  "Общи условия и политики за ползване";
+"pin_confirm_view_title"                 =  "Потвърди ПИН";
+"pin_confirm_view_details"               =  "Потвърдете 6 цифрен ПИН код";
+"pin_create_view_title"                  =  "Създай ПИН код";
+"pin_create_view_details"                =  "Въведете 6 цифрен ПИН код, с който ще достъпвате Вашия профил";
+"register_title_text"                    =  "Моля, въведете ЕГН, за да продължите с отдалечената идентификация:";
+"contact_information_title_text"         =  "Ще са ни необходими още малко данни, за да продължим с регистрацията";
+"t_and_c_toggle_label_text"              =  "Съгласен съм с общите условия на Digital Sofia";
+"auth_confirm_title_text"                =  "Идентификация";
+"auth_confirm_details_text"              =  "Съгласен съм да премина през\nпроцес на първоначална\nидентификация";
+"auth_confirm_agree_button"              =  "Съгласен съм";
+"auth_confirm_disagree_button"           =  "Не съм съгласен";
+"something_went_wrong_error_text"        =  "Възникна неочаквана грешка.\nМоля опитайте отново.";
+"auth_rejected_details_text"             =  "Ако откажете регистрацията\nси, при следващ вход ще е\nнеобходимо да стартирате\nпроцеса на регистрация отново.";
+"login_screen_title"                     =  "Мобилното гише на Столична\nОбщина";
+"document_status_unsigned"               =  "Oчаква подпис";
+"document_status_signing"                =  "В процес";
+"document_status_signed"                 =  "Подписан";
+"document_status_expired"                =  "Изтекъл";
+"document_status_rejected"               =  "Отказан";
+"document_status_failed"                 =  "Неуспешен";
+"document_status_withdrawn"              =  "Оттеглен";
+"relaod_button_title"                    =  "Презареди";
+"empty_state_title"                      =  "В момента няма намерена информация.";
+"empty_state_details"                    =  "Опитайте да презаредите екрана, за да видите информацията";
+"delete_button_title"                    =  "Изтриване";
+"delete_profile_details"                 =  "Ако изтриете профила си, ще загубите всички съхранени документи и информация.";
+"delete_profile_request_details"         =  "Профилът не може да бъде изтрит. В момента имате чакащо заявление. След приключване на процедурата ще можете да изтриете профила си.";
+"login_title_text"                       =  "Потвърдете вход в приложението";
+"enter_pin_button_title"                 =  "Използване на ПИН код";
+"forgotten_pin_button_title"             =  "Забравили сте ПИН кода си?";
+"wrong_pin_alert_text"                   =  "Имате още %@ опита.";
+"block_pin_seconds_alert_text"           =  "Моля, изчакайте %@ секунди и опитайте пак";
+"block_pin_minutes_alert_text"           =  "Моля, изчакайте %@ минути и опитайте пак";
+"block_pin_hours_alert_text"             =  "Моля, изчакайте %@ час(а) и опитайте пак";
+"login_greeting_title_text"              =  "Здравей, %@";
+"yes_button_title"                       =  "Да";
+"no_button_title"                        =  "Не";
+"biometric_data_title_text"              =  "Биометрични данни";
+"biometric_data_details_text"            =  "Желаете ли да активирате функцията за вход с пръстов отпечатък или лицево разпознаване?";
+"welcome_user_ok_title_text"             =  "Всичко е готово!";
+"welcome_user_ok_details_text"           =  "Вече имаш профил\nв Digital Sofia\nи можеш да заявиш\nнова услуга.";
+"welcome_user_error_title_text"          =  "Съжаляваме, в момента има проблем. Моля опитайте по-късно.";
+"restart_registration_button_title"      =  "Започнете регистрацията си от начало.";
+"no_internet_title_text"                 =  "Моля, проверете връзката с интернет";
+"successfully_signed_alert_title"        =  "Успешно подписахте документа.";
+"successfully_rejected_alert_title"      =  "Успешно отказахте документа.";
+"pin_mismatch_title"                     =  "Несъответствие на ПИН код";
+"pin_mismatch_details"                   =  "Въведеният от вас ПИН код не съответства на предишно въведения.";
+"successfully_changed_pin_alert_title"   =  "Успешна промяна на ПИН";
+"welcome_to_digital_sofia_text"          =  "Добре дошли в Digital Sofia";
+"done_button_title"                      =  "Готово";
+"wrong_pin_alert_title"                  =  "Грешен ПИН код";
+"general_alert_title"                    =  "Информация";
+"change_pin_old_pin_confirm_text"        =  "Въведете настоящия си ПИН код, за да направите промяната";
+"forgotten_password_confirm_auth_text"   =  "Съгласен съм да премина през\nпроцес на отдалечена идентификация\nза възстановяване на ПИН код";
+"email_placeholder"                      =  "Въведете Имейл Адрес";
+"email_label"                            =  "Имейл Адрес";
+"register_missing_info_alert_text"       =  "Моля, попълнете липсващата информация.";
+"enter_valid_email_alert_text"           =  "Въведете валиден имейл адрес.";
+"enter_valid_egn_alert_text"             =  "Съжаляваме, но към момента услугата е налична само за български граждани, притежаващи единен граждански номер";
+"register_accept_terms_alert_text"       =  "Трябва да приемете Условията за ползване";
+"phone_placeholder"                      =  "Въведете телефонен номер";
+"phone_label"                            =  "Телефон";
+"enter_valid_phone_alert_text"           =  "Въведете валиден телефонен номер";
+"verify_pin_on_login_title_text"         =  "Въведете ПИН";
+"confirm_share_data_screen_text"         =  "Споделете данните си";
+"confirm_share_data_screen_detail_text"  =  "За да получите достъп до\nуслугата, е необходимо да потвърдите своята самоличност.\n\n\nАко не желаете да споделите\nличните си данни онлайн, можете\nда подадете своето заявление на\nгише, като посетите своята\nрайонна администрация.";
+"et_share_data_doc_decline_alert_text"   =  "Трябва да се съгласите и споделите Вашите данни, за да продължите да използвате приложението";
+"open_document_sdk_setup_alert_text"     =  "Необходимо е отново да преминете през процес по отдалечена идентификация.";
+"verify_pin_error_wrong_current"         =  "Грешен ПИН код. Моля, опитайте отново.";
+"verify_pin_try_again_alert_text"        =  "Въведете ПИН код отново";
+"verify_pin_create_again_alert_text"     =  "Създайте ПИН код отново";
+"login_from_portal_title_text"           =  "Вход с Digital Sofia";
+"login_from_portal_detail_title_text"    =  "Потвърдете вход";
+"login_from_portal_details_text"         =  "Имате искане за достъп до Digital Sofia. Моля, потвърдете.";
+"confirm_button_title"                   =  "Потвърди";
+"reject_button_title"                    =  "Отказ";
+"enter_button_title"                     =  "Вход в Digital Sofia";
+"biometrics_use_reson_description"       =  "Трябва да разрешим достъп.";
+"successfully_download_web_file_text"    =  "Успешно изтеглихте документа";
+"beta_tag_title_text"                    =  "beta";
+"beta_tag_info_text"                     =  "Това е нова услуга - Вашата\nобратна връзка ще ни помогне\nда я подобрим. Пишете ни на\n";
+
+/// Error localizations
+"biometric_error_no_biometric"           =  "Автентикация с биометрия не може да бъде активирана.";
+"biometric_error_canceled"               =  "Отказахте автентикация с биометрия";
+"biometric_error_fallback"               =  "Избраният метод за автентикация е с ПИН код.";
+"et_error_wrong_input"                   =  "Съжаляваме, възникна проблем. Опитайте отново и се уверете, че данните са коректно въведени.";
+"et_error_user_canceled"                 =  "Отказахте стъпка в процеса. Можете да опитате oтново.";
+"et_error_user_not_set_up"               =  "Съжаляваме, възникна проблем. Опитайте отново.";
+"et_error_sdk_not_set_up"                =  "Съжаляваме, възникна проблем. Опитайте отново.";
+"network_error_unknown"                  =  "Съжаляваме, възникна проблем. Опитайте отново.";
+"network_error_internal"                 =  "Съжаляваме, възникна проблем. Опитайте отново.";
+"network_error_not_found"                =  "Съжаляваме, възникна проблем. Опитайте отново.";
+"network_error_forbidden"                =  "Съжаляваме, възникна проблем. Опитайте отново.";
+"network_error_unavailable"              =  "Съжаляваме, възникна проблем. Опитайте отново.";
+"network_error_no_JSON_data"             =  "Съжаляваме, възникна проблем. Опитайте отново.";
+"network_error_parsing"                  =  "Съжаляваме, възникна проблем. Опитайте отново.";
+"network_error_bad_request"              =  "Съжаляваме, възникна проблем. Опитайте отново.";
+"network_error_token_expired"            =  "Сесията ви изтече. Моля, потвърдете вход отново.";
+"network_error_timeout"                  =  "Съжаляваме, възникна проблем. Опитайте отново.";
+"network_error_no_internet_connection"   =  "Моля, проверете връзката с интернет.";
+"network_error_invalid_user_data"        =  "Грешно въведени данни.";
+"network_error_logout_count_exceeded"    =  "Прекалено много опити за вход. Моля, опитайте по-късно.";

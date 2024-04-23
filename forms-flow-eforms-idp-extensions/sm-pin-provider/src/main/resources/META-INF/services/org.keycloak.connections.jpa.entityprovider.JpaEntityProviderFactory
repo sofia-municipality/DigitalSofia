@@ -1,1 +1,2 @@
 com.bulpros.keycloak.phone.providers.jpa.TokenCodeJpaEntityProviderFactory
+com.bulpros.keycloak.phone.providers.jpa.MobileLoginJpaEntityProviderFactory

@@ -31,6 +31,7 @@ from formsflow_api.resources.user import API as KEYCLOAK_USER_API
 from formsflow_api.resources.page_block import API as PAGE_BLOCK_API
 from formsflow_api.resources.translations import API as TRANSLATIONS_API
 from formsflow_api.resources.regix import API as REGIX_API
+from formsflow_api.resources.logs import API as LOGS_API
 from formsflow_api.resources.eurotrust import API as EUROTRUST_API
 from formsflow_api.resources.address import API as ADDRESSES_API
 from formsflow_api.resources.services import API as SERVICES_API
@@ -39,6 +40,8 @@ from formsflow_api.resources.agentws import API as AGENTWS_API
 from formsflow_api.resources.application_processing import API as APPLICATION_PROCESSING_API
 from formsflow_api.resources.payment import API as PAYMENT_API
 from formsflow_api.resources.eDelivery import API as EDELIVERY_API
+from formsflow_api.resources.external_services import API as EXTERNAL_SERVICES
+# from formsflow_api.resources.firebase import API as FIREBASE_API
 
 # This will add the Authorize button to the swagger docs
 # oauth2 & openid may not yet be supported by restplus
@@ -70,7 +73,7 @@ def handle_auth_error(error: AuthError):
     return (
         {
             "type": "Invalid Token Error",
-            "message": "Access to formsflow.ai API Denied. Check if the "
+            "message": "Access to API Denied. Check if the "
             "bearer token is passed for Authorization or has expired.",
         },
         error.status_code,
@@ -107,3 +110,6 @@ API.add_namespace(AGENTWS_API, path="/agentws")
 API.add_namespace(APPLICATION_PROCESSING_API, path="/application-processing")
 API.add_namespace(PAYMENT_API, path="/payment")
 API.add_namespace(EDELIVERY_API, path="/edelivery")
+API.add_namespace(EXTERNAL_SERVICES, path="/external-services")
+API.add_namespace(LOGS_API, path="/logs")
+# API.add_namespace(FIREBASE_API, path="/firebase")

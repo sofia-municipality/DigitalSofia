@@ -90,6 +90,7 @@ class _Config():  # pylint: disable=too-few-public-methods
     BPM_CLIENT_SECRET = os.getenv("BPM_CLIENT_SECRET")
 
     FORMSFLOW_WEB_URL = os.getenv('FORMSFLOW_WEB_URL')
+    FORMSFLOW_ADMIN_WEB_URL = os.getenv('FORMSFLOW_ADMIN_WEB_URL')
     FORMSFLOW_BPM_URL = os.getenv('BPM_API_URL')
     FORMSFLOW_INSIGHTS_URL = os.getenv('INSIGHT_API_URL')
     FORMSFLOW_INSIGHTS_API_KEY = os.getenv('INSIGHT_API_KEY')

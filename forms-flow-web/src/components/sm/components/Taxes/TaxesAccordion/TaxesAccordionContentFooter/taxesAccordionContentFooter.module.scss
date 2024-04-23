@@ -1,0 +1,36 @@
+@import "../../../../../../assets/styles/mixins.scss";
+@import "../../../../../../assets/styles/themes.scss";
+@import "../../../../../../assets/styles/typography.scss";
+
+.batchNumberLabel {
+  @include sm-caption-regular;
+  color: $sm-indigo-4;
+  margin-right: 10px;
+}
+
+.batchNumber {
+  @include sm-body-2-regular;
+  color: $sm-indigo-dark;
+}
+
+.selectedAmount {
+  @include sm-body-medium;
+  font-weight: 500;
+  color: $sm-red-6;
+}
+
+.selectedAmountLabel {
+  @include sm-caption-regular;
+  margin-right: 10px;
+  color: $sm-indigo-4;
+}
+
+.currency {
+  font-family: 'Sofia Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 140%;
+  color: $sm-indigo-dark;
+  margin-left: 2px;
+}

@@ -48,12 +48,21 @@ import { useUpdateApplicationStatus } from "../../../../../apiManager/apiHooks";
 import AutofillDataModal from "../../../AutofillDataModal";
 import FormSuccessModal from "../../../FormSuccessModal";
 import FormSignDocumentModal from "../../../FormSignDocumentModal";
-import { useGetBaseUrl } from "../../../../../customHooks";
+import FormErrorModal from "../../../FormErrorModal";
+import {
+  useGetBaseUrl,
+  useFormRestrictionsCheck,
+} from "../../../../../customHooks";
 
 const Edit = React.memo((props) => {
+  const isWebView = localStorage.getItem("hideNav");
+  const showRequestServiceLink = sessionStorage.getItem(
+    "showRequestServiceLink"
+  );
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const lang = useSelector((state) => state.user.lang);
+  const tenantKey = useSelector((state) => state.tenants?.tenantId);
   const { formId, submissionId } = useParams();
   const {
     hideComponents,
@@ -69,6 +78,8 @@ const Edit = React.memo((props) => {
     isUserTask,
   } = props;
 
+  useFormRestrictionsCheck(form?.path, tenantKey);
+
   const updateApplicationStatus = useUpdateApplicationStatus();
   const [updatedSubmissionData, setUpdatedSubmissionData] = useState({});
 
@@ -81,11 +92,12 @@ const Edit = React.memo((props) => {
   const applicationDetail = useSelector(
     (state) => state.applications.applicationDetail
   );
+  const applicationDetailRef = useRef();
 
   const isFormSubmissionLoading = useSelector(
     (state) => state.formDelete.isFormSubmissionLoading
   );
-  const tenantKey = useSelector((state) => state.tenants?.tenantId);
+
   const customSubmission = useSelector(
     (state) => state.customSubmission?.submission || {}
   );
@@ -97,6 +109,12 @@ const Edit = React.memo((props) => {
   const formSuccessModalParams = useRef();
 
   const headingRef = usePageTitleRef();
+
+  useEffect(() => {
+    if (applicationDetail) {
+      applicationDetailRef.current = applicationDetail;
+    }
+  }, [applicationDetail]);
 
   useEffect(() => {
     // Check if the application is in "Resubmit" or "Awaiting Acknowledgement" status (old approach and it’s kept to have backward compatibility)
@@ -164,7 +182,13 @@ const Edit = React.memo((props) => {
               type={SmCtaTypes.OUTLINE}
               className="form-close-cta"
               isLink
-              href={PAGE_ROUTES.ADDRESS_REGISTRATION}
+              href={
+                isWebView
+                  ? showRequestServiceLink
+                    ? PAGE_ROUTES.ADDRESS_REGISTRATION
+                    : PAGE_ROUTES.MY_SERVICES_ADDRESS_REGISTRATION
+                  : PAGE_ROUTES.ADDRESS_REGISTRATION
+              }
               disabled={isFormSubmissionLoading}
               accessibilityProps={{
                 "aria-label": t("screen.reader.modal.close.cta"),
@@ -188,19 +212,21 @@ const Edit = React.memo((props) => {
         }`}
       >
         <div>
-          <AutofillDataModal formRef={formRef} />
+          {formEmbeddedConstants.REACT_APP_SHOW_AUTO_FULFILLMENT_CHECKBOX ? (
+            <AutofillDataModal formRef={formRef} />
+          ) : null}
           <FormSuccessModal
             formRef={formRef}
             onInit={(params) => (formSuccessModalParams.current = params)}
           />
+          <FormErrorModal />
           <FormSignDocumentModal
             formRef={formRef}
             setFormSubmitCallback={setFormSubmitCallback}
             onInit={(params) => {
               if (params.updateStatusOnInit) {
                 updateApplicationStatus({
-                  applicationId:
-                    formRef.current?.component?.data?.applicationId,
+                  applicationId: formRef.current?.data?.applicationId,
                   formUrl: parentFormUrl || url,
                   applicationStatus:
                     formEmbeddedConstants.APPLICATION_STATUS
@@ -222,7 +248,7 @@ const Edit = React.memo((props) => {
               setUpdatedSubmissionData(submission);
               onSubmit(
                 submission,
-                applicationDetail,
+                applicationDetailRef.current,
                 onFormSubmit,
                 form._id,
                 redirectUrl,
@@ -237,7 +263,7 @@ const Edit = React.memo((props) => {
               language: lang,
             }}
             onCustomEvent={onCustomEvent}
-            onRender={(form) => {
+            formReady={(form) => {
               formRef.current = form;
               enrichForm(formRef);
             }}
@@ -314,9 +340,12 @@ const mapDispatchToProps = (dispatch, ownProps) => {
                   if (onFormSubmit) {
                     onFormSubmit(null, formSubmitCallback?.current);
                   } else {
-                    toast.success(
-                      <Translation>{(t) => t("Submission Saved")}</Translation>
-                    );
+                    FORM_ALERTS_ENABLED &&
+                      toast.success(
+                        <Translation>
+                          {(t) => t("Submission Saved")}
+                        </Translation>
+                      );
                     dispatch(
                       push(
                         `${PAGE_ROUTES.MY_SERVICES_ADDRESS_REGISTRATION.replace(
@@ -342,9 +371,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
             if (onFormSubmit) {
               onFormSubmit(null, formSubmitCallback?.current);
             } else {
-              toast.success(
-                <Translation>{(t) => t("Submission Saved")}</Translation>
-              );
+              FORM_ALERTS_ENABLED &&
+                toast.success(
+                  <Translation>{(t) => t("Submission Saved")}</Translation>
+                );
               dispatch(
                 push(
                   `${PAGE_ROUTES.MY_SERVICES_ADDRESS_REGISTRATION.replace(

@@ -8,37 +8,45 @@
 import SwiftUI
 import EvrotrustSDK
 
-class ChangePINViewModel: NSObject, EvrotrustChangeSecurityContextDelegate {
+class ChangePINViewModel: NSObject {
+    private var viewModel = IdentityRequestViewViewModel()
     private var _pin: String = ""
-    private var _completion: ((EvrotrustError?) -> ())?
+    private var _completion: ((NetworkError?) -> ())?
     
-    func change(pin: String, completion: @escaping (EvrotrustError?) -> ()) {
+    func change(pin: String, completion: @escaping (NetworkError?) -> ()) {
         _pin = pin
         _completion = completion
         
-        let currentContext = UserProvider.shared.getUser()?.securityContext
-        let pinHash = pin.getHashedPassword
-        Evrotrust.sdk().changeSecurityContext(currentContext, withNewSecurityContext: pinHash, andDelegate: self)
-    }
-    
-    func evrotrustChangeSecurityContextDelegateDidFinish(_ result: EvrotrustChangeSecurityContextResult!) {
-        switch (result.status) {
-        case EvrotrustResultStatus.sdkNotSetUp:
-            _completion?(EvrotrustError.sdkNotSetUp)
-        case EvrotrustResultStatus.errorInput:
-            _completion?(EvrotrustError.errorInput)
-        case EvrotrustResultStatus.userNotSetUp:
-            _completion?(EvrotrustError.userNotSetUp)
-        case EvrotrustResultStatus.OK:
-            if result.changed {
-                var user = UserProvider.shared.getUser()
-                user?.pin = _pin
-                user?.securityContext = result.securityContext
-                UserProvider.shared.save(user: user)
-                _completion?(nil)
+        changePinOnServer(pin: _pin) { [weak self] pinHash in
+            let currentContext = UserProvider.currentUser?.securityContext ?? ""
+            
+            self?.viewModel.completion = { error in
+                if let error = error {
+                    self?.changeOldPinOnServer()
+                    self?._completion?(NetworkError.message(error.description))
+                } else {
+                    UserProvider.shared.update(pin: pin)
+                    self?._completion?(nil)
+                }
             }
             
-        default: break
+            self?.viewModel.changeSecurityContext(old: currentContext, to: pinHash)
         }
+    }
+    
+    private func changePinOnServer(pin: String, success: ((String) -> ())? = nil) {
+        let hash = pin.getHashedPassword ?? ""
+        NetworkManager.change(pin: hash) { [weak self] response in
+            switch response {
+            case .success(_):
+                success?(hash)
+            case .failure(let error):
+                self?._completion?(error)
+            }
+        }
+    }
+    
+    private func changeOldPinOnServer() {
+        changePinOnServer(pin: UserProvider.currentUser?.pin ?? "")
     }
 }

@@ -1,0 +1,58 @@
+@import "../../../assets/styles/themes.scss";
+@import "../../../assets/styles/typography.scss";
+
+.modalContentContainer {
+  padding-bottom: 30px;
+  padding-inline: 30px;
+}
+
+.modalCloseCta {
+  height: 30px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modalHeader, .modalBody, .modalFooter {
+  padding: 0;
+}
+
+.modalHeader, .modalBody {
+  border-bottom: none;
+}
+
+.modalHeader-center, .modalBody-center {
+  border-bottom: none;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.modalFooter {
+  border-top: none;
+}
+
+.modalHeader {
+  margin-bottom: 20px;
+  @include sm-heading-4;
+  color: $sm-indigo-dark;
+}
+
+.modalHeader-center {
+  text-align: center;
+}
+
+.modalBody {
+  margin-bottom: 40px;
+  @include sm-body-regular;
+  color: $sm-indigo-dark;
+}
+
+.modalBody-center {
+  & p {
+    text-align: center;
+  }
+}
+
+.confirmCta {
+  padding: 9px 18px !important;
+}

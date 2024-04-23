@@ -277,15 +277,27 @@ const TranslationAdministration = () => {
             isOpen={isAddModalOpen}
             onClose={() => setIsAddModalOpen(false)}
             onSubmit={(data) => {
-              addTranslation(data)
-                .then(() => {
-                  setIsAddModalOpen(false);
-                  setShouldRefresh(true);
-                  toast.success(t("so.translations.add.success"));
-                })
-                .catch((err) => {
-                  toast.error(err.message || t("so.translations.uknown.error"));
-                });
+              const translationExists = mappedTranslationsData?.find(
+                (item) =>
+                  item.key === data.key && item.language === data.language
+              );
+              if (!translationExists) {
+                addTranslation(data)
+                  .then(() => {
+                    setIsAddModalOpen(false);
+                    setShouldRefresh(true);
+                    toast.success(t("so.translations.add.success"));
+                  })
+                  .catch((err) => {
+                    setIsAddModalOpen(false);
+                    toast.error(
+                      err.message || t("so.translations.uknown.error")
+                    );
+                  });
+              } else {
+                setIsAddModalOpen(false);
+                toast.error(t("so.translations.already.exists.error"));
+              }
             }}
           />
         ) : null}

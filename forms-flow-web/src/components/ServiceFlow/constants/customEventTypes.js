@@ -7,4 +7,5 @@ export const CUSTOM_EVENT_TYPE = {
   AUTO_FILL_DATA: "triggerAutofillData",
   SIGN_DOCUMENT: "signDocument",
   SUBMIT_FORM_WITH_SUCCESS_MODAL: "submitFormWithSuccessModal",
+  OPEN_FORM_ERROR_MODAL: "openFormErrorModal",
 };

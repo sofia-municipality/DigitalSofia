@@ -1,7 +1,5 @@
 package com.bulpros.integrations.borica.model;
 
-import com.bulpros.integrations.eDelivery.model.EProfileType;
-
 public enum BoricaIdentificatorTypeEnum {
     EGN, LNC, PHONE, EMAIL;
 

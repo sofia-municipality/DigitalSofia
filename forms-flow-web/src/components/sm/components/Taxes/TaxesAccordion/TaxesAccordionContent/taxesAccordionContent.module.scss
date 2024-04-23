@@ -1,0 +1,68 @@
+@import "../../../../../../assets/styles/mixins.scss";
+@import "../../../../../../assets/styles/themes.scss";
+@import "../../../../../../assets/styles/typography.scss";
+
+.taxRecord {
+  background-color: #FCFCFC;
+  box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 1px 4px rgba(12, 14, 25, 0.08);
+  border-radius: 2px;
+  margin-top: 20px;
+
+  & > div {
+    padding: 10px;
+    @include screen-size(extra-large) {
+      padding: 20px;
+    }
+  }
+}
+
+.tableHeader {
+  & th {
+    @include sm-caption-regular;
+    border-top: none;
+  }
+}
+
+.tableBody {
+  & td {
+    @include sm-body-2-regular;
+  }
+}
+
+.taxContentWrapper {
+  padding: 20px 10px;
+  margin-inline: 1px;
+  box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 1px 4px rgba(12, 14, 25, 0.08);
+  margin-bottom: 20px;
+
+  @include screen-size(extra-large) {
+    padding: 20px;
+  }
+}
+
+.taxesMobileWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  list-style-type: none;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.taxRecordMobile {
+  background-color: #FCFCFC;
+  box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 1px 4px rgba(12, 14, 25, 0.08);
+  border-radius: 2px;
+}
+
+.mobileRow {
+  @include sm-caption-regular;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid $sm-indigo-0;
+  padding: 10px;
+}
+
+.taxRecordTable {
+  min-height: unset !important;
+}

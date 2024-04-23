@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PDFKitView: View {
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     @State private var showShareSheet = false
     
     let pdfUrl: URL?
@@ -28,7 +28,7 @@ struct PDFKitView: View {
                 Spacer()
                 
                 Button(action: {
-                    presentationMode.wrappedValue.dismiss()
+                    dismiss()
                 }) {
                     Text(AppConfig.UI.Titles.Button.done.localized)
                         .font(font)

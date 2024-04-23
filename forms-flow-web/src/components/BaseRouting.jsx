@@ -4,20 +4,31 @@ import { matchPath } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import querystring from "querystring";
 import i18n from "i18next";
+import { Helmet } from "react-helmet";
 
 import PublicRoute from "./PublicRoute";
 import PrivateRoute from "./PrivateRoute";
-import { BASE_ROUTE } from "../constants/constants";
+import {
+  BASE_ROUTE,
+  CHECK_ASSURANCE_LEVEL_ENABLED,
+} from "../constants/constants";
 import {
   PAGE_ROUTES,
   SM_ROUTES,
   ROUTES_WITHOUT_NAV,
+  ROUTES_WITH_ASSURANCE_PROTECTION,
+  ROUTES_ASSURANCE_PROTECTION_SERVICE_NAMES,
 } from "../constants/navigation";
 import { setLanguage } from "../actions/languageSetAction";
+import { openCloseForbiddenModal } from "../actions/roleActions";
 import { updateUserlang } from "../apiManager/services/userservices";
+import { useLogout, useCheckUserAssuranceLevel } from "../customHooks";
 
 import SmNavigation from "./sm/components/Navigation";
 import SmFooter from "./sm/components/Footer";
+import ForbiddenModal, {
+  ForbiddenModalTypes,
+} from "./sm/components/Modal/ForbiddenModal";
 
 /*import SideBar from "../containers/SideBar";*/
 import NavBar from "../containers/NavBar";
@@ -39,19 +50,15 @@ import Loading from "../containers/Loading";
 
 const BaseRouting = React.memo(({ store }) => {
   const dispatch = useDispatch();
+  const logout = useLogout();
   const [showContent, setShowContent] = useState(false);
   const [isWithLangParam, setIsWithLangParam] = useState(false);
-  const { search, pathname } = useLocation();
+  const { search } = useLocation();
   const params = querystring.parse(search.replace("?", "")) || {};
-  const { hideNav, lang } = params;
+  const { hideNav, lang, showRequestServiceLink } = params;
 
   const isAuth = useSelector((state) => state.user.isAuthenticated);
   const userLanguage = useSelector((state) => state.user.lang);
-  const smRoutes = Object.values(SM_ROUTES);
-  const isSmRoute = smRoutes.some((route) =>
-    matchPath(pathname, { path: route, exact: true })
-  );
-  const PageWrapper = isSmRoute ? SmRoutesWrapper : FormsFlowRoutesWrapper;
 
   useLayoutEffect(() => {
     if (userLanguage) {
@@ -64,6 +71,12 @@ const BaseRouting = React.memo(({ store }) => {
       localStorage.setItem("hideNav", true);
     }
   }, [hideNav]);
+
+  useEffect(() => {
+    if (showRequestServiceLink) {
+      sessionStorage.setItem("showRequestServiceLink", true);
+    }
+  }, [showRequestServiceLink]);
 
   useEffect(() => {
     if (lang && lang !== i18n.language) {
@@ -85,6 +98,22 @@ const BaseRouting = React.memo(({ store }) => {
       setShowContent(true);
     }
   }, [isWithLangParam, lang, userLanguage]);
+
+  useEffect(() => {
+    const handleInvalidToken = (e) => {
+      if (e.key === "logout-event" && !e.oldValue && e.newValue) {
+        logout();
+      }
+
+      if (e.key === "authToken" && !e.oldValue && e.newValue) {
+        window.location.reload();
+      }
+    };
+    window.addEventListener("storage", handleInvalidToken);
+    return function cleanup() {
+      window.removeEventListener("storage", handleInvalidToken);
+    };
+  }, [logout]);
 
   return showContent ? (
     <PageWrapper isAuth={isAuth} hideNav={hideNav}>
@@ -136,16 +165,75 @@ const BaseRoute = ({ store }) => {
   );
 };
 
+const PageWrapper = (props) => {
+  const dispatch = useDispatch();
+  const isAuth = useSelector((state) => state.user.isAuthenticated);
+  const checkUserAssuranceLevel = useCheckUserAssuranceLevel();
+  const [isUserPermitted, setIsUserPermitted] = useState(true);
+  const { pathname } = useLocation();
+  const smRoutes = Object.values(SM_ROUTES);
+  const isSmRoute = smRoutes.some((route) =>
+    matchPath(pathname, { path: route, exact: true })
+  );
+
+  useEffect(() => {
+    if (CHECK_ASSURANCE_LEVEL_ENABLED && isAuth) {
+      const assuranceProtectedRoute = ROUTES_WITH_ASSURANCE_PROTECTION.find(
+        (route) => matchPath(pathname, { path: route, exact: true })
+      );
+
+      const { isPassed, requiredAssuranceLevel } = checkUserAssuranceLevel(
+        ROUTES_ASSURANCE_PROTECTION_SERVICE_NAMES[assuranceProtectedRoute]
+      );
+
+      if (assuranceProtectedRoute && !isPassed) {
+        setIsUserPermitted(false);
+        dispatch(
+          openCloseForbiddenModal({
+            isOpen: true,
+            type: ForbiddenModalTypes.ASSURANCE_LEVEL,
+            requiredAssuranceLevel,
+          })
+        );
+      }
+    }
+  }, [checkUserAssuranceLevel, dispatch, pathname, isAuth]);
+
+  return (
+    <>
+      <ForbiddenModal />
+      {isUserPermitted ? (
+        isSmRoute ? (
+          <SmRoutesWrapper {...props} />
+        ) : (
+          <FormsFlowRoutesWrapper {...props} />
+        )
+      ) : null}
+    </>
+  );
+};
+
 const SmRoutesWrapper = ({ hideNav, children }) => {
   const adminOverridenRoutes = Object.values(ROUTES_WITHOUT_NAV);
   const isAdminOverridenRoute = adminOverridenRoutes.some((route) =>
     matchPath(window.location.pathname, { path: route, exact: true })
   );
 
-  return isAdminOverridenRoute ||
-    hideNav ||
-    localStorage.getItem("hideNav") === "true" ? (
-    <>{children}</>
+  const isHideNavParamReceived =
+    hideNav || localStorage.getItem("hideNav") === "true";
+
+  return isAdminOverridenRoute || isHideNavParamReceived ? (
+    <>
+      {isHideNavParamReceived ? (
+        <Helmet>
+          <meta
+            name="viewport"
+            content="width=device-width,initial-scale=1.0, user-scalable=no, maximum-scale=1"
+          />
+        </Helmet>
+      ) : null}
+      {children}
+    </>
   ) : (
     <>
       <SmNavigation />

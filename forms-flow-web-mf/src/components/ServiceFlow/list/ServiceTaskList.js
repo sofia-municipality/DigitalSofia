@@ -20,9 +20,16 @@ import { MAX_RESULTS } from "../constants/taskConstants";
 import { getFirstResultIndex } from "../../../apiManager/services/taskSearchParamsFormatterService";
 import TaskVariable from "./TaskVariable";
 import { MULTITENANCY_ENABLED, TASK_PAGE_NEW_DESIGN_ENABLED, TASK_LIST_DISABLE_FILTER_ENABLED } from "../../../constants/constants";
-import { APPLICATION_STATUS_LABEL, DEFAULT_APPLICATION_STATUS_LABEL } from "../../../constants/formEmbeddedConstants";
+import { DEFAULT_APPLICATION_STATUS_LABEL } from "../../../constants/formEmbeddedConstants";
+import { jsonTryParse } from "../../../utils";
 
 const getRequestorNames = (data = {}) => {
+  const caseDataSource = jsonTryParse(data.caseDataSource);
+
+  if(caseDataSource?.data?.requestorName) {
+    return caseDataSource?.data?.requestorName;
+  }
+
   const firstName = data.requestorFirstName || data.firstName;
   const middleName = data.requestorMiddleName || data.middleName;
   const lastName = data.requestorFamilyName || data.lastName;
@@ -82,136 +89,148 @@ const ServiceFlowTaskList = React.memo(() => {
     if ((tasksCount || taskList.length) && selectedFilter) {
       return (
         <>
-          {taskList.map((task, index) => (
-            <div
-              className={`clickable shadow border  ${
-                task?.id === bpmTaskId && "selected"
-              }`}
-              key={index}
-              onClick={() => getTaskDetails(task.id)}
-            >
-              {!TASK_PAGE_NEW_DESIGN_ENABLED ? (
-                <>
-                   <Row>
-                    <div className="col-12">
-                      <h5 className="font-weight-bold">{task.name}</h5>
-                    </div>
-                  </Row>
-                  <div className="font-size-16 d-flex justify-content-between">
-                    <div className="pr-0" style={{ maxWidth: "65%" }}>
-                      <span data-toggle="tooltip" title="Form Name">
-                        {
-                          getProcessDataObjectFromList(
-                            processList,
-                            task.processDefinitionId
-                          )?.name
-                        }
-                      </span>
-                    </div>
-                    <div
-                      data-toggle="tooltip"
-                      title={t("Task assignee")}
-                      className="pr-0 text-right d-inline-block text-truncate"
-                      style={{maxWidth:"150"}}
-                    >
-                      <span> {task.assignee}</span>
-                    </div>
-                  </div>
-                  <div
-                    className="d-flex justify-content-between text-muted"
-                    style={{ marginBottom: "-8px", fontSize: "14px" }}
-                  >
-                    <div style={{ maxWidth: "70%" }}>
-                      <span
-                        className="tooltiptext"
-                        title={task.due ? getFormattedDateAndTime(task.due) : ""}
-                      >
-                        {" "}
-                        {task.due
-                          ? `${t("Due")} ${moment(task.due).fromNow()}, `
-                          : ""}{" "}
-                      </span>
-                      <span
-                        className="tooltiptext"
-                        title={
-                          task.followUp
-                            ? getFormattedDateAndTime(task.followUp)
-                            : ""
-                        }
-                      >
-                        {" "}
-                        {task.followUp
-                          ? `${t("Follow-up")} ${moment(task.followUp).fromNow()}, `
-                          : ""}{" "}
-                      </span>
-                      <span
-                        className="tooltiptext"
-                        title={
-                          task.created ? getFormattedDateAndTime(task.created) : ""
-                        }
-                      >
-                        {" "}
-                        {t("Created")} {moment(task.created).fromNow()}
-                      </span>
-                    </div>
-                    <div className="pr-0 text-right tooltips" title={t("Priority")}>
-                      {task.priority}
-                    </div>
-                  </div>
+          {taskList.map((task, index) =>  {
+            const submissionData = task.submissionData;
+            const acstreData = jsonTryParse(submissionData?.acstreData);
+            const caseDataSource = jsonTryParse(submissionData?.caseDataSource);
 
-                  {task._embedded?.variable && (
-                    <TaskVariable variables={task._embedded?.variable || []} />
-                  )}
-                </>
-              ) : (
-                <Row>
-                   <div className="col-4">
-                    <Row>
-                      <div className="col-6">
-                        <h6>Входящ номер: </h6>
-                        <h6>УРИ: </h6>
-                        <h6>Заявител: </h6>
-                        <h6>Дата на получаване: </h6>
-                        <h6>Статус: </h6>
-                      </div>
-                      <div className="col-6">
-                        <h6 className="font-weight-bold">
-                          {
-                            task.submissionData?.exitNumber || 
-                            task.submissionData?.reference_number ||
-                            "None"
-                          }
-                        </h6>
-                        <h6>
-                          {
-                            task.submissionData?.exitNumber || "None"
-                          }
-                        </h6>
-                        <h6>{getRequestorNames(task.submissionData)}</h6>
-                        <h6>{moment(task.created).format("DD.MM.YYYY")}</h6>
-                        <h6>{t(
-                            APPLICATION_STATUS_LABEL[task.submissionData?.applicationStatus] || 
-                            DEFAULT_APPLICATION_STATUS_LABEL
-                          )}
-                        </h6>
+            return (
+              <div
+                className={`clickable shadow border  ${
+                  task?.id === bpmTaskId && "selected"
+                }`}
+                key={index}
+                onClick={() => getTaskDetails(task.id)}
+              >
+                {!TASK_PAGE_NEW_DESIGN_ENABLED ? (
+                  <>
+                     <Row>
+                      <div className="col-12">
+                        <h5 className="font-weight-bold">{task.name}</h5>
                       </div>
                     </Row>
-                   </div>
-                   <div className="col-8 d-flex flex-column justify-content-center align-items-center">
-                      <h6 className="font-size-16 text-right align-self-end">{task.submissionData?.documentTitle || task.name}</h6>
+                    <div className="font-size-16 d-flex justify-content-between">
+                      <div className="pr-0" style={{ maxWidth: "65%" }}>
+                        <span data-toggle="tooltip" title="Form Name">
+                          {
+                            getProcessDataObjectFromList(
+                              processList,
+                              task.processDefinitionId
+                            )?.name
+                          }
+                        </span>
+                      </div>
                       <div
                         data-toggle="tooltip"
                         title={t("Task assignee")}
-                        className="pr-0 text-right d-inline-block text-truncate mt-4 align-self-end"
+                        className="pr-0 text-right d-inline-block text-truncate"
                         style={{maxWidth:"150"}}
                       >
                         <span> {task.assignee}</span>
                       </div>
-                   </div>
-                </Row>
-              )}
-            </div>
-          ))}
+                    </div>
+                    <div
+                      className="d-flex justify-content-between text-muted"
+                      style={{ marginBottom: "-8px", fontSize: "14px" }}
+                    >
+                      <div style={{ maxWidth: "70%" }}>
+                        <span
+                          className="tooltiptext"
+                          title={task.due ? getFormattedDateAndTime(task.due) : ""}
+                        >
+                          {" "}
+                          {task.due
+                            ? `${t("Due")} ${moment(task.due).fromNow()}, `
+                            : ""}{" "}
+                        </span>
+                        <span
+                          className="tooltiptext"
+                          title={
+                            task.followUp
+                              ? getFormattedDateAndTime(task.followUp)
+                              : ""
+                          }
+                        >
+                          {" "}
+                          {task.followUp
+                            ? `${t("Follow-up")} ${moment(task.followUp).fromNow()}, `
+                            : ""}{" "}
+                        </span>
+                        <span
+                          className="tooltiptext"
+                          title={
+                            task.created ? getFormattedDateAndTime(task.created) : ""
+                          }
+                        >
+                          {" "}
+                          {t("Created")} {moment(task.created).fromNow()}
+                        </span>
+                      </div>
+                      <div className="pr-0 text-right tooltips" title={t("Priority")}>
+                        {task.priority}
+                      </div>
+                    </div>
+  
+                    {task._embedded?.variable && (
+                      <TaskVariable variables={task._embedded?.variable || []} />
+                    )}
+                  </>
+                ) : (
+                  <Row>
+                     <div className="col-4">
+                      <Row>
+                        <div className="col-6">
+                          <h6>{`${t("Входящ номер")}: `}</h6>
+                          <h6>{`${t("УРИ")}: `}</h6>
+                          <h6>{`${t("Заявител")}: `}</h6>
+                          <h6>{`${t("Дата на получаване")}`} </h6>
+                          <h6>{`${t("Статус")}: `}</h6>
+                        </div>
+                        <div className="col-6">
+                          <h6 className="font-weight-bold">
+                            {
+                              acstreData?.externalId ||
+                              submissionData?.reference_number ||
+                              "None"
+                            }
+                          </h6>
+                          <h6>
+                            {
+                              task.variables?.formName?.value?.split('-')?.[0] || "None"
+                            }
+                          </h6>
+                          <h6>{getRequestorNames(submissionData)}</h6>
+                          <h6>{moment(task.created).format("DD.MM.YYYY")}</h6>
+                          <h6>{t(
+                              submissionData?.applicationStatus || 
+                              DEFAULT_APPLICATION_STATUS_LABEL
+                            )}
+                          </h6>
+                        </div>
+                      </Row>
+                     </div>
+                     <div className="col-8 d-flex flex-column justify-content-center align-items-center">
+                        <h6 className="font-size-16 text-right align-self-end">
+                          {
+                            caseDataSource?.data?.serviceName || 
+                            submissionData?.documentTitle || 
+                            task.name
+                          }
+                        </h6>
+                        <div
+                          data-toggle="tooltip"
+                          title={t("Task assignee")}
+                          className="pr-0 text-right d-inline-block text-truncate mt-4 align-self-end"
+                          style={{maxWidth:"150"}}
+                        >
+                          <span>{task.assignee}</span>
+                        </div>
+                     </div>
+                  </Row>
+                )}
+              </div>
+            );
+          } )}
 
           <Row style={{justifyContent: "flex-end"}} className={TASK_PAGE_NEW_DESIGN_ENABLED ? "mr-1" : ""}>
             <div className="pagination-wrapper">

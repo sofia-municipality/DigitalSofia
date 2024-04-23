@@ -10,14 +10,17 @@ import SwiftUI
 struct LoginWithBiometricsView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var networkMonitor: NetworkMonitor
+    @Environment(\.dismiss) var dismiss
     
+    var onLockScreenCompletion: (() -> ())?
     @State private var showHomeScreen = false
     @State private var showPIN = false
     @State private var loginViewModel: LoginViewModel?
+    fileprivate var user: User? {
+        return UserProvider.currentUser
+    }
     
     var body: some View {
-        let user = UserProvider.shared.getUser()
-        
         VStack(spacing: AppConfig.Dimensions.Padding.XXL) {
             navigation()
             
@@ -40,21 +43,20 @@ struct LoginWithBiometricsView: View {
                     Image(systemName: BiometricProvider.biometricType == .face ? ImageProvider.SystemImages.faceID : ImageProvider.SystemImages.touchID)
                         .resizable()
                         .scaledToFit()
-                        .foregroundColor(user?.useBiometrics == true ? DSColors.Blue.blue : DSColors.pageIndicatorDeselect)
+                        .foregroundColor(DSColors.Blue.regular)
                         .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.firaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.medium))
                         .frame(width: AppConfig.Dimensions.Standart.iconHeight * 1.5, height: AppConfig.Dimensions.Standart.iconHeight * 1.5)
                     Spacer()
                 }
             }
             .padding(.bottom, AppConfig.Dimensions.Padding.large)
-            .disabled(user?.useBiometrics == false)
             
             Button {
                 showPIN = true
             } label: {
                 Text(AppConfig.UI.Titles.Button.pinCode.localized)
                     .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.firaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.medium))
-                    .foregroundColor(DSColors.Blue.blue)
+                    .foregroundColor(DSColors.Blue.regular)
                     .frame(maxWidth: .infinity, alignment: .center)
             }
             
@@ -65,21 +67,29 @@ struct LoginWithBiometricsView: View {
                 if let error = error {
                     appState.alertItem = AlertProvider.errorAlert(message: error.description)
                 } else {
-                    showHomeScreen = true
+                    if appState.shouldLockScreen {
+                        dismiss()
+                        onLockScreenCompletion?()
+                    } else {
+                        showHomeScreen = true
+                    }
                 }
             }, biometricFallbackAction: {
                 showPIN = true
             })
         }
-        .alert(item: $appState.alertItem) { alertItem in
-            AlertProvider.getAlertFor(alertItem: alertItem)
-        }
-        .background(DSColors.background)
+        .log(view: self)
+        .alert()
+        .environmentObject(appState)
+        .environmentObject(networkMonitor)
+        .backgroundAndNavigation()
     }
     
     private func navigation() -> some View {
         VStack {
-            NavigationLink(destination: TabbarView(appState: appState).environmentObject(networkMonitor),
+            NavigationLink(destination: TabbarView()
+                .environmentObject(appState)
+                .environmentObject(networkMonitor),
                            isActive: $showHomeScreen) { EmptyView() }
             
             NavigationLink(destination: LoginPINView(successfullyEnteredPIN: {

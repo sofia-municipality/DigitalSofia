@@ -38,7 +38,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"data\": {\r\n        \"email\": \"admin@example.com\",\r\n        \"password\": \"\"\r\n    }\r\n}",
+					"raw": "{\r\n    \"data\": {\r\n        \"email\": \"admin@example.com\",\r\n        \"password\": \"changeme\"\r\n    }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"

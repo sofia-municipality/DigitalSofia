@@ -72,6 +72,8 @@ window["_env_"] = {
   REACT_APP_MULTI_LANGUAGE_ENABLED: true,
   REACT_APP_TASK_LIST_DISABLE_FILTER: false,
   REACT_APP_TASK_LIST_DEFAULT_ASSIGNEE: true,
+  REACT_APP_TRANSLATE_BPMN_MODELER: true,
+  REACT_APP_TRANSLATE_FORM_BUILDER: true,
 
    /* You can provide custom theme by adding json data to following path
   public/themeConfig/customTheme.json inside forms-flow-web-root-config.

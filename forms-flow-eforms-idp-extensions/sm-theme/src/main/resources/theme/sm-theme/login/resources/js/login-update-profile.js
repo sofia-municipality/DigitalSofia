@@ -50,15 +50,7 @@
         
 
         if(emailElement) {
-            emailElement
-            .addEventListener("keyup", function(e) {
-                document.querySelector("#username").value = e.target.value;
-            });
-
             emailElement.addEventListener("input", function(e) {
-                const value = e.target.value;
-                document.querySelector("#username").value = value;
-
                 if(!emailElement.validity.valid) {
                     setError('email', 'input-error-email', emailElement.validity);
                 } else {

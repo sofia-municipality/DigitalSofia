@@ -98,26 +98,37 @@
   color: $sm-indigo-3;
 }
 
-.currency {
-  font-family: 'Sofia Sans';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 140%;
+.infoMessageWrapper {
+  margin-block: 10px;
+}
+
+.infoMessageWrapperReference {
+  margin-block: 20px;
+}
+
+.infoMessage {
+  border: 1px solid $sm-red;
+  background-color: $sm-white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+
+  @include screen-size(medium) {
+    align-items: center;
+  }
+}
+
+.infoMessageText {
   color: $sm-indigo-dark;
-  margin-left: 2px;
+  @include sm-body-2-regular;
 }
 
-.paySumTotal {
-  font-family: Sofia Sans;
-  font-size: 24px;
-  font-weight: 400;
-  line-height: 34px;
-  letter-spacing: 0px;
-  text-align: right;
-  color: $sm-red-6;
+.infoMessageIcon {
+  color: $sm-red;
 }
 
-.paySumTotalLabel {
-  display: inline-block;
+.closeInfoMessageIcon {
+  color: $sm-indigo-4;
 }

@@ -15,6 +15,14 @@
  *******************************************************************************/
 package com.bulpros.keycloak.providers.broker;
 
+import com.bulpros.keycloak.util.Utils;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 import org.keycloak.broker.provider.BrokeredIdentityContext;
 import org.keycloak.broker.provider.IdentityBrokerException;
@@ -22,7 +30,15 @@ import org.keycloak.broker.provider.IdentityProvider;
 import org.keycloak.broker.saml.SAMLEndpoint;
 import org.keycloak.broker.saml.SAMLIdentityProvider;
 import org.keycloak.broker.saml.SAMLIdentityProviderConfig;
-import org.keycloak.dom.saml.v2.assertion.*;
+import org.keycloak.dom.saml.v2.assertion.AssertionType;
+import org.keycloak.dom.saml.v2.assertion.AttributeStatementType;
+import org.keycloak.dom.saml.v2.assertion.AttributeType;
+import org.keycloak.dom.saml.v2.assertion.AuthnStatementType;
+import org.keycloak.dom.saml.v2.assertion.NameIDType;
+import org.keycloak.dom.saml.v2.assertion.StatementAbstractType;
+import org.keycloak.dom.saml.v2.assertion.SubjectConfirmationDataType;
+import org.keycloak.dom.saml.v2.assertion.SubjectConfirmationType;
+import org.keycloak.dom.saml.v2.assertion.SubjectType;
 import org.keycloak.dom.saml.v2.protocol.ResponseType;
 import org.keycloak.events.EventType;
 import org.keycloak.models.ClientModel;
@@ -48,13 +64,13 @@ import org.keycloak.services.util.CacheControlUtil;
 import org.keycloak.sessions.AuthenticationSessionModel;
 import org.w3c.dom.Element;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 import javax.xml.namespace.QName;
 import java.net.URI;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public class EAuthSAMLEndpoint extends SAMLEndpoint {
@@ -98,7 +114,8 @@ public class EAuthSAMLEndpoint extends SAMLEndpoint {
                 if (!EAuthSAMLEndpoint.this.isSuccessfulSamlResponse(responseType)) {
                     String statusMessage = responseType.getStatus() != null && responseType.getStatus()
                             .getStatusMessage() != null
-                            ? responseType.getStatus().getStatusMessage() : "identityProviderUnexpectedErrorMessage";
+                            ? responseType.getStatus().getStatusMessage()
+                            : "identityProviderUnexpectedErrorMessage";
                     return EAuthSAMLEndpoint.this.callback.error(statusMessage);
                 } else if (responseType.getAssertions() != null && !responseType.getAssertions().isEmpty()) {
                     boolean assertionIsEncrypted = AssertionUtil.isAssertionEncrypted(responseType);
@@ -183,7 +200,8 @@ public class EAuthSAMLEndpoint extends SAMLEndpoint {
                                                     "Not possible to decrypt SAML encryptedId. Please check realm keys of usage ENC in the realm '%s' and make sure there is a key able to decrypt the encryptedId encrypted by identity provider '%s'",
                                                     EAuthSAMLEndpoint.this.realm.getName(),
                                                     EAuthSAMLEndpoint.this.config.getAlias());
-                                            throw new WebApplicationException(decryptProcessingException, Response.Status.BAD_REQUEST);
+                                            throw new WebApplicationException(decryptProcessingException,
+                                                    Response.Status.BAD_REQUEST);
                                         }
                                     }
 
@@ -210,6 +228,28 @@ public class EAuthSAMLEndpoint extends SAMLEndpoint {
                                             EAuthSAMLEndpoint.this.event.error("invalid_saml_response");
                                             return ErrorPage.error(EAuthSAMLEndpoint.this.session, authSession,
                                                     Response.Status.BAD_REQUEST, "invalidRequesterMessage");
+                                        } else if (!(principal.startsWith("PNOBG-") || principal.startsWith(
+                                                "PI:BG-")) || principal.length() != 16) {
+                                            SAMLEndpoint.logger.errorf(
+                                                    "Principal id is not valid length for EGN and or LNCH!",
+                                                    EAuthSAMLEndpoint.this.expectedPrincipalType());
+                                            EAuthSAMLEndpoint.this.event.event(EventType.IDENTITY_PROVIDER_RESPONSE);
+                                            EAuthSAMLEndpoint.this.event.error("not allowed person identifier");
+                                            return ErrorPage.error(EAuthSAMLEndpoint.this.session, authSession,
+                                                    Response.Status.BAD_REQUEST, "registrationNotAllowedWithoutEGN");
+                                        } else if (principal.startsWith("PNOBG-") && Utils.isPersonIdentifierNotValid(
+                                                principal.substring(6))) {
+                                            EAuthSAMLEndpoint.this.event.event(EventType.IDENTITY_PROVIDER_RESPONSE);
+                                            EAuthSAMLEndpoint.this.event.error("not valid person identifier");
+                                            return ErrorPage.error(EAuthSAMLEndpoint.this.session, authSession,
+                                                    Response.Status.BAD_REQUEST, "registrationNotAllowedWithoutEGN");
+                                        } else if (principal.startsWith(
+                                                "PI:BG-") && !Utils.isForeignPersonIdentifierNotValid(
+                                                principal.substring(6))) {
+                                            EAuthSAMLEndpoint.this.event.event(EventType.IDENTITY_PROVIDER_RESPONSE);
+                                            EAuthSAMLEndpoint.this.event.error("not valid person identifier");
+                                            return ErrorPage.error(EAuthSAMLEndpoint.this.session, authSession,
+                                                    Response.Status.BAD_REQUEST, "registrationNotAllowedWithoutLNCH");
                                         } else {
                                             BrokeredIdentityContext identity = new BrokeredIdentityContext(principal);
                                             identity.getContextData().put("SAML_LOGIN_RESPONSE", responseType);
@@ -251,7 +291,8 @@ public class EAuthSAMLEndpoint extends SAMLEndpoint {
                                                         Response.Status.BAD_REQUEST, "expiredCodeMessage");
                                             } else {
                                                 AuthnStatementType authn = null;
-                                                Iterator<StatementAbstractType> iterator = assertion.getStatements().iterator();
+                                                Iterator<StatementAbstractType> iterator = assertion.getStatements()
+                                                        .iterator();
 
                                                 while (iterator.hasNext()) {
                                                     Object statement = iterator.next();
@@ -341,8 +382,7 @@ public class EAuthSAMLEndpoint extends SAMLEndpoint {
                             .get(0)).getAssertion().getSubject();
                     if (subjectElement != null && subjectElement.getConfirmation() != null && !subjectElement.getConfirmation()
                             .isEmpty()) {
-                        SubjectConfirmationType subjectConfirmationElement = subjectElement.getConfirmation()
-                                .get(0);
+                        SubjectConfirmationType subjectConfirmationElement = subjectElement.getConfirmation().get(0);
                         if (subjectConfirmationElement != null) {
                             SubjectConfirmationDataType subjectConfirmationDataElement = subjectConfirmationElement.getSubjectConfirmationData();
                             if (subjectConfirmationDataElement != null && subjectConfirmationDataElement.getInResponseTo() != null) {
@@ -378,8 +418,8 @@ public class EAuthSAMLEndpoint extends SAMLEndpoint {
                         Collections.singletonMap("saml_idp_initiated_sso_url_name", clientUrlName), 0, 1).findFirst();
         if (!oClient.isPresent()) {
             EAuthSAMLEndpoint.this.event.error("client_not_found");
-            Response responsex = ErrorPage.error(EAuthSAMLEndpoint.this.session, null,
-                    Response.Status.BAD_REQUEST, "clientNotFoundMessage");
+            Response responsex = ErrorPage.error(EAuthSAMLEndpoint.this.session, null, Response.Status.BAD_REQUEST,
+                    "clientNotFoundMessage");
             throw new WebApplicationException(responsex);
         } else {
             LoginProtocolFactory factory = (LoginProtocolFactory) EAuthSAMLEndpoint.this.session.getKeycloakSessionFactory()
@@ -441,8 +481,7 @@ public class EAuthSAMLEndpoint extends SAMLEndpoint {
         String configEntityId = EAuthSAMLEndpoint.this.config.getEntityId();
         return configEntityId != null && !configEntityId.isEmpty()
                 ? configEntityId
-                : UriBuilder.fromUri(uriInfo.getBaseUri()).path("realms").path(realm.getName()).build()
-                        .toString();
+                : UriBuilder.fromUri(uriInfo.getBaseUri()).path("realms").path(realm.getName()).build().toString();
     }
 
     private String getPrincipal(AssertionType assertion) {

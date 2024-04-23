@@ -21,7 +21,7 @@ const TranslationFormModal = ({
     e.preventDefault();
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
-    const payload = type === "edit" ? { ...data, id, language } : data;
+    const payload = type === "edit" ? { ...data, id, language, key } : data;
     onSubmit(payload);
   };
 
@@ -48,7 +48,7 @@ const TranslationFormModal = ({
           </Form.Group>
           <Form.Group controlId="key">
             <Form.Label>{t("so.translations.form.field.key.label")}</Form.Label>
-            <TextArea name="key" required defaultValue={key} />
+            <TextArea name="key" required defaultValue={key} disabled={type === "edit"} />
           </Form.Group>
           <Form.Group controlId="translation">
             <Form.Label>

@@ -64,7 +64,6 @@ class RegixResource(Resource):
 
             current_app.logger.debug(match)
             if not match:
-                current_app.logger.debug(BusinessException)
                 raise BusinessException(
                     "Invalid Personal Identifier bound to user.", HTTPStatus.BAD_REQUEST
                 )

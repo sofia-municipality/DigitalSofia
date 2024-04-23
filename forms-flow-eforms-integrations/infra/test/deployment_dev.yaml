@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-flow-eforms-integrations
+  namespace : form-flow-eforms-integrations
+  labels:
+    app.kubernetes.io/name: integrations
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: integrations
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: integrations
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: form-flow-eforms-integrations
+          image: sofiamunicipalitydigitall/form-flow-eforms-integrations:releasetest
+          ports:
+            - containerPort: 8002
+              name: http
+              protocol: TCPtest

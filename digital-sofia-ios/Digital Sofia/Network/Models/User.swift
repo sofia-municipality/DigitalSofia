@@ -10,6 +10,7 @@ import Foundation
 struct User: Codable {
     var token: String?
     var refreshToken: String?
+    var tokenExpireDateString: String?
     
     var pin: String?
     var useBiometrics: Bool = false
@@ -17,6 +18,7 @@ struct User: Codable {
     var email: String?
     
     var verified: Bool = false
+    var exists: Bool = false
     
     var firstName: String?
     var middleName: String?
@@ -29,6 +31,8 @@ struct User: Codable {
     var securityContext: String?
     var phone: String?
     var personalIdentificationNumber: String?
+    
+    var firebaseToken: String?
     
     var fullName: String {
         return (firstName ?? "") + " " + (middleName ?? "") + " " + (lastName ?? "")

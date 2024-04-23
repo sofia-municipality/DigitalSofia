@@ -72,7 +72,7 @@ export const Keycloak_Tenant_Client = "forms-flow-web";
 export const KEYCLOAK_REALM =
   (window._env_ && window._env_.REACT_APP_KEYCLOAK_URL_REALM) ||
   process.env.REACT_APP_KEYCLOAK_URL_REALM ||
-  "forms-flow-ai";
+  "eServices";
 export const KEYCLOAK_URL =
   (window._env_ && window._env_.REACT_APP_KEYCLOAK_URL) ||
   process.env.REACT_APP_KEYCLOAK_URL;
@@ -82,7 +82,17 @@ export const CLIENT = "formsflow-client";
 export const STAFF_DESIGNER = "formsflow-designer";
 export const STAFF_REVIEWER = "formsflow-reviewer";
 export const PAGE_ADMIN = "formsflow-page-admin";
+export const ADMIN = "formsflow-admin";
+export const ANALYTICS_VIEWER = "formsflow-analytics-viewer";
 export const ANONYMOUS_USER = "anonymous";
+
+export const ADMIN_ROLES = [
+  STAFF_DESIGNER,
+  STAFF_REVIEWER,
+  PAGE_ADMIN,
+  ADMIN,
+  ANALYTICS_VIEWER,
+];
 
 export const OPERATIONS = {
   insert: {
@@ -283,6 +293,19 @@ export const TAX_CATEGORIES_IDENTIFIER_PROP = {
   [TAX_CATEGORIES.VEHICLE]: "registerNo",
 };
 
+export const PAYMENT_STATUS = {
+  PENDING: "Pending",
+  PAID: "Paid",
+  EXPIRED: "Expired",
+  CANCELED: "Canceled",
+  IN_PROCESS: "Inprocess",
+};
+
+export const PAYMENT_RETRY_ENABLED_STATUSES = [
+  PAYMENT_STATUS.EXPIRED,
+  PAYMENT_STATUS.CANCELED,
+];
+
 export const REACT_APP_ENV =
   (window._env_ && window._env_.REACT_APP_ENV) || process.env.REACT_APP_ENV;
 
@@ -326,6 +349,40 @@ export const TASK_LIST_DISABLE_FILTER_ENABLED =
   TASK_LIST_DISABLE_FILTER_VARIABLE === true
     ? true
     : false;
+
+const TRANSLATE_BPMN_MODELER_VARIABLE =
+  (window._env_ && window._env_.REACT_APP_TRANSLATE_BPMN_MODELER) ||
+  process.env.REACT_APP_TRANSLATE_BPMN_MODELER ||
+  false;
+
+export const TRANSLATE_BPMN_MODELER =
+  TRANSLATE_BPMN_MODELER_VARIABLE === "true" ||
+  TRANSLATE_BPMN_MODELER_VARIABLE === true
+    ? true
+    : false;
+
+const TRANSLATE_FORM_BUILDER_VARIABLE =
+  (window._env_ && window._env_.REACT_APP_TRANSLATE_FORM_BUILDER) ||
+  process.env.REACT_APP_TRANSLATE_FORM_BUILDER ||
+  false;
+
+export const TRANSLATE_FORM_BUILDER =
+  TRANSLATE_FORM_BUILDER_VARIABLE === "true" ||
+  TRANSLATE_FORM_BUILDER_VARIABLE === true
+    ? true
+    : false;
+
+const MY_SERVICES_LOCAL_TAXES_ENABLED_VARIABLE =
+  (window._env_ && window._env_.REACT_APP_MY_SERVICES_LOCAL_TAXES_ENABLED) ||
+  process.env.REACT_APP_MY_SERVICES_LOCAL_TAXES_ENABLED ||
+  false;
+
+export const MY_SERVICES_LOCAL_TAXES_ENABLED =
+  MY_SERVICES_LOCAL_TAXES_ENABLED_VARIABLE === "true" ||
+  MY_SERVICES_LOCAL_TAXES_ENABLED_VARIABLE === true
+    ? true
+    : false;
+
 export const ENABLE_FORMS_MODULE =
   window._env_?.REACT_APP_ENABLE_FORMS_MODULE === "false" ||
   window._env_?.REACT_APP_ENABLE_FORMS_MODULE === false
@@ -355,3 +412,74 @@ export const ENABLE_APPLICATIONS_MODULE =
   window._env_?.REACT_APP_ENABLE_APPLICATIONS_MODULE === false
     ? false
     : true;
+
+const SM_NEW_DESIGN_ENABLED_VARIABLE =
+  (window._env_ && window._env_.REACT_APP_SM_NEW_DESIGN_ENABLED) ||
+  process.env.REACT_APP_SM_NEW_DESIGN_ENABLED ||
+  false;
+
+export const SM_NEW_DESIGN_ENABLED =
+  SM_NEW_DESIGN_ENABLED_VARIABLE === "true" ||
+  SM_NEW_DESIGN_ENABLED_VARIABLE === true
+    ? true
+    : false;
+
+export const EPAYMENT_REDIRECT_URL =
+  (window._env_ && window._env_.REACT_APP_EPAYMENT_REDIRECT_URL) ||
+  process.env.REACT_APP_EPAYMENT_REDIRECT_URL ||
+  "/";
+
+export const EPAYMENT_ACCESS_CODE_LOGIN_URL =
+  (window._env_ && window._env_.REACT_APP_EPAYMENT_ACCESS_CODE_LOGIN_URL) ||
+  process.env.REACT_APP_EPAYMENT_ACCESS_CODE_LOGIN_URL ||
+  "/";
+
+export const ASSURANCE_LEVEL = {
+  LOW: "LOW",
+  SUBSTANTIAL: "SUBSTANTIAL",
+  HIGH: "HIGH",
+};
+
+export const ASSURANCE_LEVEL_MAPPING = {
+  [ASSURANCE_LEVEL.LOW]: 0,
+  [ASSURANCE_LEVEL.SUBSTANTIAL]: 1,
+  [ASSURANCE_LEVEL.HIGH]: 2,
+};
+
+const PERNAMENT_ADDRESS_ASSURANCE_LEVEL =
+  (window._env_ && window._env_.REACT_APP_PERNAMENT_ADDRESS_ASSURANCE_LEVEL) ||
+  process.env.REACT_APP_PERNAMENT_ADDRESS_ASSURANCE_LEVEL ||
+  ASSURANCE_LEVEL.HIGH;
+
+const CURRENT_ADDRESS_ASSURANCE_LEVEL =
+  (window._env_ && window._env_.REACT_APP_CURRENT_ADDRESS_ASSURANCE_LEVEL) ||
+  process.env.REACT_APP_CURRENT_ADDRESS_ASSURANCE_LEVEL ||
+  ASSURANCE_LEVEL.HIGH;
+
+const LOCAL_TAXES_ASSURANCE_LEVEL =
+  (window._env_ && window._env_.REACT_APP_LOCAL_TAXES_ASSURANCE_LEVEL) ||
+  process.env.REACT_APP_LOCAL_TAXES_ASSURANCE_LEVEL ||
+  ASSURANCE_LEVEL.SUBSTANTIAL;
+
+export const SERVICES_NAMES = {
+  PERNAMENT_ADDRESS: PERMANENT_ADDRESS_FORM_PATH,
+  CURRENT_ADDRESS: CURRENT_ADDRESS_FORM_PATH,
+  LOCAL_TAXES: "LOCAL_TAXES",
+};
+
+export const SERVICES_ASSURANCE_LEVEL = {
+  [SERVICES_NAMES.PERNAMENT_ADDRESS]: PERNAMENT_ADDRESS_ASSURANCE_LEVEL,
+  [SERVICES_NAMES.CURRENT_ADDRESS]: CURRENT_ADDRESS_ASSURANCE_LEVEL,
+  [SERVICES_NAMES.LOCAL_TAXES]: LOCAL_TAXES_ASSURANCE_LEVEL,
+};
+
+const CHECK_ASSURANCE_LEVEL_VARIABLE =
+  (window._env_ && window._env_.REACT_APP_CHECK_ASSURANCE_LEVEL_ENABLED) ||
+  process.env.REACT_APP_CHECK_ASSURANCE_LEVEL_ENABLED ||
+  false;
+
+export const CHECK_ASSURANCE_LEVEL_ENABLED =
+  CHECK_ASSURANCE_LEVEL_VARIABLE === "true" ||
+  CHECK_ASSURANCE_LEVEL_VARIABLE === true
+    ? true
+    : false;

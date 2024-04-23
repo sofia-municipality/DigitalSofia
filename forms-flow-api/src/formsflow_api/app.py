@@ -30,6 +30,7 @@ from formsflow_api import config, models
 from formsflow_api.models import db, ma
 from formsflow_api.resources import API
 from formsflow_api.commands import SeedBlueprint, CronBlueprint
+from formsflow_api.services import FirebaseService
 
 
 def create_app(run_mode=os.getenv("FLASK_ENV", "production")):
@@ -57,9 +58,9 @@ def create_app(run_mode=os.getenv("FLASK_ENV", "production")):
     app.logger.handlers = [logs]
     app.logger.propagate = False
     logging.log.propagate = False
-    with open("logo.txt") as file:  # pylint: disable=unspecified-encoding
-        contents = file.read()
-        print(contents)
+    # with open("logo.txt") as file:  # pylint: disable=unspecified-encoding
+    #     contents = file.read()
+    #     print(contents)
     app.logger.info("Welcome to formsflow-API server...!")
     db.init_app(app)
     ma.init_app(app)
@@ -97,8 +98,12 @@ def create_app(run_mode=os.getenv("FLASK_ENV", "production")):
                 HTTPStatus.UNAUTHORIZED,
                 HTTPStatus.FORBIDDEN,
                 HTTPStatus.NOT_FOUND,
+                HTTPStatus.UNPROCESSABLE_ENTITY
             ]:
-                lang = g.token_info["locale"]
+                token_info = g.get("token_info", None)
+                if not token_info:
+                    return response
+                lang = token_info.get("locale", None)
                 if lang == "en":
                     return response
                 json_response = response.get_json()

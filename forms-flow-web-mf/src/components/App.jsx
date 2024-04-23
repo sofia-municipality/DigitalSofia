@@ -14,14 +14,18 @@ import Loading from '../containers/Loading';
 
 const LanguageProvider = ({ publish, children }) => {
   const tenantId = useSelector((state) => state.tenants?.tenantId);
-  const [areTranslationsReady, setAreTranslationsReady] = useState();
+  const [areTranslationsReady, setAreTranslationsReady] = useState(false);
 
 
   useEffect(() => {
-    TranslationsService.loadTranslations(tenantId, MULTITENANCY_ENABLED, () => {
-      publish("FF_TRANSLATIONS_READY", true);
+    if(!TranslationsService.areTranslationsLoaded()) {
+      TranslationsService.loadTranslations(tenantId, MULTITENANCY_ENABLED, () => {
+        publish("FF_TRANSLATIONS_READY", true);
+        setAreTranslationsReady(true);
+      });
+    } else {
       setAreTranslationsReady(true);
-    });
+    }
   }, [tenantId]);
 
   return areTranslationsReady ? <>{children}</> : <Loading />;

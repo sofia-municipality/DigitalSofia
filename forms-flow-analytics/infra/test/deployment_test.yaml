@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-flow-analytics
+  namespace : forms-flow-analytics
+  labels:
+    app.kubernetes.io/name: formflowwebanalytics
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: formflowwebanalytics
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: formflowwebanalytics
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: form-flow-analytics
+          image: formsflow/redash:10.1.4
+          ports:
+            - containerPort: 7000
+              name: analytics
+              protocol: TCP
+          env:
+            - name: REDASH_HOST
+              value: "http://localhost:7000"
+            - name: PYTHONUNBUFFERED
+              value: "0"
+            - name: REDASH_LOG_LEVEL
+              value: "INFO"
+            - name: REDASH_REDIS_URL
+              value: "redis://redis:6379/0"
+            - name: POSTGRES_USER
+              value: "redistest"
+            - name: POSTGRES_PASSWORD
+              value: "jw8s0F4"
+            - name: POSTGRES_DB
+              value: "redisdbtest"
+            - name: REDASH_COOKIE_SECRET
+              value: "redash-selfhosted"
+            - name: REDASH_SECRET_KEY
+              value: "redash-selfhosted"
+            - name: REDASH_DATABASE_URL
+              value: "postgresql://redis:jw8s0F4@192.168.201.46/redisdb"
+            - name: REDASH_CORS_ACCESS_CONTROL_ALLOW_ORIGIN
+              value: "*"
+            - name: REDASH_REFERRER_POLICY
+              value: "no-referrer-when-downgrade"
+            - name: REDASH_CORS_ACCESS_CONTROL_ALLOW_HEADERS
+              value: "Content-Type, Authorization"

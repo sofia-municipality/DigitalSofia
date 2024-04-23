@@ -29,6 +29,9 @@ class PaymentRequest(AuditDateTimeMixin,
     @staticmethod
     def get_by_application_id(application_id: int):
         return PaymentRequest.query.filter_by(application_id=application_id).first()
+    @staticmethod
+    def get_by_payment_id(payment_id: str):
+        return PaymentRequest.query.filter_by(payment_id=payment_id).first()
 
     def to_json(self):
         return {

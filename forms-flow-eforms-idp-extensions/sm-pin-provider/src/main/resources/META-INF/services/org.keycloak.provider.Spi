@@ -2,3 +2,6 @@ com.bulpros.keycloak.phone.providers.spi.PinVerificationCodeSpi
 com.bulpros.keycloak.phone.providers.spi.PinSpi
 com.bulpros.keycloak.phone.providers.spi.MessageSenderServiceSpi
 com.bulpros.keycloak.phone.providers.spi.UserCheckSpi
+com.bulpros.keycloak.phone.providers.spi.CodeStatusCheckSpi
+com.bulpros.keycloak.phone.providers.spi.MobileLoginSpi
+com.bulpros.keycloak.phone.providers.spi.EvrotrustSpi

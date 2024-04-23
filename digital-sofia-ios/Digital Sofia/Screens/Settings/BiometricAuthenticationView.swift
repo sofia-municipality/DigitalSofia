@@ -21,8 +21,11 @@ enum DSSecurityOptions: CaseIterable {
 }
 
 struct BiometricAuthenticationView: View {
-    @State private var isTouchIdEnabled: Bool = UserProvider.shared.getUser()?.useBiometrics ?? false
-    @State private var isFaceIdEnabled: Bool = UserProvider.shared.getUser()?.useBiometrics ?? false
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var networkMonitor: NetworkMonitor
+    
+    @State private var isTouchIdEnabled: Bool = UserProvider.biometricsAvailable
+    @State private var isFaceIdEnabled: Bool = UserProvider.biometricsAvailable
     
     var body: some View {
         VStack() {
@@ -44,6 +47,7 @@ struct BiometricAuthenticationView: View {
                 }
                 
                 if BiometricProvider.biometricType == .face {
+                    let _ = print(isFaceIdEnabled)
                     CustomToggleView(title: DSSecurityOptions.faceId.description, fontSize: DSFonts.FontSize.XL, toggle: $isFaceIdEnabled)
                         .onChange(of: isFaceIdEnabled, perform: { value in
                             if value {
@@ -58,8 +62,12 @@ struct BiometricAuthenticationView: View {
             
             Spacer()
         }
-        .background(DSColors.background)
-        .navigationBarHidden(true)
+        .alert()
+        .lockScreen()
+        .loginNotification()
+        .environmentObject(appState)
+        .environmentObject(networkMonitor)
+        .backgroundAndNavigation()
     }
     
     private func setUpBiometrics() {
@@ -78,12 +86,14 @@ struct BiometricAuthenticationView: View {
                 } else {
                     isTouchIdEnabled = false
                 }
+                
+                appState.alertItem = AlertProvider.errorAlert(message: error?.description ?? "")
             }
         }
     }
     
     private func setUSerBiometricsStatus(active: Bool) {
-        var user = UserProvider.shared.getUser()
+        var user = UserProvider.currentUser
         user?.useBiometrics = active
         UserProvider.shared.save(user: user)
     }

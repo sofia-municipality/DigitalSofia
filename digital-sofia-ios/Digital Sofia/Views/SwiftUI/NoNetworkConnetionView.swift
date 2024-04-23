@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct NoNetworkConnetionView: View {
-    var reload: (() -> ())?
-    
     private let sidePadding = AppConfig.Dimensions.Padding.XXXL
     
     var body: some View {
@@ -18,17 +16,10 @@ struct NoNetworkConnetionView: View {
                 .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, weight: DSFonts.FontWeight.bold, size: DSFonts.FontSize.XXL))
                 .foregroundColor(DSColors.Text.indigoDark)
                 .frame(maxWidth: .infinity, alignment: .center)
+                .multilineTextAlignment(.center)
                 .padding([.leading, .trailing], sidePadding)
                 .padding(.top, AppConfig.Dimensions.Padding.large)
-                .padding(.bottom, AppConfig.Dimensions.Padding.XXL)
-            
-            Spacer()
-            
-            BlueBackgroundButton(title: AppConfig.UI.Titles.Button.reload.localized) {
-                reload?()
-            }
-            
-            Spacer()
+                .padding(.bottom, sidePadding * 2)
         }
     }
 }

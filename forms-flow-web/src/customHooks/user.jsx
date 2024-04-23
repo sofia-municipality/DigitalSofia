@@ -1,21 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useStore, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useTimer } from "react-timer-hook";
 import querystring from "querystring";
 
-import { TENANT_ID } from "../constants/constants";
+import {
+  TENANT_ID,
+  ASSURANCE_LEVEL,
+  SERVICES_ASSURANCE_LEVEL,
+  ASSURANCE_LEVEL_MAPPING,
+} from "../constants/constants";
 import { setTenantFromId } from "../apiManager/services/tenantServices";
 import UserService from "../services/UserService";
 
 export const useLogin = () => {
   const store = useStore();
 
-  return (redirectUri) => UserService.userLogin({ store, redirectUri });
+  return (options, forceLogin) =>
+    UserService.userLogin({ store, options, forceLogin });
 };
 
 export const useLogout = () => {
-  return () => UserService.userLogout();
+  return (shouldClearUrlParams) => UserService.userLogout(shouldClearUrlParams);
 };
 
 export const useInitKeycloak = () => {
@@ -33,10 +39,18 @@ export const useInitKeycloak = () => {
         token: externalToken,
         refreshToken: externalRefreshToken,
         hideNav,
+        showRequestServiceLink,
       } = params;
 
       if (hideNav) {
         localStorage.setItem("hideNav", hideNav);
+      }
+
+      if (showRequestServiceLink) {
+        sessionStorage.setItem(
+          "showRequestServiceLink",
+          showRequestServiceLink
+        );
       }
 
       if (externalToken) {
@@ -105,4 +119,35 @@ export const useTokenExpireTimer = () => {
     timeLeft: ((((hours * 60) + minutes) * 60) + seconds) * 1000,
     initialTime: expirationDate.getTime() - initialDate?.getTime(),
   };
+};
+
+export const useGetUserAssuranceLevel = () => {
+  const userDetails = useSelector((state) => state?.user?.userDetail);
+  const tokenAssuranceLevel = userDetails?.assurance_level;
+  const authProvider = userDetails?.auth_provider;
+
+  if (authProvider === "digitalSofia") {
+    return ASSURANCE_LEVEL.HIGH;
+  }
+
+  return tokenAssuranceLevel;
+};
+
+export const useCheckUserAssuranceLevel = () => {
+  const userAssuranceLevel = useGetUserAssuranceLevel();
+  return useCallback(
+    (serviceName) => {
+      const requiredAssuranceLevel = SERVICES_ASSURANCE_LEVEL[serviceName];
+      let isPassed = false;
+
+      if (Object.values(ASSURANCE_LEVEL).includes(userAssuranceLevel)) {
+        isPassed =
+          ASSURANCE_LEVEL_MAPPING[userAssuranceLevel] >=
+          ASSURANCE_LEVEL_MAPPING[requiredAssuranceLevel];
+      }
+
+      return { isPassed, requiredAssuranceLevel };
+    },
+    [userAssuranceLevel]
+  );
 };

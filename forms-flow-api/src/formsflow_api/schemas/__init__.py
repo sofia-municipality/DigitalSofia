@@ -14,6 +14,11 @@ from formsflow_api.schemas.application import (
     ApplicationPermittedSchema
 )
 from formsflow_api.schemas.application_history import ApplicationHistorySchema
+from formsflow_api.schemas.application_processing import (
+    ApplicationProcessingCreateRequest,
+    ApplicationDocumentProcessedRequest,
+    ApplicationProcessingChangeAssigneesRequest
+)
 from formsflow_api.schemas.draft import DraftListSchema, DraftSchema
 from formsflow_api.schemas.page_block import PageBlockSchema, PageBlockListSchema
 from formsflow_api.schemas.faq import FAQSchema, FAQListSchema
@@ -39,5 +44,7 @@ from .address_kad import AddressKADSchema
 from .address_kra import AddressKRASchema
 from .services import ServicesListSchema
 from .kep_signature import KEPSignatureRequest
-from .payment import PaymentSchema
+from .payment import PaymentSchema, PaymentCancelledResolveSchema
 from .tenant import TenantSchema
+from .mateus_payment_group import MateusPaymentGroupSchema
+from .mateus_payment_request import MateusPaymentRequestSchema

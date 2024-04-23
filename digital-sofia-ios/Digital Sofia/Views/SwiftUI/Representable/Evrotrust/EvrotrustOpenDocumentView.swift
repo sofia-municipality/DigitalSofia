@@ -16,6 +16,9 @@ struct EvrotrustOpenDocumentView: UIViewControllerRepresentable {
     var completion: EvrotrustOpenDocumentViewCompletion?
     
     fileprivate var docVC = Evrotrust.sdk()?.createEvrotrustOpenDocumentViewController()
+    fileprivate var user: User? {
+        return UserProvider.currentUser
+    }
     
     init(transactionId: String?, completion: EvrotrustOpenDocumentViewCompletion?) {
         self.transactionId = transactionId
@@ -23,13 +26,14 @@ struct EvrotrustOpenDocumentView: UIViewControllerRepresentable {
     }
     
     func makeUIViewController(context: Context) -> some UIViewController {
-        let user = UserProvider.shared.getUser()
-        
         if let docVC = docVC {
             docVC.delegate = context.coordinator
             docVC.securityContext = user?.securityContext
             docVC.transactionID = transactionId
             docVC.isSingleDocument = true
+            
+            LoggingHelper.logSDKOpenDocumentStart(securityContext: user?.securityContext ?? "",
+                                                  transactionId: transactionId ?? "")
             
             return docVC as UIViewController
         }
@@ -53,6 +57,7 @@ final class EvrotrustOpenDocumentViewCoordinator: NSObject, EvrotrustOpenDocumen
     }
     
     func evrotrustOpenSingleDocumentDidFinish(_ result: EvrotrustOpenDocumentResult!) {
+        LoggingHelper.logSDKOpenDocumentResult(result: result)
         switch result.status {
         case .OK:
             parent.completion?(result.userDecision, nil)
@@ -63,7 +68,7 @@ final class EvrotrustOpenDocumentViewCoordinator: NSObject, EvrotrustOpenDocumen
         case .userNotSetUp:
             parent.completion?(nil, EvrotrustError.userNotSetUp)
         case .sdkNotSetUp:
-            parent.completion?(nil, EvrotrustError.sdkNotSetUp)
+            EvrotrustError.sdkNotSetupHandler()
         default: break
         }
     }

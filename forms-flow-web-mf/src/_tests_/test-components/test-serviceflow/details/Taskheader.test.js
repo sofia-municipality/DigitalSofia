@@ -1,13 +1,16 @@
+/* eslint-disable no-import-assign */
 import TaskHeader from "../../../../components/ServiceFlow/details/TaskHeader";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { fireEvent, render, screen } from "@testing-library/react";
+import * as constants from "../../../../constants/constants";
 import "@testing-library/jest-dom/extend-expect";
 
 let store;
 let mockStore = configureStore([]);
 
 it("Should render the Taskheader component without breaking", () => {
+  constants.TASK_PAGE_TASK_HEADER_ACTIONS_ENABLED = true;
   store = mockStore({
     bpmTasks: {
       taskDetail: {

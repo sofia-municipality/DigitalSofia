@@ -115,36 +115,38 @@ const ProfileOverlay = ({ showOverlay, position, hideOverlay }) => {
     >
       <div className="container-fluid">
         <div className={`row ${styles.overlayMenu}`}>
-          {menuConfig.map(({ id, title, Icon, iconColorClass, href }, index) =>
-            id === "logoutCta" ? (
-              <div className="col-12" key={index}>
-                <Button
-                  className={styles.logoutCta}
-                  onClick={logout}
-                  onBlur={hideOverlay}
-                >
-                  <span>
-                    <Icon className={`${styles.icon} ${iconColorClass}`} />
-                  </span>
-                  <span>{t(title)}</span>
-                </Button>
-              </div>
-            ) : (
-              <div className="col-12" key={index}>
-                <Nav.Link
-                  as={NavLink}
-                  to={href}
-                  className={`${styles.navLink}`}
-                  onClick={hideOverlay}
-                >
-                  <span>
-                    <Icon className={`${styles.icon} ${iconColorClass}`} />
-                  </span>
-                  <span>{t(title)}</span>
-                </Nav.Link>
-              </div>
-            )
-          )}
+          {menuConfig
+            .filter((e) => !e.condition || (e.condition && e.condition()))
+            .map(({ id, title, Icon, iconColorClass, href }, index) =>
+              id === "logoutCta" ? (
+                <div className="col-12" key={index}>
+                  <Button
+                    className={styles.logoutCta}
+                    onClick={logout}
+                    onBlur={hideOverlay}
+                  >
+                    <span>
+                      <Icon className={`${styles.icon} ${iconColorClass}`} />
+                    </span>
+                    <span>{t(title)}</span>
+                  </Button>
+                </div>
+              ) : (
+                <div className="col-12" key={index}>
+                  <Nav.Link
+                    as={NavLink}
+                    to={href}
+                    className={`${styles.navLink}`}
+                    onClick={hideOverlay}
+                  >
+                    <span>
+                      <Icon className={`${styles.icon} ${iconColorClass}`} />
+                    </span>
+                    <span>{t(title)}</span>
+                  </Nav.Link>
+                </div>
+              )
+            )}
         </div>
       </div>
     </div>

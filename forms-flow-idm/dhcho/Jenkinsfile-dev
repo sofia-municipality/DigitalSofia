@@ -33,6 +33,9 @@ pipeline {
                  sh 'curl http://172.23.230.131:8081/repository/sofmun/com%2Fbulpros%2Feforms-theme%2F1.0.0%2Feforms-theme-1.0.0.jar -o keycloak/eforms-theme-1.0.0.jar'
                  sh 'curl http://172.23.230.131:8081/repository/sofmun/com%2Fbulpros%2Fsm-pin-provider%2F1.0.0%2Fsm-pin-provider-1.0.0.jar -o keycloak/sm-pin-provider-1.0.0.jar'
                  sh 'curl http://172.23.230.131:8081/repository/sofmun/com%2Fbulpros%2Fsm-theme%2F1.0.0%2Fsm-theme-1.0.0.jar -o keycloak/sm-theme-1.0.0.jar'
+                 sh 'curl http://172.23.230.131:8081/repository/sofmun/com%2Fbulpros%2FeServices-theme%2F1.0.0%2FeServices-theme-1.0.0.jar -o keycloak/eServices-theme-1.0.0.jar'
+                 sh 'curl http://172.23.230.131:8081/repository/sofmun/com%2Fbulpros%2FdigitalSofia-theme%2F1.0.0%2FdigitalSofia-theme-1.0.0.jar -o keycloak/digitalSofia-theme-1.0.0.jar'
+                 sh 'curl http://172.23.230.131:8081/repository/sofmun/com%2Fbulpros%2Fsm-firebase-provider%2F1.0.0%2Fsm-firebase-provider-1.0.0.jar -o keycloak/sm-firebase-provider-1.0.0.jar'
             }
         }
 

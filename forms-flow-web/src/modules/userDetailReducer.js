@@ -36,6 +36,11 @@ const initialState = {
   showApplications: false,
   lang: localStorage.getItem("lang") ? localStorage.getItem("lang") : LANGUAGE,
   selectLanguages: getLanguages ? JSON.parse(getLanguages) : [],
+  forbiddenModal: {
+    isOpen: false,
+    type: "",
+    requiredAssuranceLevel: null,
+  },
 };
 
 const user = (state = initialState, action) => {
@@ -45,6 +50,7 @@ const user = (state = initialState, action) => {
     case ACTION_CONSTANTS.SET_USER_TOKEN:
       localStorage.setItem("authToken", action.payload.token);
       localStorage.setItem("refreshToken", action.payload.refreshToken);
+      localStorage.removeItem("logout-event");
       return {
         ...state,
         bearerToken: action.payload.token,
@@ -83,6 +89,8 @@ const user = (state = initialState, action) => {
           "resource"
         ),
       };
+    case ACTION_CONSTANTS.OPEN_CLOSE_FORBIDDEN_MODAL:
+      return { ...state, forbiddenModal: action.payload };
     default:
       return state;
   }

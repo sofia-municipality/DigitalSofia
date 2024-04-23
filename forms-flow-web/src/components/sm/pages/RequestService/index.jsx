@@ -10,12 +10,15 @@ import SmAnimatedCta, {
 } from "../../components/buttons/SmAnimatedCta";
 
 import { PAGE_ROUTES } from "../../../../constants/navigation";
+import { SM_NEW_DESIGN_ENABLED } from "../../../../constants/constants";
 
 import styles from "./requestService.module.scss";
 
 const cards = [
   {
-    iconSrc: "/where_to_vote.svg",
+    iconSrc: SM_NEW_DESIGN_ENABLED
+      ? "/assets/Images/address-registration-card-icon.svg"
+      : "/where_to_vote.svg",
     iconActiveSrc: "/where_to_vote_filled.svg",
     title: "requestService.addressRegistration.title",
     subTitle: "requestService.addressRegistration.subtitle",
@@ -27,7 +30,9 @@ const cards = [
     },
   },
   {
-    iconSrc: "/account_balance.svg",
+    iconSrc: SM_NEW_DESIGN_ENABLED
+      ? "/assets/Images/local-taxes-card-icon.svg"
+      : "/account_balance.svg",
     iconActiveSrc: "/account_balance_filled.svg",
     title: "requestService.localTaxes.title",
     subTitle: "requestService.localTaxes.subtitle",
@@ -43,20 +48,45 @@ const cards = [
   },
 ];
 
+const PageIcon = () => (
+  <img
+    className={styles.pageIcon}
+    width="70px"
+    height="70px"
+    alt=""
+    src="/assets/Images/request-service-icon.svg"
+  />
+);
+
+const MyServicesLinkIcon = () => (
+  <img
+    width="40px"
+    height="40px"
+    className={styles.myServiceLinkIcon}
+    alt=""
+    src="/assets/Images/my-services-link-icon.svg"
+  />
+);
+
 const RequestService = () => {
   const { t } = useTranslation();
   return (
     <PageContainer>
       <ServiceContainer
         title={t("requestService.title")}
-        TitleIcon={EditOutlinedIcon}
+        TitleIcon={SM_NEW_DESIGN_ENABLED ? PageIcon : EditOutlinedIcon}
         titleIconClass="text-sm-orange"
         link={PAGE_ROUTES.MY_SERVICES}
         linkText={t("requestService.link")}
-        LinkIcon={TaskOutlinedIcon}
+        LinkIcon={SM_NEW_DESIGN_ENABLED ? MyServicesLinkIcon : TaskOutlinedIcon}
         linkIconClass="text-sm-blue"
+        linkClass={SM_NEW_DESIGN_ENABLED ? styles.myServicesPageLink : ""}
       >
-        <div className={`row no-gutters ${styles.createSection}`}>
+        <div
+          className={`row no-gutters ${styles.createSection} ${
+            SM_NEW_DESIGN_ENABLED ? styles.createSectionNewDesign : ""
+          }`}
+        >
           {cards.map(
             (
               {
@@ -72,19 +102,25 @@ const RequestService = () => {
             ) => (
               <div key={index} className={`col ${styles.sectionCard}`}>
                 <div>
-                  <div className={styles.imgWrapper}>
-                    <img
-                      src="/iconBorder.svg"
-                      alt=""
-                      className={styles.imgBorder}
-                    />
-                    <img className={styles.icon} src={iconSrc} alt="" />
-                    <img
-                      className={`${styles.icon} ${styles.iconActive}`}
-                      src={iconActiveSrc}
-                      alt=""
-                    />
-                  </div>
+                  {SM_NEW_DESIGN_ENABLED ? (
+                    <div className={styles.cardIcon}>
+                      <img src={iconSrc} alt="" />
+                    </div>
+                  ) : (
+                    <div className={styles.imgWrapper}>
+                      <img
+                        src="/iconBorder.svg"
+                        alt=""
+                        className={styles.imgBorder}
+                      />
+                      <img className={styles.icon} src={iconSrc} alt="" />
+                      <img
+                        className={`${styles.icon} ${styles.iconActive}`}
+                        src={iconActiveSrc}
+                        alt=""
+                      />
+                    </div>
+                  )}
                   <h1 className={styles.title}>{t(title)}</h1>
                   <h2 className={styles.subTitle}>{t(subTitle)}</h2>
                   <p className={styles.description}>{t(description)}</p>

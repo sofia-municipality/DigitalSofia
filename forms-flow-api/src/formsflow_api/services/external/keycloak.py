@@ -23,7 +23,11 @@ class KeycloakAdminAPIService:
         bpm_client_id = current_app.config.get("BPM_CLIENT_ID")
         bpm_client_secret = current_app.config.get("BPM_CLIENT_SECRET")
         bpm_grant_type = current_app.config.get("BPM_GRANT_TYPE")
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache"
+        }
         payload = {
             "client_id": bpm_client_id,
             "client_secret": bpm_client_secret,
@@ -46,6 +50,8 @@ class KeycloakAdminAPIService:
             f"{current_app.config.get('KEYCLOAK_URL_REALM')}"
         )
 
+        self.bpm_token_api = current_app.config.get("BPM_TOKEN_API")
+
     @profiletime
     def get_request(self, url_path):
         """Method to fetch get request of Keycloak Admin APIs.
@@ -54,7 +60,14 @@ class KeycloakAdminAPIService:
         """
         current_app.logger.debug("Establishing new connection to keycloak...")
         url = f"{self.base_url}/{url_path}"
-        response = self.session.request("GET", url)
+        response = self.session.request(
+            "GET", 
+            url, 
+            headers={
+                "Cache-Control": "no-cache",
+                "Pragma": "no-cache"
+            }
+        )
         current_app.logger.debug(f"keycloak Admin API get request URL: {url}")
         current_app.logger.debug(f"Keycloak response: {response.json()}")
         response.raise_for_status()
@@ -214,6 +227,15 @@ class KeycloakAdminAPIService:
         return response
 
     @profiletime
+    def get_user(self, user: str):
+        """Return list of groups that the given user is part of."""
+        return self.get_request(f"users/{user}")
+
+    @profiletime
+    def impersonate_user(self, user:str):
+        return self.create_request(f"users/{user}/impersonation")
+
+    @profiletime
     def get_user_groups(self, user: str):
         """Return list of groups that the given user is part of."""
         return self.get_request(f"users/{user}/groups")
@@ -241,3 +263,22 @@ class KeycloakAdminAPIService:
         if search:
             url += f"?search={search}"
         return self.get_request(url_path=url)
+    
+    @profiletime
+    def refresh_token(self, client_id, refresh_token):
+        url = self.bpm_token_api
+        
+        response = requests.post(
+            url=url,
+            data={
+                "client_id": client_id,
+                "grant_type": "refresh_token",
+                "refresh_token": refresh_token
+            },
+            headers={'Content-Type': 'application/x-www-form-urlencoded'}
+        )
+
+        if response.ok:
+            return response.json()
+        
+        return None

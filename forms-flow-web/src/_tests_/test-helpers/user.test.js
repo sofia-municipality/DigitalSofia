@@ -3,7 +3,7 @@ import {
   getUserRolePermission,
   getNameFromEmail,
   setShowApplications,
-  userAccessGroupCheck
+  userAccessGroupCheck,
 } from "../../helper/user";
 import "@testing-library/jest-dom/extend-expect";
 
@@ -59,8 +59,6 @@ test("should check wheather to show applications or not", () => {
     ])
   ).toBeTruthy();
 });
-
-
 
 afterAll(() => {
   userAccessGroupCheck.accessAllowApplications = false;

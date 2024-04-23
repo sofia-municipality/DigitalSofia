@@ -147,12 +147,12 @@ const applicationStatusHiddenComponent = {
 const APPLICATION_ID_KEY = "applicationId";
 const APPLICATION_STATUS_KEY = "applicationStatus";
 
-const removeComponent  = (components, target) => {
-  const targetIndex = components.findIndex(item=> item.key === target);
-  if(targetIndex !== -1){
-    components.splice(targetIndex,1);
-  }
-};
+// const removeComponent  = (components, target) => {
+//   const targetIndex = components.findIndex(item=> item.key === target);
+//   if(targetIndex !== -1){
+//     components.splice(targetIndex,1);
+//   }
+// };
 
 export const addHiddenApplicationComponent = (form) => {
   const {components} = form;
@@ -160,38 +160,38 @@ export const addHiddenApplicationComponent = (form) => {
   
  
   if (flatternComponent[APPLICATION_ID_KEY]) {
-    if (form.display === "wizard") {
-       // if application id is exist : remove the component form if it is wizard display
-      removeComponent(components, APPLICATION_ID_KEY);
-      let findPanel = components.find(component=> component.type == "panel");
-       if(findPanel){
-        const applicationExist = findPanel.components.some(item => item.key === APPLICATION_ID_KEY);
-        !applicationExist && findPanel.components.push(applicationIDHiddenComponent);  
-       }
+    // if (form.display === "wizard") {
+    //    // if application id is exist : remove the component form if it is wizard display
+    //   removeComponent(components, APPLICATION_ID_KEY);
+    //   let findPanel = components.find(component=> component.type == "panel");
+    //    if(findPanel){
+    //     const applicationExist = findPanel.components.some(item => item.key === APPLICATION_ID_KEY);
+    //     !applicationExist && findPanel.components.push(applicationIDHiddenComponent);  
+    //    }
        
-    }
-  }else{
+    // }
+  } else {
     if(form.display === "wizard"){
       let findPanel = components.find(component=> component.type == "panel");
       if(findPanel){
         findPanel.components.push(applicationIDHiddenComponent);
       }
-  }else{
+  } else {
     components.push(applicationIDHiddenComponent);
   }
 }
   
   if (flatternComponent[APPLICATION_STATUS_KEY]) {
-    if (form.display === "wizard") {
-     // if application status is exist : remove the component form if it is wizard display
-      removeComponent(components, APPLICATION_STATUS_KEY);
-      let findPanel = components.find(component=> component.type == "panel");
-       if(findPanel){
-        const applicationExist = findPanel.components.some(item => 
-          item.key === APPLICATION_STATUS_KEY);
-          !applicationExist && findPanel.components.push(applicationStatusHiddenComponent);
-       }
-    }
+    // if (form.display === "wizard") {
+    //  // if application status is exist : remove the component form if it is wizard display
+    //   removeComponent(components, APPLICATION_STATUS_KEY);
+    //   let findPanel = components.find(component=> component.type == "panel");
+    //    if(findPanel){
+    //     const applicationExist = findPanel.components.some(item => 
+    //       item.key === APPLICATION_STATUS_KEY);
+    //       !applicationExist && findPanel.components.push(applicationStatusHiddenComponent);
+    //    }
+    // }
   } else {
     if(form.display === "wizard"){
       let findPanel = components.find(component=> component.type == "panel");

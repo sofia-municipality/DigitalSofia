@@ -13,7 +13,7 @@ import java.util.Date;
 public class PayModelRequest {
 
     private int companyId;
-    private int operatorId;
+    private Long operatorId;
     private String agentTransactionId;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:sss'Z'")
     private Date agentTransactionDate;

@@ -35,7 +35,7 @@ struct WelcomeUserView: View {
             Spacer()
             Spacer()
             
-            viewModel.state == .success ? AnyView(goToHomeButton()) : AnyView(startAgainButton())
+            welcomeView
             
             Spacer()
         }
@@ -49,11 +49,23 @@ struct WelcomeUserView: View {
                                                 userInfo: [:])
             }
         }
+        .log(view: self)
+    }
+    
+    @ViewBuilder
+    var welcomeView: some View {
+        if viewModel.state == .success {
+            goToHomeButton()
+        } else {
+            startAgainButton()
+        }
     }
     
     private func navigation() -> some View {
         VStack {
-            NavigationLink(destination: TabbarView(appState: appState).environmentObject(networkMonitor),
+            NavigationLink(destination: TabbarView()
+                .environmentObject(appState)
+                .environmentObject(networkMonitor),
                            isActive: $showHomeScreen) { EmptyView() }
             
         }
@@ -70,7 +82,9 @@ struct WelcomeUserView: View {
     
     private func titleLabel() -> some View {
         Text(viewModel.state == .success ? AppConfig.UI.Text.welcomeUserOkTitle.localized : AppConfig.UI.Alert.welcomeUserErrorTitle.localized)
-            .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.firaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.XLarge))
+            .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.firaSans, 
+                                        weight: DSFonts.FontWeight.regular,
+                                        size: DSFonts.FontSize.XLarge))
             .foregroundColor(DSColors.Text.indigoDark)
             .frame(maxWidth: .infinity, alignment: .center)
     }
@@ -85,7 +99,9 @@ struct WelcomeUserView: View {
         }
         
         return Text(message)
-            .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.firaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.large))
+            .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.firaSans, 
+                                        weight: DSFonts.FontWeight.regular,
+                                        size: DSFonts.FontSize.large)) 
             .foregroundColor(DSColors.Text.indigoDark)
             .multilineTextAlignment(.center)
             .lineSpacing(AppConfig.Dimensions.Padding.large)
@@ -95,24 +111,27 @@ struct WelcomeUserView: View {
     
     private func startAgainButton() -> some View {
         Button(action: {
-            NotificationCenter.default.post(name: NSNotification.Name.logoutUserNotification,
-                                            object: nil,
-                                            userInfo: [:])
+            UserProvider.shared.logout()
         }) {
             Text(AppConfig.UI.Titles.Button.restartRegistration.localized)
-                .foregroundColor(DSColors.Blue.blue)
-                .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.XXXL))
+                .foregroundColor(DSColors.Blue.regular)
+                .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, 
+                                            weight: DSFonts.FontWeight.regular,
+                                            size: DSFonts.FontSize.XXXL))
         }
     }
     
     private func goToHomeButton() -> some View {
         Button(action: {
+            DocumentsNotificationHelper.resetTab()
             showHomeScreen = true
         }) {
             HStack {
                 Text(AppConfig.UI.Titles.Tabbar.service.localized)
                     .foregroundColor(.white)
-                    .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.XXL))
+                    .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, 
+                                                weight: DSFonts.FontWeight.regular,
+                                                size: DSFonts.FontSize.XXL))
             }
         }
         .buttonStyle(PlainButtonStyle())
@@ -127,12 +146,4 @@ struct WelcomeUserView_Previews: PreviewProvider {
     static var previews: some View {
         WelcomeUserView(viewModel: WelcomeUserViewModel())
     }
-}
-
-@MainActor class WelcomeUserViewModel: ObservableObject {
-    enum WelcomeUserViewState: Equatable {
-        case success, error(description: String)
-    }
-    
-    @Published var state: WelcomeUserViewState?
 }

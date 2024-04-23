@@ -1,8 +1,7 @@
 import React from "react";
 
-import TaxesContainer, {
-  TaxesContainerType,
-} from "../components/TaxesContainer";
+import { TaxesContainerType } from "../../../../components/Taxes/utils";
+import TaxesContainer from "../components/TaxesContainer";
 
 const ReferencePage = () => {
   return (

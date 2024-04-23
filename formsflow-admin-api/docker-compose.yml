@@ -1,0 +1,67 @@
+version: "3.7"
+
+services:
+  forms-flow-admin-db:
+    image: postgres:11
+    container_name: forms-flow-admin-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME:-admin}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-changeme}
+      POSTGRES_DB: ${DATABASE_NAME:-adminapi}
+    ports:
+      - "1111:5432"
+    volumes:
+      - db-data:/data/postgresql/data1
+    networks:
+      - formsflow-network
+  forms-flow-adminapi:
+    container_name: forms-flow-adminapi
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - '5010:5000'
+    volumes:
+      - ./:/app:rw
+    restart: unless-stopped
+    links:
+      - forms-flow-admin-db
+    environment:
+      FLASK_ENV: ${FLASK_ENV:-development}
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-admin}
+      DATABASE_NAME:  ${DATABASE_NAME:-adminapi}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-changeme}
+      DATABASE_HOST: ${DATABASE_HOST:-forms-flow-admin-db}
+      DATABASE_PORT: ${DATABASE_PORT:-5432}
+      JWT_OIDC_WELL_KNOWN_CONFIG: ${KEYCLOAK_URL}/auth/realms/${KEYCLOAK_URL_REALM:-multitenant}/.well-known/openid-configuration
+      JWT_OIDC_JWKS_URI: ${KEYCLOAK_URL}/auth/realms/${KEYCLOAK_URL_REALM:-multitenant}/protocol/openid-connect/certs
+      JWT_OIDC_ISSUER: ${KEYCLOAK_URL}/auth/realms/${KEYCLOAK_URL_REALM:-multitenant}
+      JWT_OIDC_AUDIENCE: ${KEYCLOAK_WEB_CLIENT_ID:-forms-flow-web}
+      JWT_OIDC_CACHING_ENABLED: 'True'
+      JWT_OIDC_TEST_ALGORITHMS: 'RS256'
+      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      KEYCLOAK_URL_REALM: ${KEYCLOAK_URL_REALM:-multitenant}
+      FORMSFLOW_WEB_URL: ${FORMSFLOW_WEB_URL}
+      FORMSFLOW_ADMIN_WEB_URL: ${FORMSFLOW_ADMIN_WEB_URL}
+      BPM_API_URL: ${BPM_API_URL:-https://app1.aot-technologies.com/camunda}
+      KEYCLOAK_ADMIN_CLIENT: ${KEYCLOAK_ADMIN_CLIENT}
+      KEYCLOAK_ADMIN_SECRET: ${KEYCLOAK_ADMIN_SECRET}
+      INSIGHT_API_URL: ${INSIGHT_API_URL:-http://localhost:6000}
+      INSIGHT_API_KEY: ${INSIGHT_API_KEY-blqlblqblq}
+      FORMIO_URL: ${FORMIO_URL}
+      FORMIO_ROOT_EMAIL: ${FORMIO_ROOT_EMAIL}
+      FORMIO_ROOT_PASSWORD: ${FORMIO_ROOT_PASSWORD}
+      FORMIO_JWT_SECRET: ${FORMIO_JWT_SECRET}
+      BPM_CLIENT_SECRET: ${BPM_CLIENT_SECRET}
+    stdin_open: true # -i
+    tty: true # -t
+    networks:
+      - formsflow-network
+networks:
+  formsflow-network:
+    driver: 'bridge'
+    name: formsflow-network
+volumes:
+  db-data:
+    driver: local

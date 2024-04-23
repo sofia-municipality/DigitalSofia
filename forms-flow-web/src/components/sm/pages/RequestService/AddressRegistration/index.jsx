@@ -14,13 +14,18 @@ import {
   FORM_PREFILLED_DATA_ALLOWED_INPUT_VALUES,
   BASE_ROUTE,
   MULTITENANCY_ENABLED,
+  SM_NEW_DESIGN_ENABLED,
+  SERVICES_NAMES,
 } from "../../../../../constants/constants";
 import { fetchBPMFormList } from "../../../../../apiManager/services/bpmFormServices";
 import { useNavigateTo, useLogin } from "../../../../../customHooks";
-
-import ForeignerForbiddenModal from "./components/ForeignerForbiddenModal";
-import styles from "./addressRegistration.module.scss";
 import Loading from "../../../../../containers/Loading";
+import SmAnimatedCta, {
+  AnimationDirection,
+} from "../../../components/buttons/SmAnimatedCta";
+import { useFormRestrictionsCheck } from "../../../../../customHooks";
+
+import styles from "./addressRegistration.module.scss";
 
 const sections = [
   {
@@ -28,31 +33,30 @@ const sections = [
     subtitle: "addressRegistratrion.card.1.subtitle",
     [FORM_PREFILLED_DATA_INPUT_NAME]:
       FORM_PREFILLED_DATA_ALLOWED_INPUT_VALUES.MY_BEHALF,
+    icon: "/assets/Images/address-registration-myBehalf-icon.svg",
   },
   {
     title: "addressRegistratrion.card.2.title",
     subtitle: "addressRegistratrion.card.2.subtitle",
     [FORM_PREFILLED_DATA_INPUT_NAME]:
       FORM_PREFILLED_DATA_ALLOWED_INPUT_VALUES.CHILD,
+    icon: "/assets/Images/address-registration-child-icon.svg",
   },
   {
     title: "addressRegistratrion.card.3.title",
     subtitle: "addressRegistratrion.card.3.subtitle",
     [FORM_PREFILLED_DATA_INPUT_NAME]:
       FORM_PREFILLED_DATA_ALLOWED_INPUT_VALUES.OTHER_PERSON,
+    icon: "/assets/Images/address-registration-otherPerson-icon.svg",
   },
 ];
 
 const AddressRegistration = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const checkFormRestrictions = useFormRestrictionsCheck(null, null, false);
   const [isCheckFinished, setIsCheckFinished] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [isForeignerForbiddenModalOpen, setIsForeignerForbiddenModalOpen] =
-    useState(false);
-  const userPersonIdenfitier = useSelector(
-    (state) => state.user?.userDetail?.personIdentifier || ""
-  );
   const isAuth = useSelector((state) => state.user.isAuthenticated);
   const doLogin = useLogin();
   const tenantId = useSelector((state) => state.tenants?.tenantId);
@@ -89,57 +93,62 @@ const AddressRegistration = () => {
   };
 
   useEffect(() => {
-    if (search) {
-      setIsCheckFinished(false);
-      const params = querystring.parse(search.replace("?", ""));
-      const formPath = params.formPath;
-      const inputValue = params[FORM_PREFILLED_DATA_INPUT_NAME];
+    const check = async () => {
+      if (search) {
+        setIsCheckFinished(false);
+        const params = querystring.parse(search.replace("?", ""));
+        const formPath = params.formPath;
+        const inputValue = params[FORM_PREFILLED_DATA_INPUT_NAME];
 
-      const wasFormLoginInitiated = localStorage.getItem(
-        "isFormLoginInitiated"
-      );
+        const wasFormLoginInitiated = localStorage.getItem(
+          "isFormLoginInitiated"
+        );
 
-      if (formPath && inputValue && wasFormLoginInitiated && isAuth) {
-        if (
-          inputValue === FORM_PREFILLED_DATA_ALLOWED_INPUT_VALUES.MY_BEHALF &&
-          userPersonIdenfitier.split("-")?.[0] !== "PNOBG"
-        ) {
-          setIsForeignerForbiddenModalOpen(true);
-          setIsCheckFinished(true);
-        } else {
-          getFormByPath(formPath, inputValue, () => {
-            localStorage.removeItem("isFormLoginInitiated");
-          });
+        if (formPath && inputValue && wasFormLoginInitiated && isAuth) {
+          const isPassed = await checkFormRestrictions(
+            formPath,
+            tenantId,
+            inputValue
+          );
+          if (isPassed) {
+            getFormByPath(formPath, inputValue, () => {
+              localStorage.removeItem("isFormLoginInitiated");
+            });
+          }
         }
-      } else {
         setIsCheckFinished(true);
       }
-    }
+    };
+
+    check();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onCtaClick = (formPath, inputValue) => {
+  const onCtaClick = async (formPath, inputValue) => {
     let fullFormPath = formPath;
     if (MULTITENANCY_ENABLED && tenantId) {
       fullFormPath = `${tenantId}-${fullFormPath}`;
     }
     if (isAuth) {
-      if (
-        inputValue === FORM_PREFILLED_DATA_ALLOWED_INPUT_VALUES.MY_BEHALF &&
-        userPersonIdenfitier.split("-")?.[0] !== "PNOBG"
-      ) {
-        setIsForeignerForbiddenModalOpen(true);
-      } else {
+      const isPassed = await checkFormRestrictions(
+        fullFormPath,
+        tenantId,
+        inputValue
+      );
+      if (isPassed) {
         getFormByPath(fullFormPath, inputValue);
       }
     } else {
       localStorage.setItem("isFormLoginInitiated", true);
-      doLogin(
+      doLogin({
         // eslint-disable-next-line max-len
-        `${window.location.href}?formPath=${fullFormPath}&${FORM_PREFILLED_DATA_INPUT_NAME}=${inputValue}`
-      );
+        redirectUri: `${window.location.href}?formPath=${fullFormPath}&${FORM_PREFILLED_DATA_INPUT_NAME}=${inputValue}`,
+      });
     }
   };
+
+  const CtaComponent = SM_NEW_DESIGN_ENABLED ? SmAnimatedCta : SmCta;
+  const ctaClassName = SM_NEW_DESIGN_ENABLED ? styles.ctaNewDesign : styles.cta;
 
   return (
     <PageContainer>
@@ -152,20 +161,47 @@ const AddressRegistration = () => {
                 linkText={t("addressRegistratrion.backLinkText")}
                 title={t("addressRegistratrion.title")}
               />
-              <ForeignerForbiddenModal
-                modalOpen={isForeignerForbiddenModalOpen}
-              />
               <div className={`row no-gutters ${styles.cardWrapper}`}>
                 {sections.map((section, index) => (
-                  <div className={`col ${styles.card}`} key={index}>
+                  <div
+                    className={`col ${styles.card} ${
+                      SM_NEW_DESIGN_ENABLED ? styles.cardNewDesign : ""
+                    }`}
+                    key={index}
+                  >
+                    {SM_NEW_DESIGN_ENABLED ? (
+                      <div>
+                        <div className={styles.titleWrapper}>
+                          <img
+                            alt=""
+                            src={section.icon}
+                            className={styles.titleImg}
+                          />
+                          <h2 className={styles.title}>{t(section.title)}</h2>
+                        </div>
+                        <h3 className={styles.subtitle}>
+                          {t(section.subtitle)}
+                        </h3>
+                      </div>
+                    ) : (
+                      <div>
+                        <h2 className={styles.title}>{t(section.title)}</h2>
+                        <h3 className={styles.subtitle}>
+                          {t(section.subtitle)}
+                        </h3>
+                      </div>
+                    )}
+
                     <div>
-                      <h2 className={styles.title}>{t(section.title)}</h2>
-                      <h3 className={styles.subtitle}>{t(section.subtitle)}</h3>
-                    </div>
-                    <div>
-                      <div>{t("addressRegistratrion.changeOf")}</div>
-                      <SmCta
-                        className={styles.cta}
+                      <div
+                        className={
+                          SM_NEW_DESIGN_ENABLED ? styles.changeOfText : ""
+                        }
+                      >
+                        {t("addressRegistratrion.changeOf")}
+                      </div>
+                      <CtaComponent
+                        className={ctaClassName}
                         type={SmCtaTypes.SECONDARY}
                         accessibilityProps={{
                           "aria-label": t(
@@ -176,15 +212,19 @@ const AddressRegistration = () => {
                         onClick={() =>
                           onCtaClick(
                             PERMANENT_ADDRESS_FORM_PATH,
-                            section[FORM_PREFILLED_DATA_INPUT_NAME]
+                            section[FORM_PREFILLED_DATA_INPUT_NAME],
+                            SERVICES_NAMES.PERNAMENT_ADDRESS
                           )
                         }
                       >
                         {t("addressRegistratrion.primaryAddress")}
-                      </SmCta>
-                      <SmCta
-                        className={styles.cta}
+                      </CtaComponent>
+                      <CtaComponent
+                        className={ctaClassName}
                         type={SmCtaTypes.SECONDARY}
+                        animationDirection={AnimationDirection.RIGHT}
+                        circleClassName="bg-sm-circle-border-green"
+                        borderClassName="sm-cta-border-yellow-green"
                         accessibilityProps={{
                           "aria-label": t(
                             // eslint-disable-next-line
@@ -194,12 +234,13 @@ const AddressRegistration = () => {
                         onClick={() =>
                           onCtaClick(
                             CURRENT_ADDRESS_FORM_PATH,
-                            section[FORM_PREFILLED_DATA_INPUT_NAME]
+                            section[FORM_PREFILLED_DATA_INPUT_NAME],
+                            SERVICES_NAMES.CURRENT_ADDRESS
                           )
                         }
                       >
                         {t("addressRegistratrion.currentAddress")}
-                      </SmCta>
+                      </CtaComponent>
                     </div>
                   </div>
                 ))}

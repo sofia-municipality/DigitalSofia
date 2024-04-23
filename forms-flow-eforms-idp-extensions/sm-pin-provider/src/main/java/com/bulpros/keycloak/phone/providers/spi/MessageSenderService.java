@@ -1,17 +1,14 @@
 package com.bulpros.keycloak.phone.providers.spi;
 
-import com.bulpros.keycloak.phone.providers.constants.TokenCodeType;
 import com.bulpros.keycloak.phone.providers.exception.MessageSendException;
 import org.keycloak.provider.Provider;
 
+import java.util.HashMap;
 
 /**
- * SMS, Voice, APP
+ * Message
  */
 public interface MessageSenderService extends Provider {
-
-    //void sendVoiceMessage((TokenCodeType type, String realmName, String realmDisplayName, String phoneNumber, String code , int expires) throws MessageSendException;
-
-
-    void sendSmsMessage(TokenCodeType type, String phoneNumber, String code , int expires , String kind) throws MessageSendException;
+    
+    void sendCompleteMessage(String fcm, HashMap<String, String> message) throws MessageSendException;
 }

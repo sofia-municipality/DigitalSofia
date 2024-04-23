@@ -13,6 +13,7 @@ import {
   updateFormSubmissionByFormPath,
   createFormSubmissionByFormPath,
   deleteFormSubmissionByFormPath,
+  checkFormRestrictions,
 } from "../services/FormServices";
 import {
   checkApplicationPermissions,
@@ -142,3 +143,6 @@ export const useCreateFormSubmissionByFormPath = (params) =>
 
 export const useDeleteFormSubmissionByFormPath = (params) =>
   useApiCall(deleteFormSubmissionByFormPath, params, false);
+
+export const useCheckFormRestrictions = (params) =>
+  useApiCall(checkFormRestrictions, params, false);

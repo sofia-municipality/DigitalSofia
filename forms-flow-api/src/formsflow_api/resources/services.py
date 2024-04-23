@@ -123,13 +123,12 @@ class ServicesResource(Resource):
                         current_app.logger.error("An error occurred when getting submission from formio")
                         current_app.logger.error(err)
                 else:
-                    current_app.logger.debug(submission)
+                    # current_app.logger.debug(submission)
                     data = submission.get("data", [])
                 
             else:
                 draft = Draft.query.filter_by(application_id=application.id).order_by(Draft.modified.desc()).first()
                 if draft:
-                    current_app.logger.debug(draft.data)
                     data = draft.data
                     new_item["draftId"] = draft.id
 
@@ -167,3 +166,4 @@ class ServicesResource(Resource):
             }, 
             HTTPStatus.OK
         )
+

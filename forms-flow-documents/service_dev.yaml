@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: forms-flow-documents-svc
+  namespace: forms-flow-documents
+  labels:
+    app.kubernetes.io/name: forms-flow-documents
+spec:
+  selector:
+    app.kubernetes.io/name: forms-flow-documents
+  ports:
+    - name: forms-flow-documents-port
+      protocol: TCP
+      port: 5006
+      targetPort: 5006
+    

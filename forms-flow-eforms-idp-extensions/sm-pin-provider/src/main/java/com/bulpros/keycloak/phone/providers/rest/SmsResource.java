@@ -1,9 +1,8 @@
 package com.bulpros.keycloak.phone.providers.rest;
 
 import com.bulpros.keycloak.phone.providers.constants.TokenCodeType;
+import jakarta.ws.rs.Path;
 import org.keycloak.models.KeycloakSession;
-
-import javax.ws.rs.Path;
 
 public class SmsResource {
 

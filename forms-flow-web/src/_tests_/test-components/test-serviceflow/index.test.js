@@ -9,21 +9,7 @@ import * as redux from "react-redux";
 import StoreService from "../../../services/StoreService";
 import { initialstate } from "./constants";
 import { MULTITENANCY_ENABLED } from "../../../constants/constants";
-jest.mock("@formsflow/service", () => ({
-  __esModule: true,
-  default: jest.fn(() => ({})),
-  RequestService: {
-    httpGETRequest: () => Promise.resolve(jest.fn(() => ({ data: {} }))),
-    httpPOSTRequestWithHAL: () =>
-      Promise.resolve(jest.fn(() => ({ data: {} }))),
-  },
-  StorageService: {
-    get: jest.fn(() => ""),
-    User: {
-      AUTH_TOKEN: "",
-    },
-  },
-}));
+
 let store;
 beforeEach(() => {
   store = StoreService.configureStore();

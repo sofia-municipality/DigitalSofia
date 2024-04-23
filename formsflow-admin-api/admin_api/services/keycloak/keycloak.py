@@ -61,6 +61,7 @@ class KeycloakService:
             bpm_secret=bpm_secret,
             roles=tenant_roles,
             web_url=current_app.config.get('FORMSFLOW_WEB_URL'),
+            admin_web_url=current_app.config.get('FORMSFLOW_ADMIN_WEB_URL'),
             camunda_url=current_app.config.get('FORMSFLOW_BPM_URL'),
             analytics_url=current_app.config.get('FORMSFLOW_INSIGHTS_URL'),
             create_default_users=create_default_users

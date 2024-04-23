@@ -6,7 +6,7 @@ import StarIcon from "@mui/icons-material/Star";
 
 import NavLink from "../../sm/components/Navigation/NavLink";
 import Pagination from "../../sm/components/Pagination";
-import AdministrationContainer from "../AdministrationContainer";
+import AdministrationContainer from "../../AdministrationContainer";
 import { fetchFAQ } from "../../../apiManager/services/faqServices";
 import { PAGE_ROUTES } from "../../../constants/navigation";
 import { useUpdateFAQ } from "../../../apiManager/apiHooks";

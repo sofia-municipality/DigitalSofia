@@ -27,6 +27,33 @@
   }
 }
 
+@mixin sm-cta-primary-new-design {
+  text-decoration: none !important;
+  border-image: $sm-gradient-y 1;
+  border-width: 1px;
+  background-color: $sm-white !important;
+  border-radius: 0 !important;
+  color: $sm-indigo-dark !important;
+  font-weight: 300;
+
+  -webkit-transition: width 0.5s ease-in-out, height 0.5s ease-in-out;
+  -moz-transition: width 0.5s ease-in-out, height 0.5s ease-in-out;
+  -o-transition: width 0.5s ease-in-out, height 0.5s ease-in-out;
+  transition: width 0.5s ease-in-out, height 0.5s ease-in-out;
+
+  @include screen-size(large) {
+    &:not(:disabled):hover {
+      font-weight: 400;
+      border-image: $sm-gradient-y 1;
+      border-width: 2px;
+    }
+  }
+
+  &:hover, &:focus {
+    box-shadow: none !important;
+  }
+}
+
 @mixin sm-cta-secondary {
   border: none;
   text-decoration: none !important;
@@ -58,6 +85,28 @@
     &:not(:disabled):hover {
       border: 1px solid transparent;
       background-color: $sm-indigo-4 !important;
+      color: $sm-white;
+    }
+  } 
+}
+
+@mixin sm-cta-tertiary-new-design {
+  color: $sm-white;
+  text-decoration: none !important;
+  border: 1px solid $sm-indigo-4;
+  border-radius: 0 !important;
+  background-color: $sm-indigo-4 !important;
+
+  @include screen-size(medium) {
+    color: $sm-indigo-dark;
+    border: 1px solid $sm-indigo-4;
+    background-color: $sm-white !important;
+  }
+
+  @include screen-size(large) {
+    &:not(:disabled):hover {
+      border: 1px solid transparent;
+      background-color: $sm-blue-6 !important;
       color: $sm-white;
     }
   } 

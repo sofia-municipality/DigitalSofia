@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\dhcho",
+    "\\dhcho\\dev"
   ],
-  "SelectedNode": "\\C:\\Digitall\\Project\\Sofia_Municipality\\forms-flow-analytics",
+  "SelectedNode": "\\dhcho\\dev\\deployment_dev.yaml",
   "PreviewInSolutionExplorer": false
 }

@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { extractDataFromDiagram } from "../../helpers/helper";
 import { createXML } from "../../helpers/deploy";
-import { MULTITENANCY_ENABLED, PUBLIC_WORKFLOW_ENABLED } from "../../../../constants/constants";
+import { MULTITENANCY_ENABLED, PUBLIC_WORKFLOW_ENABLED, TRANSLATE_BPMN_MODELER } from "../../../../constants/constants";
 import { deployBpmnDiagram } from "../../../../apiManager/services/bpmServices";
 import Loading from "../../../../containers/Loading";
 import { SUCCESS_MSG, ERROR_MSG } from "../../constants/bpmnModelerConstants";
@@ -29,6 +29,7 @@ import {
   DmnPropertiesProviderModule,
   CamundaPropertiesProviderModule,
 } from "dmn-js-properties-panel";
+import { useCustomTranslate } from "../../hooks";
 
 // a descriptor that defines Camunda related DMN 1.1 XML extensions
 import camundaModdleDescriptor from "camunda-dmn-moddle/resources/camunda";
@@ -36,6 +37,7 @@ import camundaModdleDescriptor from "camunda-dmn-moddle/resources/camunda";
 export default React.memo(
   ({ setShowModeler, processKey, tenant, isNewDiagram }) => {
     const { t } = useTranslation();
+    const customTranslate = useCustomTranslate();
 
     const dispatch = useDispatch();
     const diagramXML = useSelector((state) => state.process.processDiagramXML);
@@ -45,12 +47,25 @@ export default React.memo(
     const [deploymentLoading, setDeploymentLoading] = useState(false);
 
     const containerRef = useCallback((node) => {
-      if (node !== null) {
-        initializeModeler();
-      }
-    }, []);
+      const customTranslateModule = {
+        translate: ["value", customTranslate],
+      };
 
-    const initializeModeler = () => {
+      if (node !== null) {
+        initializeModeler(customTranslateModule);
+      }
+    }, [customTranslate]);
+
+    const initializeModeler = (customTranslateModule) => {
+      const additionalModules = [
+        DmnPropertiesPanelModule,
+        DmnPropertiesProviderModule,
+        CamundaPropertiesProviderModule,
+      ];
+      if (TRANSLATE_BPMN_MODELER) {
+        additionalModules.push(customTranslateModule);
+      }
+
       setBpmnModeler(
         new DmnJS({
           container: "#canvas",
@@ -58,11 +73,7 @@ export default React.memo(
             propertiesPanel: {
               parent: "#js-properties-panel",
             },
-            additionalModules: [
-              DmnPropertiesPanelModule,
-              DmnPropertiesProviderModule,
-              CamundaPropertiesProviderModule,
-            ],
+            additionalModules,
           },
           moddleExtensions: {
             camunda: camundaModdleDescriptor,
@@ -285,21 +296,21 @@ export default React.memo(
               <div className="d-flex flex-column">
                 <button
                   className="mb-3 btn-zoom"
-                  title="Reset Zoom"
+                  title={t("Reset Zoom")}
                   onClick={() => zoomReset()}
                 >
                   <i className="fa fa-retweet" aria-hidden="true" />
                 </button>
                 <button
                   className="btn-zoom"
-                  title="Zoom In"
+                  title={t("Zoom In")}
                   onClick={() => zoom()}
                 >
                   <i className="fa fa-search-plus" aria-hidden="true" />
                 </button>
                 <button
                   className="btn-zoom"
-                  title="Zoom Out"
+                  title={t("Zoom Out")}
                   onClick={() => zoomOut()}
                 >
                   <i className="fa fa-search-minus" aria-hidden="true" />
@@ -316,13 +327,12 @@ export default React.memo(
         <div>
           {MULTITENANCY_ENABLED && PUBLIC_WORKFLOW_ENABLED ? (
             <label className="deploy-checkbox">
-              <input type="checkbox" checked={applyAllTenants} onClick={handleApplyAllTenants} /> Apply
-              for all tenants
+              <input type="checkbox" checked={applyAllTenants} onClick={handleApplyAllTenants} /> {t("Apply for all tenants")}
             </label>
           ) : null}
-          <Button onClick={deployProcess}>Deploy</Button>
+          <Button onClick={deployProcess}>{t("Deploy")}</Button>
           <Button className="ml-3" onClick={handleExport}>
-            Export
+            {t("Export")}
           </Button>
         </div>
       </>

@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sofmun-keycloak
+  namespace : forms-flow-idm
+  labels:
+    app.kubernetes.io/name: sofmunkeycloak
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sofmunkeycloak
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sofmunkeycloak
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: sofmunkeycloak
+          image: sofiamunicipalitydigitall/forms-flow-idm:latest
+  #        lifecycle:
+  #          postStart:
+  #            exec:
+  #              command: ["/bin/sh", "-c",  "while true; do sleep 3600; done;" ]
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          env:
+            - name: KC_DB_USERNAME
+              value: "keycloakdev"
+            - name: KC_DB_PASSWORD
+              value: "jw8s0F4"
+            - name: KC_DB_URL
+              value: "jdbc:postgresql://192.168.201.46:5432/keycloakdbdev"
+            - name: DB_PORT
+              value: "5432"
+            - name: KC_DB
+              value: "postgres"
+            - name: DB_DATABASE
+              value: "keycloakdbdev"
+            - name: KEYCLOAK_USER
+              value: "admin"
+            - name: KEYCLOAK_PASSWORD
+              value: "admin"
+            - name: KC_HOSTNAME
+              value: "digital-idm.digitalsofia.digital"
+            - name: KEYCLOAK_ADMIN
+              value: "admin"
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              value: "admin"
+            #- name: KEYCLOAK_DEFAULT_THEME
+            #  value: "formsflow"
+            - name: ENTRYPOINT
+              value: "/opt/keycloak/bin/kc.sh"
+            #- name: KEYCLOAK_WELCOME_THEME
+            #  value: formsflow
+            - name: sslRequired
+              value: "NONE"
+            - name: KC_SPI_LOGIN_PROTOCOL_OPENID_CONNECT_LEGACY_LOGOUT_REDIRECT_URI
+              value: "true"
+            - name: KC_HTTP_RELATIVE_PATH
+              value: "/auth"
+            - name: KC_FEATURES
+              value: "declarative-user-profile,admin-fine-grained-authz"
+            - name: KC_HOSTNAME_STRICT
+              value: "false"
+            - name: KC_HOSTNAME_STRICT_HTTPS
+              value: "false"
+            - name: KC_HTTP_ENABLED
+              value: "true"
+            - name: KC_SPI_USER_CHECK_EVROTRUST_INTEGRATIONS_URL
+              value: "http://forms-flow-eforms-integrations-svc.form-flow-eforms-integrations.svc.cluster.local:8002/integrations/evrotrust/user/check"
+            - name: KC_SPI_CODE_CHECK_CONFIRM_CODE_KEYCLOAK_HOME_URL
+              value: "http://digital-idm.digitalsofia.digital/auth"
+            - name: KC_SPI_CODE_CHECK_CONFIRM_CODE_CHECK_CONFIRM_STATUS_PATH
+              value: "/realms/eServices/message/authentication-code/check-confirm-status"
+            - name: SPI_MESSAGE_SENDER_FIREBASE_SENDER_ACCOUNT_SETTINGS_FILE_PATH
+              value: "/firebase-service-account.json"
+            - name: KC_QUARKUS_PROPERTIES_ENABLED
+              value: "true"

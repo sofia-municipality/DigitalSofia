@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: signatureservices
+  namespace : forms-flow-eforms-signature-services
+  labels:
+    app.kubernetes.io/name: signatureservices
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: signatureservices
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: signatureservices
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: formsflowapi
+          image: sofiamunicipalitydigitall/eforms-signature-services:latest
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c",  "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf " ]
+          ports:
+            - containerPort: 8004
+              name: http-api
+              protocol: TCP
+          

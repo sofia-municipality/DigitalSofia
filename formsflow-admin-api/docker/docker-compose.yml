@@ -5,9 +5,9 @@ services:
     image: postgres:11
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${DATABASE_USERNAME:}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:}
-      POSTGRES_DB: ${DATABASE_NAME:}
+      POSTGRES_USER: ${DATABASE_USERNAME:-admin}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-changeme}
+      POSTGRES_DB: ${DATABASE_NAME:-adminapi}
     ports:
       - "1111:5432"
     volumes:
@@ -39,6 +39,7 @@ services:
       KEYCLOAK_URL: ${KEYCLOAK_URL}
       KEYCLOAK_URL_REALM: ${KEYCLOAK_URL_REALM:-multitenant}
       FORMSFLOW_WEB_URL: ${FORMSFLOW_WEB_URL}
+      FORMSFLOW_ADMIN_WEB_URL: ${FORMSFLOW_ADMIN_WEB_URL}
       BPM_API_URL: ${BPM_API_URL:-https://app1.aot-technologies.com/camunda}
       KEYCLOAK_ADMIN_CLIENT: ${KEYCLOAK_ADMIN_CLIENT}
       KEYCLOAK_ADMIN_SECRET: ${KEYCLOAK_ADMIN_SECRET}

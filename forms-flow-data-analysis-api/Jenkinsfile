@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+    
+     stages {
+        stage('Checkout forms-data-analysis-api') {
+            steps {
+                git 'https://MihailStefanov:ATBBNbJZnqewR5NzBUmTFFt4C3uRC8D7397D@bitbucket.org/intracol/forms-flow-data-analysis-api.git'
+            }
+        }
+
+        stage('Build forms-flow-data-analysis-api') {
+            steps {
+                sh 'sudo docker build -t digitallsofmun/forms-flow-data-analysis-api:latest .'
+            }
+        }
+
+        stage('Push Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh 'sudo docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                    sh 'sudo docker push $DOCKER_USERNAME/forms-flow-data-analysis-api:latest'
+                }
+            }
+        }
+
+        stage('Deploy DEV') {
+            steps {
+                withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://192.168.201.47:6443']) {
+                   sh 'kubectl apply -f deployment_dev.yaml '
+                   sh 'kubectl apply -f service_dev.yaml '
+                   sh 'kubectl apply -f ingress_dev.yaml '
+                    }
+                }
+            }
+    }
+}

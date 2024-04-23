@@ -12,72 +12,53 @@ struct ChangePINView: View {
     @EnvironmentObject var appState: AppState
     
     @State var state: PINViewState
-    @State var shouldGoToHome: Bool
     
-    @State private var showHomeScreen = false
     @State private var newPin = ""
     @State private var viewModel = ChangePINViewModel()
     @State private var resetPin = false
     @State private var isLoading = false
+    private var user = UserProvider.currentUser
     
-    private var user = UserProvider.shared.getUser()
-    
-    init(state: PINViewState, shouldGoToHome: Bool) {
+    init(state: PINViewState) {
         self.state = state
-        self.shouldGoToHome = shouldGoToHome
     }
     
     var body: some View {
         LoadingStack(isPresented: $isLoading) {
             VStack {
-                navigation()
-                
-                if shouldGoToHome == false {
-                    CustomNavigationBar()
-                }
-                
-                Spacer()
+                CustomNavigationBar()
                 
                 ProfileTiltleView(title: SettingsType.pin.description)
+                    .padding(.bottom, AppConfig.Dimensions.Custom.numpadPadding / 2)
                 
-                PINView(resetPin: $resetPin, details: state.details) { pin in
-                    resetPin = true
-                    
-                    switch state {
-                    case .old:
-                        if user?.pin == pin {
-                            state = .new
-                        } else {
-                            appState.alertItem = AlertProvider.errorAlert(message: AppConfig.UI.Alert.wrongPINAlertTitle.localized)
-                        }
-                    case .new:
-                        newPin = pin
-                        state = .confirm
-                    case .confirm:
-                        if newPin == pin {
-                            isLoading = true
-                            
-                            viewModel.change(pin: pin) { error in
-                                isLoading = false
-                                
-                                if let etError = error {
-                                    state = .old
-                                    newPin = ""
-                                    appState.alertItem = AlertProvider.errorAlert(message: etError.description)
-                                } else {
-                                    appState.alertItem = AlertProvider.successfullPINChange {
-                                        if shouldGoToHome {
-                                            showHomeScreen = true
-                                        } else {
-                                            appState.settingsViewId = UUID()
-                                        }
-                                    }
-                                }
+                VStack(spacing: 0) {
+                    PINView(resetPin: $resetPin, 
+                            shouldVerifyPin: state != .old,
+                            details: state.details) { pin in
+                        resetPin = true
+                        
+                        switch state {
+                        case .old:
+                            if user?.pin == pin {
+                                state = .new
+                            } else {
+                                appState.alertItem = AlertProvider.errorAlert(message: AppConfig.UI.Alert.wrongPINAlertTitle.localized)
                             }
-                        } else {
-                            appState.alertItem = AlertProvider.mismatchPINAlert()
+                        case .new:
+                            newPin = pin
+                            state = .confirm
+                        case .confirm:
+                            if newPin == pin {
+                                isLoading = true
+                                changePIN(pin: pin)
+                            } else {
+                                appState.alertItem = AlertProvider.mismatchPINAlert()
+                            }
                         }
                     }
+                    .environmentObject(appState)
+                    .padding(.bottom, AppConfig.Dimensions.Custom.numpadPadding)
+                    .padding(.top, AppConfig.Dimensions.Custom.numpadPadding / 2)
                 }
                 .background {
                     Color(.white)
@@ -86,27 +67,41 @@ struct ChangePINView: View {
                         .shadow(color: .gray.opacity(0.3), radius: AppConfig.Dimensions.CornerRadius.mini)
                 }
                 .padding([.leading, .trailing, .bottom], AppConfig.Dimensions.Padding.XXXL)
-            }
-            .alert(item: $appState.alertItem) { alertItem in
-                AlertProvider.getAlertFor(alertItem: alertItem)
+                
+                Spacer()
             }
         }
-        .background(DSColors.background)
-        .navigationBarHidden(true)
+        .log(view: self)
+        .alert()
+        .lockScreen()
+        .loginNotification()
+        .environmentObject(appState)
+        .environmentObject(networkMonitor)
+        .backgroundAndNavigation()
     }
     
-    private func navigation() -> some View {
-        VStack {
-            NavigationLink(destination: TabbarView(appState: appState).environmentObject(networkMonitor),
-                           isActive: $showHomeScreen) { EmptyView() }
+    private func changePIN(pin: String) {
+        viewModel.change(pin: pin) { error in
+            isLoading = false
             
+            if error != nil {
+                state = .old
+                newPin = ""
+                appState.alertItem = AlertProvider.errorAlert(message: error?.description ?? "")
+            } else {
+                appState.alertItem = AlertProvider.successfullPINChange {
+                    DispatchQueue.main.async {
+                        appState.settingsViewId = UUID()
+                    }
+                }
+            }
         }
     }
 }
 
 struct ChangePINView_Previews: PreviewProvider {
     static var previews: some View {
-        ChangePINView(state: .old, shouldGoToHome: false)
+        ChangePINView(state: .old)
     }
 }
 

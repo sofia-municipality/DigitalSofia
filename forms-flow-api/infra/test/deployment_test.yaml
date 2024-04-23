@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-flow-api
+  namespace : forms-flow-api
+  labels:
+    app.kubernetes.io/name: formsflowapi
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: formsflowapi
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: formsflowapi
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: formsflowapi
+          image: sofiamunicipalitydigitall/forms-flow-api:releasetest
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "echo '192.168.201.46  smkeycloak-test ' >> /etc/hosts"]
+          ports:
+            - containerPort: 5000
+              name: http-api
+              protocol: TCP
+          env:
+            - name: INSIGHT_API_KEY
+              value: "{API Key from Redash}"
+            - name: INSIGHT_API_URL
+              value: "http://forms-flow-analytics-svc.forms-flow-analytics.svc.cluster.local:5000"
+            - name: DATABASE_URL
+              value: "postgresql://apitest:jw8s0F4@192.168.201.46:5432/apidbtest"
+            - name: BPM_TOKEN_API
+              value: "http://forms-flow-idm-svc.forms-flow-idm.svc.cluster.local:80/auth/realms/forms-flow-ai/protocol/openid-connect/token"
+            - name:  BPM_CLIENT_ID
+              value: "forms-flow-bpm"
+            - name: BPM_CLIENT_SECRET
+              value: "e4bdbd25-1467-4f7f-b993-bc4b1944c943"
+            - name: BPM_API_URL
+              value: "http://forms-flow-bpm-svc.forms-flow-bpm.svc.cluster.local:8000/camunda"
+            - name: FORMSFLOW_API_CORS_ORIGINS
+              value: "*"
+            - name: JWT_OIDC_WELL_KNOWN_CONFIG
+              value: "http://smkeycloak-test:8080/auth/realms/Sofia/.well-known/openid-configuration"
+            - name: JWT_OIDC_JWKS_URI
+              value: "http://smkeycloak-test:8080/auth/realms/Sofia/protocol/openid-connect/certs"
+            - name: JWT_OIDC_ISSUER
+              value: "http://smkeycloak-test:8080/auth/realms/Sofia"
+            - name: JWT_OIDC_AUDIENCE
+              value: "forms-flow-web"
+            - name: JWT_OIDC_CACHING_ENABLED
+              value: "True"
+            - name: KEYCLOAK_URL
+              value: "http://smkeycloak-test:8080"
+            - name: KEYCLOAK_URL_REALM
+              value: "Sofia"
+            - name: WEB_API_BASE_URL
+              value: "http://form-flow-api-test:8080"
+            - name: WEB_BASE_URL
+              value: "http://forms-flow-web-test:800"
+            - name: FORMIO_URL
+              value: "http://forms-flow-forms-svc.forms-flow-forms.svc.cluster.local:3001"
+            - name: MULTI_TENANCY_ENABLED
+              value: "false"
+            - name: KEYCLOAK_ENABLE_CLIENT_AUTH
+              value: "false"
+            - name: FORM_EMBED_JWT_SECRET
+              value: "f6a69a42-7f8a-11ed-a1eb-0242ac120002"
+            - name: EUROTRUST_IDENTITY_TIMEOUT
+              value: "30"

@@ -45,8 +45,11 @@ const BaseRouting = React.memo(
     }, [tenant]);
 
     React.useEffect(() => {
-      publish("ES_ROUTE", location);
-    }, [location]);
+      if(isAuth) {
+        publish("ES_ROUTE", location);
+      }
+      
+    }, [location, isAuth]);
 
     return (
       <>

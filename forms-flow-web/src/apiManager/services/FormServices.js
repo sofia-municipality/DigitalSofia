@@ -135,11 +135,61 @@ export const getCustomSubmission = (submissionId, formId, ...rest) => {
   };
 };
 
+const getRequestedFormProps = () => {
+  const requestedFormioProps = [
+    "draftId",
+    "behalf",
+    "applicationStatus",
+    "reference_number",
+    "resultingCertificateUrl",
+    "address",
+    "streetNumber",
+    "region",
+    "entrance",
+    "floorNumber",
+    "appartmentNumber",
+    "property",
+    "childCustody",
+    "childFirstName",
+    "childMiddleName",
+    "childLastName",
+    "otherPersonFirstName",
+    "otherPersonMiddleName",
+    "otherPersonLastName",
+    "firstName",
+    "middleName",
+    "lastName",
+    "trusteeFirstName",
+    "trusteeLastName",
+    "propertyOwnerFirstName",
+    "propertyOwnerLastName",
+    "propertyOwnerPdfUrl",
+    "propertyOwnerSignutureDate",
+    "trusteePdfUrl",
+    "trusteeSignitureDate",
+    "propertyOwnerRejectionDate",
+    "trusteeRejectionDate",
+    "propertyOwnerInvitationExpiredDate",
+    "trusteeInvitationExpiredDate",
+    "propertyOwnerInvitationWithdrawnDate",
+    "trusteeInvitationWithdrawnDate",
+    "submitterTaskId",
+  ];
+
+  const requiredCamundaProps = ["paymentAccessCode"];
+
+  return `formioFields=${requestedFormioProps.join(
+    ","
+  )}&bpmFields=${requiredCamundaProps.join(",")}`;
+};
+
 export const fetchDraftsAndSubmissions = async ({
   pageNo = 1,
   limit = 20,
 } = {}) => {
-  const URL = `${API.GET_SERVICES}?pageNo=${pageNo}&limit=${limit}`;
+  const URL = `${
+    API.GET_SERVICES
+  }?pageNo=${pageNo}&limit=${limit}&${getRequestedFormProps()}`;
   const res = await httpGETRequest(URL);
   return res.data;
 };
@@ -217,4 +267,8 @@ export const createFormSubmissionByFormPath = async ({ path, data }) => {
     }
   );
   return res.data;
+};
+
+export const checkFormRestrictions = () => {
+  return false;
 };

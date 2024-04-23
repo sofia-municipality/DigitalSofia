@@ -16,6 +16,7 @@ const SignDocumentPending = React.memo(
     onSuccess,
     shouldSubmitOnPendingStatus,
     onFormSubmissionError,
+    redirectUrl,
   }) => {
     const { t } = useTranslation();
     const { checkDocumentStatus, isLoading } = useCheckDocumentStatus({
@@ -24,6 +25,7 @@ const SignDocumentPending = React.memo(
       onSuccess,
       shouldSubmitOnPendingStatus,
       onFormSubmissionError,
+      redirectUrl,
     });
 
     return (

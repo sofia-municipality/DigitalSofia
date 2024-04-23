@@ -1,0 +1,65 @@
+pipeline {
+    environment {
+        DEPLOY = "${env.BRANCH_NAME == "master" ? "true" : "false"}"
+        NAME = "${env.BRANCH_NAME == "master" ? "example" : "example-staging"}"
+        gitCredentialId = 'bitbucket-password' //defined in credentials area
+        gitUrl = 'https://bitbucket.org/intracol/forms-flow-eforms-signature-services.git'
+        deployBranch = 'master'
+    }
+    
+    agent any
+    
+     stages {
+        stage('Checkout eForms-signature-services') {
+             when {
+                environment name: 'DEPLOY', value: 'true'
+            }
+            steps {
+                git(
+                url: gitUrl,
+                credentialsId: gitCredentialId,
+                branch: deployBranch
+                 )
+            }
+        }
+        
+
+
+        stage('Build eForms-signature-services') {
+            when {
+                environment name: 'DEPLOY', value: 'true'
+            }
+            steps {
+                sh 'sudo docker build -t sofiamunicipalitydigitall/eforms-signature-services:stage-$BUILD_NUMBER .'
+            }
+        }
+
+        stage('Push Image') {
+            when {
+                environment name: 'DEPLOY', value: 'true'
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh 'sudo docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                    sh 'sudo docker push $DOCKER_USERNAME/eforms-signature-services:stage-$BUILD_NUMBER'
+                }
+            }
+        }
+
+        stage('Deploy Stage') {
+            when {
+                environment name: 'DEPLOY', value: 'true'
+            }
+            steps {
+                withKubeConfig([credentialsId: 'kubeconfig-stage', serverUrl: 'https://172.23.230.60:6443']) {
+                   sh """ 
+                  sed -i 's+image: sofiamunicipalitydigitall/eforms-signature-services:.*+image: sofiamunicipalitydigitall/eforms-signature-services:stage-${env.BUILD_NUMBER}+g' ./dhcho/stage/deployment_stage.yaml 
+                  """
+                   sh 'kubectl apply -f ./dhcho/stage/deployment_stage.yaml '
+                   sh 'kubectl apply -f ./dhcho/stage/service_stage.yaml '
+                    }
+                }
+            }
+         
+    }
+}

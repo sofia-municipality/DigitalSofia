@@ -16,7 +16,7 @@
   }
 }
 
-.signDocumentModal-pending, .signDocumentModal-sent, .signDocumentModal-error, .signDocumentModal-rejected {
+.signDocumentModal-pending, .signDocumentModal-sent, .signDocumentModal-error, .signDocumentModal-rejected, .signDocumentModal-application_status_error {
   & .modal-content {
     border: 1px solid $sm-red !important;
   }

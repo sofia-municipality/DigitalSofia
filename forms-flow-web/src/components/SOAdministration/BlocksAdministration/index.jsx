@@ -7,7 +7,7 @@ import { Nav } from "react-bootstrap";
 import { PAGE_BLOCKS, PAGE_NAMES } from "../../../constants/pages";
 import { PAGE_ROUTES } from "../../../constants/navigation";
 import NavLink from "../../sm/components/Navigation/NavLink";
-import AdministrationContainer from "../AdministrationContainer";
+import AdministrationContainer from "../../AdministrationContainer";
 import { useGetPageBlockForEdit } from "../../../apiManager/apiHooks";
 import Loading from "../../../containers/Loading";
 

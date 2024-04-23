@@ -1,0 +1,68 @@
+# Database user name. E.g, postgres
+DATABASE_USERNAME=
+# Data base password.
+DATABASE_PASSWORD=
+# Database name
+DATABASE_NAME=
+# Database host
+DATABASE_HOST=
+# Database port
+DATABASE_PORT=
+
+# Test Database username
+DATABASE_TEST_USERNAME=
+# Test database password
+DATABASE_TEST_PASSWORD=
+# Test database host
+DATABASE_TEST_HOST=
+# Test database port
+DATABASE_TEST_PORT=
+# test database name
+DATABASE_TEST_NAME=
+
+# Flask env value. E.g, "development", "production"
+FLASK_ENV=
+# Flask debug flag
+FLASK_DEBUG=
+# Sql alchemy echo flag
+SQLALCHEMY_ECHO=
+
+# keycloak settings
+# Wellknown URL. E.g, https://../auth/realms/one-realm-auth/.well-known/openid-configuration
+JWT_OIDC_WELL_KNOWN_CONFIG=
+# JWKS URI. E.g, https://../auth/realms/one-realm-auth/protocol/openid-connect/certs
+JWT_OIDC_JWKS_URI=
+# OIDC Issuer. E.g, https://../auth/realms/one-realm-auth
+JWT_OIDC_ISSUER=
+# Audience name. E.g : forms-flow-admin
+JWT_OIDC_AUDIENCE=
+# JWT OIDC caching enable flag
+JWT_OIDC_CACHING_ENABLED=
+# Test algorithm
+JWT_OIDC_TEST_ALGORITHMS="RS256"
+
+# Keycloak base URL.
+KEYCLOAK_URL=
+# Keycloak realm name
+KEYCLOAK_URL_REALM=
+
+# Formsflow web application URL
+FORMSFLOW_WEB_URL=
+FORMSFLOW_ADMIN_WEB_URL=
+# Camunda API URL.
+BPM_API_URL=
+
+# Keycloak admin client id
+KEYCLOAK_ADMIN_CLIENT=
+# Keycloak admin client secret
+KEYCLOAK_ADMIN_SECRET=
+
+# Analytics
+INSIGHT_API_URL=
+INSIGHT_API_KEY=
+
+# Formio config
+FORMIO_ROOT_EMAIL=
+FORMIO_ROOT_PASSWORD=
+FORMIO_URL=
+FORMIO_JWT_SECRET=

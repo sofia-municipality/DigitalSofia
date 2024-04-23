@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analytics-api
+  namespace : analytics-api
+  labels:
+    app.kubernetes.io/name: analyticsApi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: analyticsApi
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: analyticsApi
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: analytics-api
+          image: digitallsofmun/form-flow-data-analytics-api:latest
+          ports:
+            - containerPort: 5432
+              name: analytics
+              protocol: TCP
+          env:
+            - name: KEYCLOAK_URL_REALM
+              value: "forms-flow-ai"
+            - name: KEYCLOAK_URL
+              value: "http://forms-flow-idm.forms-flow-idm.svc.cluster.local:80"
+            - name: KEYCLOAK_WEB_CLIENT_ID
+              value: "forms-flow-web"
+            - name: DATA_ANALYSIS_DB_USER
+              value: "general"
+            - name: DATA_ANALYSIS_DB_PASSWORD
+              value: "changeme"
+            - name: DATA_ANALYSIS_DB_NAME
+              value: "dataanalysis"
+            - name: DATA_ANALYSIS_DB_URL
+              value: "postgresql://general:changeme@forms-flow-data-analysis-db:5432/dataanalysis"
+            - name: DATA_ANALYSIS_API_BASE_URL
+              value: "http://localhost:5001"
+            - name: MODEL_ID
+              value: "Seethal/sentiment_analysis_generic_dataset"
+            - name: DATABASE_SUPPORT
+              value: "DISABLED"

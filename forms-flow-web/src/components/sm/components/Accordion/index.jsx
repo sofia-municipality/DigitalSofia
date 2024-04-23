@@ -6,7 +6,13 @@ import DOMPurify from "dompurify";
 
 import styles from "./accordion.module.scss";
 
-const AccordionCard = ({ title, content, eventKey, expanded = false }) => {
+const AccordionCard = ({
+  title,
+  content,
+  eventKey,
+  expanded = false,
+  onExpand,
+}) => {
   const [isExpanded, setIsExpanded] = useState(expanded);
   const accordionHeaderId = `accordion-header-${eventKey}`;
   const accordionContentId = `accordion-panel-${eventKey}`;
@@ -18,13 +24,16 @@ const AccordionCard = ({ title, content, eventKey, expanded = false }) => {
   return (
     <div className={`${styles.smCard} ${isExpanded ? styles.expanded : ""}`}>
       <Card>
-        <Card.Header>
+        <Card.Header className={styles.accordionHeader}>
           <Accordion.Toggle
             id={accordionHeaderId}
             className={styles.accordionCta}
             as={Button}
             eventKey={eventKey}
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={() => {
+              setIsExpanded(!isExpanded);
+              onExpand && onExpand(!isExpanded);
+            }}
             aria-expanded={isExpanded ? "true" : "false"}
             aria-controls={accordionContentId}
           >
@@ -40,6 +49,7 @@ const AccordionCard = ({ title, content, eventKey, expanded = false }) => {
         </Card.Header>
         <Accordion.Collapse eventKey={eventKey}>
           <Card.Body
+            className={styles.accordionBody}
             as="section"
             id={accordionContentId}
             aria-labelledby={accordionHeaderId}
@@ -51,11 +61,16 @@ const AccordionCard = ({ title, content, eventKey, expanded = false }) => {
   );
 };
 
-const SmAccordion = ({ className = "", cards = [], openCloseAll = "" }) => {
+const SmAccordion = ({
+  className = "",
+  cards = [],
+  openCloseAll = "",
+  onExpand,
+}) => {
   const [eventKey, setEventKey] = useState(0);
   const [refreshAccordion, setRefreshAccordion] = useState(0);
   useEffect(() => {
-    if (openCloseAll === "open") {
+    if (openCloseAll > 0) {
       setEventKey(1);
       setRefreshAccordion(1);
     } else {
@@ -79,8 +94,9 @@ const SmAccordion = ({ className = "", cards = [], openCloseAll = "" }) => {
               defaultActiveKey={eventKey === 1 ? index + 1 : null}
             >
               <AccordionCard
+                onExpand={onExpand}
                 eventKey={index + 1}
-                expanded={openCloseAll === "open"}
+                expanded={openCloseAll > 0}
                 {...card}
               />
             </Accordion>

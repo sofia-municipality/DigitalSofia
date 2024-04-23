@@ -65,6 +65,7 @@ import SavingLoading from "../../Loading/SavingLoading";
 import { renderPage } from "../../../helper/helper";
 import { useEnrichForm } from "../../../customHooks";
 import FormSignDocumentModal from '../../Modals/FormSignDocumentModal';
+import FormErrorModal from "../../Modals/FormErrorModal";
 
 const View = React.memo((props) => {
   const [formStatus, setFormStatus] = React.useState("");
@@ -412,8 +413,9 @@ const View = React.memo((props) => {
           form.display === "wizard" ? "form-wizzard-wrapper" : ""
         }`}
       >
-         <FormSignDocumentModal
-            formRef={formRef}
+        <FormErrorModal />
+        <FormSignDocumentModal
+          formRef={formRef}
         />
         <div className="ml-4 mr-4">
           {isPublic || formStatus === "active" ? (
@@ -437,7 +439,7 @@ const View = React.memo((props) => {
                 onSubmit(data, form._id, isPublic);
               }}
               onCustomEvent={(evt) => onCustomEvent(evt, redirectUrl)}
-              onRender={(form) => {
+              formReady={(form) => {
                 formRef.current = form;
                 enrichForm(formRef, manuallySaveDraft);
               }}

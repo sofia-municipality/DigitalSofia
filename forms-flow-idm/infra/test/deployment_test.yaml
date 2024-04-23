@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sofmun-keycloak-test
+  namespace : forms-flow-idm
+  labels:
+    app.kubernetes.io/name: sofmunkeycloak
+spec:
+  replicas: 1
+  strategy:
+      type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sofmunkeycloak
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sofmunkeycloak
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: sofmunkeycloak
+          image: sofiamunicipalitydigitall/forms-flow-idm:releasetest
+#          command: ["/opt/jboss/keycloak/bin/standalone.sh"]
+#          args: ["-b 0.0.0.0 -Dkeycloak.import=/opt/jboss/keycloak/imports/formsflow-ai-realm.json -Dkeycloak.migration.strategy=OVERWRITE_EXISTING"]
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          env:
+            - name: DB_USER
+              value: "keycloaktest"
+            - name: DB_PASSWORD
+              value: "jw8s0F4"
+            - name: DB_ADDR
+              value: "192.168.201.46"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_VENDOR
+              value: "postgres"
+            - name: DB_DATABASE
+              value: "keycloakdbtest"
+            - name: KEYCLOAK_USER
+              value: "admin"
+            - name: KEYCLOAK_PASSWORD
+              value: "admin"
+            - name: KC_HOSTNAME
+              value: "localhost"
+            - name: KEYCLOAK_ADMIN
+              value: "admin"
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              value: "admin"
+            - name: KEYCLOAK_DEFAULT_THEME
+              value: "formsflow"
+            - name: ENTRYPOINT
+              value: "/opt/keycloak/bin/kc.sh"
+            - name: KEYCLOAK_WELCOME_THEME
+              value: formsflow
+            - name: sslRequired
+              value: "NONE"
