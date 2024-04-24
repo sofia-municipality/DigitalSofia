@@ -46,7 +46,19 @@
             tools:text="@string/lorem_ipsum_size_4" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnErrorViewReload"
+            android:id="@+id/btnErrorActionOne"
+            style="@style/ButtonStyle.TransparentBlue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/margin_32"
+            android:layout_marginTop="@dimen/margin_32"
+            android:layout_marginEnd="@dimen/margin_32"
+            android:text="@string/try_again"
+            android:textSize="18sp" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnErrorActionTwo"
             style="@style/ButtonStyle.TransparentBlue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -55,7 +67,9 @@
             android:layout_marginTop="@dimen/margin_32"
             android:layout_marginEnd="@dimen/margin_32"
             android:text="@string/reload"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

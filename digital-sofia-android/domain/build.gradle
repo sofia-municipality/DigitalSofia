@@ -1,16 +1,35 @@
+/**
+ * Please follow code style when editing project
+ * Please follow principles of clean architecture
+ * Created 2023 by Roman Kryvolapov
+ **/
+
 apply plugin: 'com.android.library'
 apply plugin: 'org.jetbrains.kotlin.android'
 apply plugin: 'org.jetbrains.kotlin.kapt'
 
 android {
 
-    namespace 'com.digitall.digital_sofia.domain'
+    namespace 'com.digital.sofia.domain'
 
     compileSdk 34
 
     defaultConfig {
         minSdk 24
         targetSdk 34
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 
     buildTypes {
@@ -29,35 +48,34 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
+    flavorDimensions += "version"
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-    }
+    productFlavors {
+        environmentDev {
+        }
+        environmentTest {
+        }
+        environmentStage {
+        }
+        environmentProd {
+        }
+        all {
 
-    lintOptions {
-        warning 'InvalidPackage'
-    }
-
-    buildFeatures {
-        buildConfig true
+        }
     }
 
 }
 
 dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
-    implementation 'io.insert-koin:koin-android:3.5.0'
+    implementation 'io.insert-koin:koin-android:3.5.3'
     implementation 'javax.inject:javax.inject:1'
 
     // tests
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'io.insert-koin:koin-test:3.5.0'
+    testImplementation 'io.insert-koin:koin-test:3.5.3'
     testImplementation "androidx.arch.core:core-testing:2.2.0"
-    testImplementation 'io.insert-koin:koin-test-junit4:3.5.0'
-    testImplementation 'org.mockito:mockito-core:5.6.0'
-    testImplementation 'org.mockito.kotlin:mockito-kotlin:5.1.0'
+    testImplementation 'io.insert-koin:koin-test-junit4:3.5.3'
+    testImplementation 'org.mockito:mockito-core:5.10.0'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:5.2.1'
 }

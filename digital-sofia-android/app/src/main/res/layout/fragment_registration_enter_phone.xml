@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_background"
@@ -57,7 +55,7 @@
                 android:singleLine="false"
                 android:text="@string/registration_enter_phone_input_title" />
 
-            <com.digitall.digital_sofia.ui.view.CustomTextInputLayout
+            <com.digital.sofia.ui.view.CustomTextInputLayout
                 android:id="@+id/phoneInputLayout"
                 style="@style/DefaultTextInputLayoutStyle"
                 android:layout_marginStart="@dimen/margin_32"
@@ -74,7 +72,7 @@
                     android:inputType="phone"
                     android:maxLength="128" />
 
-            </com.digitall.digital_sofia.ui.view.CustomTextInputLayout>
+            </com.digital.sofia.ui.view.CustomTextInputLayout>
 
             <View
                 android:layout_width="wrap_content"

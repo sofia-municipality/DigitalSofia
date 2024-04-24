@@ -2,7 +2,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_background"
@@ -57,7 +56,7 @@
                 android:singleLine="false"
                 android:text="@string/registration_enter_egn_egn_title" />
 
-            <com.digitall.digital_sofia.ui.view.CustomTextInputLayout
+            <com.digital.sofia.ui.view.CustomTextInputLayout
                 android:id="@+id/egnInputLayout"
                 style="@style/DefaultTextInputLayoutStyle"
                 android:layout_marginStart="@dimen/margin_32"
@@ -75,7 +74,7 @@
                     android:inputType="number"
                     android:maxLength="10" />
 
-            </com.digitall.digital_sofia.ui.view.CustomTextInputLayout>
+            </com.digital.sofia.ui.view.CustomTextInputLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvEgnError"
@@ -159,5 +158,12 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.core.widget.NestedScrollView>
+
+    <com.digital.sofia.ui.view.LoaderView
+        android:id="@+id/loaderView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:visibility="gone" />
 
 </FrameLayout>

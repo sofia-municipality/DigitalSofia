@@ -12,8 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center">
 
-        <TextView
-            android:id="@+id/tvWait"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_32"
@@ -36,7 +36,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvWait"
+            app:layout_constraintTop_toBottomOf="@+id/tvMessage"
             app:lottie_autoPlay="true"
             app:lottie_loop="true"
             app:lottie_rawRes="@raw/lottie_loader" />

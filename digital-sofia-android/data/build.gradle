@@ -1,103 +1,25 @@
+/**
+ * Please follow code style when editing project
+ * Please follow principles of clean architecture
+ * Created 2023 by Roman Kryvolapov
+ **/
+
 apply plugin: 'com.android.library'
 apply plugin: 'org.jetbrains.kotlin.android'
 apply plugin: 'org.jetbrains.kotlin.kapt'
 
-def Properties properties = new Properties()
+Properties properties = new Properties()
 properties.load(project.rootProject.file("local.properties").newDataInputStream())
 
 android {
 
-    namespace 'com.digitall.digital_sofia.data'
+    namespace 'com.digital.sofia.data'
 
     compileSdk 34
 
     defaultConfig {
         minSdk 24
         targetSdk 34
-    }
-
-    buildTypes {
-        debug {
-            minifyEnabled false
-            debuggable true
-            jniDebuggable true
-            renderscriptDebuggable true
-
-            buildConfigField 'String', 'URL_BASE', "\"" + properties['url_base'] + "\""
-            buildConfigField 'String', 'URL_AUTH', "\"" + properties['url_auth'] + "\""
-            buildConfigField 'String', 'URL_BASE_WEB_VIEW', "\"" + properties['url_base_web_view'] + "\""
-            buildConfigField 'String', 'CLIENT_SECRET', "\"" + properties['client_secret'] + "\""
-            buildConfigField 'String', 'GRANT_TYPE', "\"" + properties['grant_type'] + "\""
-            buildConfigField 'String', 'CLIENT_ID', "\"" + properties['client_id'] + "\""
-            buildConfigField 'String', 'CLIENT_SCOPE', "\"" + properties['client_scope'] + "\""
-            buildConfigField 'String', 'URL_AUTHORIZATION_GET_ACCESS_TOKEN_WITH_REFRESH_TOKEN ', "\"" + properties['url_authorization_get_access_token_with_refresh_token'] + "\""
-            buildConfigField 'String', 'URL_AUTHORIZATION_ENTER_TO_ACCOUNT', "\"" + properties['url_authorization_enter_to_account'] + "\""
-            buildConfigField 'String', 'URL_REGISTRATION_REGISTER_NEW_USER', "\"" + properties['url_registration_register_new_user'] + "\""
-            buildConfigField 'String', 'URL_REGISTRATION_CHECK_USER', "\"" + properties['url_registration_check_user'] + "\""
-            buildConfigField 'String', 'URL_REGISTRATION_CHECK_PIN', "\"" + properties['url_registration_check_pin'] + "\""
-            buildConfigField 'String', 'URL_SEND_SIGNED_DOCUMENT', "\"" + properties['url_send_signed_document'] + "\""
-            buildConfigField 'String', 'URL_GET_DOCUMENTS', "\"" + properties['url_get_documents'] + "\""
-            buildConfigField 'String', 'DATABASE_NAME', "\"" + properties['database_name'] + "\""
-            buildConfigField 'String', 'PROPERTY_USER_PASSWORD', "\"" + properties['user_password'] + "\""
-            buildConfigField 'String', 'EVROTRUST_APPLICATION_NUMBER', "\"" + properties['evrotrust_application_number'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_DEVICE_ID', "\"" + properties['property_key_device_id'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_ACCESS_TOKEN', "\"" + properties['property_key_access_token'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_FIREBASE_TOKEN', "\"" + properties['property_key_firebase_token'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_REFRESH_TOKEN', "\"" + properties['property_key_refresh_token'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_DATABASE', "\"" + properties['property_key_database'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_SERVER_PUBLIC', "\"" + properties['property_key_server_public'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_APP_THEME_TYPE', "\"" + properties['property_key_app_theme_type'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_PIN_CODE', "\"" + properties['property_key_pin_code'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_CURRENT_LANGUAGE', "\"" + properties['property_key_current_language'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_USER', "\"" + properties['property_key_user'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_APP_STATUS', "\"" + properties['property_key_app_status'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_EVROTRUST_TRANSACTION_ID_FOR_LOGIN', "\"" + properties['property_key_evrotrust_transaction_id_for_login'] + "\""
-            buildConfigField 'String', 'ANDROID_KEYSTORE', "\"" + properties['android_keystore'] + "\""
-            buildConfigField 'String', 'MASTER_SYMMETRIC_KEY_ALIAS', "\"" + properties['master_symmetric_key_alias'] + "\""
-            buildConfigField 'String', 'MASTER_BIOMETRIC_KEY_ALIAS', "\"" + properties['master_biometric_key_alias'] + "\""
-            buildConfigField 'String', 'MASTER_PREFERENCES_KEY_ALIAS', "\"" + properties['master_preferences_key_alias'] + "\""
-        }
-        release {
-            minifyEnabled true
-            debuggable false
-            jniDebuggable false
-            renderscriptDebuggable false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-            buildConfigField 'String', 'URL_BASE', "\"" + properties['url_base'] + "\""
-            buildConfigField 'String', 'URL_AUTH', "\"" + properties['url_auth'] + "\""
-            buildConfigField 'String', 'URL_BASE_WEB_VIEW', "\"" + properties['url_base_web_view'] + "\""
-            buildConfigField 'String', 'CLIENT_SECRET', "\"" + properties['client_secret'] + "\""
-            buildConfigField 'String', 'GRANT_TYPE', "\"" + properties['grant_type'] + "\""
-            buildConfigField 'String', 'CLIENT_ID', "\"" + properties['client_id'] + "\""
-            buildConfigField 'String', 'CLIENT_SCOPE', "\"" + properties['client_scope'] + "\""
-            buildConfigField 'String', 'URL_AUTHORIZATION_GET_ACCESS_TOKEN_WITH_REFRESH_TOKEN ', "\"" + properties['url_authorization_get_access_token_with_refresh_token'] + "\""
-            buildConfigField 'String', 'URL_AUTHORIZATION_ENTER_TO_ACCOUNT', "\"" + properties['url_authorization_enter_to_account'] + "\""
-            buildConfigField 'String', 'URL_REGISTRATION_REGISTER_NEW_USER', "\"" + properties['url_registration_register_new_user'] + "\""
-            buildConfigField 'String', 'URL_REGISTRATION_CHECK_USER', "\"" + properties['url_registration_check_user'] + "\""
-            buildConfigField 'String', 'URL_REGISTRATION_CHECK_PIN', "\"" + properties['url_registration_check_pin'] + "\""
-            buildConfigField 'String', 'URL_SEND_SIGNED_DOCUMENT', "\"" + properties['url_send_signed_document'] + "\""
-            buildConfigField 'String', 'URL_GET_DOCUMENTS', "\"" + properties['url_get_documents'] + "\""
-            buildConfigField 'String', 'DATABASE_NAME', "\"" + properties['database_name'] + "\""
-            buildConfigField 'String', 'PROPERTY_USER_PASSWORD', "\"" + properties['user_password'] + "\""
-            buildConfigField 'String', 'EVROTRUST_APPLICATION_NUMBER', "\"" + properties['evrotrust_application_number'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_DEVICE_ID', "\"" + properties['property_key_device_id'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_ACCESS_TOKEN', "\"" + properties['property_key_access_token'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_FIREBASE_TOKEN', "\"" + properties['property_key_firebase_token'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_REFRESH_TOKEN', "\"" + properties['property_key_refresh_token'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_DATABASE', "\"" + properties['property_key_database'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_SERVER_PUBLIC', "\"" + properties['property_key_server_public'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_APP_THEME_TYPE', "\"" + properties['property_key_app_theme_type'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_PIN_CODE', "\"" + properties['property_key_pin_code'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_CURRENT_LANGUAGE', "\"" + properties['property_key_current_language'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_USER', "\"" + properties['property_key_user'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_APP_STATUS', "\"" + properties['property_key_app_status'] + "\""
-            buildConfigField 'String', 'PROPERTY_KEY_EVROTRUST_TRANSACTION_ID_FOR_LOGIN', "\"" + properties['property_key_evrotrust_transaction_id_for_login'] + "\""
-            buildConfigField 'String', 'ANDROID_KEYSTORE', "\"" + properties['android_keystore'] + "\""
-            buildConfigField 'String', 'MASTER_SYMMETRIC_KEY_ALIAS', "\"" + properties['master_symmetric_key_alias'] + "\""
-            buildConfigField 'String', 'MASTER_BIOMETRIC_KEY_ALIAS', "\"" + properties['master_biometric_key_alias'] + "\""
-            buildConfigField 'String', 'MASTER_PREFERENCES_KEY_ALIAS', "\"" + properties['master_preferences_key_alias'] + "\""
-        }
     }
 
     compileOptions {
@@ -109,14 +31,110 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
-    lintOptions {
-        warning 'InvalidPackage'
-    }
-
     buildFeatures {
         buildConfig true
     }
 
+    buildTypes {
+        debug {
+            minifyEnabled false
+            debuggable true
+            jniDebuggable true
+            renderscriptDebuggable true
+        }
+        release {
+            minifyEnabled true
+            debuggable false
+            jniDebuggable false
+            renderscriptDebuggable false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    /**
+     * sensitive data should be stored in local.properties
+     * this data should not be in a shared repository
+     * contact the project administrator to obtain this data
+     * data in local.properties must be in the format key=value in lowercase
+     * make sure local.properties is in gitignore
+     **/
+
+    flavorDimensions += "version"
+
+    productFlavors {
+        environmentDev {
+            buildConfigField 'String', 'URL_BASE', "\"" + properties['url_base_dev'] + "\""
+            buildConfigField 'String', 'URL_AUTH', "\"" + properties['url_auth_dev'] + "\""
+            buildConfigField 'String', 'URL_BASE_WEB_VIEW', "\"" + properties['url_base_web_view_dev'] + "\""
+            buildConfigField 'String', 'EVROTRUST_APPLICATION_NUMBER', "\"" + properties['evrotrust_application_number_dev'] +"\""
+            buildConfigField 'Boolean', 'IS_EVROTRUST_PROD', "false"
+        }
+        environmentTest {
+            buildConfigField 'String', 'URL_BASE', "\"" + properties['url_base_test'] + "\""
+            buildConfigField 'String', 'URL_AUTH', "\"" + properties['url_auth_test'] + "\""
+            buildConfigField 'String', 'URL_BASE_WEB_VIEW', "\"" + properties['url_base_web_view_test'] + "\""
+            buildConfigField 'String', 'EVROTRUST_APPLICATION_NUMBER', "\"" + properties['evrotrust_application_number_dev'] +"\""
+            buildConfigField 'Boolean', 'IS_EVROTRUST_PROD', "false"
+        }
+        environmentStage {
+            buildConfigField 'String', 'URL_BASE', "\"" + properties['url_base_stage'] + "\""
+            buildConfigField 'String', 'URL_AUTH', "\"" + properties['url_auth_stage'] + "\""
+            buildConfigField 'String', 'URL_BASE_WEB_VIEW', "\"" + properties['url_base_web_view_stage'] + "\""
+            buildConfigField 'String', 'EVROTRUST_APPLICATION_NUMBER', "\"" + properties['evrotrust_application_number_dev'] +"\""
+            buildConfigField 'Boolean', 'IS_EVROTRUST_PROD', "false"
+        }
+        environmentProd {
+            buildConfigField 'String', 'URL_BASE', "\"" + properties['url_base_stage'] + "\""
+            buildConfigField 'String', 'URL_AUTH', "\"" + properties['url_auth_stage'] + "\""
+            buildConfigField 'String', 'URL_BASE_WEB_VIEW', "\"" + properties['url_base_web_view_stage'] + "\""
+            buildConfigField 'String', 'EVROTRUST_APPLICATION_NUMBER', "\"" + properties['evrotrust_application_number_prod'] +"\""
+            buildConfigField 'Boolean', 'IS_EVROTRUST_PROD', "true"
+        }
+        configureEach {
+            dimension "version"
+            defaultConfig.buildConfigField 'String', 'GRANT_TYPE_PASSWORD', "\"" + properties['grant_type_password'] + "\""
+            defaultConfig.buildConfigField 'String', 'GRANT_TYPE_REFRESH_TOKEN', "\"" + properties['grant_type_resresh_token'] + "\""
+            defaultConfig.buildConfigField 'String', 'CLIENT_ID', "\"" + properties['client_id'] + "\""
+            defaultConfig.buildConfigField 'String', 'CLIENT_SCOPE', "\"" + properties['client_scope'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_AUTHORIZATION_GET_ACCESS_TOKEN_WITH_REFRESH_TOKEN ', "\"" + properties['url_authorization_get_access_token_with_refresh_token'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_AUTHORIZATION_ENTER_TO_ACCOUNT', "\"" + properties['url_authorization_enter_to_account'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_REGISTRATION_NEW_USER', "\"" + properties['url_registration_new_user'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_REGISTRATION_REGISTER_NEW_USER', "\"" + properties['url_registration_register_new_user'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_REGISTRATION_CHECK_USER', "\"" + properties['url_registration_check_user'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_REGISTRATION_CHECK_PIN', "\"" + properties['url_registration_check_pin'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_REQUEST_IDENTITY', "\"" + properties['url_request_identity'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_DOCUMENT_AUTHENTICATION', "\"" + properties['url_document_authentication'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_SEND_SIGNED_REGISTRATION_DOCUMENT', "\"" + properties['url_send_signed_registration_document'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_SEND_SIGNED_DOCUMENT', "\"" + properties['url_send_signed_document'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_GET_DOCUMENTS', "\"" + properties['url_get_documents'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_CHANGE_PIN', "\"" + properties['url_change_pin'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_DELETE_USER', "\"" + properties['url_delete_user'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_CONFIRMATION_GENERATE_CODE', "\"" + properties['url_confirmation_generate_code'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_CONFIRMATION_UPDATE_CODE_STATUS', "\"" + properties['url_confirmation_update_code_status'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_CONFIRMATION_GET_CODE_STATUS', "\"" + properties['url_confirmation_get_code_status'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_UPDATE_FIREBASE_TOKEN', "\"" + properties['url_update_firebase_token'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_UPLOAD_LOGS', "\"" + properties['url_upload_logs'] + "\""
+            defaultConfig.buildConfigField 'String', 'URL_LOG_LEVEL', "\"" + properties['url_log_level'] + "\""
+            defaultConfig.buildConfigField 'String', 'DATABASE_NAME', "\"" + properties['database_name'] + "\""
+            defaultConfig.buildConfigField 'String', 'ENCRYPTED_SHARED_PREFERENCES_NAME', "\"" + properties['encrypted_shared_preferences_name'] + "\""
+            defaultConfig.buildConfigField 'String', 'PROPERTY_USER_PASSWORD', "\"" + properties['user_password'] + "\""
+            defaultConfig.buildConfigField 'String', 'PROPERTY_KEY_DEVICE_ID', "\"" + properties['property_key_device_id'] + "\""
+            defaultConfig.buildConfigField 'String', 'PROPERTY_KEY_ACCESS_TOKEN', "\"" + properties['property_key_access_token'] + "\""
+            defaultConfig.buildConfigField 'String', 'PROPERTY_KEY_FIREBASE_TOKEN', "\"" + properties['property_key_firebase_token'] + "\""
+            defaultConfig.buildConfigField 'String', 'PROPERTY_KEY_REFRESH_TOKEN', "\"" + properties['property_key_refresh_token'] + "\""
+            defaultConfig.buildConfigField 'String', 'PROPERTY_KEY_DATABASE', "\"" + properties['property_key_database'] + "\""
+            defaultConfig.buildConfigField 'String', 'PROPERTY_KEY_SERVER_PUBLIC', "\"" + properties['property_key_server_public'] + "\""
+            defaultConfig.buildConfigField 'String', 'PROPERTY_KEY_APP_THEME_TYPE', "\"" + properties['property_key_app_theme_type'] + "\""
+            defaultConfig.buildConfigField 'String', 'PROPERTY_KEY_PIN_CODE', "\"" + properties['property_key_pin_code'] + "\""
+            defaultConfig.buildConfigField 'String', 'PROPERTY_KEY_CURRENT_LANGUAGE', "\"" + properties['property_key_current_language'] + "\""
+            defaultConfig.buildConfigField 'String', 'PROPERTY_KEY_USER', "\"" + properties['property_key_user'] + "\""
+            defaultConfig.buildConfigField 'String', 'PROPERTY_KEY_APP_STATUS', "\"" + properties['property_key_app_status'] + "\""
+            defaultConfig.buildConfigField 'String', 'ANDROID_KEYSTORE', "\"" + properties['android_keystore'] + "\""
+            defaultConfig.buildConfigField 'String', 'MASTER_SYMMETRIC_KEY_ALIAS', "\"" + properties['master_symmetric_key_alias'] + "\""
+            defaultConfig.buildConfigField 'String', 'MASTER_BIOMETRIC_KEY_ALIAS', "\"" + properties['master_biometric_key_alias'] + "\""
+            defaultConfig.buildConfigField 'String', 'MASTER_PREFERENCES_KEY_ALIAS', "\"" + properties['master_preferences_key_alias'] + "\""
+        }
+    }
 }
 
 dependencies {
@@ -125,11 +143,10 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.12.0'
 
     // database
-    implementation 'androidx.room:room-runtime:2.6.0'
-    annotationProcessor 'androidx.room:room-compiler:2.6.0'
-    kapt 'androidx.room:room-compiler:2.6.0'
-    implementation 'androidx.room:room-ktx:2.6.0'
-//    ksp "androidx.room:room-compiler:2.5.1"
+    implementation 'androidx.room:room-runtime:2.6.1'
+    annotationProcessor 'androidx.room:room-compiler:2.6.1'
+    kapt 'androidx.room:room-compiler:2.6.1'
+    implementation 'androidx.room:room-ktx:2.6.1'
     implementation 'net.zetetic:android-database-sqlcipher:4.5.4'
     implementation 'androidx.sqlite:sqlite:2.4.0'
 
@@ -144,20 +161,23 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
 
     //  di
-    implementation 'io.insert-koin:koin-android:3.5.0'
+    implementation 'io.insert-koin:koin-android:3.5.3'
 
     // security
     implementation "androidx.security:security-crypto:1.1.0-alpha06"
-    implementation "androidx.security:security-app-authenticator:1.0.0-alpha02"
+    implementation 'androidx.security:security-app-authenticator:1.0.0-alpha03'
     implementation "androidx.security:security-identity-credential:1.0.0-alpha03"
 
+    // common
     implementation 'javax.inject:javax.inject:1'
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    kapt 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
     // tests
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'io.insert-koin:koin-test:3.5.0'
+    testImplementation 'io.insert-koin:koin-test:3.5.3'
     testImplementation "androidx.arch.core:core-testing:2.2.0"
-    testImplementation 'io.insert-koin:koin-test-junit4:3.5.0'
-    testImplementation 'org.mockito:mockito-core:5.6.0'
-    testImplementation 'org.mockito.kotlin:mockito-kotlin:5.1.0'
+    testImplementation 'io.insert-koin:koin-test-junit4:3.5.3'
+    testImplementation 'org.mockito:mockito-core:5.10.0'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:5.2.1'
 }

@@ -9,7 +9,7 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <com.digitall.digital_sofia.ui.view.CustomToolbar
+    <com.digital.sofia.ui.view.CustomToolbar
         android:id="@+id/customToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,9 +17,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:toolbar_show_settings="true"
-        app:toolbar_title="@string/document_title" />
+        app:toolbar_icon="@drawable/img_logo_small"/>
 
-    <com.digitall.digital_sofia.ui.view.ComplexGestureRefreshView
+    <com.digital.sofia.ui.view.ComplexGestureRefreshView
         android:id="@+id/refreshLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -43,26 +43,43 @@
                 tools:listitem="@layout/list_item_document"
                 tools:visibility="visible" />
 
-            <com.digitall.digital_sofia.ui.view.EmptyStateView
+            <com.digital.sofia.ui.view.EmptyStateView
                 android:id="@+id/emptyStateView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone" />
+                android:visibility="gone"
+                tools:visibility="gone" />
 
-            <com.digitall.digital_sofia.ui.view.ErrorView
+            <com.digital.sofia.ui.view.ErrorView
                 android:id="@+id/errorView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone" />
+                android:visibility="gone"
+                app:error_view_description="@string/error_server_error"
+                app:error_view_icon="@drawable/ic_error_red"
+                app:error_view_show_button_one="true"
+                app:error_view_show_button_two="false"
+                app:error_view_show_description="true"
+                app:error_view_show_title="true"
+                app:error_view_title="@string/error_server_error_short"
+                tools:visibility="gone" />
 
-            <com.digitall.digital_sofia.ui.view.LoaderView
+            <com.digital.sofia.ui.view.LoaderView
                 android:id="@+id/loaderView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone" />
+                android:visibility="gone"
+                tools:visibility="gone" />
+
+            <com.digital.sofia.ui.view.NoInternetConnectionView
+                android:id="@+id/noInternetConnectionView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                tools:visibility="gone" />
 
         </FrameLayout>
 
-    </com.digitall.digital_sofia.ui.view.ComplexGestureRefreshView>
+    </com.digital.sofia.ui.view.ComplexGestureRefreshView>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

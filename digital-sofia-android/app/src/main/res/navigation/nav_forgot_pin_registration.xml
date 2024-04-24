@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_forgot_pin_registration"
+    app:startDestination="@id/forgotPinRegistrationCreatePinFragment">
+
+    <fragment
+        android:id="@+id/forgotPinDisagreeFragment"
+        android:name="com.digital.sofia.ui.fragments.registration.disagree.ForgotPinDisagreeFragment"
+        android:label="forgotPinDisagreeFragment"
+        tools:layout="@layout/fragment_registration_error">
+
+        <action
+            android:id="@+id/toForgotPinRegistrationCreatePinFragment"
+            app:destination="@id/forgotPinRegistrationCreatePinFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/registrationDisagreeFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/forgotPinRegistrationCreatePinFragment"
+        android:name="com.digital.sofia.ui.fragments.forgot.create.ForgotPinRegistrationCreatePinFragment"
+        android:label="forgotPinCreatePinFragment"
+        tools:layout="@layout/fragment_registration_create_pin">
+
+        <action
+            android:id="@+id/toConfirmIdentificationFragment"
+            app:destination="@id/forgotPinRegistrationConfirmIdentificationFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/forgotPinRegistrationCreatePinFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/toEnableBiometricFragment"
+            app:destination="@id/forgotPinEnableBiometricFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/forgotPinRegistrationCreatePinFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/forgotPinEnableBiometricFragment"
+        android:name="com.digital.sofia.ui.fragments.forgot.biometric.ForgotPinRegistrationEnableBiometricFragment"
+        android:label="forgotPinEnableBiometricFragment"
+        tools:layout="@layout/fragment_enable_biometric">
+
+        <action
+            android:id="@+id/toConfirmIdentificationFragment"
+            app:destination="@id/forgotPinRegistrationConfirmIdentificationFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/forgotPinEnableBiometricFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/forgotPinRegistrationConfirmIdentificationFragment"
+        android:name="com.digital.sofia.ui.fragments.forgot.confirm.ForgotPinRegistrationConfirmIdentificationFragment"
+        android:label="forgotPinConfirmIdentificationFragment"
+        tools:layout="@layout/fragment_registration_intro">
+
+        <action
+            android:id="@+id/toErrorFragment"
+            app:destination="@id/forgotPinRegistrationErrorFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/forgotPinRegistrationConfirmIdentificationFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/toForgotPinShareYourDataFragment"
+            app:destination="@id/forgotPinShareYourDataFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/forgotPinRegistrationConfirmIdentificationFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/forgotPinShareYourDataFragment"
+        android:name="com.digital.sofia.ui.fragments.registration.share.ForgotPinShareYourDataFragment"
+        android:label="forgotPinShareYourDataFragment"
+        tools:layout="@layout/fragment_registration_share_your_data">
+
+        <action
+            android:id="@+id/toConfirmIdentificationFragment"
+            app:destination="@id/forgotPinRegistrationConfirmIdentificationFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/forgotPinShareYourDataFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/toDisagreeFragment"
+            app:destination="@id/forgotPinDisagreeFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/forgotPinShareYourDataFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/forgotPinRegistrationErrorFragment"
+        android:name="com.digital.sofia.ui.fragments.forgot.error.ForgotPinRegistrationErrorFragment"
+        android:label="forgotPinErrorFragment"
+        tools:layout="@layout/fragment_registration_error">
+
+        <argument
+            android:name="errorMessage"
+            app:argType="com.digital.sofia.models.common.StringSource"
+            app:nullable="false" />
+        <action
+            android:id="@+id/toForgotPinShareYourDataFragment"
+            app:destination="@id/forgotPinShareYourDataFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/forgotPinDisagreeFragment"
+            app:popUpToInclusive="true"/>
+
+    </fragment>
+
+</navigation>

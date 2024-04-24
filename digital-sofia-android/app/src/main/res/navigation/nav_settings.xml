@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.digitall.digital_sofia.ui.fragments.settings.settings.SettingsFragment"
+        android:name="com.digital.sofia.ui.fragments.settings.settings.SettingsFragment"
         android:label="settingsFragment"
         tools:layout="@layout/fragment_settings" >
 
@@ -35,24 +35,52 @@
             app:popEnterAnim="@anim/fragment_scale_exit_back"
             app:popExitAnim="@anim/fragment_scale_exit_front" />
 
+        <action
+            android:id="@+id/toDeleteProfileConfirmFragment"
+            app:destination="@id/deleteProfileConfirmFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+        <action
+            android:id="@+id/toDeleteProfileErrorFragment"
+            app:destination="@id/deleteProfileErrorFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front" />
+
     </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.digitall.digital_sofia.ui.fragments.settings.profile.ProfileFragment"
+        android:name="com.digital.sofia.ui.fragments.settings.profile.ProfileFragment"
         android:label="profileFragment"
         tools:layout="@layout/fragment_profile" />
 
     <fragment
         android:id="@+id/languageFragment"
-        android:name="com.digitall.digital_sofia.ui.fragments.settings.language.SettingsLanguageFragment"
+        android:name="com.digital.sofia.ui.fragments.settings.language.SettingsLanguageFragment"
         android:label="languageFragment"
         tools:layout="@layout/fragment_language" />
 
     <fragment
         android:id="@+id/authMethodFragment"
-        android:name="com.digitall.digital_sofia.ui.fragments.settings.auth.SettingsAuthMethodFragment"
+        android:name="com.digital.sofia.ui.fragments.settings.auth.SettingsAuthMethodFragment"
         android:label="authMethodFragment"
         tools:layout="@layout/fragment_auth_method" />
+
+    <fragment
+        android:id="@+id/deleteProfileConfirmFragment"
+        android:name="com.digital.sofia.ui.fragments.settings.delete.profile.confirm.DeleteProfileConfirmFragment"
+        android:label="deleteProfileConfirmFragment"
+        tools:layout="@layout/fragment_profile_delete_confirm" />
+
+    <fragment
+        android:id="@+id/deleteProfileErrorFragment"
+        android:name="com.digital.sofia.ui.fragments.settings.delete.profile.error.DeleteProfileErrorFragment"
+        android:label="deleteProfileErrorFragment"
+        tools:layout="@layout/fragment_profile_delete_error" />
 
 </navigation>

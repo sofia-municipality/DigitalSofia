@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/documentsFragment"
-        android:name="com.digitall.digital_sofia.ui.fragments.main.documents.DocumentsFragment"
+        android:name="com.digital.sofia.ui.fragments.main.documents.DocumentsFragment"
         android:label="documentsFragment"
         tools:layout="@layout/fragment_documents" >
 
@@ -23,12 +23,12 @@
 
     <fragment
         android:id="@+id/documentPreviewFragment"
-        android:name="com.digitall.digital_sofia.ui.fragments.main.documents.preview.DocumentPreviewFragment"
+        android:name="com.digital.sofia.ui.fragments.main.documents.preview.DocumentPreviewFragment"
         android:label="documentPreviewFragment"
         tools:layout="@layout/fragment_documents" >
 
         <argument
-            android:name="url"
+            android:name="documentUrl"
             app:argType="string"
             app:nullable="false" />
 

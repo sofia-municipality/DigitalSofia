@@ -8,76 +8,90 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
-    <com.digitall.digital_sofia.ui.view.CustomToolbar
+    <com.digital.sofia.ui.view.CustomToolbar
         android:id="@+id/customToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:toolbar_icon="@drawable/ic_back"
         app:toolbar_title="@string/back" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvTitle"
-        style="@style/TextStyle.24spRegularMainColor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginStart="@dimen/margin_32"
-        android:layout_marginEnd="@dimen/margin_32"
-        android:text="@string/change_pin_enter_title" />
-
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/margin_20"
-        android:layout_marginTop="@dimen/margin_20"
-        android:layout_marginEnd="@dimen/margin_20"
-        android:layout_marginBottom="@dimen/margin_20"
-        android:background="@color/color_background"
-        android:elevation="10dp"
-        android:fitsSystemWindows="true"
-        android:orientation="vertical">
+        android:clipToPadding="false"
+        android:fillViewport="true">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvDescription"
-            style="@style/TextStyle.16spRegularMainColor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginStart="@dimen/margin_32"
-            android:layout_marginTop="@dimen/margin_48"
-            android:layout_marginEnd="@dimen/margin_32"
-            android:lines="2"
-            android:maxLines="2"
-            android:minLines="2"
-            android:singleLine="false"
-            android:text="@string/change_pin_enter_description"
-            android:textAlignment="center" />
-
-
-        <com.digitall.digital_sofia.ui.view.CodeView
-            android:id="@+id/passcodeView"
-            style="@style/PassCodeStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/margin_48"
-            app:itemCount="6" />
-
-        <com.digitall.digital_sofia.ui.view.CodeKeyboardView
-            android:id="@+id/keyboard"
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/margin_48"
-            android:layout_marginBottom="@dimen/margin_32"
-            android:maxHeight="@dimen/pass_code_keyboard_max_height"
-            app:keyboard_view_numbers="6" />
+            android:orientation="vertical">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTitle"
+                style="@style/TextStyle.24spRegularMainColor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="@dimen/margin_32"
+                android:layout_marginEnd="@dimen/margin_32"
+                android:text="@string/change_pin_enter_title" />
 
-    </androidx.appcompat.widget.LinearLayoutCompat>
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/margin_20"
+                android:layout_marginTop="@dimen/margin_20"
+                android:layout_marginEnd="@dimen/margin_20"
+                android:layout_marginBottom="@dimen/margin_20"
+                android:background="@color/color_background"
+                android:elevation="10dp"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvDescription"
+                    style="@style/TextStyle.16spRegularMainColor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginStart="@dimen/margin_32"
+                    android:layout_marginTop="@dimen/margin_48"
+                    android:layout_marginEnd="@dimen/margin_32"
+                    android:lines="2"
+                    android:maxLines="2"
+                    android:minLines="2"
+                    android:singleLine="false"
+                    android:text="@string/change_pin_enter_description"
+                    android:textAlignment="center"
+                    android:gravity="center"/>
+
+                <com.digital.sofia.ui.view.CodeView
+                    android:id="@+id/passcodeView"
+                    style="@style/PassCodeStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/margin_48"
+                    app:itemCount="6" />
+
+                <com.digital.sofia.ui.view.CodeKeyboardView
+                    android:id="@+id/keyboard"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/margin_48"
+                    android:layout_marginBottom="@dimen/margin_32"
+                    android:maxHeight="@dimen/pass_code_keyboard_max_height"
+                    app:keyboard_view_numbers="6" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

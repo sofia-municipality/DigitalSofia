@@ -35,7 +35,14 @@
         <attr name="error_view_description" format="string" />
         <attr name="error_view_show_description" format="boolean" />
         <attr name="error_view_icon" format="reference" />
-        <attr name="error_view_button_title" format="string" />
+        <attr name="error_view_show_button_one" format="boolean" />
+        <attr name="error_view_show_button_two" format="boolean" />
+        <attr name="error_view_button_one_title" format="string" />
+        <attr name="error_view_button_two_title" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="LoaderView">
+        <attr name="loader_view_message" format="string" />
     </declare-styleable>
 
 </resources>

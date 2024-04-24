@@ -2,20 +2,24 @@
     <string name="app_name">DigitalSofia</string>
     <string name="loader_wait_message">We are looking for your data, it might take a moment.</string>
 
-    <!-- Errors -->
+    <!-- Common errors -->
     <string name="error">Something went wrong</string>
     <string name="error_loading_error">Sorry, it seems something went wrong. Please try again.</string>
-    <string name="error_network_error">It seems like you don\'t have a connection, please try again.</string>
+    <string name="error_server_error_short">Server error</string>
+    <string name="error_server_error">Error while receiving data from the server, please try again later</string>
+    <string name="error_network_error_short">Network error</string>
+    <string name="error_network_error">Error during network request, please try again later</string>
     <string name="error_network_not_available">No internet connection</string>
     <string name="error_invalid_format">Invalid format</string>
     <string name="error_not_enough_characters">Not enough characters in the field.</string>
     <string name="error_cannot_be_empty">This field cannot be empty.</string>
     <string name="error_password_must_contain_only_numbers">Password must contain only numbers</string>
     <string name="must_contain_only_numbers">Only numbers are allowed here</string>
-    <string name="error_empty_state_tile">Nothing found</string>
-    <string name="error_empty_state_description">Refresh the screen if content should be present</string>
+    <string name="error_empty_state_tile">Sorry, there is no information.</string>
+    <string name="error_empty_state_description">Try reloading the screen to see the missing data.</string>
     <string name="error_no_consent_to_share_data">No consent to share data</string>
     <string name="error_pin_code_not_setup">Pin code not setup</string>
+    <string name="error_biometric">Error use biometric</string>
     <string name="error_user_not_setup_correct">User not setup</string>
     <string name="error_user_is_not_identified">User is not identified</string>
     <string name="error_user_name_not_found">User name not found</string>
@@ -23,12 +27,20 @@
     <string name="error_user_phone_not_found">User phone not found</string>
     <string name="error_user_personal_identification_number_not_found">User personal identification number not found</string>
     <string name="error_request_is_being_processed">The request is being processed, please wait and click update</string>
+    <string name="error_information_is_outdated">Information is outdated and no longer relevant</string>
+    <string name="error_unexpected">An unexpected error occurred</string>
+    <string name="error_file_download">An error occurred while trying to open the file</string>
+    <string name="error_no_internet_connection">Please, check your internet connection.</string>
+    <string name="error_invalid_user_data">Wrong data is entered.</string>
+    <string name="error_logout_count_exceeded">Sorry, too many tries for login. Please, try again later.</string>
+    <string name="error_common">Sorry, something went wrong. Let\'s try again.</string>
 
     <!-- Errors sdk -->
     <string name="sdk_error_sdk_not_set">Incorrect configuration, please try again or restart the application</string>
     <string name="sdk_error_user_not_specified">User not specified, try again or restart the application</string>
-    <string name="sdk_error_wrong_input">Wrong input, try again or restart the application</string>
-    <string name="sdk_error_cancelled">Canceled by user, try again or restart the application</string>
+    <string name="sdk_error_user_data_error">Incorrect entry of Eurotrust data</string>
+    <string name="sdk_error_wrong_input">Sorry, something went wrong. Let\'s try again and make sure all data is correct.</string>
+    <string name="sdk_error_cancelled">Activity is cancelled. You can try again.</string>
     <string name="sdk_error_unknown">Unknown error, try again or restart the application</string>
     <string name="sdk_error_critical">Critical error, try again or restart the application</string>
 
@@ -82,6 +94,9 @@
     <string name="yes">Yes</string>
     <string name="update">Update</string>
     <string name="wait">Please wait</string>
+    <string name="information">Information</string>
+    <string name="success">Success</string>
+    <string name="ready">Ready</string>
 
     <!-- Notifications -->
     <string name="channel_name">DigitalSofia</string>
@@ -90,7 +105,7 @@
     <string name="notifications_window_label">In order for application to work properly, you must allow notifications. Current notification: %s</string>
     <string name="settings_label">Settings</string>
 
-    <!-- Passcode -->
+    <!-- Pin -->
     <string name="passcode_btn_1">1</string>
     <string name="passcode_btn_2">2</string>
     <string name="passcode_btn_3">3</string>
@@ -104,7 +119,7 @@
 
     <!-- Permissions -->
     <string name="permissions_modal_title">Access required</string>
-    <string name="permissions_modal_description">Please adjust your settings to allow GTWorld access your %s, without it you cannot proceed.</string>
+    <string name="permissions_modal_description">For the application to work, we need the following permissions: %s</string>
     <string name="permissions_modal_step_1">Turn on «%s» in settings.</string>
     <string name="permissions_modal_step_2">After that, go back to the app.</string>
     <string name="permissions_modal_open_settings">Open settings</string>
@@ -128,43 +143,52 @@
     <!-- Profile auth method -->
     <string name="auth_method_title">Login Protection</string>
     <string name="auth_method_pin">PIN</string>
-    <string name="auth_method_biometric">Fingerprint</string>
+    <string name="auth_method_biometric">Biometric data</string>
 
     <!-- Profile change pin -->
     <string name="change_pin_create_title">Change PIN</string>
     <string name="change_pin_create_description_1">Enter a 6-digit PIN to access your account</string>
-    <string name="change_pin_create_description_2">Re-enter 6-digit PIN code to avoid errors</string>
+    <string name="change_pin_create_description_2">Repeat the 6 digit PIN code to confirm</string>
+    <string name="change_pin_create_message_ok">Successfully changed PIN</string>
 
     <string name="change_pin_enter_title">Change PIN</string>
-    <string name="change_pin_enter_description">Enter your current 6-digit PIN</string>
+    <string name="change_pin_enter_description">Enter your current PIN to make the change</string>
 
     <!-- Profile -->
     <string name="profile_title">Profile</string>
 
-    <!-- Language -->
+    <!-- Profile Language -->
     <string name="language_title">Application language</string>
-    <string name="language_bg">Български</string>
+    <string name="language_bg">Bulgarian</string>
     <string name="language_en">English</string>
+
+    <!-- Profile delete confirm -->
+    <string name="profile_delete_confirm_description">If you delete your profile you will loose all of your saved documents and information.</string>
+    <string name="profile_delete_confirm_button">Delete</string>
+
+    <!-- Profile delete error -->
+    <string name="profile_delete_error_description">"The profile can't be deleted. There is a pending task. When it's completed, you can delete your profile.”</string>
 
     <!-- Registration start -->
     <string name="start_title">Welcome to Digital Sofia</string>
-    <string name="start_description">mobile electronic window of the Metropolitan Municipality</string>
-    <string name="start_button">Next</string>
+    <string name="start_description">The mobile desk of Sofia Municipality</string>
+    <string name="start_button">Enter Digital Sofia</string>
 
     <!-- Registration enter EGN -->
     <string name="registration_enter_egn_title">Welcome to Digital Sofia</string>
-    <string name="registration_enter_egn_description">Please enter the EGN to continue with the registration</string>
+    <string name="registration_enter_egn_description">Please enter your Personal ID (EGN) to continue with the remote identification:</string>
     <string name="registration_enter_egn_egn_title">EGN</string>
     <string name="registration_enter_egn_egn_hint">Enter EGN</string>
-    <string name="registration_enter_egn_egn_error">Please enter a correct Uniform Civil Number</string>
-    <string name="registration_enter_egn_email_title">E-mail</string>
-    <string name="registration_enter_egn_email_hint">Enter e-mail</string>
+    <string name="registration_enter_egn_egn_error">We\'re sorry but at the moment the service is only available for Bulgarian citizens with valid Personal ID.</string>
+    <string name="registration_enter_egn_email_title">Email</string>
+    <string name="registration_enter_egn_email_hint">Enter Email Address</string>
     <string name="registration_enter_egn_email_error">Please enter a correct E-mail</string>
     <string name="registration_enter_egn_phone_title">Phone number</string>
     <string name="registration_enter_egn_phone_hint">Enter phone number</string>
     <string name="registration_enter_egn_phone_error">Please enter a correct phone number</string>
     <string name="registration_enter_egn_conditions">I agree to the terms and conditions of Digital Sofia</string>
     <string name="registration_enter_egn_conditions_error">Please agree to the terms and conditions</string>
+    <string name="registration_enter_egn_conditions_error_evrotrust">You does not have an Evrotrust account, create an account and repeat</string>
 
     <!-- Registration enter phone -->
     <string name="registration_enter_phone_title">Enter phone number</string>
@@ -174,7 +198,7 @@
 
     <!-- Registration enter email -->
     <string name="registration_enter_email_title">Welcome to Digital Sofia</string>
-    <string name="registration_enter_email_description">We will need some more data to continue with the registration</string>
+    <string name="registration_enter_email_description">We need some additional information to create your account</string>
 
     <!-- Registration create PIN -->
     <string name="registration_create_pin_title">Create PIN</string>
@@ -183,12 +207,12 @@
     <string name="registration_create_pin_confirm_description">Enter a 6-digit PIN code to access your account</string>
 
     <!-- Registration enter PIN -->
-    <string name="registration_enter_pin_title">Hello</string>
+    <string name="registration_enter_pin_title">Enter PIN</string>
     <string name="registration_enter_pin_forgot_title">Forgot your PIN?</string>
-    <string name="registration_enter_pin_incorrect">PIN is incorrect. The number of attempts left: %s\nTry again or click the forgotten password button.</string>
+    <string name="registration_enter_pin_incorrect">PIN is incorrect. The number of attempts left: %s. Try again or click the forgotten password button.</string>
     <string name="registration_enter_pin_error_check_remote">PIN is incorrect. Try again or click the forgotten password button.</string>
 
-    <!-- Create code -->
+    <!-- Create pin -->
     <string name="create_pin_title">Create password</string>
     <string name="create_pin_description">To better protect your app avoid using consecutive numbers, repeating digits, your date of birth, or your phone number.</string>
     <string name="create_pin_error_pass_code_not_secure">Your password is too simple. Use different numbers to create a stronger one.</string>
@@ -197,68 +221,80 @@
     <string name="create_pin_error_pass_code_your_date_of_birth">Don\'t use your birthday. It\'s too easy to guess. Make a stronger password.</string>
     <string name="create_pin_error_pass_code_your_part_phone_number">Don\'t use any part of your phone number. It\'s too easy to guess. Make a stronger password.</string>
     <string name="create_pin_error_pass_code_already_used">You\'ve already used this combination for a password. Please create a new one. </string>
+    <string name="create_pin_error_easy">The PIN is not strong enough. Your PIN cannot contain number sequences or repeated characters.</string>
 
-    <!-- Confirm code -->
+    <!-- Confirm pin -->
     <string name="confirm_pin_title">Confirm password</string>
     <string name="confirm_pin_description">Enter your password one more time to be sure it\'s correct.</string>
-    <string name="confirm_pin_error_password_not_match">Your password does not match the one you provided earlier.</string>
+    <string name="confirm_pin_error_password_not_match">The entered PIN does not match the previous one.</string>
 
     <!-- Auth Enable biometric -->
-    <string name="enable_biometric_title">Enable biometrics</string>
-    <string name="enable_biometric_for_faster_login_description">Would you like to enable biometric login?</string>
+    <string name="enable_biometric_title">Biometric data</string>
+    <string name="enable_biometric_for_faster_login_description">Do you want to activate device bio to be used for login?</string>
     <string name="enable_biometric_for_faster_transactions_and_in_app_actions_description">You can turn on biometrics for faster transactions and in-app actions.</string>
     <string name="enable_biometric_btn_later">Set it up later</string>
     <string name="enable_biometric_btn_enable">Enable</string>
 
     <!-- Auth Enter pin -->
-    <string name="auth_enter_pin_title">Hello, %s,</string>
-    <string name="auth_enter_pin_forgot_title">Forgot your PIN?</string>
-    <string name="auth_enter_pin_incorrect">PIN is incorrect. The number of attempts left: %s\nTry again or click the forgotten password button.</string>
+    <string name="auth_enter_pin_title">Hello, %s</string>
+    <string name="auth_enter_pin_forgot_title">Forgotten PIN code?</string>
+    <string name="auth_enter_pin_incorrect">You have %s tries left</string>
     <string name="auth_enter_pin_error_check_remote">PIN is incorrect. Try again or click the forgotten password button.</string>
+    <string name="auth_enter_pin_incorrect_wait_30_seconds">Please, wait 30 seconds and try again.</string>
+    <string name="auth_enter_pin_incorrect_wait_5_minutes">Please, wait 5 minutes and try again.</string>
+    <string name="auth_enter_pin_incorrect_wait_1_hour">Please, wait 1 hour and try again.</string>
+    <string name="auth_enter_pin_incorrect_wait_24_hour">Please, wait 24 hours and try again.</string>
 
     <!-- Enter biometric -->
-    <string name="enter_biometric_title">Hello, %s,</string>
-    <string name="enter_biometric_use_pin">Use PIN</string>
-    <string name="enter_biometric_confirm">Confirm app login</string>
+    <string name="enter_biometric_title">Hello, %s</string>
+    <string name="enter_biometric_use_pin">Use PIN code</string>
+    <string name="enter_biometric_confirm">Confirm login</string>
 
     <!-- Registration intro -->
     <string name="registration_intro_title">Identity</string>
-    <string name="registration_intro_description">I agree to go through an initial identification process.</string>
-    <string name="registration_intro_btn_yes">I agree</string>
-    <string name="registration_intro_btn_no">I do not agree</string>
+    <string name="registration_intro_description">I agree to pass through the process of initial identification</string>
+    <string name="registration_intro_btn_yes">Accept</string>
+    <string name="registration_intro_btn_no">Decline</string>
 
-    <!-- Share your data -->
+    <!-- Registration share your data -->
     <string name="registration_share_your_data_title">Share your data</string>
-    <string name="registration_share_your_data_description">Your identity needs to be verified to access the service. You cannot use the available services without sharing your personal data. If you do not wish to share your personal details online, you can submit your application over the counter by visiting your district administration.</string>
+    <string name="registration_share_your_data_description">To receive access to the service you need to confirm your identity.\n\n\nIf you don\'t want to share your personal data, you can submit your form by visiting your local administration.</string>
     <string name="registration_share_your_data_send_error">Error sending data, please try again later</string>
 
     <!-- Registration disagree -->
-    <string name="registration_disagree_title">Identification</string>
-    <string name="registration_disagree_description">If you decline your registration, you will need to start the registration process again the next time you log in.</string>
-    <string name="registration_disagree_btn_yes">Identity</string>
-    <string name="registration_disagree_btn_no">Back</string>
+    <string name="registration_disagree_title">Hello, %s</string>
+    <string name="registration_disagree_description">Sorry, something went wrong. Please try again later.</string>
+    <string name="registration_disagree_button">Please begin your registration from the first step.</string>
 
     <!-- Registration ready -->
-    <string name="registration_ready_hello">Hello, %s,</string>
+    <string name="registration_ready_hello">Hello, %s</string>
     <string name="registration_ready_title">Everything is ready!</string>
-    <string name="registration_ready_description">You already have an account in Digital Sofia and you can request a new service at the electronic counter</string>
+    <string name="registration_ready_description">You have a profile in Digital Sofia and you can request a new service from menu Request service.</string>
     <string name="registration_ready_button">Request service</string>
 
     <!-- Registration error -->
-    <string name="registration_error_title">Hello</string>
+    <string name="registration_error_title">Identification</string>
+    <string name="registration_error_description">If you reject the identification the next time you open the app you will need to start the registration process again</string>
     <string name="registration_error_button">Start registration from the beginning</string>
+    <string name="registration_error_button_yes">Identification</string>
+    <string name="registration_error_button_no">Back</string>
 
     <!-- Documents -->
+    <string name="document_opened_title">Sofia Municipality</string>
     <string name="document_title">Documents</string>
     <string name="document_created_on">Created on</string>
     <string name="document_signed_on">Signed on</string>
+    <string name="document_rejected_on">Rejected on</string>
+    <string name="document_expired_on">Expired on</string>
     <string name="document_status_signed">Signed</string>
     <string name="document_status_wait_sign">Awaiting signature</string>
     <string name="document_status_expired">Expired</string>
     <string name="document_status_rejected">Rejected</string>
     <string name="document_status_pending">Pending</string>
-    <string name="document_status_unsigned">Unsigned</string>
+    <string name="document_status_unsigned">New</string>
     <string name="document_status_unknown">Unknown</string>
+    <string name="document_status_failed">Failed</string>
+    <string name="document_status_withdrawn">Withdrawn</string>
     <string name="document_view_file">View File</string>
     <string name="document_download_file">Download</string>
 
@@ -280,6 +316,22 @@
     <string name="auth_biometric_scanner_title">Authentication</string>
     <string name="auth_biometric_scanner_failed">Fingerprint not recognized.</string>
     <string name="auth_biometric_scanner_many_attempts">Too many attempts. Please try again later.</string>
+
+    <!-- Confirmation -->
+    <string name="confirmation_title">Login with Digital Sofia</string>
+    <string name="confirmation_subtitle">Confirm Login</string>
+    <string name="confirmation_description">A login attempt into the Digital Sofia portal was made. Please confirm.</string>
+    <string name="confirmation_button_yes">Confirm</string>
+    <string name="confirmation_button_no">Deny</string>
+
+    <!-- File Download -->
+    <string name="file_download_success">Successfully downloaded file</string>
+    
+    <!-- Beta -->
+    <string name="beta_feedback_description">It’s our new service – Your feedback will help us to make it better. Send it to address@sofia.bg</string>
+    <string name="beta_button_title">beta</string>
+    <string name="beta_feedback_email">address@sofia.bg</string>
+
 
     <!-- Lorem ipsum -->
     <string name="lorem_ipsum_size_1">Lorem ipsum</string>

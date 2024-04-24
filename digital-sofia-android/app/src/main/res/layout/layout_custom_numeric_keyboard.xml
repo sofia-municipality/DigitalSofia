@@ -2,8 +2,8 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:clipToPadding="false"
     android:background="@color/color_background"
+    android:clipToPadding="false"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -142,11 +142,11 @@
         android:textSize="@dimen/default_text_size"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btn0"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_max="@dimen/pass_code_button_max_size"
         app:layout_constraintHeight_min="@dimen/pass_code_button_min_size"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn7"
+        app:layout_constraintStart_toEndOf="@id/btn0"
+        app:layout_constraintTop_toBottomOf="@+id/btn9"
         app:layout_constraintWidth_max="@dimen/pass_code_button_max_size"
         app:layout_constraintWidth_min="@dimen/pass_code_button_min_size"
         tools:visibility="visible" />
@@ -174,11 +174,11 @@
         android:src="@drawable/ic_fingerprint"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn0"
         app:layout_constraintHeight_max="@dimen/pass_code_button_max_size"
         app:layout_constraintHeight_min="@dimen/pass_code_button_min_size"
-        app:layout_constraintStart_toEndOf="@id/btn0"
-        app:layout_constraintTop_toBottomOf="@+id/btn9"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn7"
         app:layout_constraintWidth_max="@dimen/pass_code_button_max_size"
         app:layout_constraintWidth_min="@dimen/pass_code_button_min_size"
         tools:visibility="visible" />

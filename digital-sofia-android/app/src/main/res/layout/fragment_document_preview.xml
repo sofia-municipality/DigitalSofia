@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.digital.sofia.ui.view.CustomToolbar
+        android:id="@+id/customToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:toolbar_icon="@drawable/ic_back"
+        app:toolbar_title="@string/back" />
+
+    <com.digital.sofia.ui.view.ComplexGestureRefreshView
+        android:id="@+id/refreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.github.barteksc.pdfviewer.PDFView
+                android:id="@+id/pdfView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <com.digital.sofia.ui.view.ErrorView
+                android:id="@+id/errorView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                app:error_view_button_one_title="@string/try_again"
+                app:error_view_button_two_title="@string/close"
+                app:error_view_show_button_one="true"
+                app:error_view_show_button_two="true"
+                app:error_view_show_description="true"
+                app:error_view_show_title="true"
+                tools:visibility="gone" />
+
+            <com.digital.sofia.ui.view.LoaderView
+                android:id="@+id/loaderView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone"
+                tools:visibility="gone" />
+
+        </FrameLayout>
+
+    </com.digital.sofia.ui.view.ComplexGestureRefreshView>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

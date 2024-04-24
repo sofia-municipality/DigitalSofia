@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/serviceRequestFragment"
-        android:name="com.digitall.digital_sofia.ui.fragments.main.request.ServiceRequestFragment"
+        android:name="com.digital.sofia.ui.fragments.main.request.ServiceRequestFragment"
         android:label="serviceRequestFragment"
         tools:layout="@layout/fragment_base_web_view" />
 
