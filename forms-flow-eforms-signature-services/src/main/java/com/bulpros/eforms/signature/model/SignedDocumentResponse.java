@@ -1,7 +1,8 @@
 package com.bulpros.eforms.signature.model;
 
 import eu.europa.esig.dss.enumerations.DigestAlgorithm;
-import eu.europa.esig.dss.model.MimeType;
+
+import eu.europa.esig.dss.enumerations.MimeType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

@@ -9,7 +9,7 @@ import org.keycloak.services.resource.RealmResourceProviderFactory;
 
 public class PersonIdentifierResourceProviderFactory implements RealmResourceProviderFactory {
 
-    private static final Logger logger = Logger.getLogger(SmsResourceProviderFactory.class);
+    private static final Logger logger = Logger.getLogger(MessageResourceProviderFactory.class);
 
     @Override
     public String getId() {

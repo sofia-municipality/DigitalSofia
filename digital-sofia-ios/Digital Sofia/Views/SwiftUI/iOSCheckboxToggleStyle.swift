@@ -15,10 +15,10 @@ struct iOSCheckboxToggleStyle: ToggleStyle {
             HStack {
                 ZStack {
                     RoundedRectangle(cornerRadius: AppConfig.Dimensions.CornerRadius.mini)
-                        .stroke(configuration.isOn ? DSColors.Blue.blue : DSColors.toggleDeselected,
+                        .stroke(configuration.isOn ? DSColors.Blue.regular : DSColors.toggleDeselected,
                                 lineWidth: AppConfig.Dimensions.Standart.lineHeight / 2)
                         .background {
-                            configuration.isOn ? DSColors.Blue.blue : Color.white
+                            configuration.isOn ? DSColors.Blue.regular : Color.white
                         }
                     
                     if configuration.isOn {

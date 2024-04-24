@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 
 import { PAGE_ROUTES } from "../../constants/navigation";
 import AdminCards from "./AdminCards";
-import AdministrationContainer from "./AdministrationContainer";
+import AdministrationContainer from "../AdministrationContainer";
 
 const SOAdminstrationPage = () => {
   const { t } = useTranslation();

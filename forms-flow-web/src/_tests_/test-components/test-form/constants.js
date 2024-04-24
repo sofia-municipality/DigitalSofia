@@ -13,7 +13,7 @@ export const mockstate = {
     },
     isAuthenticated: true,
     currentPage: "",
-    showApplications: true
+    showApplications: true,
   },
 
   formDelete: {

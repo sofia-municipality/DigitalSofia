@@ -1,4 +1,4 @@
-from marshmallow import EXCLUDE, Schema, fields
+from marshmallow import EXCLUDE, Schema, fields, validates
 
 
 class DocumentsListSchema(Schema):
@@ -9,8 +9,8 @@ class DocumentsListSchema(Schema):
     # type = fields.Str(required=False,allow_null=True)
     cursor = fields.Str(required=False,allow_null=True)
     created_after = fields.Str(data_key="createdAfter", required=False, allow_none=True)
+    limit = fields.Int(data_key="limit", required=False, allow_none=True)
     # page_no = fields.Int(data_key="pageNo", required=False, allow_none=True)
-    # size = fields.Int(data_key="size", required=False, allow_none=True)
 
 class DocumentSignRequest(Schema):
     """This class manages document sign schema."""
@@ -24,6 +24,14 @@ class DocumentSignRequest(Schema):
     content = fields.Str(required=True)
     content_type = fields.Str(data_key="contentType", required=True)
     file_name = fields.Str(data_key="fileName", required=True)
+    origin_form_formio_id = fields.Str(data_key="originFormFormioId", required=False)
+    signature_source = fields.Str(data_key="signatureSource", required=False, default=None)
+
+    
+    @validates("signature_source")
+    def validate_signature_source(self, signature_source):
+        return signature_source in ["digitalSofia", "evrotrust", "kep"]
+
 
 class DocumentSignCallback(Schema):
     transaction_id = fields.Str(data_key="transactionID")

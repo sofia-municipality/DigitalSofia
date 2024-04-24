@@ -36,7 +36,7 @@ struct RegisterBiometricsAuthView: View {
             Image(systemName: BiometricProvider.biometricType == .face ? ImageProvider.SystemImages.faceID : ImageProvider.SystemImages.touchID)
                 .resizable()
                 .scaledToFit()
-                .foregroundColor(DSColors.Blue.blue)
+                .foregroundColor(DSColors.Blue.regular)
                 .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.firaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.medium))
                 .frame(width: AppConfig.Dimensions.Standart.iconHeight * 1.5, height: AppConfig.Dimensions.Standart.iconHeight * 1.5)
             
@@ -47,12 +47,13 @@ struct RegisterBiometricsAuthView: View {
                 BlueTextButton(title: AppConfig.UI.Titles.Button.no.localized) {
                     showConfirmAuth = true
                 }
+                .padding([.trailing], verticalPadding / 2)
                 
                 BlueBackgroundButton(title: AppConfig.UI.Titles.Button.yes.localized, action: {
                     loginViewModel?.authenticateWithBiometrics()
                 })
+                .padding([.leading], verticalPadding / 2)
             }
-            .frame(width: .infinity)
             .padding(.bottom, verticalPadding)
         }
         .onAppear {
@@ -60,7 +61,7 @@ struct RegisterBiometricsAuthView: View {
                 if let error = error {
                     appState.alertItem = AlertProvider.errorAlert(message: error.description)
                 } else {
-                    var user = UserProvider.shared.getUser()
+                    var user = UserProvider.currentUser
                     user?.useBiometrics = true
                     UserProvider.shared.save(user: user)
                     
@@ -68,17 +69,17 @@ struct RegisterBiometricsAuthView: View {
                 }
             })
         }
-        .alert(item: $appState.alertItem) { alertItem in
-            AlertProvider.getAlertFor(alertItem: alertItem)
-        }
+        .log(view: self)
+        .alert()
+        .environmentObject(appState)
+        .environmentObject(networkMonitor)
         .padding([.leading, .trailing], horizontalPadding)
-        .background(DSColors.background)
-        .navigationBarHidden(true)
+        .backgroundAndNavigation()
     }
     
     private func navigation() -> some View {
         HStack {
-            NavigationLink(destination: AuthenticationConfirmationView()
+            NavigationLink(destination: ConfirmAuthenticationView()
                 .environmentObject(appState)
                 .environmentObject(networkMonitor),
                            isActive: $showConfirmAuth) { EmptyView() }

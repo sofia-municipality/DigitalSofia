@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-flow-forms
+  namespace : forms-flow-forms
+  labels:
+    app.kubernetes.io/name: forms
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: forms
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: forms
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: form-flow-forms
+          image: formsflow/forms-flow-forms:v5.1.0
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c", "echo '140.82.121.4 github.com ' >> /etc/hosts && echo '140.82.121.9 codeload.github.com' >> /etc/hosts" ]
+          stdin: true 
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          tty: true 
+          ports:
+            - containerPort: 3001
+              name: http
+              protocol: TCP
+          env:
+            - name: DEBUG
+              value: "*"
+            - name: FORMIO_DB_USERNAME
+              value: "formsio"
+            - name: FORMIO_DB_PASSWORD
+              value: "P@ssw0rd"
+            - name: FORMIO_DB_DATABASE
+              value: "formsiodbdev"
+            - name: ROOT_EMAIL
+              value: "iiliev@digitall.com"
+            - name: ROOT_PASSWORD
+              value: "fd1cnUW2Rp608S2"
+            - name: FORMIO_CLIENT_UI
+              value: "true" 
+            - name: FORMIO_DOMAIN
+              value: "http://digital-formio.digitalsofia.digital"
+            - name: FORMIO_JWT_SECRET
+              value: "test-secret"
+            - name: FORMIO_JWT_EXPIRE
+              value: "240"
+            - name: MULTI_TENANCY_ENABLED
+              value: "true"
+            - name: NODE_CONFIG
+              value: "{\"mongo\":\"mongodb://formsio:formsiotest123@192.168.201.46:27017/formsiodbdev\"}"

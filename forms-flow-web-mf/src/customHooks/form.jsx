@@ -5,8 +5,14 @@ import querystring from "querystring";
 
 import * as formEmbeddedConstants from "../constants/formEmbeddedConstants";
 import API from "../apiManager/endpoints";
+import * as apiConfig from "../apiManager/endpoints/config";
 import * as httpRequestHandler from "../apiManager/httpRequestHandler";
-import { validatePersonalIdentifier } from "../utils";
+import {
+  validatePersonalIdentifier,
+  downloadFile,
+  sendMobleAppMessage,
+  downloadBase64File,
+} from "../utils";
 import { useDevice } from "./device";
 
 export const useEnrichForm = () => {
@@ -16,23 +22,25 @@ export const useEnrichForm = () => {
   const enrichForm = useCallback(
     (formRef, saveDraft = () => {}, draftId) => {
       const searchParams = querystring.parse(search.replace("?", "")) || {};
-      if (formRef.current.component?.parent) {
+      if (formRef.current) {
         if (draftId) {
-          formRef.current.component.parent.draftId = draftId;
+          formRef.current.draftId = draftId;
         }
 
-        formRef.current.component.parent.httpRequestHandler =
-          httpRequestHandler;
-        formRef.current.component.parent.validatePersonalIdentifier =
-          validatePersonalIdentifier;
-        formRef.current.component.parent.saveAs = saveAs;
-        formRef.current.component.parent.searchParams = searchParams;
-        formRef.current.component.parent.saveDraft = saveDraft;
-        formRef.current.component.parent.deviceSize = deviceSize;
-        formRef.current.component.parent.constants = {
+        formRef.current.httpRequestHandler = httpRequestHandler;
+        formRef.current.validatePersonalIdentifier = validatePersonalIdentifier;
+        formRef.current.saveAs = saveAs;
+        formRef.current.searchParams = searchParams;
+        formRef.current.saveDraft = saveDraft;
+        formRef.current.deviceSize = deviceSize;
+        formRef.current.constants = {
           api: API,
+          apiConfig,
           ...formEmbeddedConstants,
         };
+        formRef.current.downloadBase64File = downloadBase64File;
+        formRef.current.downloadFile = downloadFile;
+        formRef.current.sendMobleAppMessage = sendMobleAppMessage;
       }
     },
     [deviceSize, search]

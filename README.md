@@ -1,4 +1,4 @@
-# SOA23-DG55-07
+# SOA23DG55-158
 
 
 
@@ -15,14 +15,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin https://git.egov.bg/so/digitalsofia/soa23-dg55-07.git
+git remote add origin https://git.egov.bg/so/eservices/soa23dg55-158.git
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](https://git.egov.bg/so/digitalsofia/soa23-dg55-07/-/settings/integrations)
+- [ ] [Set up project integrations](https://git.egov.bg/so/eservices/soa23dg55-158/-/settings/integrations)
 
 ## Collaborate with your team
 

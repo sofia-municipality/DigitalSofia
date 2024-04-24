@@ -19,9 +19,11 @@ import {
 } from "../actions/bpmActions";
 import { setLanguage } from "../actions/languageSetAction";
 import {
-  CLIENT,
   STAFF_REVIEWER,
   STAFF_DESIGNER,
+  ANALYTICS_VIEWER,
+  PAGE_ADMIN,
+  ADMIN,
   ENABLE_APPLICATIONS_MODULE,
   ENABLE_DASHBOARDS_MODULE,
   ENABLE_FORMS_MODULE,
@@ -167,6 +169,60 @@ const PrivateRoute = React.memo((props) => {
     [userRoles]
   );
 
+  const PageAdminRoute = useMemo(
+    () =>
+      ({ component: Component, ...rest }) =>
+        (
+          <Route
+            {...rest}
+            render={(props) =>
+              userRoles.includes(PAGE_ADMIN) ? (
+                <Component {...props} />
+              ) : (
+                <Redirect exact to="/404" />
+              )
+            }
+          />
+        ),
+    [userRoles]
+  );
+
+  const AdminRoute = useMemo(
+    () =>
+      ({ component: Component, ...rest }) =>
+        (
+          <Route
+            {...rest}
+            render={(props) =>
+              userRoles.includes(ADMIN) ? (
+                <Component {...props} />
+              ) : (
+                <Redirect exact to="/404" />
+              )
+            }
+          />
+        ),
+    [userRoles]
+  );
+
+  const AnalyticsViewerRoute = useMemo(
+    () =>
+      ({ component: Component, ...rest }) =>
+        (
+          <Route
+            {...rest}
+            render={(props) =>
+              userRoles.includes(ANALYTICS_VIEWER) ? (
+                <Component {...props} />
+              ) : (
+                <Redirect exact to="/404" />
+              )
+            }
+          />
+        ),
+    [userRoles]
+  );
+
   const ReviewerRoute = useMemo(
     () =>
       ({ component: Component, ...rest }) =>
@@ -185,15 +241,14 @@ const PrivateRoute = React.memo((props) => {
     [userRoles]
   );
 
-  const ClientReviewerRoute = useMemo(
+  const DraftRoute = useMemo(
     () =>
       ({ component: Component, ...rest }) =>
         (
           <Route
             {...rest}
             render={(props) =>
-              userRoles.includes(STAFF_REVIEWER) ||
-              userRoles.includes(CLIENT) ? (
+              DRAFT_ENABLED && userRoles.includes(ADMIN) ? (
                 <Component {...props} />
               ) : (
                 <Redirect exact to="/404" />
@@ -204,25 +259,20 @@ const PrivateRoute = React.memo((props) => {
     [userRoles]
   );
 
-  const DraftRoute = useMemo(
-    () =>
-      ({ component: Component, ...rest }) =>
-        (
-          <Route
-            {...rest}
-            render={(props) =>
-              DRAFT_ENABLED &&
-              (userRoles.includes(STAFF_REVIEWER) ||
-                userRoles.includes(CLIENT)) ? (
-                <Component {...props} />
-              ) : (
-                <Redirect exact to="/404" />
-              )
-            }
-          />
-        ),
-    [userRoles]
-  );
+  const redirectUrlToHomePageBasedOnRole = () => {
+    if (userRoles?.includes(STAFF_REVIEWER)) {
+      return `${redirecUrl}task`;
+    } else if (userRoles?.includes(STAFF_DESIGNER)) {
+      return `${redirecUrl}form`;
+    } else if (userRoles?.includes(PAGE_ADMIN)) {
+      return `${redirecUrl}translations`;
+    } else if (userRoles?.includes(ANALYTICS_VIEWER)) {
+      return `${redirecUrl}metrics`;
+    } else {
+      return `${redirecUrl}application`;
+    }
+  };
+
   return (
     <>
       {isAuth ? (
@@ -238,7 +288,7 @@ const PrivateRoute = React.memo((props) => {
               <DraftRoute path={`${BASE_ROUTE}draft`} component={Drafts} />
             )}
             {ENABLE_APPLICATIONS_MODULE && (
-              <ClientReviewerRoute
+              <AdminRoute
                 path={`${BASE_ROUTE}application`}
                 component={Application}
               />
@@ -252,13 +302,13 @@ const PrivateRoute = React.memo((props) => {
             )}
 
             {ENABLE_DASHBOARDS_MODULE && (
-              <ReviewerRoute
+              <AnalyticsViewerRoute
                 path={`${BASE_ROUTE}metrics`}
                 component={DashboardPage}
               />
             )}
             {ENABLE_DASHBOARDS_MODULE && (
-              <ReviewerRoute
+              <AnalyticsViewerRoute
                 path={`${BASE_ROUTE}insights`}
                 component={InsightsPage}
               />
@@ -279,7 +329,7 @@ const PrivateRoute = React.memo((props) => {
             )}
 
             {ENABLE_TRANSLATIONS_ADMINISTRATION_MODULE && (
-              <DesignerRoute
+              <PageAdminRoute
                 exact
                 path={`${BASE_ROUTE}translations`}
                 component={TranslationAdministration}
@@ -289,9 +339,7 @@ const PrivateRoute = React.memo((props) => {
             <Route exact path={BASE_ROUTE}>
              {userRoles.length && <Redirect
                 to={
-                  userRoles?.includes(STAFF_REVIEWER)
-                    ? `${redirecUrl}task`
-                    : `${redirecUrl}form`
+                  redirectUrlToHomePageBasedOnRole()
                 }
               />}
             </Route>

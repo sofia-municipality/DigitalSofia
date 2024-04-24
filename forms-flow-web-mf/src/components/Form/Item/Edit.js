@@ -6,7 +6,8 @@ import _set from "lodash/set";
 import _cloneDeep from "lodash/cloneDeep";
 import _camelCase from "lodash/camelCase";
 import _isEquial from "lodash/isEqual";
-import { MULTITENANCY_ENABLED } from "../../../constants/constants";
+import i18next from "i18next";
+import { MULTITENANCY_ENABLED, TRANSLATE_FORM_BUILDER } from "../../../constants/constants";
 import { INACTIVE } from "../constants/formListConstants";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
@@ -723,7 +724,8 @@ const Edit = React.memo(() => {
             form={form}
             onChange={formChange}
             options={{
-              language: lang,
+              language: TRANSLATE_FORM_BUILDER ? lang : "en",
+              i18next: i18next.createInstance(),
               i18n: TranslationsService.getFormTranslations(),
             }}
           />

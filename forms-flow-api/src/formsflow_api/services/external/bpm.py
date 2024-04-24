@@ -117,6 +117,16 @@ class BPMService(BaseBPMService):
         url = cls._get_url_(BPMEndpointType.TASK) + task_id + "/variables"
         return cls.get_request(url, token)
 
+    def get_process_instance_variable(cls, process_instance_id, token, variable_name):
+        url = (
+            cls._get_url_(BPMEndpointType.DEFAULT_PROCESS_INSTANCE)
+            + process_instance_id
+            + "/variables"
+            + f"/{variable_name}"
+        )
+
+        return cls.get_request(url, token)
+
     @classmethod
     def claim_task(cls, task_id, data, token):
         """Claim a task."""
@@ -148,11 +158,11 @@ class BPMService(BaseBPMService):
         return cls.post_request(url, token, data)
 
     @classmethod
-    def get_process_activity_instances(cls, process_instace_id, token):
+    def get_process_activity_instances(cls, process_instance_id, token):
         """Get task."""
         url = (
             cls._get_url_(BPMEndpointType.PROCESS_INSTANCE)
-            + process_instace_id
+            + process_instance_id
             + "/activity-instances"
         )
         return cls.get_request(url, token)
@@ -165,6 +175,62 @@ class BPMService(BaseBPMService):
             + "/variables"
         )
         return cls.get_request(url, token)
+    
+    @classmethod
+    def update_process_variables(cls, process_instance_id, token, modifications={}, deletions=[]):
+        url = (
+            cls._get_url_(BPMEndpointType.DEFAULT_PROCESS_INSTANCE)
+            + process_instance_id
+            + "/variables"
+        )
+
+        data = {
+            "modifications": modifications,
+            "deletions": deletions
+        }
+
+        return cls.post_request(url, token, payload=data)
+    
+    def create_process_variable(cls, process_instance_id, token, variable_name, payload):
+        url = (
+            cls._get_url_(BPMEndpointType.DEFAULT_PROCESS_INSTANCE)
+            + process_instance_id
+            + "/variables"
+            + f"/{variable_name}"
+        )
+
+        return cls.put_request(url, token=token, payload=payload)
+
+    @classmethod
+    def post_identity_links(cls, process_instance_id, token, data):
+        url = (
+            cls._get_url_(BPMEndpointType.TASK)
+            + process_instance_id
+            + "/identity-links"
+        )
+
+        return cls.post_request(url, token, data)
+    
+    @classmethod
+    def get_identity_links(cls, process_instance_id, token):
+        url = (
+            cls._get_url_(BPMEndpointType.TASK)
+            + process_instance_id
+            + "/identity-links"
+        )
+
+        return cls.get_request(url, token)
+    
+    @classmethod
+    def delete_identity_links(cls, process_instance_id, token, data):
+        url = (
+            cls._get_url_(BPMEndpointType.TASK)
+            + process_instance_id
+            + "/identity-links"
+            + "/delete"
+        )
+
+        return cls.post_request(url, token, data)
 
     @classmethod
     def delete_process_instance(cls, process_instance_id, token):
@@ -215,3 +281,60 @@ class BPMService(BaseBPMService):
                 "type": "Environment missing",
                 "message": "Missing environment variable BPM_API_URL",
             }
+        
+
+    @classmethod
+    def get_apps_not_completed_for_child(cls, personIdentifier:str, tenantId:str, definitionId:str):
+        """
+            To find if there is at least one application for adderss change/registration for child is started but not completed:
+            - Filter by EGN: personIdentifier_like_%-{egn}
+            - Application status must not be 'Completed': applicationStatus_neq_Completed
+            - Application must be on behalf of the child: behalf_eq_child
+            - Filter by Tenant ID: tenantIdIn={tenantId}
+            - Filter by processDefinitionId: Process_sofiade:66:ab532399-cf36-11ee-80ed-e20c45ea0eb8
+        """
+
+        if not personIdentifier:
+            current_app.logger.error("personIdentifier is required for BPMService.get_apps_not_completed_for_child")
+            return {
+                "success": False,
+                "error": "personIdentifier is required for BPMService.get_apps_not_completed_for_child"
+            }
+
+
+        if not tenantId:
+            current_app.logger.error("tenantId is required for BPMService.get_apps_not_completed_for_child")
+            return {
+                "success": False,
+                "error": "tenantId is required for BPMService.get_apps_not_completed_for_child"
+            }            
+
+        if not definitionId:
+            current_app.logger.error("definitionId is required for BPMService.get_apps_not_completed_for_child")
+            return {
+                "success": False,
+                "error": "definitionId is required for BPMService.get_apps_not_completed_for_child"
+            }            
+
+        # pnobg-9308241146
+        egn = personIdentifier[6:]
+
+        if len(egn) != 10:
+            current_app.logger.error(f"Invalid EGN is provided: {egn}")
+            return {
+                "success": False,
+                "error": f"Invalid EGN is provided: {egn}"
+            }   
+
+        url = cls._get_url_(BPMEndpointType.DEFAULT_PROCESS_INSTANCE) + f"?variables=personIdentifier_like_%-{egn},applicationStatus_neq_Completed,behalf_eq_child&&tenantIdIn={tenantId}&processDefinitionId={definitionId}"
+
+        current_app.logger.debug(url)
+
+        data = cls.get_request(url, token = None)
+
+        current_app.logger.debug(data) 
+
+        return{
+            "success": True,
+            "data": data
+        }

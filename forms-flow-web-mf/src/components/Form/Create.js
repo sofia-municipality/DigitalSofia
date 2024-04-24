@@ -4,8 +4,10 @@ import _set from "lodash/set";
 import _cloneDeep from "lodash/cloneDeep";
 import _camelCase from "lodash/camelCase";
 import { push } from "connected-react-router";
+import i18next from "i18next";
 import {
   MULTITENANCY_ENABLED,
+  TRANSLATE_FORM_BUILDER
 } from "../../constants/constants";
 import { addHiddenApplicationComponent } from "../../constants/applicationComponent";
 import { saveFormProcessMapperPost } from "../../apiManager/services/processServices";
@@ -389,7 +391,8 @@ const Create = React.memo(() => {
           form={form}
           onChange={formChange}
           options={{
-            language: lang,
+            language: TRANSLATE_FORM_BUILDER ? lang : "en",
+            i18next: i18next.createInstance(),
             i18n: TranslationsService.getFormTranslations(),
           }}
         />

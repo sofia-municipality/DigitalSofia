@@ -1,5 +1,6 @@
 com.bulpros.keycloak.phone.authentication.authenticators.browser.SmsOtpMfaAuthenticatorFactory
 com.bulpros.keycloak.phone.authentication.authenticators.browser.PhoneUsernamePasswordForm
+com.bulpros.keycloak.phone.authentication.authenticators.browser.EgnUsernamePasswordForm
 com.bulpros.keycloak.phone.authentication.authenticators.resetcred.ResetCredentialWithPhone
 com.bulpros.keycloak.phone.authentication.authenticators.resetcred.ResetCredentialEmailWithPhone
 com.bulpros.keycloak.phone.authentication.authenticators.directgrant.AuthenticationCodeAuthenticatorFactory

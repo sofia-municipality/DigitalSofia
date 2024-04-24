@@ -1,15 +1,21 @@
 package com.bulpros.keycloak.phone.providers.spi.impl;
 
+import com.bulpros.keycloak.phone.Utils;
 import com.bulpros.keycloak.phone.authentication.requiredactions.ConfigSmsOtpRequiredAction;
 import com.bulpros.keycloak.phone.authentication.requiredactions.UpdatePhoneNumberRequiredAction;
-import com.bulpros.keycloak.phone.providers.jpa.TokenCode;
-import com.bulpros.keycloak.phone.Utils;
 import com.bulpros.keycloak.phone.credential.PhoneOtpCredentialModel;
 import com.bulpros.keycloak.phone.credential.PhoneOtpCredentialProvider;
 import com.bulpros.keycloak.phone.credential.PhoneOtpCredentialProviderFactory;
 import com.bulpros.keycloak.phone.providers.constants.TokenCodeType;
+import com.bulpros.keycloak.phone.providers.jpa.TokenCode;
+import com.bulpros.keycloak.phone.providers.model.CodeStatusEnum;
 import com.bulpros.keycloak.phone.providers.representations.TokenCodeRepresentation;
 import com.bulpros.keycloak.phone.providers.spi.PinVerificationCodeProvider;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TemporalType;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.ForbiddenException;
 import org.jboss.logging.Logger;
 import org.keycloak.connections.jpa.JpaConnectionProvider;
 import org.keycloak.credential.CredentialModel;
@@ -20,11 +26,6 @@ import org.keycloak.models.UserModel;
 import org.keycloak.services.validation.Validation;
 import org.keycloak.util.JsonSerialization;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.TemporalType;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.ForbiddenException;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
@@ -51,26 +52,75 @@ public class DefaultPinVerificationCodeProvider implements PinVerificationCodePr
     }
 
     @Override
-    public TokenCodeRepresentation ongoingProcess(String pin, TokenCodeType tokenCodeType) {
+    public TokenCodeRepresentation ongoingProcess(String personIdentifier, TokenCodeType tokenCodeType) {
 
         try {
-            TokenCode entity = getEntityManager()
-                    .createNamedQuery("ongoingProcess", TokenCode.class)
-                    .setParameter("realmId", getRealm().getId())
-                    .setParameter("pin", pin)
-                    .setParameter("now", new Date(), TemporalType.TIMESTAMP)
-                    .setParameter("type", tokenCodeType.name())
+            TokenCode entity = getEntityManager().createNamedQuery("ongoingProcess", TokenCode.class) //
+                    .setParameter("realmId", getRealm().getId()) //
+                    .setParameter("personIdentifier", personIdentifier) //
+                    .setParameter("now", new Date(), TemporalType.TIMESTAMP) //
+                    .setParameter("type", tokenCodeType.name()) //
                     .getSingleResult();
-
             TokenCodeRepresentation tokenCodeRepresentation = new TokenCodeRepresentation();
 
             tokenCodeRepresentation.setId(entity.getId());
-            tokenCodeRepresentation.setPin(entity.getPin());
+            tokenCodeRepresentation.setPersonIdentifier(entity.getPersonIdentifier());
             tokenCodeRepresentation.setCode(entity.getCode());
             tokenCodeRepresentation.setType(entity.getType());
             tokenCodeRepresentation.setCreatedAt(entity.getCreatedAt());
             tokenCodeRepresentation.setExpiresAt(entity.getExpiresAt());
-            tokenCodeRepresentation.setConfirmed(entity.getConfirmed());
+            tokenCodeRepresentation.setStatus(CodeStatusEnum.getByWaitingStatusName(entity.getStatus()));
+
+            return tokenCodeRepresentation;
+        } catch (NoResultException e) {
+            return null;
+        } catch (Exception e) {
+            logger.error("Ongoing Process exception: " + e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public void changeStatusInProcess(String personIdentifier, String code, TokenCodeType tokenCodeType,
+            CodeStatusEnum status) {
+
+        getEntityManager().createNamedQuery("changeStatusInProcess") //
+                .setParameter("realmId", getRealm().getId()) //
+                .setParameter("personIdentifier", personIdentifier) //
+                .setParameter("code", code) //
+                .setParameter("type", tokenCodeType.name()) //
+                .setParameter("status", status.getStatus()) //
+                .executeUpdate();
+    }
+
+    @Override
+    public int deleteUserProcess(String personIdentifier, TokenCodeType tokenCodeType) {
+
+        return getEntityManager().createNamedQuery("deleteUserProcess") //
+                .setParameter("realmId", getRealm().getId()) //
+                .setParameter("personIdentifier", personIdentifier) //
+                .setParameter("type", tokenCodeType.name()) //
+                .executeUpdate();
+    }
+
+    @Override
+    public TokenCodeRepresentation getStatus(String personIdentifier, String code, TokenCodeType tokenCodeType) {
+        try {
+            TokenCode entity = getEntityManager().createNamedQuery("getStatus", TokenCode.class) //
+                    .setParameter("realmId", getRealm().getId()) //
+                    .setParameter("personIdentifier", personIdentifier) //
+                    .setParameter("code", code) //
+                    .setParameter("type", tokenCodeType.name()) //
+                    .getSingleResult();
+            TokenCodeRepresentation tokenCodeRepresentation = new TokenCodeRepresentation();
+
+            tokenCodeRepresentation.setId(entity.getId());
+            tokenCodeRepresentation.setPersonIdentifier(entity.getPersonIdentifier());
+            tokenCodeRepresentation.setCode(entity.getCode());
+            tokenCodeRepresentation.setType(entity.getType());
+            tokenCodeRepresentation.setCreatedAt(entity.getCreatedAt());
+            tokenCodeRepresentation.setExpiresAt(entity.getExpiresAt());
+            tokenCodeRepresentation.setStatus(CodeStatusEnum.getByWaitingStatusName(entity.getStatus()));
 
             return tokenCodeRepresentation;
         } catch (NoResultException e) {
@@ -79,31 +129,25 @@ public class DefaultPinVerificationCodeProvider implements PinVerificationCodePr
     }
 
     @Override
-    public boolean isAbusing(String pin, TokenCodeType tokenCodeType,
-                             String sourceAddr, int sourceHourMaximum, int targetHourMaximum) {
+    public boolean isAbusing(String pin, TokenCodeType tokenCodeType, String sourceAddr, int sourceHourMaximum,
+            int targetHourMaximum) {
 
         Date oneHourAgo = new Date(System.currentTimeMillis() - TimeUnit.HOURS.toMillis(1));
 
-        if (targetHourMaximum > 0){
-            long targetCount = (getEntityManager()
-                .createNamedQuery("processesSinceTarget", Long.class)
-                .setParameter("realmId", getRealm().getId())
-                .setParameter("pin", pin)
-                .setParameter("date", oneHourAgo, TemporalType.TIMESTAMP)
-                .setParameter("type", tokenCodeType.name())
-                .getSingleResult());
+        if (targetHourMaximum > 0) {
+            long targetCount = (getEntityManager().createNamedQuery("processesSinceTarget", Long.class)
+                    .setParameter("realmId", getRealm().getId()).setParameter("pin", pin)
+                    .setParameter("date", oneHourAgo, TemporalType.TIMESTAMP).setParameter("type", tokenCodeType.name())
+                    .getSingleResult());
             if (targetCount > targetHourMaximum)
                 return true;
         }
 
-        if (sourceHourMaximum > 0){
-            long sourceCount = (getEntityManager()
-                .createNamedQuery("processesSinceSource", Long.class)
-                .setParameter("realmId", getRealm().getId())
-                .setParameter("addr", sourceAddr)
-                .setParameter("date", oneHourAgo, TemporalType.TIMESTAMP)
-                .setParameter("type", tokenCodeType.name())
-                .getSingleResult());
+        if (sourceHourMaximum > 0) {
+            long sourceCount = (getEntityManager().createNamedQuery("processesSinceSource", Long.class)
+                    .setParameter("realmId", getRealm().getId()).setParameter("addr", sourceAddr)
+                    .setParameter("date", oneHourAgo, TemporalType.TIMESTAMP).setParameter("type", tokenCodeType.name())
+                    .getSingleResult());
             if (sourceCount > sourceHourMaximum)
                 return true;
         }
@@ -119,12 +163,12 @@ public class DefaultPinVerificationCodeProvider implements PinVerificationCodePr
 
         entity.setId(tokenCode.getId());
         entity.setRealmId(getRealm().getId());
-        entity.setPin(tokenCode.getPin());
+        entity.setPersonIdentifier(tokenCode.getPersonIdentifier());
         entity.setCode(tokenCode.getCode());
         entity.setType(tokenCodeType.name());
         entity.setCreatedAt(Date.from(now));
         entity.setExpiresAt(Date.from(now.plusSeconds(tokenExpiresIn)));
-        entity.setConfirmed(tokenCode.getConfirmed());
+        entity.setStatus(tokenCode.getStatus().getStatus());
         if (session.getContext().getConnection() != null) {
             entity.setIp(session.getContext().getConnection().getRemoteAddr());
             entity.setPort(session.getContext().getConnection().getRemotePort());
@@ -148,60 +192,55 @@ public class DefaultPinVerificationCodeProvider implements PinVerificationCodePr
         if (tokenCode == null)
             throw new BadRequestException(String.format("There is no valid ongoing %s process", tokenCodeType.label));
 
-        if (!tokenCode.getCode().equals(code)) throw new ForbiddenException("Code does not match with expected value");
+        if (!tokenCode.getCode().equals(code))
+            throw new ForbiddenException("Code does not match with expected value");
 
         logger.info(String.format("User %s correctly answered the %s code", user.getId(), tokenCodeType.label));
 
-        tokenValidated(user,pin,tokenCode.getId(),TokenCodeType.OTP.equals(tokenCodeType));
+        tokenValidated(user, pin, tokenCode.getId(), TokenCodeType.OTP.equals(tokenCodeType));
 
         if (TokenCodeType.OTP.equals(tokenCodeType))
-            updateUserOTPCredential(user,pin,tokenCode.getCode());
+            updateUserOTPCredential(user, pin, tokenCode.getCode());
     }
 
     @Override
     public void tokenValidated(UserModel user, String phoneNumber, String tokenCodeId, boolean isOTP) {
 
         boolean updateUserPhoneNumber = !isOTP;
-        if (isOTP){
+        if (isOTP) {
             updateUserPhoneNumber = PhoneOtpCredentialModel.getSmsOtpCredentialData(user)
-                .map(PhoneOtpCredentialModel.SmsOtpCredentialData::getPhoneNumber)
-                .map(pn -> pn.equals(phoneNumber))
-                .orElse(false);
+                    .map(PhoneOtpCredentialModel.SmsOtpCredentialData::getPhoneNumber).map(pn -> pn.equals(phoneNumber))
+                    .orElse(false);
 
         }
 
-
-        if (updateUserPhoneNumber){
-            if (!Utils.isDuplicatePhoneAllowed(session)){
+        if (updateUserPhoneNumber) {
+            if (!Utils.isDuplicatePhoneAllowed(session)) {
                 session.users()
-                    .searchForUserByUserAttributeStream(session.getContext().getRealm(),"phoneNumber", phoneNumber)
-                    .filter(u -> !u.getId().equals(user.getId()))
-                    .forEach(u -> {
-                        logger.info(String.format("User %s also has phone number %s. Un-verifying.", u.getId(), phoneNumber));
-                        u.setSingleAttribute("phoneNumberVerified", "false");
+                        .searchForUserByUserAttributeStream(session.getContext().getRealm(), "phoneNumber", phoneNumber)
+                        .filter(u -> !u.getId().equals(user.getId())).forEach(u -> {
+                            logger.info(
+                                    String.format("User %s also has phone number %s. Un-verifying.", u.getId(), phoneNumber));
+                            u.setSingleAttribute("phoneNumberVerified", "false");
 
-                        u.addRequiredAction(UpdatePhoneNumberRequiredAction.PROVIDER_ID);
+                            u.addRequiredAction(UpdatePhoneNumberRequiredAction.PROVIDER_ID);
 
-                        //remove otp Credentials
-                        u.credentialManager()
-                            .getStoredCredentialsByTypeStream(PhoneOtpCredentialModel.TYPE)
-                            .filter(c -> {
-                                try {
-                                    PhoneOtpCredentialModel.SmsOtpCredentialData credentialData =
-                                        JsonSerialization.readValue(c.getCredentialData(), PhoneOtpCredentialModel.SmsOtpCredentialData.class);
-                                    if (Validation.isBlank(credentialData.getPhoneNumber())){
-                                        return true;
-                                    }
-                                    return credentialData.getPhoneNumber().equals(user.getFirstAttribute("phoneNumber"));
-                                } catch (IOException e) {
-                                    logger.warn("Unknown format Otp Credential", e);
-                                    return true;
-                                }
-                            })
-                            .map(CredentialModel::getId)
-                            .toList()
-                            .forEach(id -> u.credentialManager().removeStoredCredentialById(id));
-                    });
+                            //remove otp Credentials
+                            u.credentialManager().getStoredCredentialsByTypeStream(PhoneOtpCredentialModel.TYPE).filter(c -> {
+                                        try {
+                                            PhoneOtpCredentialModel.SmsOtpCredentialData credentialData = JsonSerialization.readValue(
+                                                    c.getCredentialData(), PhoneOtpCredentialModel.SmsOtpCredentialData.class);
+                                            if (Validation.isBlank(credentialData.getPhoneNumber())) {
+                                                return true;
+                                            }
+                                            return credentialData.getPhoneNumber().equals(user.getFirstAttribute("phoneNumber"));
+                                        } catch (IOException e) {
+                                            logger.warn("Unknown format Otp Credential", e);
+                                            return true;
+                                        }
+                                    }).map(CredentialModel::getId).toList()
+                                    .forEach(id -> u.credentialManager().removeStoredCredentialById(id));
+                        });
             }
             user.setSingleAttribute("phoneNumberVerified", "true");
             user.setSingleAttribute("phoneNumber", phoneNumber);
@@ -211,28 +250,24 @@ public class DefaultPinVerificationCodeProvider implements PinVerificationCodePr
 
         validateProcess(tokenCodeId, user);
 
-
     }
 
     @Override
     public void validateProcess(String tokenCodeId, UserModel user) {
         TokenCode entity = getEntityManager().find(TokenCode.class, tokenCodeId);
-        entity.setConfirmed(true);
-        entity.setByWhom(user.getId());
         getEntityManager().persist(entity);
     }
 
-
-    private void updateUserOTPCredential(UserModel user, String phoneNumber,  String code) {
+    private void updateUserOTPCredential(UserModel user, String phoneNumber, String code) {
         user.removeRequiredAction(ConfigSmsOtpRequiredAction.PROVIDER_ID);
-        PhoneOtpCredentialProvider ocp = (PhoneOtpCredentialProvider)
-                session.getProvider(CredentialProvider.class, PhoneOtpCredentialProviderFactory.PROVIDER_ID);
+        PhoneOtpCredentialProvider ocp = (PhoneOtpCredentialProvider) session.getProvider(CredentialProvider.class,
+                PhoneOtpCredentialProviderFactory.PROVIDER_ID);
         if (ocp.isConfiguredFor(getRealm(), user, PhoneOtpCredentialModel.TYPE)) {
-            var credentialData = new PhoneOtpCredentialModel.SmsOtpCredentialData(phoneNumber,Utils.getOtpExpires(session));
-            PhoneOtpCredentialModel.updateOtpCredential(user,credentialData,code);
+            var credentialData = new PhoneOtpCredentialModel.SmsOtpCredentialData(phoneNumber,
+                    Utils.getOtpExpires(session));
+            PhoneOtpCredentialModel.updateOtpCredential(user, credentialData, code);
         }
     }
-
 
     @Override
     public void close() {

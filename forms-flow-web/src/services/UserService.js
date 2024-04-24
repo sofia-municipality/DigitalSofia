@@ -23,9 +23,28 @@ import { LANGUAGE } from "../constants/constants";
 
 let KeycloakData;
 
+const appendParentOriginIntoUrl = (url, customParams = {}) => {
+  return (url += Object.entries(customParams).reduce((acc, [key, value]) => {
+    acc += `&${key}=${value}`;
+    return acc;
+  }, ""));
+};
+
 const setKeycloakJson = (tenantKey = null) => {
   const kcJson = getTenantKeycloakJson(tenantKey);
   KeycloakData = new Keycloak(kcJson);
+  const originalCreateLoginUrl = KeycloakData.createLoginUrl;
+
+  KeycloakData.createLoginUrl = function (options) {
+    const url = originalCreateLoginUrl.call(this, options);
+    const urlWithParentOrigin = appendParentOriginIntoUrl(
+      url,
+      options?.customParams
+    );
+
+    return urlWithParentOrigin;
+  };
+
   return kcJson.clientId;
 };
 
@@ -45,22 +64,32 @@ const initKeycloak = async ({
   const { dispatch } = store;
   const { user } = store.getState();
   const clientId = setKeycloakJson(tenantKey);
-  const authenticated = await KeycloakData.init({
-    onLoad: "check-sso",
-    promiseType: "native",
-    silentCheckSsoRedirectUri:
-      window.location.origin + "/silent-check-sso.html",
-    pkceMethod: "S256",
-    checkLoginIframe: false,
-    token: user.bearerToken || externalToken,
-    refreshToken: user.refreshToken || externalRefreshToken,
-  });
+  const isWebView = localStorage.getItem("hideNav");
+
+  let authenticated;
+  try {
+    authenticated = await KeycloakData.init({
+      onLoad: "check-sso",
+      promiseType: "native",
+      silentCheckSsoRedirectUri:
+        window.location.origin + "/silent-check-sso.html",
+      pkceMethod: "S256",
+      checkLoginIframe: false,
+      token: externalToken || user.bearerToken,
+      refreshToken: externalRefreshToken || user.refreshToken,
+    });
+  } catch (err) {
+    console.log("Error initializing keycloak");
+    console.log(err);
+    authenticated = false;
+  }
 
   dispatch(setUserAuth(authenticated));
   if (authenticated) {
     if (KeycloakData.resourceAccess[clientId]) {
       const UserRoles = KeycloakData.resourceAccess[clientId].roles;
       dispatch(setUserRole(UserRoles));
+      localStorage.setItem("USER_ROLES", JSON.stringify(UserRoles));
       dispatch(
         setUserToken({
           token: KeycloakData.token,
@@ -85,15 +114,18 @@ const initKeycloak = async ({
             console.error(err);
             // doLogout();
           } else {
-            KeycloakData.loadUserInfo().then((res) =>
-              dispatch(setUserDetails(res))
-            );
+            KeycloakData.loadUserInfo()
+              .then((res) => dispatch(setUserDetails(res)))
+              .catch((err) => {
+                console.log(err);
+                dispatch(setUserDetails(KeycloakData.tokenParsed));
+              });
             // onAuthenticatedCallback();
           }
         })
       );
       // refreshToken(store);
-      logoutOnTokenExpiration();
+      isWebView ? setRefreshTokenInterval(store) : logoutOnTokenExpiration();
     } else {
       KeycloakData?.logout();
     }
@@ -105,15 +137,19 @@ const initKeycloak = async ({
   }
 };
 
-const userLogin = ({ store, redirectUri }) => {
+const userLogin = ({ store, options = {}, forceLogin = false }) => {
   const { user } = store.getState();
-  if (!user.isAuthenticated) {
-    const locale = user.lang || "bg";
-    const options = { locale };
-    if (redirectUri) {
-      options.redirectUri = redirectUri;
+  if (!user.isAuthenticated || forceLogin) {
+    if (!options?.locale) {
+      options.locale = user.lang || "bg";
     }
-    KeycloakData?.login(options);
+
+    try {
+      KeycloakData?.login(options);
+    } catch (err) {
+      console.log("Error on login");
+      console.log(err);
+    }
   }
 };
 
@@ -128,31 +164,30 @@ const userLogin = ({ store, redirectUri }) => {
 //   }
 // };
 
-// let refreshInterval;
-// const refreshToken = (store) => {
-//   const refreshTime = getTokenExpireTime(KeycloakData);
-//   refreshInterval = setInterval(() => {
-//     KeycloakData &&
-//       KeycloakData.updateToken(5)
-//         .then((refreshed) => {
-//           if (refreshed) {
-//             clearInterval(refreshInterval);
-//             store.dispatch(
-//               setUserToken({
-//                 token: KeycloakData.token,
-//                 refreshToken: KeycloakData.refreshToken,
-//                 tokenParsed: KeycloakData.tokenParsed,
-//               })
-//             );
-//             refreshToken(store);
-//           }
-//         })
-//         .catch((error) => {
-//           console.log(error);
-//           userLogout();
-//         });
-//   }, refreshTime);
-// };
+let refreshInterval;
+const setRefreshTokenInterval = (store) => {
+  const refreshTime = getTokenExpireTime(KeycloakData);
+  refreshInterval = setInterval(() => {
+    KeycloakData &&
+      KeycloakData.updateToken(5)
+        .then((refreshed) => {
+          if (refreshed) {
+            clearInterval(refreshInterval);
+            store.dispatch(
+              setUserToken({
+                token: KeycloakData.token,
+                refreshToken: KeycloakData.refreshToken,
+                tokenParsed: KeycloakData.tokenParsed,
+              })
+            );
+            setRefreshTokenInterval(store);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+  }, refreshTime);
+};
 
 const getTokenExpireTime = (keycloak) => {
   const { exp, iat } = keycloak.tokenParsed;
@@ -177,15 +212,26 @@ const logoutOnTokenExpiration = () => {
 /**
  * Logout function
  */
-const userLogout = (isWithExternalTokens) => {
+const userLogout = (shouldClearUrlParams) => {
   const language = localStorage.getItem("lang");
   const hideNav = localStorage.getItem("hideNav");
+  const logoutEvent = localStorage.getItem("logout-event");
   localStorage.clear();
   localStorage.setItem("lang", language || LANGUAGE);
   hideNav && localStorage.setItem("hideNav", hideNav);
+  if (!logoutEvent) {
+    localStorage.setItem("logout-event", `logout-${Date.now()}`);
+  }
+
+  const showRequestServiceLink = sessionStorage.getItem(
+    "showRequestServiceLink"
+  );
+
   sessionStorage.clear();
+  showRequestServiceLink &&
+    sessionStorage.setItem("showRequestServiceLink", showRequestServiceLink);
   const options = {};
-  if (isWithExternalTokens) {
+  if (shouldClearUrlParams) {
     options.redirectUri = `${window.location.origin}${window.location.pathname}`;
   }
   // clearInterval(refreshInterval);

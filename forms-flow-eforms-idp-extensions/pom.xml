@@ -14,8 +14,8 @@
        Igor Radomirov
  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.bulpros</groupId>
     <artifactId>eforms-idp-extensions</artifactId>
@@ -27,15 +27,16 @@
         <module>eauth2-provider</module>
         <module>eforms-theme</module>
         <module>sm-theme</module>
+        <module>digitalSofia-theme</module>
         <module>eServices-theme</module>
         <module>sm-firebase-provider</module>
         <module>sm-pin-provider</module>
     </modules>
-    
+
     <properties>
         <sonar.projectName>IdpExtensions</sonar.projectName>
         <sonar.projectKey>IdpExtensions</sonar.projectKey>
-        <keycloak.version>21.1.1</keycloak.version>
+        <keycloak.version>23.0.3</keycloak.version>
         <lombok.version>1.18.20</lombok.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
@@ -43,53 +44,58 @@
 
     </properties>
     <dependencies>
-    <dependency>
-        <groupId>org.keycloak</groupId>
-        <artifactId>keycloak-saml-core</artifactId>
-        <version>${keycloak.version}</version>
-        <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-saml-core</artifactId>
+            <version>${keycloak.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-    <dependency>
-        <groupId>org.keycloak</groupId>
-        <artifactId>keycloak-core</artifactId>
-        <version>${keycloak.version}</version>
-        <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-core</artifactId>
+            <version>${keycloak.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-    <dependency>
-        <groupId>org.keycloak</groupId>
-        <artifactId>keycloak-services</artifactId>
-        <version>${keycloak.version}</version>
-        <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-services</artifactId>
+            <version>${keycloak.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-    <dependency>
-        <groupId>org.keycloak</groupId>
-        <artifactId>keycloak-server-spi</artifactId>
-        <version>${keycloak.version}</version>
-        <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-server-spi</artifactId>
+            <version>${keycloak.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-    <dependency>
-        <groupId>org.keycloak</groupId>
-        <artifactId>keycloak-server-spi-private</artifactId>
-        <version>${keycloak.version}</version>
-        <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-server-spi-private</artifactId>
+            <version>${keycloak.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
-    <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <version>${lombok.version}</version>
-    </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.0</version>
+        </dependency>
     </dependencies>
-    <repositories>        
-		<repository>
-			<id>bulpros-nexus</id>
+    <repositories>
+        <repository>
+            <id>bulpros-nexus</id>
             <url>http://212.73.136.25:8081/repository/sofmun/</url>
         </repository>
-	</repositories>
+    </repositories>
 
     <profiles>
         <profile>

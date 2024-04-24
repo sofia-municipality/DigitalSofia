@@ -3,8 +3,8 @@
 from http import HTTPStatus
 from typing import Dict
 from PyPDF2 import PdfMerger, PdfReader, PdfWriter
+from PyPDF2.errors import PdfReadError
 import io
-
 
 from formsflow_api_utils.exceptions import BusinessException
 from formsflow_api_utils.utils import ANONYMOUS_USER, DRAFT_APPLICATION_STATUS
@@ -127,7 +127,7 @@ FORMIO_FILENAME_CONDITIONS = [
                 "value": "liveWithOwner",
             }
         ],
-        "filename": "Spouce declaration - permanent"
+        "filename": "Spouse declaration - permanent"
     },
     {
         "path": "ownersignform",
@@ -141,11 +141,12 @@ FORMIO_FILENAME_CONDITIONS = [
                 "value": "liveWithOwner",
             }
         ],
-        "filename": "Spouce declaration - current"
+        "filename": "Spouse declaration - current"
     }
 ]
-    
+
 DEFAULT_DOCUMENT_FILENAME = "Document"
+
 
 class DraftService:
     """This class manages submission service."""
@@ -170,6 +171,8 @@ class DraftService:
         tenant_key = user.tenant_key
         application_payload["created_by"] = user_id
         mapper = FormProcessMapper.find_form_by_form_id(application_payload["form_id"])
+        current_app.logger.info(mapper)
+
         if mapper is None:
             if tenant_key:
                 raise BusinessException(
@@ -180,8 +183,9 @@ class DraftService:
                 f"Mapper does not exist with formId - {application_payload['form_id']}.",
                 HTTPStatus.BAD_REQUEST,
             )
+        
         if (mapper.status == FormProcessMapperStatus.INACTIVE.value) or (
-            not token and not mapper.is_anonymous
+                not token and not mapper.is_anonymous
         ):
             raise BusinessException(
                 f"Permission denied, formId - {application_payload['form_id']}.",
@@ -191,19 +195,26 @@ class DraftService:
             raise BusinessException(
                 "Tenant authentication failed.", HTTPStatus.FORBIDDEN
             )
+        
         application_payload["form_process_mapper_id"] = mapper.id
 
         application_payload["application_status"] = DRAFT_APPLICATION_STATUS
         application_payload["submission_id"] = None
+
         application = cls.__create_draft_application(application_payload)
+        
         if not application:
             response, status = {
-                "type": "Internal server error",
-                "message": "Unable to create application",
-            }, HTTPStatus.INTERNAL_SERVER_ERROR
+                                   "type": "Internal server error",
+                                   "message": "Unable to create application",
+                               }, HTTPStatus.INTERNAL_SERVER_ERROR
             raise BusinessException(response, status)
+        
         draft_payload["application_id"] = application.id
         draft = cls.__create_draft(draft_payload)
+
+        
+
         return draft
 
     @staticmethod
@@ -218,9 +229,9 @@ class DraftService:
             return draft_schema.dump(draft)
 
         response, status = {
-            "type": "Bad request error",
-            "message": f"Invalid request data - draft id {draft_id} does not exist",
-        }, HTTPStatus.BAD_REQUEST
+                               "type": "Bad request error",
+                               "message": f"Invalid request data - draft id {draft_id} does not exist",
+                           }, HTTPStatus.BAD_REQUEST
         raise BusinessException(response, status)
 
     @staticmethod
@@ -234,9 +245,9 @@ class DraftService:
             draft.update(data)
         else:
             response, status = {
-                "type": "Bad request error",
-                "message": f"Invalid request data - draft id {draft_id} does not exist",
-            }, HTTPStatus.BAD_REQUEST
+                                   "type": "Bad request error",
+                                   "message": f"Invalid request data - draft id {draft_id} does not exist",
+                               }, HTTPStatus.BAD_REQUEST
             raise BusinessException(response, status)
 
     @staticmethod
@@ -276,9 +287,9 @@ class DraftService:
         draft = Draft.make_submission(draft_id, data, user_id)
         if not draft:
             response, status = {
-                "type": "Bad request error",
-                "message": f"Invalid request data - draft id {draft_id} does not exist",
-            }, HTTPStatus.BAD_REQUEST
+                                   "type": "Bad request error",
+                                   "message": f"Invalid request data - draft id {draft_id} does not exist",
+                               }, HTTPStatus.BAD_REQUEST
             raise BusinessException(response, status)
 
         application = Application.find_by_id(draft.application_id)
@@ -305,12 +316,11 @@ class DraftService:
             draft.delete()
         else:
             response, status = {
-                "type": "Bad request error",
-                "message": f"Invalid request data - draft id {draft_id} does not exist",
-            }, HTTPStatus.BAD_REQUEST
+                                   "type": "Bad request error",
+                                   "message": f"Invalid request data - draft id {draft_id} does not exist",
+                               }, HTTPStatus.BAD_REQUEST
             raise BusinessException(response, status)
-        
-        
+
     @staticmethod
     @user_context
     def export_draft_to_pdf(draft_id: int, **kwargs):
@@ -342,7 +352,7 @@ class DraftService:
             tenant_key = user.tenant_key
             if tenant_key:
                 headers['X-Tenant-Key'] = user.tenant_key
-            
+
             current_app.logger.debug("Post to documents")
             result = requests.post(url, headers=headers, data=json.dumps(request.get_json()))
 
@@ -353,12 +363,11 @@ class DraftService:
 
             ### Generatting the correct form
             current_app.logger.debug(f"Generating correct filename for path_name - {formio_path_name}")
-            matches = re.match(r"(\w+)-(.+)",formio_path_name)
+            matches = re.match(r"(\w+)-(.+)", formio_path_name)
             tenant_key = matches[1]
             current_app.logger.debug(f"tenant_key - {tenant_key}")
             relevant_path_name = matches[2]
             current_app.logger.debug(f"relevant_path_name - {relevant_path_name}")
-
 
             name = DEFAULT_DOCUMENT_FILENAME
             ### Go throuh filename conditions
@@ -382,14 +391,14 @@ class DraftService:
                             value = key_value_data_to_check.get("value")
                             if draft.data.get(key) != value:
                                 shouldChangeName = False
-                        
+
                         if shouldChangeName:
                             name = item.get("filename")
 
             ### Add reference_number
             reference_number = request.get_json().get("reference_number", " ")
             name = name + " - " + reference_number + ".pdf"
-            
+
             current_app.logger.debug("Generate name")
             current_app.logger.debug(name)
 
@@ -397,7 +406,9 @@ class DraftService:
             json_string = None
 
             ### Should we get metadata
-            if relevant_path_name.startswith("changeofpernamentaddress") or relevant_path_name.startswith("changeofcurrentaddress"):
+            if relevant_path_name.startswith("changeofpernamentaddress") or relevant_path_name.startswith(
+                    "changeofcurrentaddress")or relevant_path_name.startswith(
+                    "trusteesignform"):
                 current_app.logger.debug("Generate metadata dict")
                 ### Get metadata
                 xml_file_name = os.path.join(current_app.static_folder, 'data', 'xml', 'change_address_template.xml')
@@ -407,11 +418,10 @@ class DraftService:
                 xml_string = metadata_instance.convert_to_string()
                 json_string = json.dumps(metadata_instance.convert_to_dict(), ensure_ascii=False)
 
-
             ### Write metadata
             current_app.logger.debug("PyPdf2")
             open_pdf_file = io.BytesIO(result.content)
-            
+
             reader = PdfReader(open_pdf_file)
             writer = PdfWriter()
 
@@ -420,17 +430,26 @@ class DraftService:
                 writer.add_page(page)
 
             if xml_string and json_string:
+                requestorName = draft.data.get("firstName") + " " + draft.data.get("lastName")
+                service = {"serviceId" : draft.data.get("serviceId"),
+                           "serviceName" : draft.data.get("serviceName")}
                 # # Add the metadata
+                json_submission_data = draft.generate_application_json_submission_dict(requestorName, service)
+                json_submission_data.pop('document', None)
+                json_submission_data.pop('attorneyDocument', None)
+                json_submission_data.pop('childCustodyDocument', None)
+
                 writer.add_metadata(
                     {
                         "/application_json_xml": xml_string,
                         "/application_json_json": json_string,
+                        "/application_json_submission": json.dumps({"data": json_submission_data}, ensure_ascii=False)
                     }
                 )
 
             write_buffer = io.BytesIO()
             writer.write(write_buffer)
-            
+
             current_app.logger.debug("Finishing adding metadata")
             base64File = base64.b64encode(write_buffer.getvalue())
             base64File = base64File.decode()
@@ -460,19 +479,36 @@ class DraftService:
                     }],
                     "status": 'unsigned',
                     "userId": person_identifier,
-                    "referenceId": reference_number
+                    "referenceId": reference_number,
+                    "formPath": formio_path_name
                 }
 
             }
 
+            current_app.logger.debug(application_id)
+            current_app.logger.debug(person_identifier)
+            current_app.logger.debug(reference_number)
             formio_service.post_submission(data=data, formio_token=formio_token)
             return (current_app.config.get(
                 "FORMSFLOW_API_URL") + f"/form/{user.tenant_key}-generated-files/submission?data.applicationId=" +
                     str(application_id) +
                     "&userId=" +
                     str(person_identifier))
+        except PdfReadError as err:
+            response, status = {
+                                   "type": "Bad request error",
+                                   "message": "PDF file error.",
+                               }, HTTPStatus.BAD_REQUEST
+
+            current_app.logger.debug(url)
+            current_app.logger.debug(request.get_json())
+            current_app.logger.debug(result.content)
+
+            raise BusinessException(response, status)
         except Exception as err:
-            current_app.logger.debug(err)
+            template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+            message = template.format(type(err).__name__, err.args)
+            current_app.logger.debug(message)
             response, status = {
                                    "type": "Bad request error",
                                    "message": str(err),

@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useTranslation } from "react-i18next";
 
+import { useOpenCloseAllItems } from "../../../../../../customHooks";
 import NavLink from "../../../../components/Navigation/NavLink";
 import { PAGE_ROUTES } from "../../../../../../constants/navigation";
 import Accordion from "../../../../components/Accordion";
@@ -22,7 +23,6 @@ const FAQSection = ({
   const { t } = useTranslation();
   const userLanguage = useSelector((state) => state.user.lang);
   const { isPhone } = useDevice();
-  const [openCloseAll, setOpenCloseAll] = useState();
   const [{ faqs = [] } = {}, isLoading] = useFetchFAQ(
     1,
     999999,
@@ -30,11 +30,8 @@ const FAQSection = ({
     true
   );
 
-  const onOpenCloseAllClick = () => {
-    openCloseAll !== "open"
-      ? setOpenCloseAll("open")
-      : setOpenCloseAll("close");
-  };
+  const { onOpenCloseAllClick, onExpand, openCloseAll, shouldOpenCloseAll } =
+    useOpenCloseAllItems(faqs.length);
 
   const onOpenCloseAllEnterPressed = (e) => {
     if (e.key === "Enter") {
@@ -74,9 +71,15 @@ const FAQSection = ({
                       }`}
                       onClick={onOpenCloseAllClick}
                       onKeyDown={onOpenCloseAllEnterPressed}
-                      aria-expanded={openCloseAll !== "open" ? "false" : "true"}
+                      aria-expanded={
+                        shouldOpenCloseAll !== "open" ? "false" : "true"
+                      }
                     >
-                      {t(openCloseAll !== "open" ? openAllText : closeAllText)}
+                      {t(
+                        shouldOpenCloseAll !== "open"
+                          ? openAllText
+                          : closeAllText
+                      )}
                     </span>
                   </div>
                 </div>
@@ -86,6 +89,7 @@ const FAQSection = ({
                   className={styles.faqList}
                   cards={faqs}
                   openCloseAll={openCloseAll}
+                  onExpand={onExpand}
                 />
               </div>
               <div className={`col-12 ${styles.viewAllLinkWrapper}`}>

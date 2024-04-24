@@ -9,7 +9,6 @@ import Foundation
 
 struct RegisterParameters {
     var clientID: String?
-    var clientSecret: String?
     var scope: String?
     var grantType: String?
     var pin: String?
@@ -19,30 +18,22 @@ struct RegisterParameters {
     var fcm: String?
     
     func getDictionary() -> [String: Any] {
-        return [NetworkConfig.Parameters.clientId: clientID ?? "",
-                NetworkConfig.Parameters.clientSecret: clientSecret ?? "",
-                NetworkConfig.Parameters.scope: scope ?? "",
-                NetworkConfig.Parameters.grantType: grantType ?? "",
-                NetworkConfig.Parameters.pin: pin ?? "",
-                NetworkConfig.Parameters.egn: egn ?? "",
-                NetworkConfig.Parameters.phoneNumber: phoneNumber ?? "",
-                NetworkConfig.Parameters.email: email ?? "",
-                NetworkConfig.Parameters.fcm: fcm ?? ""]
-    }
-}
-
-struct RefreshTokeParameters {
-    var refreshToken: String?
-    var clientID: String?
-    var clientSecret: String?
-    var scope: String?
-    var grantType: String?
-    
-    func getDictionary() -> [String: Any] {
-        return [NetworkConfig.Parameters.refreshToken: refreshToken ?? "",
-                NetworkConfig.Parameters.clientId: clientID ?? "",
-                NetworkConfig.Parameters.clientSecret: clientSecret ?? "",
-                NetworkConfig.Parameters.scope: scope ?? "",
-                NetworkConfig.Parameters.grantType: grantType ?? ""]
+        var dict =  [NetworkConfig.Parameters.clientId: clientID ?? "",
+                     NetworkConfig.Parameters.scope: scope ?? "",
+                     NetworkConfig.Parameters.grantType: grantType ?? "",
+                     NetworkConfig.Parameters.pin: pin ?? "",
+                     NetworkConfig.Parameters.egn: egn ?? "",
+                     NetworkConfig.Parameters.fcm: fcm ?? "",
+        ]
+        
+        if let phoneNumber = phoneNumber {
+            dict[NetworkConfig.Parameters.phoneNumber] = phoneNumber
+        }
+        
+        if let email = email {
+            dict[NetworkConfig.Parameters.email] = email
+        }
+        
+        return dict
     }
 }

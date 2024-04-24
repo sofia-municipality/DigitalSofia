@@ -7,43 +7,51 @@
 
 import Foundation
 import CryptoKit
+import UniformTypeIdentifiers
 
 extension String {
     var localized: String {
-        let appLanguage = LanguageProvider.shared.appLanguage
-        
-        guard let path = Bundle.main.path(forResource: appLanguage?.rawValue, ofType: "lproj") else {
-            return ""
-        }
-        
-        guard let bundle = Bundle(path: path) else {
-            return ""
-        }
-        
+        guard let bundle = Bundle.getLanguageBundle() else { return "" }
         return NSLocalizedString(self, tableName: nil, bundle: bundle, value: "", comment: "")
     }
+    
+    var evrotrustLocalized: String {
+        guard let bundle = Bundle.getLanguageBundle() else { return "" }
+        return NSLocalizedString(self, tableName: "Evrotrust", bundle: bundle, value: "", comment: "")
+    }
+    
+    var faceTechLocalized: String {
+        guard let bundle = Bundle.getLanguageBundle() else { return "" }
+        return NSLocalizedString(self, tableName: "FaceTec", bundle: bundle, value: "", comment: "")
+    }
 }
-
 
 extension String {
     var isoDate: Date? {
         return Date.iso8601Formatter.date(from: self)
     }
+    
+    func dateFor(format: DateFormat) -> Date? {
+        let dateformat = DateFormatter()
+        dateformat.dateFormat = format.rawValue
+        return dateformat.date(from: self)
+    }
 }
 
 extension String {
     var digitallWebLink: String {
-        let user = UserProvider.shared.getUser()
+        let user = UserProvider.currentUser
         let token = user?.token ?? ""
         let refreshToken = user?.refreshToken ?? ""
         
         let language = LanguageProvider.shared.appLanguage?.short ?? ""
         
-        let urlString = self + "?token=\(token)&refreshToken=\(refreshToken)&hideNav=true&lang=\(language)"
+        var urlString = self + "?token=\(token)&refreshToken=\(refreshToken)&hideNav=true&lang=\(language)"
         
-#if DEBUG
-        //        print(urlString)
-#endif
+        if self == AppConfig.WebViewPages.services {
+            urlString.append("&showRequestServiceLink=true")
+        }
+        
         return urlString
     }
 }
@@ -84,50 +92,29 @@ extension String {
     }
 }
 
-extension String {
-    var isValidEmail: Bool {
-        let emailRegEx = #"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"#
-        
-        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        return emailPred.evaluate(with: self)
-    }
-    
-    var isValidPhone: Bool {
-        let emailRegEx = #"(\+)?(359|0)8[789]\d{1}(|-| )\d{3}(|-| )\d{3}"#
-        
-        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        return emailPred.evaluate(with: self)
+extension NSString {
+    public func mimeType() -> String {
+        if let mimeType = UTType(filenameExtension: self.pathExtension)?.preferredMIMEType {
+            return mimeType
+        }
+        else {
+            return "application/octet-stream"
+        }
     }
 }
 
-/// Matches a 10-digit number of the format NNNNNNNNNN, where second and third number starts from [01–12 or 21–32 or 41–52], and the fourth and fifth number starts from [01–31]
 extension String {
-    var isValidEGN: Bool {
-        let emailRegEx = #"\b[0-9]{2}(?:0[1-9]|1[0-2]|2[1-9]|3[0-2]|4[1-9]|5[0-2])(?:0[1-9]|[1-2][0-9]|3[0-1])[0-9]{4}\b"#
-        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        let passedRegex = emailPred.evaluate(with: self)
-        
-        if passedRegex {
-            let checksums = [2,4,8,5,10,9,7,3,6]
-            var sum = 0
-            for (index, numberString) in self.enumerated() {
-                if index != self.count - 1 {
-                    let weight = checksums[index]
-                    let number = Int(String(numberString)) ?? 0
-                    sum += number * weight
-                }
-            }
-            
-            let division = sum.quotientAndRemainder(dividingBy: 11)
-            let checksum = sum - (division.quotient * 11)
-            
-            if let checkNumberString = self.last {
-                let checkNumber = Int(String(checkNumberString)) ?? 0
-                let passChecksum = checkNumber == checksum
-                return passChecksum
-            }
-        }
-        
-        return false
+    public func mimeType() -> String {
+        return (self as NSString).mimeType()
+    }
+}
+
+extension String {
+    var fileName: String {
+        return (self as NSString).deletingPathExtension
+    }
+    
+    var fileExtension: String {
+        return (self as NSString).pathExtension
     }
 }

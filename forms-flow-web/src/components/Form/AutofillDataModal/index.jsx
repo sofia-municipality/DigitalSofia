@@ -23,12 +23,12 @@ const AutofillDataModal = ({ formRef }) => {
     const data = await fetchAutofillData(autoFillRequestData);
     if (data) {
       Object.entries(data).forEach(([key, value]) => {
-        if (formRef.current?.component?.data) {
-          formRef.current.component.data[key] = value;
+        if (formRef.current?.data) {
+          formRef.current.data[key] = value;
         }
       });
 
-      formRef.current.component.root.triggerRedraw();
+      formRef.current.root.triggerRedraw();
 
       setIsAutofillTriggered(false);
       setTimeout(() => {

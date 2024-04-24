@@ -1,0 +1,42 @@
+pipeline {
+    environment {
+        DEPLOY = "${env.BRANCH_NAME == "develop" ? "true" : "false"}"
+        NAME = "${env.BRANCH_NAME == "develop" ? "example" : "example-staging"}"
+    }
+    
+    agent any
+    
+     stages {
+        stage('Deploy DEV') {
+            when {
+                environment name: 'DEPLOY', value: 'true'
+            }
+            steps {
+                withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://192.168.201.47:6443']) {
+                   sh 'kubectl delete all --all -n forms-flow-analytics '
+                   sh 'kubectl apply -f ./infra/dev/deployment_dev.yaml '
+                   sh 'kubectl apply -f ./infra/dev/service_dev.yaml '
+                   sh 'kubectl apply -f ./infra/dev/ingress_dev.yaml '
+                    }
+                }
+            }
+            
+        stage('Deploy TEST') {
+            when {
+                //allOf {
+                //environment name: 'DEPLOY', value: 'true'
+                tag "release-*" 
+               // buildingTag()
+                //}
+            }
+            steps {
+                withKubeConfig([credentialsId: 'kubeconfig-test', serverUrl: 'https://192.168.201.42:6443']) {
+                   sh 'kubectl delete all --all -n forms-flow-analytics '
+                   sh 'kubectl apply -f ./infra/test/deployment_test.yaml '
+                   sh 'kubectl apply -f ./infra/test/service_test.yaml '
+                   sh 'kubectl apply -f ./infra/test/ingress_test.yaml '
+                    }
+                }
+            }
+    }
+}

@@ -9,19 +9,6 @@ import { createMemoryHistory } from "history";
 import { Router, Route } from "react-router";
 
 let store;
-jest.mock("@formsflow/service", () => ({
-  __esModule: true,
-  default: jest.fn(() => ({})),
-  RequestService: {
-    httpGETRequest: () => Promise.resolve(jest.fn(() => ({ data: {} }))),
-  },
-  StorageService: {
-    get: () => jest.fn(() => {}),
-    User: {
-      AUTH_TOKEN: "",
-    },
-  },
-}));
 
 function renderWithRouterMatch(
   Ui,

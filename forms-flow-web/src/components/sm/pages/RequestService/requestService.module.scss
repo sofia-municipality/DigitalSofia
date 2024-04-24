@@ -20,6 +20,12 @@
   }
 }
 
+.createSectionNewDesign {
+  @include screen-size(large) {
+    margin-top: 20px;
+  }
+}
+
 .sectionCard {
   background-color: #FCFCFC;
   padding-inline: 30px !important;
@@ -125,4 +131,22 @@
 .cta {
   width: 100% !important;
   margin-top: 20px;
+}
+
+.myServiceLinkIcon {
+  margin-right: 10px;
+}
+
+.myServicesPageLink {
+  padding-inline: 15px !important;
+}
+
+.cardIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pageIcon {
+  margin-right: 10px;
 }

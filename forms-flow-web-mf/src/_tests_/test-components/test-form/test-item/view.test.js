@@ -19,6 +19,35 @@ jest.mock("react-formio", () => ({
   ...jest.requireActual("react-formio"),
 }));
 
+jest.mock("@formsflow/service", () => ({
+  __esModule: true,
+  default: jest.fn(() => ({})),
+  RequestService: {
+    httpGETRequest: () => Promise.resolve(jest.fn(() => ({ data: {} }))),
+    httpPOSTRequest: () => Promise.resolve(jest.fn(() => ({ data: {} }))),
+  },
+  StorageService: {
+    get: () => jest.fn(() => {}),
+    User: {
+      AUTH_TOKEN: "",
+    },
+  },
+  TranslationsService: {
+    getFormTranslations: () => ({})
+  }
+}));
+
+jest.mock('react-responsive', () => ({
+  useMediaQuery: () => ({})
+}));
+
+jest.mock("i18next", () => ({
+  ...jest.requireActual("i18next"),
+  options: {
+    resources: {},
+  },
+}));
+
 const middlewares = [thunk];
 let store;
 let mockStore = configureStore(middlewares);

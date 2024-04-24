@@ -1,0 +1,21 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "forms-flow-idm.fullname" . -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: {{ $ingress.path }}
+            backend:
+              service:
+                name: {{ $ingress.serviceName }}
+                port:
+                  number: {{ $ingress.servicePort }}
+            pathType: {{ $ingress.pathType }}
+{{- end }}

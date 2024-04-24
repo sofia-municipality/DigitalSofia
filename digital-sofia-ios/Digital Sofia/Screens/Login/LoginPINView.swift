@@ -10,15 +10,19 @@ import SwiftUI
 struct LoginPINView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var networkMonitor: NetworkMonitor
+    @Environment(\.dismiss) var dismiss
     
     @State private var resetPin = false
     @State private var showHomeScreen = false
-    @State private var showChangePasswordAuthScreen = false
+    @State private var showForgottenPIN = false
     @State private var pinAttempts = 3
     @State private var loginViewModel: LoginViewModel?
     
     var successfullyEnteredPIN: (() -> ())?
-    let user = UserProvider.shared.getUser()
+    var onLockScreenCompletion: (() -> ())?
+    fileprivate var user: User? {
+        return UserProvider.currentUser
+    }
     
     var body: some View {
         VStack(spacing: AppConfig.Dimensions.Padding.XXL) {
@@ -32,19 +36,25 @@ struct LoginPINView: View {
             Spacer()
             Spacer()
             
-            NumpadView(reset: $resetPin, shouldShowBiometrics: user?.useBiometrics == true, didReachedCodeLength: { pin in
-                let pin = pin.map({ String($0) }).joined()
+            PINView(resetPin: $resetPin,
+                    shouldShowBiometrics: UserProvider.biometricsAvailable,
+                    shouldVerifyPin: false,
+                    didReachedCodeLength: { pin in
                 handleResponseFor(pin: pin)
             }, didClickOnBiometrics: {
                 loginViewModel?.authenticateWithBiometrics()
             })
+            .environmentObject(appState)
+            .padding([.leading, .trailing], AppConfig.Dimensions.Padding.XL)
+            
+            Spacer()
             
             Button {
-                showChangePasswordAuthScreen = true
+                showForgottenPIN = true
             } label: {
                 Text(AppConfig.UI.Titles.Button.forgottenPin.localized)
                     .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.firaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.medium))
-                    .foregroundColor(DSColors.Blue.blue)
+                    .foregroundColor(DSColors.Blue.regular)
                     .frame(maxWidth: .infinity, alignment: .center)
             }
             
@@ -59,10 +69,11 @@ struct LoginPINView: View {
                 }
             })
         }
-        .alert(item: $appState.alertItem) { alertItem in
-            AlertProvider.getAlertFor(alertItem: alertItem)
-        }
-        .background(DSColors.background)
+        .log(view: self)
+        .alert()
+        .environmentObject(appState)
+        .environmentObject(networkMonitor)
+        .backgroundAndNavigation()
     }
     
     private func handleResponseFor(pin: String) {
@@ -94,26 +105,36 @@ struct LoginPINView: View {
     }
     
     private func navigateOnSuccessfullPIN() {
+        PINBlockProvider.shared.resetBlock()
+        
         if successfullyEnteredPIN == nil {
-            showHomeScreen = true
+            if appState.shouldLockScreen {
+                dismiss()
+                onLockScreenCompletion?()
+            } else {
+                showHomeScreen = true
+            }
         } else {
             successfullyEnteredPIN?()
         }
     }
     
     private func showBlockAlert() {
-        appState.alertItem = AlertProvider.pinBlockAlert(seconds: PINBlockProvider.shared.blockLength)
+        appState.alertItem = AlertProvider.pinBlockAlert(message: PINBlockProvider.shared.blockAlertMessage)
     }
     
     private func navigation() -> some View {
         VStack {
-            NavigationLink(destination: TabbarView(appState: appState).environmentObject(networkMonitor),
-                           isActive: $showHomeScreen) { EmptyView() }
-            
-            NavigationLink(destination: ForgottenPasswordAuthenticationView()
+            NavigationLink(destination: TabbarView()
                 .environmentObject(appState)
                 .environmentObject(networkMonitor),
-                           isActive: $showChangePasswordAuthScreen) { EmptyView() }
+                           isActive: $showHomeScreen) { EmptyView() }
+            
+            NavigationLink(destination: ForgottenPIN(isResetPin: false)
+                .environmentObject(appState)
+                .environmentObject(networkMonitor)
+                .environmentObject(IdentityRequestConfig()),
+                           isActive: $showForgottenPIN) { EmptyView() }
         }
     }
 }

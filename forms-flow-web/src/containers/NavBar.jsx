@@ -13,13 +13,14 @@ import createURLPathMatchExp from "../helper/regExp/pathMatch";
 import { useTranslation } from "react-i18next";
 import "./styles.scss";
 import {
-  CLIENT,
   STAFF_REVIEWER,
   APPLICATION_NAME,
   STAFF_DESIGNER,
   MULTITENANCY_ENABLED,
   TENANT_ID,
   PAGE_ADMIN,
+  ANALYTICS_VIEWER,
+  ADMIN,
 } from "../constants/constants";
 import { PAGE_ROUTES } from "../constants/navigation";
 import { push } from "connected-react-router";
@@ -118,19 +119,22 @@ const NavBar = React.memo(() => {
           {isAuthenticated ? (
             <Navbar.Collapse id="responsive-navbar-nav" className="navbar-nav">
               <Nav id="main-menu-nav" className="active align-items-lg-center">
-                <Nav.Link
-                  as={Link}
-                  to={`${baseUrl}form`}
-                  className={`main-nav nav-item ${
-                    pathname.match(createURLPathMatchExp("form", baseUrl))
-                      ? "active-tab"
-                      : ""
-                  }`}
-                >
-                  <i className="fa fa-wpforms fa-fw fa-lg mr-2" />
-                  {t("Forms")}
-                </Nav.Link>
                 {getUserRolePermission(userRoles, STAFF_DESIGNER) ? (
+                  <Nav.Link
+                    as={Link}
+                    to={`${baseUrl}form`}
+                    className={`main-nav nav-item ${
+                      pathname.match(createURLPathMatchExp("form", baseUrl))
+                        ? "active-tab"
+                        : ""
+                    }`}
+                  >
+                    <i className="fa fa-wpforms fa-fw fa-lg mr-2" />
+                    {t("Forms")}
+                  </Nav.Link>
+                ) : null}
+
+                {getUserRolePermission(userRoles, ADMIN) ? (
                   <Nav.Link
                     as={Link}
                     to={`${baseUrl}admin`}
@@ -181,8 +185,7 @@ const NavBar = React.memo(() => {
                 ) : null}
 
                 {showApplications ? (
-                  getUserRolePermission(userRoles, STAFF_REVIEWER) ||
-                  getUserRolePermission(userRoles, CLIENT) ? (
+                  getUserRolePermission(userRoles, ADMIN) ? (
                     <Nav.Link
                       as={Link}
                       to={`${baseUrl}application`}
@@ -221,7 +224,7 @@ const NavBar = React.memo(() => {
                   </Nav.Link>
                 ) : null}
 
-                {getUserRolePermission(userRoles, STAFF_REVIEWER) ? (
+                {getUserRolePermission(userRoles, ANALYTICS_VIEWER) ? (
                   <Nav.Link
                     as={Link}
                     to={`${baseUrl}metrics`}
@@ -290,7 +293,7 @@ const NavBar = React.memo(() => {
                     {user?.name || user?.preferred_username}
                     <br />
                     <i className="fa fa-users fa-lg fa-fw" />
-                    <b>{getUserRoleName(userRoles)}</b>
+                    <b>{t(getUserRoleName(userRoles))}</b>
                   </NavDropdown.Item>
                   <NavDropdown.Divider />
                   <NavDropdown.Item onClick={logout}>

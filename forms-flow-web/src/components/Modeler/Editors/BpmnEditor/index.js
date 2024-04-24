@@ -9,6 +9,7 @@ import { createXML } from "../../helpers/deploy";
 import {
   MULTITENANCY_ENABLED,
   PUBLIC_WORKFLOW_ENABLED,
+  TRANSLATE_BPMN_MODELER,
 } from "../../../../constants/constants";
 import { deployBpmnDiagram } from "../../../../apiManager/services/bpmServices";
 import Loading from "../../../../containers/Loading";
@@ -46,11 +47,15 @@ import camundaModdleDescriptors from "camunda-bpmn-moddle/resources/camunda";
 import lintModule from "bpmn-js-bpmnlint";
 import "bpmn-js-bpmnlint/dist/assets/css/bpmn-js-bpmnlint.css";
 import linterConfig from "../../lint-rules/packed-config";
+import { useCustomTranslate } from "../../hooks";
 
 export default React.memo(
   ({ setShowModeler, processKey, tenant, isNewDiagram }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
+
+    const customTranslate = useCustomTranslate();
+
     const diagramXML = useSelector((state) => state.process.processDiagramXML);
     const [bpmnModeler, setBpmnModeler] = useState(null);
     const tenantKey = useSelector((state) => state.tenants?.tenantId);
@@ -58,13 +63,31 @@ export default React.memo(
     const [lintErrors, setLintErrors] = useState([]);
     const [deploymentLoading, setDeploymentLoading] = useState(false);
 
-    const containerRef = useCallback((node) => {
-      if (node !== null) {
-        initializeModeler();
-      }
-    }, []);
+    const containerRef = useCallback(
+      (node) => {
+        const customTranslateModule = {
+          translate: ["value", customTranslate],
+        };
 
-    const initializeModeler = () => {
+        if (node !== null) {
+          initializeModeler(customTranslateModule);
+        }
+      },
+      [customTranslate]
+    );
+
+    const initializeModeler = (customTranslateModule) => {
+      const additionalModules = [
+        BpmnPropertiesPanelModule,
+        BpmnPropertiesProviderModule,
+        CamundaPlatformPropertiesProviderModule,
+        CamundaExtensionModule,
+        lintModule,
+      ];
+
+      if (TRANSLATE_BPMN_MODELER) {
+        additionalModules.push(customTranslateModule);
+      }
       setBpmnModeler(
         new BpmnModeler({
           container: "#canvas",
@@ -75,13 +98,7 @@ export default React.memo(
             bpmnlint: linterConfig,
             active: true,
           },
-          additionalModules: [
-            BpmnPropertiesPanelModule,
-            BpmnPropertiesProviderModule,
-            CamundaPlatformPropertiesProviderModule,
-            CamundaExtensionModule,
-            lintModule,
-          ],
+          additionalModules,
           moddleExtensions: {
             camunda: camundaModdleDescriptors,
           },
@@ -318,21 +335,21 @@ export default React.memo(
               <div className="d-flex flex-column">
                 <button
                   className="mb-3 btn-zoom"
-                  title="Reset Zoom"
+                  title={t("Reset Zoom")}
                   onClick={() => zoomReset()}
                 >
                   <i className="fa fa-retweet" aria-hidden="true" />
                 </button>
                 <button
                   className="btn-zoom"
-                  title="Zoom In"
+                  title={t("Zoom In")}
                   onClick={() => zoom()}
                 >
                   <i className="fa fa-search-plus" aria-hidden="true" />
                 </button>
                 <button
                   className="btn-zoom"
-                  title="Zoom Out"
+                  title={t("Zoom Out")}
                   onClick={() => zoomOut()}
                 >
                   <i className="fa fa-search-minus" aria-hidden="true" />
@@ -354,12 +371,12 @@ export default React.memo(
                 checked={applyAllTenants}
                 onClick={handleApplyAllTenants}
               />
-              Apply for all tenants
+              {t("Apply for all tenants")}
             </label>
           ) : null}
-          <Button onClick={deployProcess}>Deploy</Button>
+          <Button onClick={deployProcess}>{t("Deploy")}</Button>
           <Button className="ml-3" onClick={handleExport}>
-            Export
+            {t("Export")}
           </Button>
         </div>
       </>

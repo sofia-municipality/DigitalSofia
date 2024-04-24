@@ -27,7 +27,7 @@ class EurotrustIntegrationsService:
         
         error_response = response.json()
         current_app.logger.debug(error_response)
-        raise EurotrustException(error_response["message"], error_response["status"])
+        raise EurotrustException(error_response.get("message"), error_response.get("status"), error_response.get("data"))
 
     def get_signed_file(self, transaction_id: str, group_signing: bool = False) -> dict:
         url = f"{self.base_url}/integrations/evrotrust/document/download/{transaction_id}/{str(group_signing)}"
@@ -40,11 +40,11 @@ class EurotrustIntegrationsService:
         
         error_response = response.json()
         current_app.logger.debug(error_response)
-        raise EurotrustException(error_response["message"], error_response["status"])
+        raise EurotrustException(error_response.get("message"), error_response.get("status"), error_response.get("data"))
     
     def withdraw_document(self, thread_id: str,) -> dict:
         response = requests.post(
-            url=f"{self.base_url}/integrations/evrotrust/document/sign",
+            url=f"{self.base_url}/integrations/evrotrust/document/withdraw",
             json={
                 "threadID": thread_id
             }
@@ -55,7 +55,7 @@ class EurotrustIntegrationsService:
 
         error_response = response.json()
         current_app.logger.debug(error_response)
-        raise EurotrustException(error_response["message"], error_response["status"])
+        raise EurotrustException(error_response.get("message"), error_response.get("status"), error_response.get("data"))
 
     def send_identification_request(self, user_identifier: str, date_expire:str) ->dict:
         current_app.logger.debug(self.base_url)
@@ -67,8 +67,8 @@ class EurotrustIntegrationsService:
             "includes": {
                 "names": True,
                 "latinNames": True,
-                "phones": True,
-                "emails": True,
+                "phones": False,
+                "emails": False,
                 "address": True,
                 "documentType": True,
                 "documentNumber": True,
@@ -77,15 +77,15 @@ class EurotrustIntegrationsService:
                 "documentIssueDate": True,
                 "documentCountry": True,
                 "identificationNumber": True,
-                "gender": True,
-                "nationality": True,
-                "documentPicture": True,
-                "documentSignature": True,
-                "picFront": True,
-                "picBack": True,
-                "picIDCombined": True,
-                "dateOfBirth": True,
-                "placeOfBirth": True
+                "gender": False,
+                "nationality": False,
+                "documentPicture": False,
+                "documentSignature": False,
+                "picFront": False,
+                "picBack": False,
+                "picIDCombined": False,
+                "dateOfBirth": False,
+                "placeOfBirth": False
             },
             "BIOrequired": 0,
             "user": {
@@ -107,7 +107,7 @@ class EurotrustIntegrationsService:
 
         error_response = response.json()
         current_app.logger.debug(error_response)
-        raise EurotrustException(error_response["message"], error_response["status"])
+        raise EurotrustException(error_response["message"], error_response["status"], error_response.get("data"))
 
     def sign_document(
             self, 
@@ -145,4 +145,4 @@ class EurotrustIntegrationsService:
 
         error_response = response.json()
         current_app.logger.debug(error_response)
-        raise EurotrustException(error_response["message"], error_response["status"])
+        raise EurotrustException(error_response.get("message"), error_response.get("status"), error_response.get("data"))

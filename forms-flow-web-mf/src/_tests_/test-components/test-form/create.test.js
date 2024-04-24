@@ -8,6 +8,14 @@ import { createMemoryHistory } from "history";
 import configureStore from "redux-mock-store";
 import * as redux from "react-redux";
 
+jest.mock("@formsflow/service", () => ({
+  __esModule: true,
+  default: jest.fn(() => ({})),
+  TranslationsService: {
+    getFormTranslations: () => ({})
+  }
+}));
+
 let store;
 let mockStore = configureStore([]);
 beforeEach(() => {

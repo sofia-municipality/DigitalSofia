@@ -2,6 +2,8 @@ package com.bulpros.eforms.signature.config;
 
 import javax.sql.DataSource;
 
+import eu.europa.esig.dss.spi.client.jdbc.JdbcCacheConnector;
+import eu.europa.esig.dss.spi.x509.aia.DefaultAIASource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,7 +56,8 @@ public class DSSConfig {
     @Bean
     public JdbcCacheCRLSource cachedCRLSource() {
         JdbcCacheCRLSource jdbcCacheCRLSource = new JdbcCacheCRLSource();
-        jdbcCacheCRLSource.setDataSource(dataSource);
+        JdbcCacheConnector jdbcCacheConnector = new JdbcCacheConnector(dataSource);
+        jdbcCacheCRLSource.setJdbcCacheConnector(jdbcCacheConnector);
         jdbcCacheCRLSource.setProxySource(onlineCRLSource());
         jdbcCacheCRLSource.setDefaultNextUpdateDelay((long) (60 * 10)); // 10 minutes
         return jdbcCacheCRLSource;
@@ -84,7 +87,7 @@ public class DSSConfig {
         CommonCertificateVerifier certificateVerifier = new CommonCertificateVerifier();
         certificateVerifier.setCrlSource(cachedCRLSource());
         certificateVerifier.setOcspSource(onlineOcspSource());
-        certificateVerifier.setDataLoader(dataLoader());
+        certificateVerifier.setAIASource(new DefaultAIASource(dataLoader()));
         certificateVerifier.setTrustedCertSources(trustedListSource());
 
         // Default configs

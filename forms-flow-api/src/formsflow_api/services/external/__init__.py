@@ -5,3 +5,5 @@ from .eform_integrations import EFormIntegrationsService
 from .eurotrust_integrations import EurotrustIntegrationsService
 from .eurotrust_integrations import EurotrustIntegrationsService
 from .signature_services_integration import SignatureServicesIntegrationService
+from .keycloak import KeycloakAdminAPIService
+from .firebase import FirebaseService

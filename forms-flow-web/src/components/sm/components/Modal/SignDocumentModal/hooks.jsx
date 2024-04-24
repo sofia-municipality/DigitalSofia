@@ -4,6 +4,7 @@ import { useGetDocumentSignStatus } from "../../../../../apiManager/apiHooks";
 import { SIGN_DOCUMENT_STATUSES } from "../../../../../constants/constants";
 import { PAGE_ROUTES } from "../../../../../constants/navigation";
 import { useNavigateTo } from "../../../../../customHooks";
+import { APPLICATION_STATUS_FORCED_ERROR } from "../../../../../constants/formEmbeddedConstants";
 
 import { SignDocumentContext, STEPS } from "./context";
 
@@ -13,9 +14,10 @@ export const useCheckDocumentStatus = ({
   onReject,
   shouldSubmitOnPendingStatus,
   onFormSubmissionError,
+  redirectUrl,
 }) => {
-  const navigateToMyServices = useNavigateTo(
-    PAGE_ROUTES.MY_SERVICES_ADDRESS_REGISTRATION
+  const redirect = useNavigateTo(
+    redirectUrl || PAGE_ROUTES.MY_SERVICES_ADDRESS_REGISTRATION
   );
   const { fetch: getDocumentStatus, isLoading } = useGetDocumentSignStatus();
 
@@ -36,9 +38,19 @@ export const useCheckDocumentStatus = ({
             })
             .catch((err) => {
               console.log(err);
-              onFormSubmissionError
-                ? onFormSubmissionError(err)
-                : setSignDocumentContext({ currentStep: STEPS.ERROR });
+              const isApplicationStatusForcedError =
+                APPLICATION_STATUS_FORCED_ERROR.includes(err);
+
+              if (isApplicationStatusForcedError) {
+                setSignDocumentContext({
+                  currentStep: STEPS.APPLICATION_STATUS_ERROR,
+                  applicationStatusForcedError: err,
+                });
+              } else {
+                onFormSubmissionError
+                  ? onFormSubmissionError(err)
+                  : setSignDocumentContext({ currentStep: STEPS.ERROR });
+              }
             });
 
           break;
@@ -49,7 +61,7 @@ export const useCheckDocumentStatus = ({
               setSignDocumentContext({ currentStep: STEPS.LOADING });
               onSuccess(null, true)
                 .then(() => {
-                  navigateToMyServices();
+                  redirect();
                 })
                 .catch((err) => {
                   console.log(err);
@@ -58,7 +70,7 @@ export const useCheckDocumentStatus = ({
                     : setSignDocumentContext({ currentStep: STEPS.ERROR });
                 });
             } else {
-              navigateToMyServices();
+              redirect();
             }
           } else {
             setSignDocumentContext({ currentStep: STEPS.PENDING });

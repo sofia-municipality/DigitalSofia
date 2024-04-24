@@ -14,3 +14,4 @@ class IdentityRequest(AuditDateTimeMixin, BaseModel, db.Model):
     person_identifier = db.Column(db.String(16), nullable=False)
 
     valid_untill = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    # validated = db.Column(db.Boolean, unique=False, default=False)

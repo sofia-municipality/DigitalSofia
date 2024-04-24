@@ -14,6 +14,9 @@ import { DRAFT_ENABLED } from "../../../../../constants/constants";
 import { getProcessReq } from "../../../../../apiManager/services/bpmServices";
 import { updateApplicationStatus } from "../../../../../apiManager/services/applicationServices";
 import selectApplicationCreateAPI from "../../../../Form/Item/apiSelectHelper";
+import { sendProcessEvent } from "../../../../../apiManager/services/applicationServices";
+import { EDELIVERY_RETRY_EVENT } from "../../../../../constants/applicationConstants";
+import { downloadFile } from "../../../../../utils";
 
 import SmCta, {
   SmCtaSizes,
@@ -21,6 +24,7 @@ import SmCta, {
 } from "../../../components/buttons/SmCta";
 
 import styles from "./hooks.module.scss";
+import { useState } from "react";
 
 export const useGetAddressCardProps = ({
   t,
@@ -33,13 +37,15 @@ export const useGetAddressCardProps = ({
   behalf,
   property,
   childCustody,
+  resultingCertificateUrl,
   trusteeFirstName,
   trusteeLastName,
   ownerFirstName,
   ownerLastName,
   entryNumber,
   onDelete = () => {},
-  rejectReason,
+  // Add reject reason when BE retrieves it
+  // rejectReason,
   ownerPdfUrl,
   ownerSignutureDate,
   trusteePdfUrl,
@@ -49,16 +55,19 @@ export const useGetAddressCardProps = ({
   trusteeRejectionDate,
   ownerInvitationExpiredDate,
   trusteeInvitationExpiredDate,
+  paymentCode,
   onInvitationResend,
   processInstanceId,
   onWithdraw,
   ownerInvitationWithdrawnDate,
   trusteeInvitationWithdrawnDate,
   onSubmissionResend,
+  onPayInitiated,
 }) => {
   const dispatch = useDispatch();
   const baseUrl = useGetBaseUrl();
   const isAuth = useSelector((state) => state.user.isAuthenticated);
+  const [isButtonClicked, setIsButtonClicked] = useState(false);
 
   const thirdPartySignitureContentProps = {
     t,
@@ -116,6 +125,7 @@ export const useGetAddressCardProps = ({
           },
         ],
       };
+    case APPLICATION_STATUS.CANCELED:
     case APPLICATION_STATUS.WITHDRAWN_INVITATION:
       return {
         activeStepIndex: 0,
@@ -284,13 +294,20 @@ export const useGetAddressCardProps = ({
                       applicationId,
                       applicationStatus: formioApplicationStatus,
                       formUrl: data.formUrl,
-                    }).then(() => {
-                      onSubmissionResend();
-                    });
+                    })
+                      .then(() => {
+                        setIsButtonClicked(false);
+                        onSubmissionResend();
+                      })
+                      .catch(() => {
+                        setIsButtonClicked(false);
+                      });
                   }
                 })
               );
             },
+            loading: isButtonClicked,
+            disabled: isButtonClicked,
           },
           {
             type: SmCtaTypes.OUTLINE,
@@ -301,8 +318,47 @@ export const useGetAddressCardProps = ({
           },
         ],
       };
+    case APPLICATION_STATUS.EDELIVERY_ERROR:
+      return {
+        activeStepIndex: 3,
+        Icon: EditOutlinedIcon,
+        borderClassName: "bg-sm-circle-border-red",
+        iconClassName: "bg-sm-red",
+        accordionTitle: t("myServices.status.submission.error.title"),
+        accordionContent: t("myServices.status.submission.error.content"),
+        ctas: [
+          {
+            type: SmCtaTypes.OUTLINE,
+            text: t("myServices.delete.cta"),
+            onClick: () => {
+              onDelete(applicationId);
+            },
+          },
+          {
+            type: SmCtaTypes.OUTLINE,
+            text: t("myServices.status.submission.error.tryAgain.cta"),
+            onClick: () => {
+              setIsButtonClicked(true);
+              sendProcessEvent({
+                messageName: EDELIVERY_RETRY_EVENT,
+                processInstanceId,
+              })
+                .then(() => {
+                  setIsButtonClicked(false);
+                  onSubmissionResend();
+                })
+                .catch(() => {
+                  setIsButtonClicked(false);
+                });
+            },
+            loading: isButtonClicked,
+            disabled: isButtonClicked,
+          },
+        ],
+      };
     case APPLICATION_STATUS.NEW:
     case APPLICATION_STATUS.FORM_SUBMITTED:
+    case APPLICATION_STATUS.CANCELLED_PAYMENT:
       return {
         activeStepIndex: 4,
         Icon: EditOutlinedIcon,
@@ -339,7 +395,9 @@ export const useGetAddressCardProps = ({
         borderClassName: "bg-sm-circle-border-red",
         iconClassName: "bg-sm-red",
         accordionTitle: t("myServices.status.rejected.accordion.title"),
-        accordionContent: renderFormSubmissionRejectedContent(t, rejectReason),
+        accordionContent: renderFormSubmissionRejectedContent(t),
+        // Add reject reason when BE retrieves it
+        // accordionContent: renderFormSubmissionRejectedContent(t, rejectReason),
         ctas: [
           {
             type: SmCtaTypes.OUTLINE,
@@ -365,8 +423,8 @@ export const useGetAddressCardProps = ({
         ctas: [
           {
             type: SmCtaTypes.SECONDARY,
-            text: "myServices.pay.cta",
-            href: "/",
+            text: t("myServices.pay.cta"),
+            onClick: () => onPayInitiated(paymentCode),
           },
         ],
       };
@@ -392,31 +450,26 @@ export const useGetAddressCardProps = ({
           {
             type: SmCtaTypes.SUCCESS,
             text: t("myServices.downloadDocument.cta"),
-            href: "/",
             Icon: FileDownloadOutlinedIcon,
+            onClick: () => {
+              const fileName = entryNumber
+                ? `${entryNumber}.pdf`
+                : "Удостоверение.pdf";
+              downloadFile(resultingCertificateUrl, fileName);
+            },
           },
         ],
-      };
-    case APPLICATION_STATUS.CANCELED:
-      return {
-        activeStepIndex: 8,
-        Icon: CloseIcon,
-        borderClassName: "bg-sm-circle-border-red",
-        iconClassName: "bg-sm-red",
-        accordionTitle: "myServices.status.cancelled.accordion.title",
-        accordionContent: "",
-        ctas: [],
       };
     default:
       return {};
   }
 };
 
-const renderFormSubmissionRejectedContent = (t, rejectReason) => (
+const renderFormSubmissionRejectedContent = (t) => (
   <div>
-    <p>{`${t(
-      "myServices.status.rejected.accordion.content.title"
-    )} ${rejectReason}`}</p>
+    <p>{`${t("myServices.status.rejected.accordion.content.title")}`}</p>
+    {/* Add reject reason when BE is ready */}
+    {/* )} ${rejectReason}`}</p> */}
     <p>{t("myServices.status.rejected.accordion.content.description")}</p>
   </div>
 );

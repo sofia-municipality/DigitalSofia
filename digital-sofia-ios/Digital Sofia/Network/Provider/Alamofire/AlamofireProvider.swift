@@ -42,39 +42,48 @@ final class AlamofireProvider: ProviderProtocol {
             .eraseToAnyPublisher()
     }
     
+    func uploadRequest<T: Decodable>(type: T.Type, files: [String], service: ServiceProtocol) -> AnyPublisher<T, NetworkError> {
+        if let uploadRequest = FileUploader.upload(files: files, service: service) {
+            return uploadRequest
+                .validate()
+                .publishDecodable(type: T.self, emptyResponseCodes: emptyResponseCodes)
+                .value()
+                .mapError({ return self.mapError(afError: $0) })
+                .receive(on: RunLoop.main)
+                .eraseToAnyPublisher()
+        }
+        
+        return Empty(completeImmediately: false).eraseToAnyPublisher()
+    }
+    
     // MARK: - Initialize/Livecycle methods
     
     // MARK: - Override methods
     
     // MARK: - Private properties
     
-    fileprivate let retryLimit = 3
-    fileprivate let verifyDocumentRetryLimit = 40
+    private let decoder = JSONDecoder()
+    private let retryLimit = 3
+    private let emptyResponseCodes: Set = [201, 204, 205]
     
     // MARK: - Private methods
     
     private func run<T: Decodable>(request: DataRequest) -> AnyPublisher<T, NetworkError> {
         return request
-            .responseDecodable(of: T.self) { _ in }
-            .validate { request, response, data in
-                print(request)
-                print(response)
+            .responseDecodable(of: T.self, emptyResponseCodes: emptyResponseCodes) { _ in }
+            .validate { [weak self] request, response, data in
+                self?.printResponse(request: request, response: response, data: data)
                 
-                var errorDescription: String?
-                guard let data = data else { return .failure(NetworkError.noJSONData) }
-                let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String : Any]
-                errorDescription = json?["error"] as? String
-                print(json ?? [:])
-                
-                if errorDescription == nil && (200...299).contains(response.statusCode) {
-                    return .success(())
-                } else {
-                    return .failure(errorDescription == nil
+                guard (200...299).contains(response.statusCode) else {
+                    let error = try? self?.decoder.decode(ErrorResponse.self, from: data ?? Data())
+                    return .failure(error == nil
                                     ? NetworkError.mapErrorBy(statusCode: response.statusCode)
-                                    : NetworkError.message(errorDescription ?? ""))
+                                    : NetworkError.message(error?.error ?? ""))
                 }
+                
+                return .success(())
             }
-            .publishDecodable(type: T.self)
+            .publishDecodable(type: T.self, emptyResponseCodes: emptyResponseCodes)
             .value()
             .mapError({ return self.mapError(afError: $0) })
             .receive(on: RunLoop.main)
@@ -82,39 +91,77 @@ final class AlamofireProvider: ProviderProtocol {
     }
     
     private func mapError(afError: AFError) -> NetworkError {
-        switch afError.responseCode {
+        var mappedError: NetworkError?
+        
+        switch afError.responseCode ?? 0 {
         case 400:
-            return NetworkError.badRequest
-        case 401:
-            NotificationCenter.default.post(name: NSNotification.Name.tokenExpiredNotification,
-                                            object: nil,
-                                            userInfo: [:])
-            return NetworkError.tokenExpired
+            mappedError = NetworkError.badRequest
+        case 401, 500...599:
+            mappedError = tokenExpiredHandler()
         case 403:
-            return NetworkError.forbidden
+            mappedError = NetworkError.forbidden
         case 404:
-            return NetworkError.notFound
-        case 503:
-            return NetworkError.unavailable
-        case 500:
-            return NetworkError.internal
+            mappedError = NetworkError.notFound
         default:
-            var message = afError.localizedDescription
+            print("------ AFERROR ------")
+            print(afError)
             
             switch afError {
             case .responseValidationFailed(reason: let reason):
                 switch reason {
                 case .customValidationFailed(error: let error):
                     if let networkError = error as? NetworkError {
-                        message = networkError.description
+                        switch networkError.description {
+                        case NetworkError.invalidUserData.serverErrorDescription:
+                            if UserProvider.loginInitiated {
+                                mappedError = tokenExpiredHandler()
+                            } else {
+                                mappedError = .invalidUserData
+                            }
+                        case NetworkError.logoutCountExceeded.serverErrorDescription:
+                            mappedError = .logoutCountExceeded
+                        case NetworkError.invalidUser.serverErrorDescription:
+                            mappedError = tokenExpiredHandler()
+                        default:
+                            if networkError == .tokenExpired {
+                                mappedError = tokenExpiredHandler()
+                            } else {
+                                mappedError = networkError
+                            }
+                        }
                     }
                 default: break
                 }
-            default: break
+            default:
+                if let error = (afError.underlyingError as? URLError) {
+                    switch error.code {
+                    case .timedOut:
+                        mappedError = NetworkError.timeOut
+                    case .notConnectedToInternet:
+                        mappedError = NetworkError.noInternetConnection
+                    default:
+                        break
+                    }
+                }
             }
-            
-            return NetworkError.message(message)
         }
+        
+        UserProvider.loginInitiated = false
+        return mappedError ?? .unknown
+    }
+    
+    private func tokenExpiredHandler() -> NetworkError {
+        UserProvider.shared.tokenExpire()
+        return NetworkError.tokenExpired
+    }
+    
+    private func printResponse(request: URLRequest?, response: HTTPURLResponse, data: Data?) {
+        let json = try? JSONSerialization.jsonObject(with: data ?? Data(), options: []) as? [String : Any]
+        let response = "\(request?.cURL(pretty: true) ?? "")\nstatusCode: \(response.statusCode)\nand data: \(json ?? [:])"
+        LoggingHelper.logRequest(response: response)
+        
+        print("------ REQUEST ------")
+        print(response)
     }
 }
 
@@ -122,13 +169,17 @@ extension AlamofireProvider: RequestInterceptor {
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
         var request = urlRequest
         
-        guard let token = UserProvider.shared.getUser()?.token else {
+        guard let token = UserProvider.currentUser?.token else {
             completion(.success(request))
             return
         }
         
-        let bearerToken = NetworkConfig.Headers.token + token
-        request.setValue(bearerToken, forHTTPHeaderField: NetworkConfig.Headers.authorization)
+        let isTokenRequest = urlRequest.url?.absoluteString.contains(NetworkConfig.EP.Keycloak.token)
+        if isTokenRequest == false {
+            let bearerToken = NetworkConfig.Headers.token + token
+            request.setValue(bearerToken, forHTTPHeaderField: NetworkConfig.Headers.authorization)
+        }
+        
         completion(.success(request))
     }
     
@@ -139,9 +190,16 @@ extension AlamofireProvider: RequestInterceptor {
             return
         }
         
-        let retryCount = statusCode == 443 ? verifyDocumentRetryLimit : retryLimit
+        print("------ RETRY REQUEST ------")
+        print(request.request?.url?.absoluteString ?? "")
+        //        print(request.cURLDescription())
         
-        guard request.retryCount < retryCount else {
+        guard request.request?.url?.absoluteString.contains(NetworkConfig.EP.Keycloak.token) == false else {
+            completion(.doNotRetry)
+            return
+        }
+        
+        guard request.retryCount < retryLimit else {
             completion(.doNotRetry)
             return
         }
@@ -149,17 +207,9 @@ extension AlamofireProvider: RequestInterceptor {
         switch statusCode {
         case 200...299:
             completion(.doNotRetry)
-        case 400:
-            if request.cURLDescription().contains("\(NetworkConfig.Parameters.grantType)=\(NetworkConfig.Variables.grantTypeRefresh)") {
-                register { isSuccess in isSuccess ? completion(.retry) : completion(.doNotRetry) }
-            } else {
-                completion(.retry)
-            }
         case 401:
-            if request.cURLDescription().contains("\(NetworkConfig.Parameters.grantType)=\(NetworkConfig.Variables.grantTypeRefresh)") {
-                register { isSuccess in isSuccess ? completion(.retry) : completion(.doNotRetry) }
-            } else {
-                refreshToken { isSuccess in isSuccess ? completion(.retry) : completion(.doNotRetry) }
+            login { isSuccess in
+                isSuccess ? completion(.retry) : completion(.doNotRetry)
             }
         case 443:
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -170,33 +220,9 @@ extension AlamofireProvider: RequestInterceptor {
         }
     }
     
-    func refreshToken(completion: @escaping (_ isSuccess: Bool) -> Void) {
-        NetworkManager.refreshToken() { response in
-            switch response {
-            case .failure(let error):
-#if DEBUG
-                print("Error when refreshing token: \(error)")
-#endif
-                completion(false)
-            case .success(let success):
-                completion(success)
-            }
-        }
-    }
-    
-    func register(completion: @escaping (_ isSuccess: Bool) -> Void) {
-        if let user = UserProvider.shared.getUser() {
-            NetworkManager.registerUser(user: user, fcmToken: nil) { response in
-                switch response {
-                case .failure(let error):
-#if DEBUG
-                    print("Error when refreshing token from register: \(error)")
-#endif
-                    completion(false)
-                case .success(let success):
-                    completion(success)
-                }
-            }
+    private func login(completion: @escaping (_ isSuccess: Bool) -> Void) {
+        UserProvider.shared.login { isSuccess in
+            completion(isSuccess)
         }
     }
 }

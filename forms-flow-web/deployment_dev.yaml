@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-flow-web
+  namespace: forms-flow-web
+  labels:
+    name: formsflowweb
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      name: formsflowweb
+  template:
+    metadata:
+      labels:
+        name: formsflowweb
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: form-flow-web
+          image: sofiamunicipalitydigitall/forms-flow-web:latest
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          env:
+            - name: REACT_APP_ENV
+              value: "dev"

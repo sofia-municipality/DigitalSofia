@@ -41,7 +41,7 @@ import {
   MULTITENANCY_ENABLED,
   TASK_PAGE_NEW_DESIGN_ENABLED,
   TASK_DETAILS_HISTORY_TAB_ENABLED,
-  TASK_DETAILS_DIAGRAM_TAB_ENABLED
+  TASK_DETAILS_DIAGRAM_TAB_ENABLED,
 } from "../../../constants/constants";
 import { getCustomSubmission } from "../../../apiManager/services/FormServices";
 import { getFormioRoleIds } from "../../../apiManager/services/userservices";
@@ -75,7 +75,7 @@ const ServiceFlowTaskDetails = React.memo(() => {
   const tenantKey = useSelector((state) => state.tenants?.tenantId);
   const redirectUrl = MULTITENANCY_ENABLED ? `/tenant/${tenantKey}/` : "/";
   const error = useSelector((state) => state.bpmTasks.error);
-  
+  const [submissionLoading, setSubmissionLoading] = useState(false);
 
   useEffect(() => {
     if (taskId) {
@@ -97,13 +97,12 @@ const ServiceFlowTaskDetails = React.memo(() => {
 
   useEffect(() => {
     if (error) {
-      dispatch(push('/404'));
+      dispatch(push("/404"));
     }
     return () => {
-      dispatch(bpmActionError(''));
+      dispatch(bpmActionError(""));
     };
-  }, [error,dispatch]);
-  
+  }, [error, dispatch]);
   useEffect(() => {
     if (processList.length && task?.processDefinitionId) {
       const pKey = getProcessDataObjectFromList(
@@ -127,6 +126,7 @@ const ServiceFlowTaskDetails = React.memo(() => {
       Formio.clearCache();
       dispatch(resetFormData("form"));
       function fetchForm() {
+        setSubmissionLoading(true);
         dispatch(
           getForm("form", formId, (err) => {
             if (!err) {
@@ -154,6 +154,7 @@ const ServiceFlowTaskDetails = React.memo(() => {
                 dispatch(setFormSubmissionLoading(false));
               }
             }
+            setSubmissionLoading(false);
           })
         );
       }
@@ -163,7 +164,7 @@ const ServiceFlowTaskDetails = React.memo(() => {
   );
 
   useEffect(() => {
-    if (task?.taskFormUrl || task?.formUrl) {
+    if ((task?.taskFormUrl || task?.formUrl) && taskId === bpmTaskId) {
       getFormSubmissionData(task?.taskFormUrl || task?.formUrl);
     }
   }, [task?.taskFormUrl, task?.formUrl, dispatch, getFormSubmissionData]);
@@ -182,11 +183,31 @@ const ServiceFlowTaskDetails = React.memo(() => {
     getFormSubmissionData,
   ]);
 
-  const reloadTasks = () => {
+  const reloadTasks = (shouldShowNextAvailableTask) => {
     dispatch(setBPMTaskDetailLoader(true));
-    dispatch(setSelectedTaskID(null)); // unSelect the Task Selected
-    dispatch(fetchServiceTaskList(selectedFilter.id, firstResult, reqData)); //Refreshes the Tasks
-    dispatch(push(`${redirectUrl}task/`));
+    !shouldShowNextAvailableTask && dispatch(setSelectedTaskID(null)); // unSelect the Task Selected
+    dispatch(
+      fetchServiceTaskList(
+        selectedFilter.id,
+        firstResult,
+        reqData,
+        null,
+        (err, data) => {
+          let url = `${redirectUrl}task/`;
+          if (shouldShowNextAvailableTask && data) {
+            const nextTask = data.find(
+              (e) => e.processInstanceId === processInstanceId
+            );
+            if (nextTask?.id) {
+              url += nextTask.id;
+              dispatch(setSelectedTaskID(nextTask?.id));
+            }
+          }
+
+          dispatch(push(url));
+        }
+      )
+    ); //Refreshes the Tasks
   };
 
   const reloadCurrentTask = () => {
@@ -196,13 +217,14 @@ const ServiceFlowTaskDetails = React.memo(() => {
         getBPMTaskDetail(task.id, (err, taskDetail) => {
           if (!err) {
             dispatch(setFormSubmissionLoading(true));
-            getFormSubmissionData(taskDetail?.taskFormUrl || taskDetail?.formUrl);
+            getFormSubmissionData(
+              taskDetail?.taskFormUrl || taskDetail?.formUrl
+            );
           }
         })
       ); // Refresh the Task Selected
       dispatch(getBPMGroups(task.id));
       dispatch(fetchServiceTaskList(selectedFilter.id, firstResult, reqData)); //Refreshes the Tasks
-      
     }
   };
 
@@ -215,14 +237,15 @@ const ServiceFlowTaskDetails = React.memo(() => {
         reloadCurrentTask();
         break;
       case CUSTOM_EVENT_TYPE.ACTION_COMPLETE:
-        onFormSubmitCallback(customEvent.actionType);
+        onFormSubmitCallback(customEvent);
         break;
       default:
         return;
     }
   };
 
-  const onFormSubmitCallback = (actionType = "") => {
+  const onFormSubmitCallback = (customEvent) => {
+    const { actionType = "", checkForNextTask = true } = customEvent;
     if (bpmTaskId) {
       dispatch(setBPMTaskDetailLoader(true));
       const { formId, submissionId } = getFormIdSubmissionIdFromURL(
@@ -242,7 +265,7 @@ const ServiceFlowTaskDetails = React.memo(() => {
           ),
           (err) => {
             if (!err) {
-              reloadTasks();
+              reloadTasks(checkForNextTask);
             } else {
               dispatch(setBPMTaskDetailLoader(false));
             }
@@ -253,8 +276,6 @@ const ServiceFlowTaskDetails = React.memo(() => {
       reloadCurrentTask();
     }
   };
-
-  
   const ServiceTaskDetailsComponent = () => (
     <div className="service-task-details">
       <LoadingOverlay active={isTaskUpdating} spinner text={t("Loading...")}>
@@ -284,7 +305,7 @@ const ServiceFlowTaskDetails = React.memo(() => {
           {TASK_DETAILS_HISTORY_TAB_ENABLED && (
             <Tab eventKey="history" title={t("History")}>
               <History applicationId={task?.applicationId} />
-            </Tab> 
+            </Tab>
           )}
           {TASK_DETAILS_DIAGRAM_TAB_ENABLED && (
             <Tab eventKey="diagram" title={t("Diagram")}>
@@ -310,7 +331,7 @@ const ServiceFlowTaskDetails = React.memo(() => {
         {t("Select a task in the list.")}
       </Row>
     );
-  } else if (isTaskLoading) {
+  } else if (isTaskLoading || taskId !== bpmTaskId || submissionLoading) {
     return (
       <div className="service-task-details">
         <Loading />
@@ -322,8 +343,9 @@ const ServiceFlowTaskDetails = React.memo(() => {
       <Container fluid id="main">
         <ServiceTaskDetailsComponent />
       </Container>
-      
-    ) : <ServiceTaskDetailsComponent />;
+    ) : (
+      <ServiceTaskDetailsComponent />
+    );
   }
 });
 

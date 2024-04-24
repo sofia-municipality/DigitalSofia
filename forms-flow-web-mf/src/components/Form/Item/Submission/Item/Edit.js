@@ -1,5 +1,5 @@
-import React, { useEffect , useState, useMemo, useRef } from "react";
-import { connect, useDispatch, useSelector} from "react-redux";
+import React, { useEffect, useState, useMemo, useRef } from "react";
+import { connect, useDispatch, useSelector } from "react-redux";
 import {
   selectRoot,
   resetSubmissions,
@@ -37,6 +37,7 @@ import { Translation, useTranslation } from "react-i18next";
 import { updateCustomSubmission } from "../../../../../apiManager/services/FormServices";
 import { useEnrichForm } from "../../../../../customHooks";
 import FormSignDocumentModal from "../../../../Modals/FormSignDocumentModal";
+import FormErrorModal from "../../../../Modals/FormErrorModal";
 
 const Edit = React.memo((props) => {
   const { t } = useTranslation();
@@ -55,7 +56,6 @@ const Edit = React.memo((props) => {
   } = props;
 
   const [updatedSubmissionData, setUpdatedSubmissionData] = useState({});
-
   const applicationStatus = useSelector(
     (state) => state.applications.applicationDetail?.applicationStatus || ""
   );
@@ -99,15 +99,19 @@ const Edit = React.memo((props) => {
     formId,
     onFormSubmit,
   ]);
-  const updatedSubmission = useMemo(()=>{
+  const updatedSubmission = useMemo(() => {
     if (CUSTOM_SUBMISSION_URL && CUSTOM_SUBMISSION_ENABLE) {
       return customSubmission;
     } else {
       return submission;
     }
-  },[customSubmission,submission]);
+  }, [customSubmission, submission]);
 
-  if (isFormActive || (isSubActive && !isFormSubmissionLoading) || !updatedSubmission?.data) {
+  if (
+    isFormActive ||
+    (isSubActive && !isFormSubmissionLoading) ||
+    !updatedSubmission?.data
+  ) {
     return <Loading />;
   }
 
@@ -119,7 +123,9 @@ const Edit = React.memo((props) => {
           message={props.submissionError.message}
           onConfirm={props.onConfirm}
         ></SubmissionError>
-        <h3 className="task-head text-truncate" style={{ height:"45px" }}>{form.title}</h3>
+        <h3 className="task-head text-truncate" style={{ height: "45px" }}>
+          {form.title}
+        </h3>
       </div>
       <Errors errors={errors} />
       <LoadingOverlay
@@ -130,17 +136,19 @@ const Edit = React.memo((props) => {
           form.display === "wizard" ? "form-wizzard-wrapper" : ""
         }`}
       >
-        <FormSignDocumentModal
-          formRef={formRef}
-        />
+        <FormErrorModal />
+        <FormSignDocumentModal formRef={formRef} />
         <div className="ml-4 mr-4">
           <Form
             form={form}
-            submission={isFormSubmissionLoading ? updatedSubmissionData : updatedSubmission}
+            submission={
+              isFormSubmissionLoading
+                ? updatedSubmissionData
+                : updatedSubmission
+            }
             url={url}
             hideComponents={hideComponents}
-            onSubmit={(submission) =>{
-
+            onSubmit={(submission) => {
               setUpdatedSubmissionData(submission);
               onSubmit(
                 submission,
@@ -149,16 +157,14 @@ const Edit = React.memo((props) => {
                 form._id,
                 redirectUrl
               );
-            }
-
-            }
+            }}
             options={{
               ...options,
               i18n: TranslationsService.getFormTranslations(),
               language: lang,
             }}
             onCustomEvent={onCustomEvent}
-            onRender={(form) => {
+            formReady={(form) => {
               formRef.current = form;
               enrichForm(formRef);
             }}
@@ -212,7 +218,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
             UPDATE_EVENT_STATUS.includes(applicationDetail.applicationStatus) ||
             applicationDetail.isResubmit
           ) {
-            const data = getProcessDataReq(applicationDetail,submission.data);
+            const data = getProcessDataReq(applicationDetail, submission.data);
             dispatch(
               updateApplicationEvent(applicationDetail.id, data, () => {
                 dispatch(resetSubmissions("submission"));
@@ -271,7 +277,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           onFormSubmit ? formId : ownProps.match.params.formId,
           callBack
         );
-      }else{
+      } else {
         dispatch(
           saveSubmission(
             "submission",
@@ -281,7 +287,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
           )
         );
       }
-
     },
     onConfirm: () => {
       const ErrorDetails = { modalOpen: false, message: "" };

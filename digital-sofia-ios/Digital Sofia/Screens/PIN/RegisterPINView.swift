@@ -15,18 +15,25 @@ struct RegisterPINView: View {
     @State private var newPin = ""
     @State private var resetPin = false
     @State private var showConfirmBiometrics = false
+    @State private var showConfirmAuth = false
     
     var body: some View {
         VStack(spacing: RegisterFlowConstants.padding) {
             navigation()
             
             Text(state.title)
-                .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.XXXL))
+                .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, 
+                                            weight: DSFonts.FontWeight.regular,
+                                            size: DSFonts.FontSize.XXXL))
                 .foregroundColor(DSColors.Text.indigoDark)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.bottom, RegisterFlowConstants.padding)
             
-            PINView(resetPin: $resetPin, details: state.details) { pin in
+            Spacer()
+            
+            PINView(resetPin: $resetPin, 
+                    shouldVerifyPin: state == .new,
+                    details: state.details) { pin in
                 resetPin = true
                 
                 switch state {
@@ -36,11 +43,12 @@ struct RegisterPINView: View {
                     state = .confirm
                 case .confirm:
                     if newPin == pin {
-                        showConfirmBiometrics = true
-                        
-                        var user = UserProvider.shared.getUser()
-                        user?.pin = pin
-                        UserProvider.shared.save(user: user)
+                        UserProvider.shared.update(pin: pin)
+                        if BiometricProvider.biometricsAvailable {
+                            showConfirmBiometrics = true
+                        } else {
+                            showConfirmAuth = true
+                        }
                     } else {
                         appState.alertItem = PrimaryAndSecondaryAlertItem(title: Text(AppConfig.UI.Alert.pinMismatchAlertTitle.localized),
                                                                           message: Text(AppConfig.UI.Alert.pinMismatchAlertDetails.localized),
@@ -51,11 +59,16 @@ struct RegisterPINView: View {
                     }
                 }
             }
+            .environmentObject(appState)
+            
+            Spacer()
+            Spacer()
         }
         .padding([.leading, .trailing, .top], RegisterFlowConstants.padding)
-        .alert(item: $appState.alertItem) { alertItem in
-            AlertProvider.getAlertFor(alertItem: alertItem)
-        }
+        .log(view: self)
+        .alert()
+        .environmentObject(appState)
+        .environmentObject(networkMonitor)
     }
     
     private func navigation() -> some View {
@@ -64,6 +77,11 @@ struct RegisterPINView: View {
                 .environmentObject(appState)
                 .environmentObject(networkMonitor),
                            isActive: $showConfirmBiometrics) { EmptyView() }
+            
+            NavigationLink(destination: ConfirmAuthenticationView()
+                .environmentObject(appState)
+                .environmentObject(networkMonitor),
+                           isActive: $showConfirmAuth) { EmptyView() }
         }
     }
 }

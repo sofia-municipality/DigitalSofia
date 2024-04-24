@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "forms-flow-idm.fullname" . }}
+  labels:
+    {{- include "forms-flow-idm.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: {{ .Values.service.metadata.name }}
+      port: {{ .port }}
+      targetPort: {{ .targetPort }}
+      protocol: TCP
+  selector:
+    {{- include "forms-flow-idm.selectorLabels" . | nindent 4 }}
+

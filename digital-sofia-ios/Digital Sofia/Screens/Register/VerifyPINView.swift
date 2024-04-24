@@ -14,7 +14,8 @@ struct VerifyPINView: View {
     @StateObject private var viewModel = VerifyPINViewModel()
     @State private var resetPin = false
     @State private var showConfirmBiometrics = false
-    @State private var showChangePasswordAuthScreen = false
+    @State private var showForgottenPIN = false
+    @State private var showConfirmAuth = false
     @State private var isLoading = false
     
     var body: some View {
@@ -29,11 +30,10 @@ struct VerifyPINView: View {
                 Spacer()
                 Spacer()
                 
-                NumpadView(reset: $resetPin, shouldShowBiometrics: false, didReachedCodeLength: { pin in
-                    let fullPin = pin.map({ String($0) }).joined()
+                PINView(resetPin: $resetPin, shouldVerifyPin: false, didReachedCodeLength: { pin in
                     isLoading = true
                     
-                    viewModel.verify(pin: fullPin) { error in
+                    viewModel.verify(pin: pin) { error in
                         isLoading = false
                         
                         if let error = error {
@@ -42,16 +42,16 @@ struct VerifyPINView: View {
                         }
                     }
                 })
-                .padding([.leading, .trailing], RegisterFlowConstants.padding)
+                .environmentObject(appState)
                 
                 Spacer()
                 
                 Button {
-                    showChangePasswordAuthScreen = true
+                    showForgottenPIN = true
                 } label: {
                     Text(AppConfig.UI.Titles.Button.forgottenPin.localized)
                         .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.firaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.medium))
-                        .foregroundColor(DSColors.Blue.blue)
+                        .foregroundColor(DSColors.Blue.regular)
                         .frame(maxWidth: .infinity, alignment: .center)
                 }
                 
@@ -65,13 +65,16 @@ struct VerifyPINView: View {
             case .biometrics:
                 showConfirmBiometrics = true
             case .forgottenPin:
-                showChangePasswordAuthScreen = true
+                showForgottenPIN = true
+            case .authentication:
+                showConfirmAuth = true
             }
         }
-        .alert(item: $appState.alertItem) { alertItem in
-            AlertProvider.getAlertFor(alertItem: alertItem)
-        }
-        .background(DSColors.background)
+        .log(view: self)
+        .alert()
+        .environmentObject(appState)
+        .environmentObject(networkMonitor)
+        .backgroundAndNavigation()
     }
     
     private func header() -> some View {
@@ -97,10 +100,16 @@ struct VerifyPINView: View {
                 .environmentObject(networkMonitor),
                            isActive: $showConfirmBiometrics) { EmptyView() }
             
-            NavigationLink(destination: ForgottenPasswordAuthenticationView()
+            NavigationLink(destination: ForgottenPIN(isResetPin: true)
+                .environmentObject(appState)
+                .environmentObject(networkMonitor)
+                .environmentObject(IdentityRequestConfig()),
+                           isActive: $showForgottenPIN) { EmptyView() }
+            
+            NavigationLink(destination: ConfirmAuthenticationView()
                 .environmentObject(appState)
                 .environmentObject(networkMonitor),
-                           isActive: $showChangePasswordAuthScreen) { EmptyView() }
+                           isActive: $showConfirmAuth) { EmptyView() }
         }
     }
 }
@@ -109,30 +118,6 @@ struct VerifyPINView: View {
     VerifyPINView()
 }
 
-
-@MainActor class VerifyPINViewModel: ObservableObject {
-    @Published var nextScreen: VerifyPINNextScreen = .none
-    
-    func verify(pin: String, completion: @escaping (String?) -> ()) {
-        NetworkManager.verifyPIN(pin: pin) { [weak self] response in
-            switch response {
-            case .success(let pinVerification):
-                if pinVerification.matches {
-                    var user = UserProvider.shared.getUser()
-                    user?.pin = pin
-                    UserProvider.shared.save(user: user)
-                    
-                    self?.nextScreen = .biometrics
-                } else {
-                    completion(AppConfig.UI.Alert.verifyPinErrorWrongCurrent.localized)
-                }
-            case .failure(_):
-                completion(AppConfig.UI.Alert.welcomeUserErrorTitle.localized)
-            }
-        }
-    }
-}
-
 enum VerifyPINNextScreen {
-    case none, biometrics, forgottenPin
+    case none, biometrics, forgottenPin, authentication
 }

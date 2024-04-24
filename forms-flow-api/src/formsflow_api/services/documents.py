@@ -18,17 +18,25 @@ class DocumentsService:
             status_id,
             formio_id,
             user_email,
-            application_id=None
+            application_id=None,
+            origin_form_formio_id=None,
+            signature_source=None
         ) -> DocumentTransaction:
-        return DocumentTransaction(
+        transaction = DocumentTransaction(
                 transaction_id=transaction_id,
                 thread_id=thread_id,
                 tenant_key=tenant_key,
                 status_id=status_id,
                 application_id=application_id,
                 formio_id=formio_id,
-                user_email=user_email
+                user_email=user_email,
+                origin_form_formio_id=origin_form_formio_id,
+                signature_source=signature_source
             )
+        
+    
+
+        return transaction
     
     def get_document_by_submission_id(self, formio_id:str):
         return DocumentTransaction.query.filter_by(formio_id=formio_id).first()
@@ -139,11 +147,12 @@ class DocumentsService:
             content=signed_file_dict.get('content'),
         )
 
-        current_app.logger.debug(response)
+        # current_app.logger.debug(response)
 
         return response
 
     def create_identity_request(self, person_identifier:str, tenant_key:str):
+        ### HERE
         client = EurotrustIntegrationsService()
         current_time = datetime.utcnow()
         eurotrust_identity_timeout = current_app.config.get("EUROTRUST_IDENTITY_TIMEOUT")
@@ -169,3 +178,18 @@ class DocumentsService:
             person_identifier=person_identifier, 
             tenant_key=tenant_key
         ).first()
+
+    def get_identity_request_by_transaction_id(self, transaction_id:str, tenant_key:str):
+        return IdentityRequest.query.filter_by(
+            transaction_id=transaction_id,
+            tenant_key=tenant_key
+        ).first()
+    
+    def delete_identity_request(self, identity_request: IdentityRequest):
+        ### HERE
+        if identity_request:
+            db.session.delete(identity_request)
+            db.session.commit()
+            return True
+        
+        return False

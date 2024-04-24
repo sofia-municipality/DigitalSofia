@@ -1,0 +1,52 @@
+# Author: Shibin Thomas
+version: "3.7"
+
+volumes:
+  postgres:
+
+services:
+  keycloak-db:
+    image: postgres:latest
+    restart: always
+    container_name: keycloak_db
+    volumes:
+      - ./postgres/keycloak:/data/postgres
+    environment:
+      POSTGRES_DB: ${KEYCLOAK_JDBC_DB:-keycloak}
+      POSTGRES_USER: ${KEYCLOAK_JDBC_USER:-admin}
+      POSTGRES_PASSWORD: ${KEYCLOAK_JDBC_PASSWORD:-changeme}
+    ports:
+      - 5431:5431
+    networks:
+      - formsflow-network
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.1.1
+    restart: unless-stopped
+    container_name: keycloak
+    volumes:
+      - ./providers/:/opt/keycloak/providers/
+    entrypoint: 
+      - /opt/keycloak/bin/kc.sh
+      - start-dev
+    environment:
+      - DB_VENDOR=POSTGRES
+      - DB_ADDR=keycloak-db
+      - DB_DATABASE=${KEYCLOAK_JDBC_DB:-keycloak}
+      - DB_USER=${KEYCLOAK_JDBC_USER-admin}
+      - DB_PASSWORD=${KEYCLOAK_JDBC_PASSWORD:-changeme}
+      - KEYCLOAK_ADMIN=${KEYCLOAK_ADMIN_USER:-admin}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD:-changeme}
+      - spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true
+      - KC_FEATURES=declarative-user-profile,admin-fine-grained-authz
+      - KC_HTTP_RELATIVE_PATH=/auth
+    ports:
+      - 8080:8080
+    depends_on:
+      - keycloak-db
+    networks:
+      - formsflow-network
+
+networks:
+  formsflow-network:
+    driver: 'bridge'
+    name: formsflow-network

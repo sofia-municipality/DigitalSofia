@@ -30,7 +30,7 @@ pipeline {
                 environment name: 'DEPLOY', value: 'true'
             }
             steps {
-                sh 'sudo docker build -t sofiamunicipalitydigitall/forms-flow-bpm:dev-$BUILD_NUMBER .'
+                sh 'sudo docker build --no-cache -t sofiamunicipalitydigitall/forms-flow-bpm:dev-$BUILD_NUMBER .'
             }
         }
 

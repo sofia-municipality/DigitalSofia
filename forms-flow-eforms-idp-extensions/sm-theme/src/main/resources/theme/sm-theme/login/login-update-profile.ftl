@@ -1,19 +1,11 @@
 <#import "template.ftl" as layout>
-<@layout.registrationLayout displayMessage=!messagesPerField.existsError('username','email','firstName','lastName'); section>
+<@layout.registrationLayout displayMessage=!messagesPerField.existsError('email','firstName','lastName'); section>
     <#if section = "header">
         ${msg("loginProfileTitle")}
     <#elseif section = "form">
         <form id="kc-update-profile-form" class="${properties.kcFormClass!}" action="${url.loginAction}" method="post">
             <div class="sm-form-description">
                 ${msg("loginProfileDescription")}
-            </div>
-            <div class="${properties.kcFormGroupClass!}" style="display:none">
-                <div class="${properties.kcInputWrapperClass!}">
-                    <input hidden readonly type="text" id="username" name="username" value="${(user.email!'')}"
-                            class="${properties.kcInputClass!}"
-                            aria-invalid="<#if messagesPerField.existsError('username')>true</#if>"
-                    />
-                </div>
             </div>
             <div class="${properties.kcFormGroupClass!}">
                 <div class="${properties.kcLabelWrapperClass!}">

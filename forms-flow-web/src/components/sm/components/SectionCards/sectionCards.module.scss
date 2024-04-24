@@ -1,0 +1,138 @@
+@import "./../../../../assets/styles/mixins.scss";
+@import "./../../../../assets/styles/themes.scss";
+
+.servicesSectionWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-top: 100px;
+}
+
+.servicesSection {
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: nowrap;
+  width: 100%;
+  max-width: 720px;
+
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    text-decoration: none !important;
+  }
+}
+
+.servicesSectionWrapperNewDesign {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  
+  @include screen-size(medium) {
+    margin-top: 100px;
+  }
+}
+
+.servicesSectionRow {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 720px;
+  gap: 20px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  @include screen-size(medium) {
+    flex-direction: row;
+  }
+}
+
+.servicesSectionNewDesign {
+  display: flex;
+  width: 100%;
+  gap: 20px;
+  justify-content: space-between;
+
+  &:hover {
+    text-decoration: none !important;
+  }
+
+  @include screen-size(medium) {
+    width: 350px;
+  }
+}
+
+.serviceLink {
+  display: flex;
+  gap: 20px;
+}
+
+.serviceLinkWrapper {
+  background-color: #FCFCFC;
+  box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 2px 12px rgba(12, 14, 25, 0.12);
+  border-radius: 2px;
+  padding: 15px !important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .arrowIcon{
+    transition: 0.3s;
+  }
+  @include screen-size(medium) {
+    padding: 30px !important;
+  }
+
+  &:hover {
+    box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 2px 12px rgba(12, 14, 25, 0.24);
+    background-color: $sm-white;
+  }
+
+  &:hover .icon {
+    display: none;
+    color: $sm-blue-6;
+  }
+
+  &:hover .arrowIcon {
+    color: $sm-indigo-3;
+    margin-right:-5px;
+  }
+
+  &:hover .arrowIconNewDesign {
+    color: $sm-indigo-3;
+  }
+
+  &:hover .iconActive {
+    display: block;
+  }
+}
+
+.serviceLinkWrapperNewDesign {
+  flex-direction: column;
+  border-bottom: 1px solid $sm-blue;
+  text-align: center;
+}
+
+.icon {
+  color: black;
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.iconNewDesign {
+  margin-bottom: 20px;
+}
+
+.iconActive {
+  display: none;
+}
+
+.arrowIcon {
+  color: $sm-indigo-1-5;
+}
+
+.arrowIconNewDesign {
+  color: $sm-indigo-1-5;
+  margin-top: 20px;
+}

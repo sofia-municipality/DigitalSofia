@@ -25,12 +25,16 @@ export const useApi = (apiCall) => {
   return [data, loading, error];
 };
 
-export const mockApiCall = (data, timeout = 1000) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(data);
-    }, timeout);
-  });
+export const useMockApiCall = (mockData, timeout = 1000) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState();
+
+  setTimeout(() => {
+    setData(mockData);
+    setIsLoading(false);
+  }, timeout);
+
+  return { data, isLoading };
 };
 
 export const useApiCall = (apiCall, params, onMount = true) => {

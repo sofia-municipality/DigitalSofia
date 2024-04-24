@@ -8,21 +8,6 @@ import ViewApplication from "../../../components/Application/ViewApplication";
 import { createMemoryHistory } from "history";
 import * as redux from "react-redux";
 
-jest.mock("@formsflow/service", () => ({
-  __esModule: true,
-  default: jest.fn(() => ({})),
-  RequestService: {
-    httpGETRequest: () => Promise.resolve(jest.fn(() => ({ data: {} }))),
-    httpPUTRequest: () => Promise.resolve(jest.fn(() => "")),
-  },
-  StorageService: {
-    get: () => jest.fn(() => {}),
-    User: {
-      AUTH_TOKEN: "",
-    },
-  },
-}));
-
 const store = StoreService.configureStore();
 
 describe("Integration test for the ViewApplication component", () => {

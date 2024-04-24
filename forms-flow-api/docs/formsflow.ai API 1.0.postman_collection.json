@@ -1056,7 +1056,7 @@
 					"var client_id = \"{KEYCLOAK_BPM_CLIENT_ID}\" // the name of the client you created in Keycloak",
 					"var client_secret = \"{KEYCLOAK_BPM_CLIENT_SECRET}\" // the secret you copied earlier",
 					"var username = \"formsflow-reviewer\" //name of the reviewer/client",
-					"var password = \"\" //password that you set",
+					"var password = \"changeme\" //password that you set",
 					"var grant_type = \"client_credentials\"",
 					"",
 					"// request to Keycloak",

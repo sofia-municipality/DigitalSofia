@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
+import { SM_NEW_DESIGN_ENABLED } from "../../../../../constants/constants";
 import BaseCta from "../BaseCta";
 
 import styles from "./sm-cta.module.scss";
@@ -45,7 +46,9 @@ const SmCta = ({
     <BaseCta
       className={`btn ${styles.smCta} ${styles[type]} ${
         styles[size]
-      } ${className} ${loading ? styles.loading : ""}`}
+      } ${className} ${loading ? styles.loading : ""} ${
+        SM_NEW_DESIGN_ENABLED ? styles[`${type}-new-design`] : ""
+      }`}
       isLink={isLink}
       href={href}
       hardRedirect={hardRedirect}

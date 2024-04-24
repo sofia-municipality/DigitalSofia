@@ -8,14 +8,16 @@
 import Alamofire
 
 extension Session {
+    
     func initWith(service: ServiceProtocol, interceptor: RequestInterceptor) -> DataRequest {
         return AF.request(service.requestPath,
                           method: service.method.afMethod,
                           parameters: service.task.getParamDictionary(),
+                          encoding: service.parametersEncoding == .json ? JSONEncoding.default : URLEncoding.default,
                           headers: .service(service.headers),
                           interceptor: interceptor)
     }
-
+    
     func initDownloadWith(service: ServiceProtocol, interceptor: RequestInterceptor, to destination: DownloadRequest.Destination?) -> DownloadRequest {
         return AF.download(service.requestPath,
                            method: service.method.afMethod,

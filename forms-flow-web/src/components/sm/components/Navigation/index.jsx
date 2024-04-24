@@ -56,8 +56,9 @@ const ProfileMenu = ({ onNavLinkClick }) => {
 
   return (
     <div className={styles.profileMenu}>
-      {loggedInMenuItems.map(
-        ({ id, title, Icon, iconColorClass, href }, index) =>
+      {loggedInMenuItems
+        .filter((e) => !e.condition || (e.condition && e.condition()))
+        .map(({ id, title, Icon, iconColorClass, href }, index) =>
           id === "logoutCta" ? (
             <Button
               key={index}
@@ -86,7 +87,7 @@ const ProfileMenu = ({ onNavLinkClick }) => {
               <span>{t(title)}</span>
             </Nav.Link>
           )
-      )}
+        )}
     </div>
   );
 };
@@ -136,6 +137,7 @@ const Navigation = () => {
   const { smallNav: isSmallNavTriggered, isNavExpanded } = smContext;
   const isAuth = useSelector((state) => state.user.isAuthenticated);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [hideContent, setHideContent] = useState(false);
   const { pathname } = useLocation();
 
   const withNavAnimation = ROUTES_WITH_NAV_ANIMATION.some((route) =>
@@ -149,6 +151,31 @@ const Navigation = () => {
   }, [setSmContext, isExpanded, isNavExpanded]);
 
   const onNavLinkClick = () => isExpanded && setIsExpanded(!isExpanded);
+
+  const onLogoClick = (e) => {
+    const isHomePage = matchPath(pathname, {
+      path: PAGE_ROUTES.HOME,
+      exact: true,
+    });
+
+    if (isHomePage) {
+      e.preventDefault();
+      const element = document.getElementById("app");
+      if (element) {
+        element.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (isExpanded) {
+      setHideContent(false);
+    } else {
+      setTimeout(() => {
+        setHideContent(true);
+      }, 120);
+    }
+  }, [isExpanded]);
 
   return (
     <>
@@ -169,6 +196,17 @@ const Navigation = () => {
       >
         Skip to main content
       </Link>
+      <section className="container-fluid d-flex beta-container">
+        <div className="row w-100">
+          <div className="col-xs-3 beta-title d-flex justify-content-center align-content-center">
+            <span className="align-self-center">BETA</span>
+          </div>
+          <div className="col-xs-9 beta-description">
+            {t("navigation.beta.description")}
+            <span className="beta-link"> address@sofia.bg</span>
+          </div>
+        </div>
+      </section>
       <Navbar
         sticky="top"
         bg="white"
@@ -186,6 +224,7 @@ const Navigation = () => {
           <div className={isMobile ? `container ${styles.navigation}` : null}>
             <div className={styles.logoWrapper}>
               <Navbar.Brand
+                onClick={onLogoClick}
                 as={NavLink}
                 to={`${PAGE_ROUTES.HOME}#${NavLinksSections.MAIN_CONTENT}`}
               >
@@ -214,40 +253,42 @@ const Navigation = () => {
           <Navbar.Collapse id="navbarScroll">
             <div className={!isMobile ? "container" : styles.navContentWrapper}>
               {isMobile ? <LanguageSelector /> : null}
-              <div
-                className={`container-lg ${styles.navContent} ${
-                  isPortraitMode && isExpanded ? styles.portrait : ""
-                }`}
-              >
-                <Nav
-                  className={`container-lg justify-content-lg-center
-                flex-lg-nowrap ${styles.navLinksContainer}`}
+              {!isMobile || (isMobile && !hideContent) ? (
+                <div
+                  className={`container-lg ${styles.navContent} ${
+                    isPortraitMode && isExpanded ? styles.portrait : ""
+                  }`}
                 >
-                  {navLinks.map((el, index) => (
-                    <NavigationLink
-                      key={index}
-                      {...el}
-                      onClick={onNavLinkClick}
-                    />
-                  ))}
-                  {isMobile && isAuth ? (
-                    <ProfileMenu onNavLinkClick={onNavLinkClick} />
-                  ) : null}
-                </Nav>
-                <div className={styles.navLoginWrapper}>
-                  {!isAuth ? (
-                    <LoginButton
-                      className={`${styles.navLoginCta} ${
-                        smallNav ? styles.small : null
-                      }`}
-                    >
-                      {t("login.ctaText")}
-                    </LoginButton>
-                  ) : !isMobile ? (
-                    <ProfileIcon />
-                  ) : null}
+                  <Nav
+                    className={`container-lg justify-content-lg-center
+                flex-lg-nowrap ${styles.navLinksContainer}`}
+                  >
+                    {navLinks.map((el, index) => (
+                      <NavigationLink
+                        key={index}
+                        {...el}
+                        onClick={onNavLinkClick}
+                      />
+                    ))}
+                    {isMobile && isAuth ? (
+                      <ProfileMenu onNavLinkClick={onNavLinkClick} />
+                    ) : null}
+                  </Nav>
+                  <div className={styles.navLoginWrapper}>
+                    {!isAuth ? (
+                      <LoginButton
+                        className={`${styles.navLoginCta} ${
+                          smallNav ? styles.small : null
+                        }`}
+                      >
+                        {t("login.ctaText")}
+                      </LoginButton>
+                    ) : !isMobile ? (
+                      <ProfileIcon />
+                    ) : null}
+                  </div>
                 </div>
-              </div>
+              ) : null}
             </div>
           </Navbar.Collapse>
         </div>

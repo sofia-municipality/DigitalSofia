@@ -1,6 +1,7 @@
 package com.bulpros.integrations.egov.service;
 
 import com.bulpros.integrations.egov.model.UserContactDataResponse;
+import com.bulpros.integrations.esb.tokenManager.EsbTokenManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Component("eGovService")
@@ -19,8 +21,14 @@ import java.util.Map;
 public class EGovService {
 
     private final RestTemplate restTemplateEsb;
-    private final EGovTokenManager tokenManager;
+    private final EsbTokenManager tokenManager;
 
+    @Value("${epdeau.registration.name}")
+    private String epdeauClientRegistrationName;
+    @Value("${spring.security.oauth2.client.registration.epdeau.client-id}")
+    private String epdeauClientId;
+    @Value("${spring.security.oauth2.client.registration.epdeau.scope}")
+    private String epdaeuScope;
     @Value("${com.bulpros.egov.user.contact.data.url}")
     private String eGovUrl;
     @Value("${com.bulpros.egov.user.administrations.authorization.url}")
@@ -99,7 +107,8 @@ public class EGovService {
     }
 
     private HttpEntity<Void> prepareRequest() {
-        String token = tokenManager.getAccessToken();
+        String token = tokenManager.getAccessToken(epdeauClientRegistrationName, epdeauClientId,
+                epdaeuScope, new HashMap<>());
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token);
         return new HttpEntity<>(headers);

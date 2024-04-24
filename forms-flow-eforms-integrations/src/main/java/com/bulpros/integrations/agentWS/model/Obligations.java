@@ -1,18 +1,21 @@
 package com.bulpros.integrations.agentWS.model;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class Obligations {
-
-    private int debtinstalmentId;
+    @JsonProperty(value = "debtInstalmentId")
+    @JsonAlias("debtinstalmentId")
+    private int debtInstalmentId;
     private String rnu;
     private int municipalityId;
     private String municipalityName;
@@ -25,8 +28,8 @@ public class Obligations {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date termPayDate;
     private int instNo;
-    private int residual;
-    private int interest;
+    private float residual;
+    private float interest;
     private int payOrder;
 
 }

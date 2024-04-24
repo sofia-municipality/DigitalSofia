@@ -6,6 +6,6 @@ import com.bulpros.keycloak.phone.providers.model.UserExtendedModel;
 import org.keycloak.provider.Provider;
 
 public interface UserCheckProvider extends Provider {
-        UserExtendedModel getEvrotrustUser(UserCheckModel userCheckModel) throws CustomProviderException;
+    UserExtendedModel getEvrotrustUser(UserCheckModel userCheckModel) throws CustomProviderException;
 
 }

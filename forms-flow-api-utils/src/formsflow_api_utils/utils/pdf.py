@@ -6,7 +6,6 @@ import json
 from flask import current_app, make_response
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -31,15 +30,13 @@ def send_devtools(driver, cmd, params=None):
 
 def get_pdf_from_html(path, chromedriver=None, p_options=None, args=None):
     """Load url in chrome web driver and print as pdf."""
-    current_app.logger.debug("FormsFlowApiUtils - 1. Defining interceptor")
+
     def interceptor(request):
         request.headers["Authorization"] = args["auth_token"]
 
-    current_app.logger.debug("FormsFlowApiUtils - 2. Getting args")
     if args is None:
         args = {}
 
-    current_app.logger.debug("FormsFlowApiUtils - 3. Defining options")
     options = Options()
     options.add_argument("--headless")
     options.add_argument("--disable-gpu")
@@ -50,27 +47,19 @@ def get_pdf_from_html(path, chromedriver=None, p_options=None, args=None):
     options.add_argument("--log-level=3")
     sel_options = {"request_storage_base_dir": "/tmp"}
 
-    current_app.logger.debug("FormsFlowApiUtils - 4. Defining service")
-    service = Service(chromedriver)
-
     # pylint: disable=E1123
-    current_app.logger.debug("FormsFlowApiUtils - 5. Initing chrome driver")
     driver = webdriver.Chrome(
-        service=service, options=options, seleniumwire_options=sel_options
+        chromedriver, options=options, seleniumwire_options=sel_options
     )
     driver.set_window_size(1920, 1080)
 
-    current_app.logger.debug("FormsFlowApiUtils - 6. Set request interceptor which defines auth_token")
     if "auth_token" in args:
         driver.request_interceptor = interceptor
 
-    
-    current_app.logger.debug("FormsFlowApiUtils - 7. Set timezone in driver")
     if "timezone" in args and args["timezone"] is not None:
         tz_params = {"timezoneId": args["timezone"]}
         driver.execute_cdp_cmd("Emulation.setTimezoneOverride", tz_params)
 
-    current_app.logger.debug("FormsFlowApiUtils - 8. Open path in driver")
     driver.get(path)
 
     try:
@@ -86,15 +75,12 @@ def get_pdf_from_html(path, chromedriver=None, p_options=None, args=None):
         }
         if p_options is not None:
             calculated_print_options.update(p_options)
-        current_app.logger.debug("FormsFlowApiUtils - 9. Print to pdf")
         result = send_devtools(driver, "Page.printToPDF", calculated_print_options)
-        current_app.logger.debug("FormsFlowApiUtils - 10. Closing driver")
         driver.quit()
         return base64.b64decode(result["data"])
 
     except TimeoutException as err:
         driver.quit()
-        current_app.logger.critical("Driver timeout")
         current_app.logger.warning(err)
         return False
 

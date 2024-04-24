@@ -1,0 +1,87 @@
+pipeline {
+    environment {
+        DEPLOY = "${env.BRANCH_NAME == "develop" ? "true" : "false"}"
+        NAME = "${env.BRANCH_NAME == "develop" ? "example" : "example-staging"}"
+    }
+    
+    agent any
+    
+     stages {
+        stage('Checkout eForms-signature-services') {
+             when {
+                environment name: 'DEPLOY', value: 'true'
+            }
+            steps {
+                git branch: 'develop', 
+                    url : 'https://MihailStefanov:ATBBNbJZnqewR5NzBUmTFFt4C3uRC8D7397D@bitbucket.org/intracol/forms-flow-eforms-signature-services.git'
+            }
+        }
+        
+        stage('Build eForms-signature-services') {
+            when {
+                environment name: 'DEPLOY', value: 'true'
+            }
+            steps {
+                sh 'sudo docker build -t sofiamunicipalitydigitall/eforms-signature-services:latest .'
+                sh 'sudo docker images'
+            }
+        }
+
+         stage('Push Image') {
+            when {
+                environment name: 'DEPLOY', value: 'true'
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh 'sudo docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                    sh 'sudo docker push $DOCKER_USERNAME/eforms-signature-services:latest'
+                }
+            }
+        }
+
+        stage('Deploy DEV') {
+            when {
+                environment name: 'DEPLOY', value: 'true'
+            }
+            steps {
+                withKubeConfig([credentialsId: 'kubeconfig', serverUrl: 'https://192.168.201.47:6443']) {
+                   sh 'kubectl delete all --all -n forms-flow-eforms-signature-services '
+                   sh 'kubectl apply -f ./infra/dev/deployment_dev.yaml '
+                   sh 'kubectl apply -f ./infra/dev/service_dev.yaml '
+                   sh 'kubectl apply -f ./infra/dev/ingress_dev.yaml '
+                    }
+                }
+            }
+        
+        stage('Push Image with Tag') {
+             when {
+                tag "release-*"
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh 'sudo docker tag $DOCKER_USERNAME/forms-flow-api:latest $DOCKER_USERNAME/forms-flow-api:releasetest'
+                    sh 'sudo docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                    sh 'sudo docker push $DOCKER_USERNAME/eForms-signature-services:releasetest'
+                }
+            }
+        }
+            
+        stage('Deploy TEST') {
+            when {
+                //allOf {
+                //environment name: 'DEPLOY', value: 'true'
+                tag "release-*" 
+               // buildingTag()
+                //}
+            }
+            steps {
+                withKubeConfig([credentialsId: 'kubeconfig-test', serverUrl: 'https://192.168.201.42:6443']) {
+                   sh 'kubectl delete all --all -n forms-flow-eforms-signature-services '
+                   sh 'kubectl apply -f ./infra/test/deployment_test.yaml '
+                   sh 'kubectl apply -f ./infra/test/service_test.yaml '
+                   sh 'kubectl apply -f ./infra/test/ingress_test.yaml '
+                    }
+                }
+            }
+    }
+}

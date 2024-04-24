@@ -41,7 +41,11 @@ Not applicable.
 
 |Variable name | Meaning | Possible values | Default value |
 |--- | --- | --- | ---
+|`FORMIO_DB_USERNAME`|Mongo Root Username. Used on installation to create the database.Choose your own||`admin`
+|`FORMIO_DB_PASSWORD`|Mongo Root Password||`changeme`
 |`FORMIO_DB_NAME`|Mongo Database  Name. Used on installation to create the database.Choose your own||`formio`
+|`FORMIO_ROOT_EMAIL`|forms-flow-forms admin login|eg. admin@example.com|`admin@example.com`
+|`FORMIO_ROOT_PASSWORD`|forms-flow-forms admin password|eg.changeme|`changeme`
 |`FORMIO_CLIENT_UI`|To setup FORMIO client ui |true / false|`false`
 |`FORMIO_DEFAULT_PROJECT_URL`:triangular_flag_on_post:|forms-flow-forms default url||`http://{your-ip-address}:3001`
 |`FORMIO_JWT_SECRET`|forms-flow-forms jwt secret| |`--- change me now ---`
@@ -68,6 +72,11 @@ Not applicable.
 ### Health Check
 
    The application should be up and available for use at port defaulted to 3001 in  (i.e. <http://localhost:3001/>)
+
+        Default Login Credentials
+        -----------------
+        User Name / Email : admin@example.com
+        Password  : changeme
 
 
 ## Custom Components

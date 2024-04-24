@@ -1,18 +1,36 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
 import { PAGE_ROUTES } from "../../../../../constants/navigation";
+import { SM_NEW_DESIGN_ENABLED } from "../../../../../constants/constants";
 import PageContainer from "../../../components/PageContainer";
-import NavLink from "../../../components/Navigation/NavLink";
+import SectionCards from "../../../components/SectionCards";
 import CustomBreadcrumbs from "../../../components/Breadcrumbs/CustomBreadcrumbs";
-
-import { useDevice } from "../../../../../customHooks";
 
 import styles from "./localTaxesAndFees.module.scss";
 
+const sectionCards = [
+  {
+    link: PAGE_ROUTES.LOCAL_TAXES_AND_FEES_REFERENCE,
+    iconSrc: SM_NEW_DESIGN_ENABLED
+      ? "/assets/Images/tax-reference-card-icon.svg"
+      : "/quick_reference.svg",
+    iconActiveSrc: "/quick_reference_filled.svg",
+    title: "localTaxesAndFees.card.1.title",
+    subtitle: "localTaxesAndFees.card.1.subtitle",
+  },
+  {
+    link: PAGE_ROUTES.LOCAL_TAXES_AND_FEES_PAYMENT,
+    iconSrc: SM_NEW_DESIGN_ENABLED
+      ? "/assets/Images/tax-payment-card-icon.svg"
+      : "/credit_card.svg",
+    iconActiveSrc: "/credit_card_filled.svg",
+    title: "localTaxesAndFees.card.2.title",
+    subtitle: "localTaxesAndFees.card.2.subtitle",
+  },
+];
+
 const LocalTaxesAndFees = () => {
-  const { isPhone } = useDevice();
   const { t } = useTranslation();
 
   return (
@@ -25,68 +43,7 @@ const LocalTaxesAndFees = () => {
             linkText={t("addressRegistratrion.backLinkText")}
             title={t("localTaxesAndFees.title")}
           />
-          <div className={styles.localTaxesSectionWrapper}>
-            <NavLink
-              to={PAGE_ROUTES.LOCAL_TAXES_AND_FEES_REFERENCE}
-              className={`row no-gutters ${styles.localTaxesSection}`}
-            >
-              <div className={`col ${styles.serviceLinkWrapper}`}>
-                <div className={styles.serviceLink}>
-                  <img
-                    className={styles.icon}
-                    src="/quick_reference.svg"
-                    alt=""
-                  />
-                  <img
-                    className={`${styles.icon} ${styles.iconActive}`}
-                    src="/quick_reference_filled.svg"
-                    alt=""
-                  />
-                  <div className={styles.content}>
-                    <h2
-                      className={`${
-                        isPhone ? "sm-heading-5" : "sm-heading-4"
-                      } text-sm-indigo-dark`}
-                    >
-                      {t("localTaxesAndFees.card.1.title")}
-                    </h2>
-                    <p className="sm-body-2-regular text-sm-indigo-4">
-                      {t("localTaxesAndFees.card.1.subtitle")}
-                    </p>
-                  </div>
-                </div>
-                <KeyboardArrowRightIcon className={styles.arrowIcon} />
-              </div>
-            </NavLink>
-            <NavLink
-              to={PAGE_ROUTES.LOCAL_TAXES_AND_FEES_PAYMENT}
-              className={`row no-gutters ${styles.localTaxesSection}`}
-            >
-              <div className={`col ${styles.serviceLinkWrapper}`}>
-                <div className={styles.serviceLink}>
-                  <img className={styles.icon} src="/credit_card.svg" alt="" />
-                  <img
-                    className={`${styles.icon} ${styles.iconActive}`}
-                    src="/credit_card_filled.svg"
-                    alt=""
-                  />
-                  <div className={styles.content}>
-                    <h2
-                      className={`${
-                        isPhone ? "sm-heading-5" : "sm-heading-4"
-                      } text-sm-indigo-dark`}
-                    >
-                      {t("localTaxesAndFees.card.2.title")}
-                    </h2>
-                    <p className="sm-body-2-regular text-sm-indigo-4">
-                      {t("localTaxesAndFees.card.2.subtitle")}
-                    </p>
-                  </div>
-                </div>
-                <KeyboardArrowRightIcon className={styles.arrowIcon} />
-              </div>
-            </NavLink>
-          </div>
+          <SectionCards items={sectionCards} />
         </div>
       </div>
     </PageContainer>

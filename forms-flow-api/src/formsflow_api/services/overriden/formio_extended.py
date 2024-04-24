@@ -63,10 +63,10 @@ class FormioServiceExtended(FormioService):
     def get_submissions(self, 
                         form_path:str, 
                         formio_token:str,
-                        person_identifier:str,
                         limit:int = 10,
                         skip:int = 0,
                         status:list = None,
+                        params: list = [],
                         select: list = [],
                         created_after: str = None
                         ):
@@ -81,11 +81,11 @@ class FormioServiceExtended(FormioService):
         
         headers = {"Content-Type": "application/json", "x-jwt-token": formio_token}
         url = f"{self.base_url}/form/{form_id}/submission/"
-        params = {
+        base_params = {
             'limit': limit,
             'skip': skip,
-            'data.userId': person_identifier
         }
+        params = params | base_params
 
         if status:
             params['data.status__in'] = ','.join(status)
@@ -98,6 +98,9 @@ class FormioServiceExtended(FormioService):
 
         params['sort'] = '-created'
 
+        current_app.logger.debug("FormioExtended@get_submissions")
+        current_app.logger.debug(url)
+        current_app.logger.debug(params)
         response = requests.get(
             url, 
             params=params,
@@ -219,18 +222,22 @@ class FormioServiceExtended(FormioService):
             data
         )
 
-    def update_resource_formio_file(self, form_path, formio_resource_id, type, name, content):
+    def update_resource_formio_file(
+        self, 
+        form_path, 
+        formio_resource_id, 
+        type, 
+        name, 
+        content, 
+        signature_source = None
+    ):
         formio_token = self.get_formio_access_token()
         formio_form_id = self.fetch_form_id_by_path(form_path=form_path, formio_token=formio_token)
 
         typed_content = f"data:{type};base64," + content
 
-        return self.partial_update_application(
-            formio_form_id,
-            formio_resource_id,
-            formio_token,
-            [
-                {
+        data = [
+            {
                     "op": "replace",
                     "path": "/data/file",
                     "value": [
@@ -243,8 +250,24 @@ class FormioServiceExtended(FormioService):
                             "size": (len(typed_content) * 3) / 4 - typed_content.count('=', -2)
                         }
                     ]
+            }
+        ]
+
+        if signature_source:
+            data.append(
+                {
+                    "op": "add",
+                    "path": "/data/signatureSource",
+                    "value": signature_source
                 }
-            ]
+            )
+
+
+        return self.partial_update_application(
+            formio_form_id,
+            formio_resource_id,
+            formio_token,
+            data
         )
     
     def check_if_submission_exists(self, form_path: str, data: dict):
@@ -265,7 +288,6 @@ class FormioServiceExtended(FormioService):
         
         current_app.logger.debug(response.content)
         raise BusinessException(response.content, HTTPStatus.BAD_REQUEST)
-    
 
     def debug_get_submission(self, data, formio_token):
         """Get request to formio API to get submission details."""

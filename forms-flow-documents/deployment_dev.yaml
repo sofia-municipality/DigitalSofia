@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-flow-documents
+  namespace : forms-flow-documents
+  labels:
+    app.kubernetes.io/name: forms-flow-documents
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: forms-flow-documents
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: forms-flow-documents
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: form-flow-web
+          image: sofiamunicipalitydigitall/forms-flow-documents:latest
+          ports:
+            - containerPort: 5006
+              name: http
+              protocol: TCP
+          env:
+            - name: FORMIO_DEFAULT_PROJECT_URL
+              value: "http://localhost:3001"
+            - name: FORMIO_ROOT_EMAIL
+              value: admin@example.com
+            - name: FORMIO_ROOT_PASSWORD
+              value: "changeme"
+            - name: KEYCLOAK_URL
+              value: "http://forms-flow-idm.forms-flow-idm.svc.cluster.local:80"
+            - name: FORMSFLOW_API_URL
+              value: "http://localhost:5000"
+            - name: BPM_API_URL
+              value: "http://forms-flow-bpm-svc.forms-flow-bpm.svc.cluster.local:8000/camunda"
+            - name: APPLICATION_NAME
+              value: "formsflow.ai"
+            - name: CHROME_DRIVER_PATH
+              value: "/usr/local/bin/chromedriver"
+            - name: FORMSFLOW_API_CORS_ORIGINS
+              value: "*"
+            - name: CUSTOM_SUBMISSION_ENABLED
+              value: "false"
+            - name: CUSTOM_SUBMISSION_URL
+              value: "http://localhost:6212"
+            - name: FORMSFLOW_API_DB_URL
+              value: "postgresql://documents:jw8s0F4@192.168.201.46:5432/documentsdb"
+            - name: FORMSFLOW_API_DB_USER
+              value: "documents"
+            - name: FORMSFLOW_API_DB_PASSWORD
+              value: "jw8s0F4"
+            - name: FORMSFLOW_API_DB_NAME
+              value: "documentsdb"

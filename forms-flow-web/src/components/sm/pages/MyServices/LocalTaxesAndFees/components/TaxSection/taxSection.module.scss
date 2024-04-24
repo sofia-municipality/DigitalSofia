@@ -1,0 +1,21 @@
+@import "../../../../../../../assets/styles/mixins.scss";
+@import "../../../../../../../assets/styles/themes.scss";
+@import "../../../../../../../assets/styles/typography.scss";
+
+.taxSectionContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.taxSectionHeading {
+  @include sm-body-2-regular;
+  font-size: 16px !important;
+  color: $sm-indigo-4 !important;
+  margin-bottom: 10px;
+}
+
+.taxSection {
+  width: 100%;
+  max-width: 960px;
+}

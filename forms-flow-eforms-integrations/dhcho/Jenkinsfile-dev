@@ -57,6 +57,7 @@ pipeline {
                   """
                    sh 'kubectl apply -f ./dhcho/dev/deployment_dev.yaml '
                    sh 'kubectl apply -f ./dhcho/dev/service_dev.yaml '
+                   sh 'kubectl apply -f ./dhcho/dev/ingress_dev.yaml '
                     }
                 }
             }

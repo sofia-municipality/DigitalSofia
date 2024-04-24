@@ -1,1 +1,1 @@
-com.bulpros.keycloak.pin.providers.sender.DummyMessageSenderServiceProviderFactory
+com.bulpros.keycloak.pin.providers.sender.FirebaseMessageSenderServiceProviderFactory

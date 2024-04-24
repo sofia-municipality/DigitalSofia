@@ -26,6 +26,9 @@ dist/
 # JetBrains IDE
 .idea/
 
+# VC Ide
+.vs/
+
 # Unit test reports
 TEST*.xml
 
@@ -49,4 +52,5 @@ Thumbs.db
 *.wmv
 
 postgres/
+src/formsflow_api/static/data/credentials/
 .env

@@ -6,7 +6,7 @@ import { useAddFAQ } from "../../../../apiManager/apiHooks";
 import { useNavigateTo } from "../../../../customHooks";
 import { PAGE_ROUTES } from "../../../../constants/navigation";
 import { LANGUAGE } from "../../../../constants/constants";
-import AdministrationContainer from "../../AdministrationContainer";
+import AdministrationContainer from "../../../AdministrationContainer";
 import FAQForm from "../FAQForm";
 
 const AddFAQ = () => {

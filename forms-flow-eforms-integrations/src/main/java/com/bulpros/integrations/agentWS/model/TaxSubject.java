@@ -9,9 +9,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TaxSubject {
 
-    private int taxsubjectid;
+    private long taxSubjectId;
     private String idn;
     private String name;
-    private String permanentaddress;
+    private String permanentAddress;
 
 }

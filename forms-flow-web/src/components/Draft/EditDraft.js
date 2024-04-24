@@ -3,6 +3,10 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import Loading from "../../containers/Loading";
+import {
+  setDraftDetailStatusCode,
+  setDraftDetail,
+} from "../../actions/draftActions";
 import { getForm, getSubmission } from "react-formio";
 // import { Translation } from "react-i18next";
 import { getDraftById } from "../../apiManager/services/draftService";
@@ -34,8 +38,8 @@ const EditDraft = React.memo(() => {
       })
     );
     return () => {
-      //   dispatch(setApplicationDetailLoader(true));
-      //   dispatch(setApplicationDetailStatusCode(""));
+      dispatch(setDraftDetail({ isDraftDetailLoading: true }));
+      dispatch(setDraftDetailStatusCode(""));
     };
     //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draftId, dispatch]);

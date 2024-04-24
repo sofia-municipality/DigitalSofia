@@ -19,14 +19,16 @@ export const formatPayloadForKEP = (
   file,
   signatureValue = null
 ) => {
+  const { content, fileName, formioId, ...rest } = file;
   const payloadForSign = {
     signingCertificate: certificate.certificate,
     certificateChain: certificate.certificateChain,
     encryptionAlgorithm: certificate.encryptionAlgorithm,
-    documentToSign: file.content,
-    documentName: file.fileName,
-    formioId: file.formioId,
+    documentToSign: content,
+    documentName: fileName,
+    formioId,
     signingDate: new Date(),
+    ...(rest || {}),
   };
   if (signatureValue) {
     payloadForSign.signatureValue = signatureValue;

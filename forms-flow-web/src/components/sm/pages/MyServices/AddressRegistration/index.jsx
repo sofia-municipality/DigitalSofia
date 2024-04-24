@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import CachedIcon from "@mui/icons-material/Cached";
 
 import PageContainer from "../../../components/PageContainer";
 import CustomBreadcrumbs from "../../../components/Breadcrumbs/CustomBreadcrumbs";
 import Pagination from "../../../components/Pagination";
 import { PAGE_ROUTES } from "../../../../../constants/navigation";
 import { APPLICATION_STATUS } from "../../../../../constants/formEmbeddedConstants";
+import {
+  SM_NEW_DESIGN_ENABLED,
+  EPAYMENT_ACCESS_CODE_LOGIN_URL,
+} from "../../../../../constants/constants";
 import Loading from "../../../../../containers/Loading";
 import { deleteApplicationById } from "../../../../../apiManager/services/applicationServices";
 import {
@@ -13,6 +18,11 @@ import {
   useWithdrawApplication,
 } from "../../../../../apiManager/apiHooks";
 import Modal from "../../../components/Modal/Modal";
+import BaseCta from "../../../components/buttons/BaseCta";
+import SmCta, {
+  SmCtaSizes,
+  SmCtaTypes,
+} from "../../../components/buttons/SmCta";
 
 import { useGetFullAddress } from "./hooks";
 import AddressRegistrationCard from "./components/AddressRegistrationCard";
@@ -46,6 +56,9 @@ const getPersonNames = (data) => {
 
 const MyServicesAddressRegistration = () => {
   const { t } = useTranslation();
+  const showRequestServiceLink = sessionStorage.getItem(
+    "showRequestServiceLink"
+  );
   const getFullAddress = useGetFullAddress();
   const {
     fetch: withdrawInvitation,
@@ -62,6 +75,8 @@ const MyServicesAddressRegistration = () => {
     useState();
   const [isWithdrawInvitationModalOpen, setIsWithdrawInvitationModalOpen] =
     useState();
+  const [isPayModalOpen, setIsPayModalOpen] = useState(false);
+  const [paymentCode, setPaymentCode] = useState(false);
   const [attemptedDeleteId, setAttemptedDeleteId] = useState(null);
   const [resendInvitationParams, setResendInvitationParams] = useState(null);
   const [withdrawInvitationParams, setWithdrawInvitationParams] =
@@ -183,6 +198,30 @@ const MyServicesAddressRegistration = () => {
                   showNo={!withdrawInvitationError}
                 />
               ) : null}
+              {isPayModalOpen ? (
+                <Modal
+                  title={t("myServices.pay.modal.title")}
+                  message={(() => (
+                    <span>
+                      {t("myServices.pay.modal.paymentCode")}
+                      <strong>{paymentCode}</strong>
+                    </span>
+                  ))()}
+                  description={t("myServices.pay.modal.description")}
+                  textAlign="center"
+                  borderColor="green"
+                  modalOpen={isPayModalOpen}
+                  yesText={t("myServices.pay.modal.cta")}
+                  onYes={() => {
+                    window.location.href = `${EPAYMENT_ACCESS_CODE_LOGIN_URL}?code=${paymentCode}`;
+                  }}
+                  noText={t("myServices.pay.modal.back")}
+                  onNo={() => {
+                    setPaymentCode(null);
+                    setIsPayModalOpen(false);
+                  }}
+                />
+              ) : null}
               {isResendInvitationModalOpen ? (
                 <ResendInvitationModal
                   modalOpen={isResendInvitationModalOpen}
@@ -191,10 +230,28 @@ const MyServicesAddressRegistration = () => {
                 />
               ) : null}
               <CustomBreadcrumbs
+                className={styles.breadCrumbs}
                 link={PAGE_ROUTES.MY_SERVICES}
                 linkText={t("myServices.backLinkText")}
                 title={t("addressRegistratrion.title")}
               />
+              <div className={styles.refreshCtaWrapper}>
+                <SmCta
+                  size={SmCtaSizes.MEDIUM}
+                  type={SmCtaTypes.OUTLINE}
+                  className={styles.refreshCta}
+                  onClick={refetchServices}
+                >
+                  <span className="sm-cta-outline-underline">
+                    {t("refreshData.cta")}
+                  </span>
+                  <CachedIcon
+                    className={styles.refreshCtaIcon}
+                    width="20"
+                    height="15"
+                  />
+                </SmCta>
+              </div>
               <div className={styles.contentWrapper}>
                 {data?.length ? (
                   <ul
@@ -229,6 +286,9 @@ const MyServicesAddressRegistration = () => {
                             item.formioData?.applicationStatus
                           }
                           entryNumber={item.formioData?.reference_number}
+                          resultingCertificateUrl={
+                            item.formioData?.resultingCertificateUrl
+                          }
                           address={getFullAddress(
                             item.formioData?.address,
                             item.formioData?.streetNumber,
@@ -272,6 +332,9 @@ const MyServicesAddressRegistration = () => {
                           trusteeInvitationWithdrawnDate={
                             item.formioData?.trusteeInvitationWithdrawnDate
                           }
+                          paymentCode={
+                            item?.camundaData?.paymentAccessCode?.value
+                          }
                           submitterTaskId={item.formioData?.submitterTaskId}
                           processInstanceId={item.processInstanceId}
                           onDelete={(id) => {
@@ -288,6 +351,10 @@ const MyServicesAddressRegistration = () => {
                           }}
                           onSubmissionResend={() => {
                             refetchServices();
+                          }}
+                          onPayInitiated={(code) => {
+                            setPaymentCode(code);
+                            setIsPayModalOpen(true);
                           }}
                         />
                       </li>
@@ -320,6 +387,24 @@ const MyServicesAddressRegistration = () => {
             <Loading />
           )}
         </div>
+        {SM_NEW_DESIGN_ENABLED && showRequestServiceLink ? (
+          <div className={styles.stickyMobileBottomNav}>
+            <BaseCta
+              className={styles.stickyMobileBottomNavLink}
+              isLink
+              href={PAGE_ROUTES.REQUEST_SERVICE}
+            >
+              <img
+                width="40px"
+                height="40px"
+                className={styles.stickyMobileBottomNavPageIcon}
+                alt=""
+                src="/assets/Images/request-service-link-icon.svg"
+              />
+              <span>{t("myServices.link")}</span>
+            </BaseCta>
+          </div>
+        ) : null}
       </div>
     </PageContainer>
   );

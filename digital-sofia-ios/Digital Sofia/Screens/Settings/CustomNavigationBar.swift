@@ -8,37 +8,59 @@
 import SwiftUI
 
 struct CustomNavigationBar: View {
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     
-    var title = AppConfig.UI.Titles.Button.back.localized 
+    var title = AppConfig.UI.Titles.Button.back.localized
     var image = ""
+    var bigTitle = false
+    
+    private var titleFontSize: DSFonts.FontSize {
+        return bigTitle ? DSFonts.FontSize.XXXL : DSFonts.FontSize.XL
+    }
+    
+    private var closeButtonSize: CGFloat {
+        return bigTitle ? AppConfig.Dimensions.Standart.iconHeight * 2.5
+        : AppConfig.Dimensions.Standart.iconHeight * 1.5
+    }
     
     var body: some View {
         HStack {
-            image.isEmpty
-            ? AnyView(createCloseButton())
-            : AnyView(Image(image)
-                .resizable()
-                .frame(width: AppConfig.Dimensions.Standart.iconHeight, height: AppConfig.Dimensions.Standart.iconHeight))
+            titleView
             
             Text(title)
-                .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.XL))
+                .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans,
+                                            weight: DSFonts.FontWeight.regular,
+                                            size: titleFontSize))
                 .foregroundColor(DSColors.Text.indigoDark)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding([.leading, .trailing], AppConfig.Dimensions.Padding.standart + AppConfig.Dimensions.Padding.large)
         .padding(.top, AppConfig.Dimensions.Padding.large)
         .padding(.bottom, AppConfig.Dimensions.Padding.medium)
-        .background(DSColors.background)
+        .backgroundAndNavigation()
+    }
+    
+    @ViewBuilder
+    var titleView: some View {
+        if image.isEmpty {
+            createCloseButton()
+        } else {
+            Image(image)
+                .resizable()
+                .renderingMode(.template)
+                .foregroundColor(DSColors.Indigo.light)
+                .frame(width: AppConfig.Dimensions.Standart.iconHeight,
+                       height: AppConfig.Dimensions.Standart.iconHeight)
+        }
     }
     
     private func createCloseButton() -> some View {
         Button {
-            presentationMode.wrappedValue.dismiss()
+            dismiss()
         } label: {
             Image(ImageProvider.backMenuButton)
                 .resizable()
-                .frame(width: AppConfig.Dimensions.Standart.iconHeight * 1.5, height: AppConfig.Dimensions.Standart.iconHeight * 1.5)
+                .frame(width: closeButtonSize, height: closeButtonSize)
         }
     }
 }

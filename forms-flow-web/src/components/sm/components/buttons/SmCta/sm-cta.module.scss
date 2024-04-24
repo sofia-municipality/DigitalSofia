@@ -32,8 +32,26 @@
     text-decoration: none;
   }
 
+  &.loading {
+    display: flex;
+    align-items: center;
+    &:after {
+      content: url('data:image/svg+xml,%3Csvg xmlns="http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" width="24" height="24" viewBox="0 0 24 24"%3E%3Cpath fill="black" d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8Z"%2F%3E%3C%2Fsvg%3E');
+      width: 24px;
+      height: 24px;
+      margin-left: 10px;
+      margin-right: -10px;
+      display: block;
+      animation: lds-dual-ring 1.2s linear infinite;
+    }
+  }
+  
   &.primary {
    @include sm-cta-primary;
+  }
+  
+  &.primary-new-design {
+   @include sm-cta-primary-new-design;
   }
   
   &.secondary {
@@ -55,6 +73,10 @@
 
   &.tertiary {
     @include sm-cta-tertiary;
+  }
+
+  &.tertiary-new-design {
+    @include sm-cta-tertiary-new-design;
   }
 
   &.quaternary {

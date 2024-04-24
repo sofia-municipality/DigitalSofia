@@ -1,8 +1,4 @@
-import {
-  replaceUrl,
-  removeTenantKey,
-  addTenantkey,
-} from "../../helper/helper";
+import { replaceUrl, removeTenantKey, addTenantkey } from "../../helper/helper";
 import "@testing-library/jest-dom/extend-expect";
 
 test("replace the second param in the first param with the third param ", () => {
@@ -12,23 +8,13 @@ test("replace the second param in the first param with the third param ", () => 
 });
 
 test("adding tenenkey based on value and tenenkey passed", () => {
-  expect(
-    addTenantkey(
-      "path-of-the-form",
-      "tenant-test"
-    )
-  ).toBe("tenant-test-path-of-the-form"); //value is converted into lowercase
-
+  expect(addTenantkey("path-of-the-form", "tenant-test")).toBe(
+    "tenant-test-path-of-the-form"
+  ); //value is converted into lowercase
 });
 
 test("removing tenankey based on value and tenenkey passed", () => {
-  expect(
-    removeTenantKey(
-      "tenant-test-path-of-the-form",
-      "tenant-test"
-    )
-  ).toBe("path-of-the-form"); //returns value itself after removing the first string before the
-
+  expect(removeTenantKey("tenant-test-path-of-the-form", "tenant-test")).toBe(
+    "path-of-the-form"
+  ); //returns value itself after removing the first string before the
 });
-
- 

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: signature-services-svc
+  namespace: forms-flow-eforms-signature-services
+  labels:
+    app.kubernetes.io/name: signatureservices
+spec:
+  selector:
+    app.kubernetes.io/name: signatureservices
+  ports:
+    - name: signature-services-port
+      protocol: TCP
+      port: 8004
+      targetPort: 8004

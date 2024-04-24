@@ -23,7 +23,7 @@ class AddressService:
 
         schema = AddressKRASchema()
         addresses_with_regions = AddressKAD.get_regions_for_streets(schema.dump(addresses, many=True))
-        current_app.logger.info(addresses_with_regions)
+        # current_app.logger.info(addresses_with_regions)
         return schema.dump(addresses_with_regions, many=True), page_count, total
 
     @classmethod

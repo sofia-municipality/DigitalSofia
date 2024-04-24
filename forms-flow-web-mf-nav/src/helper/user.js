@@ -2,6 +2,8 @@ import {
   STAFF_REVIEWER,
   STAFF_DESIGNER,
   ADMIN_ROLE,
+  ANALYTICS_VIEWER,
+  PAGE_ADMIN
 } from "../constants/constants";
 
 const getUserRoleName = (userRoles) => {
@@ -12,6 +14,10 @@ const getUserRoleName = (userRoles) => {
     role = "REVIEWER";
   } else if (userRoles.includes(STAFF_DESIGNER)) {
     role = "DESIGNER";
+  } else if (userRoles.includes(PAGE_ADMIN)) {
+    role = "Marketing Admin";
+  } else if (userRoles.includes(ANALYTICS_VIEWER)) {
+    role = "Analytics Admin";
   } else {
     role = "CLIENT";
   }

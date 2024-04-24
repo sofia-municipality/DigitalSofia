@@ -21,6 +21,7 @@ import LoadingOverlay from "react-loading-overlay";
 import SubmissionError from "../../components/Modal/SubmissionErrorModal";
 import { CUSTOM_EVENT_TYPE } from "../../../ServiceFlow/constants/customEventTypes";
 import { getTaskSubmitFormReq } from "../../../../apiManager/services/bpmServices";
+import { getApplicationDetails } from "../../../../apiManager/services/applicationServices";
 import { useParams } from "react-router-dom";
 import { push } from "connected-react-router";
 import {
@@ -53,10 +54,14 @@ const UserTask = React.memo(() => {
   const dispatch = useDispatch();
   const currentUser = useSelector(
     (state) => state.user?.userDetail?.preferred_username || ""
-  );
+  )?.toLowerCase();
+  const currentUserEmail = useSelector(
+    (state) => state.user?.userDetail?.email || ""
+  )?.toLowerCase();
   const submissionErrorParams = useSelector(
     (state) => state.formDelete?.formSubmissionError
   );
+  const taskAssignee = task?.assignee?.toLowerCase();
   const [canEdit, setCanEdit] = useState(true);
   const redirectUrl = useGetBaseUrl();
 
@@ -167,7 +172,13 @@ const UserTask = React.memo(() => {
           (err) => {
             if (!err) {
               if (formSubmitCallback) {
-                formSubmitCallback();
+                getApplicationDetails(task?.applicationId)
+                  .then((res) => {
+                    formSubmitCallback(null, res);
+                  })
+                  .catch(() => {
+                    dispatch(push("/"));
+                  });
               } else {
                 dispatch(push("/"));
               }
@@ -202,7 +213,8 @@ const UserTask = React.memo(() => {
       <div className="service-task-details">
         <LoadingOverlay
           active={
-            task?.assignee?.toLowerCase() !== currentUser?.toLowerCase() ||
+            (taskAssignee !== currentUser &&
+              taskAssignee !== currentUserEmail) ||
             !canEdit
           }
           styles={{
@@ -214,7 +226,8 @@ const UserTask = React.memo(() => {
             }),
           }}
         >
-          {task?.assignee?.toLowerCase() === currentUser?.toLowerCase() &&
+          {(taskAssignee === currentUser ||
+            taskAssignee === currentUserEmail) &&
           canEdit ? (
             <>
               <SubmissionError

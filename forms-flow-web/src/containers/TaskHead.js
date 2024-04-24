@@ -3,12 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { push } from "connected-react-router";
 import { NavDropdown } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
+
 import ServiceFlowFilterListDropDown from "../components/ServiceFlow/filter/ServiceTaskFilterListDropDown";
 import createURLPathMatchExp from "../helper/regExp/pathMatch";
 import { fetchFilterList } from "../apiManager/services/bpmTaskServices";
 import { useGetBaseUrl } from "../customHooks";
 
 function TaskHead() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const selectedFilter = useSelector(
     (state) => state.bpmTasks.selectedFilter?.name
@@ -45,7 +48,9 @@ function TaskHead() {
                 title={
                   <>
                     <i className="fa fa-list fa-lg fa-fw " />
-                    {`${selectedFilter ? selectedFilter : "Tasks"} ${" "}`}
+                    {`${
+                      selectedFilter ? t(selectedFilter) : t("Tasks")
+                    } ${" "}`}
                     {count}
                   </>
                 }

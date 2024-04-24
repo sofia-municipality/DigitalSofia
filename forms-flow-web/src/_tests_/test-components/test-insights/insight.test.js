@@ -10,13 +10,6 @@ import { render as rtlRender } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 
 const store = StoreService.configureStore();
-jest.mock("@formsflow/service", () => ({
-  __esModule: true,
-  default: jest.fn(() => ({})),
-  RequestService: {
-    httpGETRequest: () => Promise.resolve(jest.fn(() => ({ data: {} }))),
-  },
-}));
 
 function renderWithRouterMatch(
   Ui,

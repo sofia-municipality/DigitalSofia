@@ -89,6 +89,20 @@ class ImageProvider {
         return "status_error"
     }
     
+    static var loginFromPortalLogo: String {
+        return "login-from-portal-logo"
+    }
+    
+    struct ETImages {
+        static var logoScanInstructionsVC: String {
+            return "logo-scan-vc"
+        }
+        
+        static var logoVC: String {
+            return "logo-vc"
+        }
+    }
+    
     struct SystemImages {
         static var touchID: String {
             return "touchid"
@@ -144,6 +158,10 @@ extension ImageProvider {
         
         static var myServices: String {
             return "my_services"
+        }
+        
+        static var documentsTabLogo: String {
+            return "documents_tab_logo"
         }
     }
 }

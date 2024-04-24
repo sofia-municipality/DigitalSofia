@@ -10,6 +10,7 @@ import SwiftUI
 struct RegisterView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var networkMonitor: NetworkMonitor
+    @EnvironmentObject var config: KeyboardInactivityHandlerConfig
     
     @StateObject private var viewModel = RegisterViewModel()
     @State private var personalNumber = ""
@@ -22,34 +23,37 @@ struct RegisterView: View {
     
     private let padding = AppConfig.Dimensions.Padding.XXXL
     private var egnIsValid: Bool {
-        return personalNumber.isValidEGN
+        return personalNumber.isValid(rules: [ValidEGNRule()])
     }
     
     var body: some View {
         LoadingStack(isPresented: $isLoading) {
-            VStack {
-                LogoHeaderView()
-                
-                navigation()
-                
-                Text(AppConfig.UI.Register.personalIdLabelText.localized)
-                    .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.medium))
-                    .foregroundColor(DSColors.Text.indigoDark)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.bottom, AppConfig.Dimensions.Padding.XXL)
-                
-                addPersonalNumber()
-                
-                Spacer()
-                
-                addTC()
-                    .padding(.bottom, AppConfig.Dimensions.Padding.XXL)
-                
-                let buttonIsDisabled = personalNumber.isEmpty || acceptedTerms == false
-                BlueBackgroundButton(title: AppConfig.UI.Titles.Button.forward.localized, disabled: buttonIsDisabled) {
-                    forward()
+            KeyboardInactivityHandler {
+                VStack {
+                    LogoHeaderView()
+                    
+                    navigation()
+                    
+                    Text(AppConfig.UI.Register.personalIdLabelText.localized)
+                        .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.medium))
+                        .foregroundColor(DSColors.Text.indigoDark)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.bottom, AppConfig.Dimensions.Padding.XXL)
+                    
+                    addPersonalNumber()
+                    
+                    Spacer()
+                    
+                    addTC()
+                        .padding(.bottom, AppConfig.Dimensions.Padding.XXL)
+                    
+                    let buttonIsDisabled = personalNumber.isEmpty || acceptedTerms == false
+                    BlueBackgroundButton(title: AppConfig.UI.Titles.Button.forward.localized, disabled: buttonIsDisabled) {
+                        forward()
+                    }
                 }
             }
+            .environmentObject(config)
             .contentShape(Rectangle())
             .padding([.leading, .trailing], RegisterFlowConstants.padding)
         }
@@ -65,12 +69,14 @@ struct RegisterView: View {
             }
         }
         .onTapGesture {
+            config.stopTimer = true
             hideKeyboard()
         }
-        .alert(item: $appState.alertItem) { alertItem in
-            AlertProvider.getAlertFor(alertItem: alertItem)
-        }
-        .background(DSColors.background)
+        .log(view: self)
+        .alert()
+        .environmentObject(appState)
+        .environmentObject(networkMonitor)
+        .backgroundAndNavigation()
         .ignoresSafeArea(.keyboard)
     }
     
@@ -88,11 +94,24 @@ struct RegisterView: View {
                         .font(RegisterFlowConstants.placeholderFont)
                         .foregroundColor(RegisterFlowConstants.placeholderColor)
                 }
+                .onChange(of: personalNumber, perform: { newValue in
+                    if newValue.count > 8 {
+                        config.startTimer = true
+                    } else {
+                        config.stopTimer = true
+                    }
+                    
+                    if newValue.count == 10 {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            hideKeyboard()
+                        }
+                    }
+                })
                 .submitLabel(.done)
                 .padding(.all, AppConfig.Dimensions.Padding.medium)
                 .overlay(
                     RoundedRectangle(cornerRadius: AppConfig.Dimensions.CornerRadius.mini)
-                        .stroke(DSColors.indigo.opacity(0.2), lineWidth: AppConfig.Dimensions.Standart.lineHeight / 2)
+                        .stroke(DSColors.Indigo.regular.opacity(0.2), lineWidth: AppConfig.Dimensions.Standart.lineHeight / 2)
                 )
                 .frame(width: RegisterFlowConstants.fieldWidth)
                 .padding(.bottom, AppConfig.Dimensions.Padding.XL)
@@ -124,7 +143,8 @@ struct RegisterView: View {
             
             NavigationLink(destination: ContactInfoView()
                 .environmentObject(appState)
-                .environmentObject(networkMonitor),
+                .environmentObject(networkMonitor)
+                .environmentObject(KeyboardInactivityHandlerConfig(inactivityDelay: 3)),
                            isActive: $showContactInfo) { EmptyView() }
             
             NavigationLink(destination: VerifyPINView()
@@ -169,30 +189,6 @@ struct RegisterFlowConstants {
     static let placeholderColor = DSColors.Text.placeholder.opacity(0.3)
     static var fieldWidth: CGFloat {
         return UIScreen.main.bounds.width - RegisterFlowConstants.padding * 2
-    }
-}
-
-@MainActor class RegisterViewModel: ObservableObject {
-    @Published var nextScreen: RegisterFlowNextScreen = .none
-    
-    func check(personalNumber: String, completion: @escaping (String?) -> ()) {
-        NetworkManager.verifyPersonalId(egn: personalNumber) { [weak self] response in
-            switch response {
-            case .success(let userVerification):
-                completion(nil)
-                
-                var user = UserProvider.shared.getUser()
-                user?.personalIdentificationNumber = personalNumber
-                UserProvider.shared.save(user: user)
-                
-                self?.nextScreen = userVerification.exists
-                ? userVerification.hasPin ? .verifyPin : .createPin
-                : .contactInfo
-                
-            case .failure(_):
-                completion(AppConfig.UI.Alert.welcomeUserErrorTitle.localized)
-            }
-        }
     }
 }
 

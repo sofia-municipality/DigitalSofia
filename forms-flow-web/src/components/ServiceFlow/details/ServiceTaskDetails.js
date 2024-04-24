@@ -63,7 +63,12 @@ const ServiceFlowTaskDetails = React.memo(() => {
   const dispatch = useDispatch();
   const currentUser = useSelector(
     (state) => state.user?.userDetail?.preferred_username || ""
-  );
+  )?.toLowerCase();
+  const currentUserEmail = useSelector(
+    (state) => state.user?.userDetail?.email || ""
+  )?.toLowerCase();
+
+  const taskAssignee = task?.assignee?.toLowerCase();
   const selectedFilter = useSelector((state) => state.bpmTasks.selectedFilter);
   const firstResult = useSelector((state) => state.bpmTasks.firstResult);
   const [processKey, setProcessKey] = useState("");
@@ -271,7 +276,10 @@ const ServiceFlowTaskDetails = React.memo(() => {
           <Tabs defaultActiveKey="form" id="service-task-details" mountOnEnter>
             <Tab eventKey="form" title={t("Form")}>
               <LoadingOverlay
-                active={task?.assignee !== currentUser}
+                active={
+                  taskAssignee !== currentUser &&
+                  taskAssignee !== currentUserEmail
+                }
                 styles={{
                   overlay: (base) => ({
                     ...base,
@@ -280,7 +288,8 @@ const ServiceFlowTaskDetails = React.memo(() => {
                   }),
                 }}
               >
-                {task?.assignee === currentUser ? (
+                {taskAssignee === currentUser ||
+                taskAssignee === currentUserEmail ? (
                   <FormEdit
                     onFormSubmit={onFormSubmitCallback}
                     onCustomEvent={onCustomEventCallBack}

@@ -7,8 +7,11 @@ metadata:
     app.kubernetes.io/name: integrations
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
+  strategy: 
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: integrations
@@ -44,7 +47,7 @@ spec:
             - name: EVROTRUST_PRIVATE_KEY
               value: "/cert/evrotrust-private-key.pem"
             - name: ESB_KEYSTORE_LOCATION
-              value: "/cert/eforms-web-test.egov.bg.p12"
+              value: "/cert/test_SO_client_eUslugi_Za_administraciqta_Digital.pfx"
             - name: MALWARESCAN_KEYSTORE_LOCATION
               value: "/cert/malwareScanKeystore.p12"
             - name: EVROTRUST_VENDOR_API_KEY
@@ -59,3 +62,13 @@ spec:
               value: "https://ltf.is-bg.net/AgentWS-SOF46/payment/transactioninfo"
             - name: AGENTWS_REVERSAL_URL
               value: "https://ltf.is-bg.net/AgentWS-SOF46/reversal"
+            - name: MAIL_FROM
+              value: "formsflow@egov.bg"
+            - name: MAIL_HOST
+              value: "sandbox.smtp.mailtrap.io"
+            - name: MAIL_PORT
+              value: "2525"
+            - name: MAIL_USERNAME
+              value: "769b3912c73663"
+            - name: MAIL_PASSWORD
+              value: "3c42f3720e2814"

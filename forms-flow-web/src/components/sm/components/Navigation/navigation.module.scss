@@ -9,10 +9,10 @@
   left: 0;
   position: absolute;
 
-  -webkit-transition: all 0.5s ease-in-out;
-  -moz-transition: all 0.5s ease-in-out;
-  -o-transition: all 0.5s ease-in-out;
-  transition: all 0.5s ease-in-out;
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .circle {
@@ -29,10 +29,10 @@
   position: absolute;
   left: 0;
 
-  -webkit-transition: all 0.5s ease-in-out;
-  -moz-transition: all 0.5s ease-in-out;
-  -o-transition: all 0.5s ease-in-out;
-  transition: all 0.5s ease-in-out;
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .circleWrapper {
@@ -84,8 +84,26 @@
     height:calc(100vh - 100px);
   }
 
+
+  &:not(.portrait) {
+    height: 75dvh;
+    position: relative;
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    @media screen and (max-width: 280px) {
+      height: 85dvh;
+    }
+  }
+
   @include screen-size(large) {
-    height: auto;
+    height: auto !important;
+    position: unset !important;
     flex-direction: row;
   }
 
@@ -98,7 +116,7 @@
   width: 180px;
 
   @media screen and (max-width: 280px) {
-    width: 150px;
+    width: 140px;
   }
 
   @include screen-size(huge) {
@@ -216,11 +234,18 @@
 }
 
 .navLinksContainer {
-  padding-inline: 0px;
+  padding-inline: 20px;
+
+  @include screen-size(large) {
+    padding-inline: 0;
+  }
 }
 
 .navContentWrapper {
-  padding: 20px;
+  padding-block: 20px;
+
+  min-height: 100dvh;
+  position: relative;
 }
 
 .collapseCloseIcon {
@@ -238,7 +263,7 @@
 
 .navLoginCta {
   float: right;
-  margin-bottom: 200px;
+  margin-bottom: 20px;
   @include screen-size(large) {
     margin-bottom: 0;
   }

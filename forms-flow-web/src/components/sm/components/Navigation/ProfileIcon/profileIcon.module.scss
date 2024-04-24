@@ -44,7 +44,6 @@
 
 .overlay {
   width: 280px;
-  height: 420px;
   position: absolute;
   z-index: 1;
   background-color: $sm-white;
@@ -98,6 +97,7 @@
   font-size: 20px;
   line-height: 17px;
   margin-top: 70px;
+  margin-bottom: 30px;
 
   color: $sm-indigo-3;
 

@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-flow-eforms-integrations
+  namespace : form-flow-eforms-integrations
+  labels:
+    app.kubernetes.io/name: integrations
+spec:
+  replicas: 1
+  strategy: 
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: integrations
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: integrations
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: form-flow-eforms-integrations
+          image: sofiamunicipalitydigitall/forms-flow-eforms-integrations:latest
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/sh", "-c",  "echo '213.91.173.217 service-regix-test.egov.bg' >> /etc/hosts " ]
+          ports:
+            - containerPort: 8002
+              name: http
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /cert/prod
+              name: cert
+          env:
+            - name: AGENTWS_KEYSTORE_LOCATION
+              value: "/cert/agentWS-certificate.p12"
+            - name: EDELIVERY_KEYSTORE_LOCATION
+              value: "/cert/eDelivery-BulprosTest.pfx"
+            - name: REGIX_KEYSTORE_LOCATION
+              value: "/cert/prod/regix-prod.server.p12"
+            - name: REGIX_KEYSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                    key: password
+                    name: regix-keystore-pass
+            - name: REGIX_WSDL
+              value: "https://service-regix.egov.bg/RegiXEntryPointV2.svc.singlewsdl.xml"
+            - name: REGIX_ENTRY_POINT
+              value: "https://service-regix.egov.bg/RegiXEntryPointV2.svc/basic"
+            - name: EPAYMENT_ESB_CLIENT_ID
+              value: "prod_SO_client_eUslugi_Za_administraciqta_Digital"
+            - name: ESB_KEYSTORE_PASS
+              valueFrom:
+                secretKeyRef:
+                    key: password
+                    name: esb-keystore-pass
+            - name: ESB_TOKEN_URL
+              value: "https://integr-prod.egov.bg:5050/token"
+
+            - name: EVROTRUST_VENDOR_API_KEY
+              value: "38fd544c-d763-4fdf-9waf-4739q99edf7f"
+            - name: EVROTRUST_VENDOR_NUMBER
+              value: "PhmbCuthhY25pCxC"
+            - name: BORICA_KEYSTORE_LOCATION
+              value: "/cert/test.bulpros.cer.pfx"
+            - name: EVROTRUST_PUBLIC_KEY
+              value: "/cert/prod/evrotrust-prod-publickey.pem"
+            - name: EVROTRUST_PRIVATE_KEY
+              value: "/cert/prod/evrotrust-prod-privatekey.pem"
+            - name: EVROTRUST_URL
+              value: "https://v.evrotrust.com/vendor/"
+            - name: ESB_KEYSTORE_LOCATION
+              value: "/cert/prod/prod_SO_client_eUslugi_Za_administraciqta_Digital.pfx"
+            - name: MALWARESCAN_KEYSTORE_LOCATION
+              value: "/cert/malwareScanKeystore.p12"
+            - name: AGENTWS_OBLIGATIONS_URL
+              value: "https://ltf.is-bg.net/AgentWS-SOF46/obligations"
+            - name: AGENTWS_PAYMENT_URL
+              value: "https://ltf.is-bg.net/AgentWS-SOF46/payment/pay"
+            - name: AGENTWS_PAYMENT_INFO_URL
+              value: "https://ltf.is-bg.net/AgentWS-SOF46/payment/transactioninfo"
+            - name: AGENTWS_REVERSAL_URL
+              value: "https://ltf.is-bg.net/AgentWS-SOF46/reversal"
+            - name: MAIL_FROM
+              value: "eServices@egov.bg"
+            - name: MAIL_HOST
+              value: "172.30.1.100"
+            - name: MAIL_PORT
+              value: "25"
+            - name: MAIL_USERNAME
+              value: ""
+            - name: MAIL_PASSWORD
+              value: ""
+      volumes:
+        - name: cert
+          nfs:
+            path: /pvc/cert
+            server: 172.23.230.80

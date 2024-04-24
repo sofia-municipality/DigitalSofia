@@ -10,6 +10,8 @@ import eu.europa.esig.dss.enumerations.DigestAlgorithm;
 import eu.europa.esig.dss.enumerations.EncryptionAlgorithm;
 import eu.europa.esig.dss.enumerations.SignatureForm;
 import eu.europa.esig.dss.enumerations.SignatureLevel;
+import eu.europa.esig.dss.model.x509.CertificateToken;
+import eu.europa.esig.dss.spi.DSSUtils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,6 +38,8 @@ public class DataToSignRequest implements Serializable {
 
     @NotNull
     private EncryptionAlgorithm encryptionAlgorithm;
+
+    private CertificateToken signingCertificateToken;
     
     private Date signingDate;
 
@@ -45,5 +49,6 @@ public class DataToSignRequest implements Serializable {
         setSignatureForm(parameters.getSignatureForm());
         setSignatureLevel(parameters.getSignatureLevel());
         setDigestAlgorithm(parameters.getDigestAlgorithm());
+        setSigningCertificateToken(DSSUtils.loadCertificateFromBase64EncodedString(signingCertificate));
     }
 }

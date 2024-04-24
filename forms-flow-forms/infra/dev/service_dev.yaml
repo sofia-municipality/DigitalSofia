@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: forms-flow-forms-svc
+  namespace: forms-flow-forms
+  labels:
+    app.kubernetes.io/name: forms
+spec:
+  selector:
+    app.kubernetes.io/name: forms
+  ports:
+    - name: forms-flow-forms-port
+      protocol: TCP
+      port: 3001
+      targetPort: 3001
+    

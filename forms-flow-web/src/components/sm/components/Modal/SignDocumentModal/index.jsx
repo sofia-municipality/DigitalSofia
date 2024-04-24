@@ -8,6 +8,7 @@ import {
   getDocumentToSign,
   signDocumentNexu,
 } from "../../../../../apiManager/services/documentSignServices";
+import { APPLICATION_STATUS_FORCED_ERROR } from "../../../../../constants/formEmbeddedConstants.js";
 
 import {
   SignDocumentContext,
@@ -22,7 +23,8 @@ import Error from "./steps/Error";
 import Sent from "./steps/Sent";
 import Loading from "./steps/Loading";
 import Rejected from "./steps/Rejected";
-import NexuInstructions from "./steps/NexuInstructions.jsx";
+import NexuInstructions from "./steps/NexuInstructions";
+import ApplicationStatusError from "./steps/ApplicationStatusError";
 
 const renderCurrentStep = ({ currentStep, ...rest }) => {
   switch (currentStep) {
@@ -38,6 +40,8 @@ const renderCurrentStep = ({ currentStep, ...rest }) => {
       return <Error {...rest} />;
     case STEPS.NEXU_INSTRUCTIONS:
       return <NexuInstructions {...rest} />;
+    case STEPS.APPLICATION_STATUS_ERROR:
+      return <ApplicationStatusError {...rest} />;
     case STEPS.LOADING:
       return <Loading />;
     default:
@@ -49,17 +53,20 @@ const SignDocumentModal = React.memo(
   ({
     modalOpen = false,
     params = {},
+    hideStatusModals = false,
     onInit = () => {},
+    onSubmit = () => {},
     closeModal = () => {},
     onSuccess = () => {},
     onSuccessClose = () => {},
     onReject = () => {},
     onRejectClose = () => {},
     onFormSubmissionError = () => {},
+    onFormSubmissionSuccess = () => {},
   }) => {
     const { signDocumentContext, setSignDocumentContext } =
       useContext(SignDocumentContext);
-    const { currentStep } = signDocumentContext;
+    const { currentStep, applicationStatusForcedError } = signDocumentContext;
     const {
       type = "evrotrust",
       referenceNumber,
@@ -67,6 +74,7 @@ const SignDocumentModal = React.memo(
       rejectModalTitle,
       rejectModalDescription,
       shouldSubmitOnPendingStatus,
+      redirectUrl,
     } = params;
 
     const onClose = () => {
@@ -81,11 +89,36 @@ const SignDocumentModal = React.memo(
         });
         signDocument(params)
           .then((res) => {
-            setSignDocumentContext({
-              currentStep: STEPS.SENT,
-              transactions: res?.response?.transactions,
-            });
-            onInit();
+            if (hideStatusModals && onSubmit) {
+              onSubmit()
+                .then(() => {
+                  onFormSubmissionSuccess && onFormSubmissionSuccess();
+                })
+                .catch((err) => {
+                  console.log(err);
+                  const isApplicationStatusForcedError =
+                    APPLICATION_STATUS_FORCED_ERROR.includes(err);
+
+                  if (isApplicationStatusForcedError) {
+                    setSignDocumentContext({
+                      currentStep: STEPS.APPLICATION_STATUS_ERROR,
+                      applicationStatusForcedError: err,
+                    });
+                  } else {
+                    onFormSubmissionError
+                      ? onFormSubmissionError(err)
+                      : setSignDocumentContext({
+                          currentStep: STEPS.ERROR,
+                        });
+                  }
+                });
+            } else {
+              setSignDocumentContext({
+                currentStep: STEPS.SENT,
+                transactions: res?.response?.transactions,
+              });
+              onInit();
+            }
           })
           .catch((err) => {
             console.log(err);
@@ -139,11 +172,24 @@ const SignDocumentModal = React.memo(
                                     })
                                     .catch((err) => {
                                       console.log(err);
-                                      onFormSubmissionError
-                                        ? onFormSubmissionError(err)
-                                        : setSignDocumentContext({
-                                            currentStep: STEPS.ERROR,
-                                          });
+                                      const isApplicationStatusForcedError =
+                                        APPLICATION_STATUS_FORCED_ERROR.includes(
+                                          err
+                                        );
+
+                                      if (isApplicationStatusForcedError) {
+                                        setSignDocumentContext({
+                                          currentStep:
+                                            STEPS.APPLICATION_STATUS_ERROR,
+                                          applicationStatusForcedError: err,
+                                        });
+                                      } else {
+                                        onFormSubmissionError
+                                          ? onFormSubmissionError(err)
+                                          : setSignDocumentContext({
+                                              currentStep: STEPS.ERROR,
+                                            });
+                                      }
                                     });
                                 }
                               } catch (err) {
@@ -213,6 +259,8 @@ const SignDocumentModal = React.memo(
           rejectModalDescription,
           shouldSubmitOnPendingStatus,
           onFormSubmissionError,
+          redirectUrl,
+          applicationStatusForcedError,
         })}
       </Modal>
     ) : null;

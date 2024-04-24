@@ -14,7 +14,8 @@ public class SupportPhonePages {
     EXISTS("phoneNumberExists"),
     ABUSED("abusedMessageService") ,
     NOT_MATCH("phoneTokenCodeDoesNotMatch"),
-    FAIL("sendVerificationCodeFail");
+    FAIL("sendVerificationCodeFail"),
+    AUTH_CANCELLED("authCancelled");
 
 
     private final String errorMessage;

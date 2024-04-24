@@ -20,7 +20,15 @@ jest.mock("@formsflow/service", () => ({
       AUTH_TOKEN: "",
     },
   },
+  TranslationsService: {
+    getFormTranslations: () => ({})
+  }
 }));
+
+jest.mock('react-responsive', () => ({
+  useMediaQuery: () => ({})
+}));
+
 let store;
 
 beforeEach(() => {

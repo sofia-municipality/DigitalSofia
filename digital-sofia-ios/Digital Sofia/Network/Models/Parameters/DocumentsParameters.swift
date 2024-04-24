@@ -8,13 +8,13 @@
 import Foundation
 
 struct DocumentsParameters {
-    var statuses: [DocumentStatus]?
+    var statuses: [DocumentStatus]
     var cursor: String?
     
     func getDictionary() -> [String: Any] {
-        let statusString = statuses?.map({ $0.rawValue }).joined(separator: ",")
+        let statusString = statuses.map({ $0.rawValue }).joined(separator: ",")
         
-        return ["status": statusString ?? "",
+        return ["status": statusString,
                 "cursor": cursor ?? ""]
     }
 }

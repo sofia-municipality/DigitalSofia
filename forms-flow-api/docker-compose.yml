@@ -1,0 +1,78 @@
+version: '3.7'
+
+services:
+  forms-flow-webapi-db:
+    image: postgres:11
+    environment:
+      POSTGRES_USER: ${FORMSFLOW_API_DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${FORMSFLOW_API_DB_PASSWORD:-changeme}
+      POSTGRES_DB: ${FORMSFLOW_API_DB_NAME:-webapi}
+    ports:
+      - '6432:5432'
+    restart: unless-stopped
+    volumes:
+      - ./postgres/webapi:/var/lib/postgresql/data
+    networks:
+      - forms-flow-webapi-network
+
+  forms-flow-webapi:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - forms-flow-webapi-db
+    entrypoint: "/wait-for-service.sh forms-flow-webapi-db:5432 -s -- ./entrypoint.sh"
+    ports:
+      - '5000:5000'
+      - '5678:5678'
+    volumes:
+      - ./:/app:rw
+      - ./documents/acstre:/var/lib/documents
+    environment:
+      INSIGHT_API_KEY: ${INSIGHT_API_KEY}
+      INSIGHT_API_URL: ${INSIGHT_API_URL}
+      DATABASE_URL: ${FORMSFLOW_API_DB_URL:-postgresql://postgres:changeme@forms-flow-webapi-db:5432/webapi}
+      BPM_TOKEN_API: ${KEYCLOAK_URL}/auth/realms/${KEYCLOAK_URL_REALM:-eServices}/protocol/openid-connect/token
+      BPM_CLIENT_ID: ${KEYCLOAK_BPM_CLIENT_ID:-forms-flow-bpm}
+      BPM_CLIENT_SECRET: ${KEYCLOAK_BPM_CLIENT_SECRET:-e4bdbd25-1467-4f7f-b993-bc4b1944c943}
+      BPM_API_URL: ${BPM_API_URL}
+      FORMSFLOW_API_CORS_ORIGINS: ${FORMSFLOW_API_CORS_ORIGINS:-*}
+      JWT_OIDC_WELL_KNOWN_CONFIG: ${KEYCLOAK_URL}/auth/realms/${KEYCLOAK_URL_REALM:-eServices}/.well-known/openid-configuration
+      JWT_OIDC_JWKS_URI: ${KEYCLOAK_URL}/auth/realms/${KEYCLOAK_URL_REALM:-eServices}/protocol/openid-connect/certs
+      JWT_OIDC_ISSUER: ${KEYCLOAK_URL}/auth/realms/${KEYCLOAK_URL_REALM:-eServices}
+      JWT_OIDC_AUDIENCE: ${KEYCLOAK_WEB_CLIENT_ID:-forms-flow-web}
+      JWT_OIDC_CACHING_ENABLED: 'True'
+      KEYCLOAK_URL: ${KEYCLOAK_URL}
+      KEYCLOAK_URL_REALM: ${KEYCLOAK_URL_REALM:-eServices}
+      EFORM_INTEGRATIONS_URL: ${EFORM_INTEGRATIONS_URL}
+      WEB_API_BASE_URL: ${FORMSFLOW_API_URL}
+      WEB_BASE_URL: ${WEB_BASE_URL:-null}
+      FORMIO_URL: ${FORMIO_DEFAULT_PROJECT_URL}
+      FORMIO_WEB_URL: ${FORMIO_WEB_URL}
+      FORMIO_ROOT_EMAIL: ${FORMIO_ROOT_EMAIL:-admin@example.com}
+      FORMIO_ROOT_PASSWORD: ${FORMIO_ROOT_PASSWORD:-changeme}
+      FORMIO_JWT_SECRET: ${FORMIO_JWT_SECRET:---- change me now ---}
+      MULTI_TENANCY_ENABLED: ${MULTI_TENANCY_ENABLED:-false}
+      KEYCLOAK_ENABLE_CLIENT_AUTH: ${KEYCLOAK_ENABLE_CLIENT_AUTH:-false}
+      FORM_EMBED_JWT_SECRET: ${FORM_EMBED_JWT_SECRET:-f6a69a42-7f8a-11ed-a1eb-0242ac120002}
+      EVROTRUST_IDENTITY_REQUESTS_MAX_RETRIES: ${EVROTRUST_IDENTITY_REQUESTS_MAX_RETRIES:-15}
+      EVROTRUST_IDENTITY_AUTHENTICATE_TIMEOUT: ${EVROTRUST_IDENTITY_AUTHENTICATE_TIMEOUT:-3}
+      OTHER_FILE_DESTINATION: ${OTHER_FILE_DESTINATION}
+      MOBILE_LOGS_FILE_DESTINATION: ${MOBILE_LOGS_FILE_DESTINATION}
+      EUROTRUST_IDENTITY_TIMEOUT: 30
+
+    stdin_open: true # -i
+    tty: true # -t
+    networks:
+      - forms-flow-webapi-network
+    extra_hosts:
+      - "forms-flow-eforms-integrations-dev:212.73.136.24"
+
+networks:
+  forms-flow-webapi-network:
+    driver: 'bridge'
+
+volumes:
+  mdb-data:
+  macstre-data:

@@ -83,3 +83,75 @@ export const useHandleNavResize = () => {
 
   return setNavRef;
 };
+
+export const useSyncEnvVars = () => {
+  useEffect(() => {
+    if (
+      process?.env?.NODE_ENV === "development" &&
+      !Object.keys(window?._env_ || {}).length
+    ) {
+      window._env_ = process.env;
+    }
+  }, []);
+};
+
+export const useOpenCloseAllItems = (itemsLength) => {
+  const [openCloseAll, setOpenCloseAll] = useState(0);
+  const [shouldOpenCloseAll, setShouldOpenCloseAll] = useState();
+  const [expandedItemsCount, setExpandedItemsCount] = useState(0);
+
+  const forceOpenAll = useCallback(() => {
+    setShouldOpenCloseAll("open");
+    setOpenCloseAll(1);
+    setExpandedItemsCount(itemsLength);
+  }, [itemsLength]);
+
+  const forceCloseAll = useCallback(() => {
+    setShouldOpenCloseAll("close");
+    setOpenCloseAll(0);
+    setExpandedItemsCount(0);
+  }, []);
+
+  const onOpenCloseAllClick = () => {
+    if (shouldOpenCloseAll !== "open") {
+      setShouldOpenCloseAll("open");
+      setExpandedItemsCount(itemsLength);
+      if (openCloseAll < 0) {
+        setOpenCloseAll(1);
+      } else {
+        setOpenCloseAll((state) => state + 1);
+      }
+    } else {
+      setShouldOpenCloseAll("close");
+      setExpandedItemsCount(0);
+      if (openCloseAll > 1) {
+        setOpenCloseAll(0);
+      } else {
+        setOpenCloseAll((state) => state - 1);
+      }
+    }
+  };
+
+  const onExpand = (isExpanded) => {
+    const nexExpandedItemsCount = isExpanded
+      ? expandedItemsCount + 1
+      : expandedItemsCount - 1;
+
+    if (nexExpandedItemsCount === itemsLength) {
+      setShouldOpenCloseAll("open");
+    } else {
+      setShouldOpenCloseAll("close");
+    }
+
+    setExpandedItemsCount(nexExpandedItemsCount);
+  };
+
+  return {
+    openCloseAll,
+    shouldOpenCloseAll,
+    forceOpenAll,
+    forceCloseAll,
+    onOpenCloseAllClick,
+    onExpand,
+  };
+};

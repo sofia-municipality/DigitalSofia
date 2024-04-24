@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import List from "./List";
@@ -22,7 +22,7 @@ const CreateFormRoute = ({ component: Component, ...rest }) => (
       if (user.includes(STAFF_DESIGNER)) {
         return <Component {...props} />;
       } else {
-        return <>Unauthorized</>;
+        return <Redirect exact to="/404" />;
       }
     }}
   />
@@ -34,7 +34,20 @@ const FormSubmissionRoute = ({ component: Component, ...rest }) => (
       user.includes(STAFF_REVIEWER) || user.includes(CLIENT) ? (
         <Component {...props} />
       ) : (
-        <>Unauthorized</>
+        <Redirect exact to="/404" />
+      )
+    }
+  />
+);
+
+const FormListRoute = ({ component: Component, ...rest }) => (
+  <Route
+    {...rest}
+    render={(props) =>
+      user.includes(STAFF_DESIGNER) ? (
+        <Component {...props} />
+      ) : (
+        <Redirect exact to="/404" />
       )
     }
   />
@@ -49,7 +62,7 @@ export default React.memo(() => {
   return (
     <div data-testid="Form-index">
       <Switch>
-        <Route exact path={`${BASE_ROUTE}form`} component={List} />
+        <FormListRoute exact path={`${BASE_ROUTE}form`} component={List} />
         <CreateFormRoute
           path={`${BASE_ROUTE}formflow/:formId?/:step?`}
           component={Stepper}

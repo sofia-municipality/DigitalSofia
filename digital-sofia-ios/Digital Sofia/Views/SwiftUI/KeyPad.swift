@@ -9,16 +9,18 @@ import SwiftUI
 
 struct KeyPad: View {
     @Binding var string: String
+    @Binding var isRecording: Bool
+    
     var limit: Int?
     var shouldShowBiometrics: Bool = false
     var didClickOnBiometrics: (() -> ())?
     
     var body: some View {
         VStack {
-            KeyPadRow(keys: ["1", "2", "3"])
-            KeyPadRow(keys: ["4", "5", "6"])
-            KeyPadRow(keys: ["7", "8", "9"])
-            KeyPadRow(keys: [" ", "0", "⌫"], shouldShowBiometrics: shouldShowBiometrics)
+            KeyPadRow(keys: ["1", "2", "3"], isRecording: $isRecording)
+            KeyPadRow(keys: ["4", "5", "6"], isRecording: $isRecording)
+            KeyPadRow(keys: ["7", "8", "9"], isRecording: $isRecording)
+            KeyPadRow(keys: [" ", "0", "⌫"], shouldShowBiometrics: shouldShowBiometrics, isRecording: $isRecording)
         }.environment(\.keyPadButtonAction, self.keyWasPressed(_:))
     }
     
@@ -52,11 +54,12 @@ extension EnvironmentValues {
 struct KeyPadRow: View {
     var keys: [String]
     var shouldShowBiometrics: Bool = false
+    @Binding var isRecording: Bool
     
     var body: some View {
-        HStack {
+        HStack(spacing: 0) {
             ForEach(keys, id: \.self) { key in
-                KeyPadButton(key: key, shouldShowBiometrics: shouldShowBiometrics)
+                KeyPadButton(key: key, shouldShowBiometrics: shouldShowBiometrics, isRecording: $isRecording)
             }
         }
     }
@@ -65,6 +68,7 @@ struct KeyPadRow: View {
 struct KeyPadButton: View {
     var key: String
     var shouldShowBiometrics: Bool = false
+    @Binding var isRecording: Bool
     
     var body: some View {
         Button(action: { self.action(self.key) }) {
@@ -84,7 +88,9 @@ struct KeyPadButton: View {
                 getKey(key: key)
             }
         }
-        .padding(.all, AppConfig.Dimensions.Padding.XL)
+        .buttonStyle(StaticButtonStyle(isRecording: isRecording))
+        .padding([.top, .bottom], AppConfig.Dimensions.Padding.medium)
+        .padding([.leading, .trailing], AppConfig.Dimensions.Padding.large / 2)
     }
     
     private func getKey(key: String) -> some View {
@@ -99,4 +105,13 @@ struct KeyPadButton: View {
     }
     
     @Environment(\.keyPadButtonAction) var action: (String) -> Void
+}
+
+struct StaticButtonStyle: ButtonStyle {
+    var isRecording: Bool
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity((configuration.isPressed && !isRecording) ? 0.5 : 1.0)
+    }
 }

@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import AdministrationContainer from "../../AdministrationContainer";
+import AdministrationContainer from "../../../AdministrationContainer";
 import { useTranslation } from "react-i18next";
 import { Form, Button, Row, Col } from "react-bootstrap";
 

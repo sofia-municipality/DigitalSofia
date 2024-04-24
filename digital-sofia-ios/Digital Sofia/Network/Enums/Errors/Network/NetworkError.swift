@@ -7,7 +7,8 @@
 
 import Foundation
 
-public enum NetworkError: Error {
+public enum NetworkError: Error, Comparable {
+    // SERVER
     case unknown
     case `internal`
     case notFound
@@ -17,6 +18,15 @@ public enum NetworkError: Error {
     case parsing
     case badRequest
     case tokenExpired
+    case noInternetConnection
+    case timeOut
+    
+    // VALIDATION
+    case invalidUserData
+    case invalidUser
+    case logoutCountExceeded
+    
+    // GENERAL
     case message(String)
     
     public var description: String {
@@ -39,6 +49,14 @@ public enum NetworkError: Error {
             return AppConfig.ErrorLocalisations.Network.parsing.localized
         case .tokenExpired:
             return AppConfig.ErrorLocalisations.Network.tokenExpired.localized
+        case .noInternetConnection:
+            return AppConfig.ErrorLocalisations.Network.noInternetConnection.localized
+        case .timeOut:
+            return AppConfig.ErrorLocalisations.Network.noInternetConnection.localized
+        case .invalidUserData, .invalidUser:
+            return AppConfig.ErrorLocalisations.Network.invalidUserData.localized
+        case .logoutCountExceeded:
+            return AppConfig.ErrorLocalisations.Network.logoutCountExceeded.localized
         case .message(let message):
             return message
         }
@@ -60,6 +78,18 @@ public enum NetworkError: Error {
             return NetworkError.internal
         default:
             return NetworkError.unknown
+        }
+    }
+    
+    public var serverErrorDescription: String {
+        switch self {
+        case .logoutCountExceeded:
+            return "Login count exceeded!"
+        case .invalidUserData:
+            return "invalid user data"
+        case .invalidUser:
+            return "User does not exist!"
+        default: return ""
         }
     }
 }

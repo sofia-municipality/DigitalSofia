@@ -26,3 +26,10 @@ extension View {
         }
     }
 }
+
+extension View {
+    var name: String {
+        let fullName = String(describing: self)
+        return fullName.components(separatedBy: "(").first ?? ""
+    }
+}

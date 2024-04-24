@@ -8,12 +8,12 @@
 import LocalAuthentication
 
 class BiometricProvider {
+    static let context = LAContext()
+    
     static var biometricType: BiometricType {
         let authContext = LAContext()
         let _ = authContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil)
         switch(authContext.biometryType) {
-        case .none:
-            return .none
         case .touchID:
             return .touch
         case .faceID:
@@ -23,14 +23,17 @@ class BiometricProvider {
         }
     }
     
+    static var biometricsAvailable: Bool {
+        var error: NSError?
+        return context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
+    }
+    
     static func authenticate(completion: @escaping (Bool, BiometricError?) -> ()) {
-        let context = LAContext()
         var error: NSError?
         
         if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            let reason = "We need to unlock your data."
-            
-            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, authenticationError in
+            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics,
+                                   localizedReason: AppConfig.UI.Permissions.biometricts.localized) { success, authenticationError in
                 if success {
                     completion(success, nil)
                 } else {

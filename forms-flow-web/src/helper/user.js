@@ -1,4 +1,10 @@
-import { STAFF_REVIEWER, STAFF_DESIGNER } from "../constants/constants";
+import {
+  STAFF_REVIEWER,
+  STAFF_DESIGNER,
+  ADMIN,
+  PAGE_ADMIN,
+  ANALYTICS_VIEWER,
+} from "../constants/constants";
 import { GROUPS } from "../constants/groupConstants";
 import { featureFlags } from "../featureToogle";
 
@@ -17,10 +23,16 @@ export const userAccessGroupCheck = {
 
 const getUserRoleName = (userRoles) => {
   let role = "";
-  if (userRoles.includes(STAFF_REVIEWER)) {
+  if (userRoles.includes(ADMIN)) {
+    role = "ADMIN";
+  } else if (userRoles.includes(STAFF_REVIEWER)) {
     role = "REVIEWER";
   } else if (userRoles.includes(STAFF_DESIGNER)) {
     role = "DESIGNER";
+  } else if (userRoles.includes(PAGE_ADMIN)) {
+    role = "Marketing Admin";
+  } else if (userRoles.includes(ANALYTICS_VIEWER)) {
+    role = "Analytics Admin";
   } else {
     role = "CLIENT";
   }

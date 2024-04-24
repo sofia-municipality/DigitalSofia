@@ -37,7 +37,12 @@ const AddressSection = ({
         </SmAnimatedCta>
       </div>
       <div className={`col-md-6 ${styles.addrMap}`}>
-        <img src={image} className={styles.addrImg} alt="" />
+        <img
+          src={image}
+          className={styles.addrImg}
+          alt=""
+          data-testid="address-section-image"
+        />
       </div>
     </div>
   </section>

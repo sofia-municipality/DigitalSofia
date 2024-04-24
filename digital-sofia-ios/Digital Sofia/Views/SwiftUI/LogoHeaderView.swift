@@ -20,7 +20,6 @@ struct LogoHeaderView: View {
                 Spacer()
             }
             .padding([.top, .bottom], AppConfig.Dimensions.Padding.XL)
-            .frame(width: .infinity)
             
             if hideTitle == false {
                 Text(AppConfig.UI.Text.welcomeToDigitalSofiaText.localized)

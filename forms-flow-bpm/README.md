@@ -89,6 +89,8 @@ To know more about Camunda, visit https://camunda.com/.
  --- | --- | --- | ---
  `FORMSFLOW_API_URL`:triangular_flag_on_post:|formsflow.ai Rest API URI||`http://{your-ip-address}:5000`
  `FORMIO_DEFAULT_PROJECT_URL`:triangular_flag_on_post:|The URL of the forms-flow-forms server||`http://{your-ip-address}:3001`
+ `FORMIO_ROOT_EMAIL`|forms-flow-forms admin login|eg. admin@example.com|`admin@example.com`
+ `FORMIO_ROOT_PASSWORD`|forms-flow-forms admin password|eg.changeme|`changeme`
  `WEBSOCKET_SECURITY_ORIGIN` :triangular_flag_on_post:|Camunda task event streaming, for multiple origins you can separate them using a comma |eg:`host1, host2`| `http://{your-ip-address}:3000`
  `WEBSOCKET_MESSAGE_TYPE`|Camunda task event streaming. Message type ||`TASK_EVENT`
  `WEBSOCKET_ENCRYPT_KEY`|Camunda task event streaming. AES encryption of token||`giert989jkwrgb@DR55`
@@ -142,7 +144,9 @@ To know more about Camunda, visit https://camunda.com/.
    CURL commands are leveraged for this action. 
    
    ##### 1. Generate token using elevated user or service-client credentials
-
+```   
+      export token=`curl -X POST "{your keycloak url}/auth/realms/{realm}/protocol/openid-connect/token" -H "Content-Type: application/x-www-form-urlencoded" -d "username=test" -d "password=test" -d "grant_type=password" -d "client_id=forms-flow-bpm" -d "client_secret=xxxxxxxxxxxxxx" | jq -r ".access_token"`
+```
    ##### 2. Post the process as file with HTTP verb POST.
 ```
    curl -H "Authorization: Bearer ${token}" -H "Accept: application/json" -F "deployment-name=One Step Approval" -F "enable-duplicate-filtering=false" -F "deploy-changed-only=falses" -F "one_step_approval.bpmnn=@one_step_approval.bpmn"  http://{your-ip-address}:8000/camunda/engine-rest/deployment/create

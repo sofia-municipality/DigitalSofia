@@ -14,7 +14,10 @@ class LottieLoadingUIView: UIView {
             lottieAnimationView?.loopMode = .loop
             lottieAnimationView?.contentMode = .scaleAspectFit
             lottieAnimationView?.play()
-            addSubview(lottieAnimationView!)
+            
+            if let lottieAnimationView  = lottieAnimationView {
+                addSubview(lottieAnimationView)
+            }
         }
     }
     
@@ -32,14 +35,13 @@ class LottieLoadingUIView: UIView {
     
     private func setupView() {
         backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        
         lottieAnimationView = LottieAnimationView(name: "loading")
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        lottieAnimationView?.frame = bounds
-        lottieAnimationView?.transform = CGAffineTransform(scaleX: 0.2, y: 0.2)
+        lottieAnimationView?.frame = CGRect(origin: .zero, size: CGSize(width: frame.width * 0.2, height: frame.height * 0.2))
+        lottieAnimationView?.center = center
     }
 }

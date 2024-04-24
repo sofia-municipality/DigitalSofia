@@ -15,7 +15,9 @@ struct EvrotrustEditAndIdentifyView: UIViewControllerRepresentable {
     var completion: EvrotrustViewCompletion?
     
     fileprivate var editVC = Evrotrust.sdk()?.createEvrotrustEditAndIdentifyViewController()
-    fileprivate let user = UserProvider.shared.getUser()
+    fileprivate var user: User? {
+        return UserProvider.currentUser
+    }
     
     init(completion: EvrotrustViewCompletion?) {
         self.completion = completion
@@ -23,8 +25,10 @@ struct EvrotrustEditAndIdentifyView: UIViewControllerRepresentable {
     
     func makeUIViewController(context: Context) -> some UIViewController {
         if let editVC = editVC {
-            editVC.securityContext = user?.securityContext
+            let securityContext = user?.securityContext ?? ""
+            editVC.securityContext = securityContext
             editVC.editPersonalDataDelegate = context.coordinator
+            LoggingHelper.logSDKEditUserStart(securityContext: securityContext)
             
             return editVC as UIViewController
         }
@@ -48,17 +52,18 @@ final class EvrotrustEditAndIdentifyViewCoordinator: NSObject, EvrotrustEditPers
     }
     
     func evrotrustEditPersonalDataDidFinish(_ result: EvrotrustEditPersonalDataResult!) {
+        LoggingHelper.logSDKEditUserResult(result: result)
         switch result.status {
         case EvrotrustResultStatus.OK:
             parent.completion?(true, nil)
         case .errorInput:
-            parent.completion?(false, EvrotrustError.errorInput)
+            parent.completion?(false, .errorInput)
         case .userCanceled:
-            parent.completion?(false, EvrotrustError.userCancelled)
+            parent.completion?(false, .userCancelled)
         case .userNotSetUp:
-            parent.completion?(false, EvrotrustError.userNotSetUp)
+            parent.completion?(false, .userNotSetUp)
         case .sdkNotSetUp:
-            parent.completion?(false, EvrotrustError.sdkNotSetUp)
+            EvrotrustError.sdkNotSetupHandler()
         default: break
         }
     }

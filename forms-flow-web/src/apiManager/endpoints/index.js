@@ -97,6 +97,9 @@ const API = {
   APPLICATION_LIST: `${WEB_BASE_URL}/authorizations/application`,
   HANDLE_AUTHORIZATION_FOR_DESIGNER: `${WEB_BASE_URL}/authorizations/resource/<resource_id>`,
   APPLICATION_WITHDRAW: `${WEB_BASE_URL}/application/<application_id>/withdraw/<role>`,
+  PAY_TAX_DATA: `${WEB_BASE_URL}/agentws/payment-request`,
+  GET_PAY_TAX_GROUP_DATA: `${WEB_BASE_URL}/agentws/obligation`,
+  GET_PAY_TAX_DATA: `${WEB_BASE_URL}/agentws/obligation/<taxGroupId>`,
 };
 
 export default API;

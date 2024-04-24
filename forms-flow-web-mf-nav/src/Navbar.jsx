@@ -5,12 +5,13 @@ import { getUserRoleName, getUserRolePermission } from "./helper/user";
 import createURLPathMatchExp from "./helper/regExp/pathMatch";
 import { useTranslation } from "react-i18next";
 import {
-  CLIENT,
   STAFF_REVIEWER,
   APPLICATION_NAME,
   STAFF_DESIGNER,
   MULTITENANCY_ENABLED,
   ADMIN_ROLE,
+  PAGE_ADMIN,
+  ANALYTICS_VIEWER,
   ENABLE_FORMS_MODULE,
   ENABLE_PROCESSES_MODULE,
   ENABLE_DASHBOARDS_MODULE,
@@ -246,8 +247,7 @@ const NavBar = React.memo(({ props }) => {
                     : null}
 
                   {showApplications
-                    ? getUserRolePermission(userRoles, STAFF_REVIEWER) ||
-                      getUserRolePermission(userRoles, CLIENT)
+                    ? getUserRolePermission(userRoles, ADMIN_ROLE)
                       ? ENABLE_APPLICATIONS_MODULE && (
                           <Nav.Link
                             as={Link}
@@ -291,7 +291,7 @@ const NavBar = React.memo(({ props }) => {
                       )
                     : null}
 
-                  {getUserRolePermission(userRoles, STAFF_REVIEWER)
+                  {getUserRolePermission(userRoles, ANALYTICS_VIEWER)
                     ? ENABLE_DASHBOARDS_MODULE && (
                         <Nav.Link
                           as={Link}
@@ -314,7 +314,7 @@ const NavBar = React.memo(({ props }) => {
                         </Nav.Link>
                       )
                     : null}
-                    {getUserRolePermission(userRoles, STAFF_DESIGNER)
+                    {getUserRolePermission(userRoles, PAGE_ADMIN)
                       ? ENABLE_TRANSLATIONS_ADMINISTRATION_MODULE && (
                           <Nav.Link
                             as={Link}

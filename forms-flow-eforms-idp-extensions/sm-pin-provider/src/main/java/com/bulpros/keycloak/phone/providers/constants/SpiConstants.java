@@ -7,6 +7,7 @@ public class SpiConstants {
     public final static String PHONE_NUMBER = "phoneNumber";
     public final static String VERIFIED = "isVerified";
     public final static String FCM = "fcm";
+    public final static String LOG_LEVEL = "logLevel";
     public final static String EVROTRUST_EMAIL = "evrotrustEmail";
     //   Prefixes
     public final static String PNOBG_PREFIX = "PNOBG-";

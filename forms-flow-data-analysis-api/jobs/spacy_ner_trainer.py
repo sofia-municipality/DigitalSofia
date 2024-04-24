@@ -93,9 +93,9 @@ def upload_to_database(model_path: str):
         conn = psycopg2.connect(**{
             'host': 'localhost',
             'port': '5432',
-            'dbname': '',
-            'user': '',
-            'password': ''
+            'dbname': 'postgres',
+            'user': 'postgres',
+            'password': 'aot123'
         })
         print(conn)
         cur = conn.cursor()

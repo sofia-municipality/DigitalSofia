@@ -23,6 +23,7 @@ const AddressRegistrationCard = ({
   formName,
   formPath = "",
   status,
+  resultingCertificateUrl,
   formioApplicationStatus,
   entryNumber,
   address,
@@ -43,12 +44,14 @@ const AddressRegistrationCard = ({
   trusteeInvitationExpiredDate,
   ownerInvitationWithdrawnDate,
   trusteeInvitationWithdrawnDate,
+  paymentCode,
   processInstanceId,
   stepsCount = 8,
   onDelete = () => {},
   onInvitationResend = () => {},
   onWithdraw = () => {},
   onSubmissionResend = () => {},
+  onPayInitiated = () => {},
 }) => {
   const { t } = useTranslation();
   const props = useGetAddressCardProps({
@@ -60,6 +63,7 @@ const AddressRegistrationCard = ({
     formId,
     submissionId,
     behalf,
+    resultingCertificateUrl,
     onDelete,
     property,
     childCustody,
@@ -79,10 +83,12 @@ const AddressRegistrationCard = ({
     trusteeInvitationExpiredDate,
     ownerInvitationWithdrawnDate,
     trusteeInvitationWithdrawnDate,
+    paymentCode,
     onInvitationResend,
     processInstanceId,
     onWithdraw,
     onSubmissionResend,
+    onPayInitiated,
   });
   if (!Object.keys(props).length) {
     return null;

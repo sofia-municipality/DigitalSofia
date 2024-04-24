@@ -7,8 +7,11 @@ metadata:
     app.kubernetes.io/name: forms
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
+  strategy: 
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: forms
@@ -22,10 +25,10 @@ spec:
       containers:
         - name: form-flow-forms
           image: formsflow/forms-flow-forms:v5.1.0
-          lifecycle:
-            postStart:
-              exec:
-                command: ["/bin/sh", "-c", "echo '140.82.121.4 github.com ' >> /etc/hosts && echo '140.82.121.9 codeload.github.com' >> /etc/hosts" ]
+         # lifecycle:
+         #   postStart:
+         #     exec:
+         #       command: ["/bin/sh", "-c", "echo '140.82.121.4 github.com ' >> /etc/hosts && echo '140.82.121.9 codeload.github.com' >> /etc/hosts" ]
           stdin: true 
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
@@ -34,28 +37,36 @@ spec:
             - containerPort: 3001
               name: http
               protocol: TCP
+          volumeMounts:
+            - mountPath: /mnt/external-services/acstre/documents
+              name: documents
           env:
             - name: DEBUG
               value: "*"
             - name: FORMIO_DB_USERNAME
               value: "formsio"
             - name: FORMIO_DB_PASSWORD
-              value: ""
+              value: "WhN3c5meUb"
             - name: FORMIO_DB_DATABASE
-              value: ""
+              value: "formsiodbdev"
             - name: ROOT_EMAIL
-              value: ""
+              value: "iiliev@digitall.com"
             - name: ROOT_PASSWORD
-              value: ""
+              value: "fd1cnUW2Rp608S2"
             - name: FORMIO_CLIENT_UI
               value: "true" 
             - name: FORMIO_DOMAIN
-              value: "http://forms-dev-eservices.egov.bg"
+              value: "https://forms-dev-eservices.egov.bg"
             - name: FORMIO_JWT_SECRET
-              value: ""
+              value: "test-secret"
             - name: FORMIO_JWT_EXPIRE
               value: "240"
             - name: MULTI_TENANCY_ENABLED
-              value: "false"
+              value: "true"
             - name: NODE_CONFIG
               value: "{\"mongo\":\"mongodb://formsio:WhN3c5meUb@172.23.230.134:27017/formsiodbdev\"}"
+      volumes:
+       - name: documents
+         nfs:
+           path: /pvc/documents
+           server: 172.23.230.140

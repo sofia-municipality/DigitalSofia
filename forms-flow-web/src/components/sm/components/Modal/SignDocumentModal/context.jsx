@@ -8,6 +8,7 @@ export const STEPS = {
   LOADING: "loading",
   REJECTED: "rejected",
   NEXU_INSTRUCTIONS: "nexu_instructions",
+  APPLICATION_STATUS_ERROR: "application_status_error",
 };
 
 const SignDocumentContext = createContext({});

@@ -26,23 +26,30 @@ struct CustomMenuView: View {
                 Image(ImageProvider.close)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .frame(width: AppConfig.Dimensions.Padding.XL, height: AppConfig.Dimensions.Padding.XL)
+                    .frame(width: AppConfig.Dimensions.Padding.XL,
+                           height: AppConfig.Dimensions.Padding.XL)
             }
             .padding(.top, AppConfig.Dimensions.Padding.XL)
             .onTapGesture {
                 presentView = false
             }
             
-            createSettingsMenuRow(title: AppConfig.UI.Titles.Screens.settings.localized, image: ImageProvider.settings, action: {
+            createSettingsMenuRow(title: AppConfig.UI.Titles.Screens.settings.localized,
+                                  image: ImageProvider.settings,
+                                  action: {
                 showSettings = true
             })
             
             createSeparator()
             
-            createSettingsMenuRow(title: AppConfig.UI.Menu.faq.localized, image: ImageProvider.faqIcon, small: true, action: {
+            createSettingsMenuRow(title: AppConfig.UI.Menu.faq.localized,
+                                  image: ImageProvider.faqIcon, small: true,
+                                  action: {
                 showFAQ = true
             })
-            createSettingsMenuRow(title: AppConfig.UI.Menu.contacts.localized, image: ImageProvider.contactIcon, small: true, action: {
+            createSettingsMenuRow(title: AppConfig.UI.Menu.contacts.localized,
+                                  image: ImageProvider.contactIcon, small: true,
+                                  action: {
                 showContacts = true
             })
             
@@ -52,7 +59,9 @@ struct CustomMenuView: View {
                 showPP = true
             }) {
                 Text(AppConfig.UI.Menu.privacyPolicy.localized)
-                    .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.small))
+                    .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans,
+                                                weight: DSFonts.FontWeight.regular,
+                                                size: DSFonts.FontSize.small))
                     .foregroundColor(DSColors.Text.indigoDark)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
@@ -66,7 +75,9 @@ struct CustomMenuView: View {
         
         return HStack() {
             Text(title)
-                .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.XL))
+                .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans,
+                                            weight: DSFonts.FontWeight.regular,
+                                            size: DSFonts.FontSize.XL))
                 .minimumScaleFactor(0.01)
                 .foregroundColor(DSColors.Text.indigoDark)
                 .frame(maxWidth: .infinity, alignment: .trailing)

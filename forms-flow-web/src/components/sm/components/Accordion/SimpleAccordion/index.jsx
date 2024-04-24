@@ -15,17 +15,16 @@ const SimpleAccordion = ({
   className,
   expandedClassName = "",
   borderClassName = "",
+  onExpand,
 }) => {
   const accordionHeaderId = `accordion-header-${id}`;
   const accordionContentId = `accordion-panel-${id}`;
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    if (forceOpenClose === "open") {
+    if (forceOpenClose > 0) {
       setIsExpanded(true);
-    }
-
-    if (forceOpenClose === "close") {
+    } else {
       setIsExpanded(false);
     }
   }, [forceOpenClose]);
@@ -42,7 +41,10 @@ const SimpleAccordion = ({
           className={styles.accordionCta}
           as={Button}
           eventKey="0"
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={() => {
+            setIsExpanded(!isExpanded);
+            onExpand && onExpand(!isExpanded);
+          }}
           aria-expanded={isExpanded ? "true" : "false"}
           aria-controls={accordionContentId}
         >

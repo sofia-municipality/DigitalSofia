@@ -23,7 +23,7 @@ public class EvrotrustUnknownStatusErrorHandler {
         Message msg = exchange.getMessage();
         ExceptionBody exceptionBody;
         UnknownHttpStatusCodeException exception = ((UnknownHttpStatusCodeException) throwable);
-        if (exception.getRawStatusCode() == 443) {
+        if (exception.getRawStatusCode() == 443 || exception.getRawStatusCode() == 438) {
             exceptionBody = ExceptionBody.builder()
                     .status(HttpStatus.NOT_FOUND.value())
                     .error(HttpStatus.NOT_FOUND.getReasonPhrase())

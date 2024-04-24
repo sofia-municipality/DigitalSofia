@@ -8,9 +8,10 @@
 import Foundation
 
 final class PINBlockProvider {
-    /// TODO: change block interval
+    private init() { }
+    
     enum PINBlockSeconds: Int {
-        case min = 30, med = 60, max = 600 //3600
+        case min = 30, med = 300, max = 3600
     }
     
     static let shared = PINBlockProvider()
@@ -31,8 +32,24 @@ final class PINBlockProvider {
         }
     }
     
-    var blockLength: Int {
+    private var blockLength: Int {
         return UserDefaults.standard.integer(forKey: AppConfig.UserDefaultsKeys.blockLength)
+    }
+    
+    var blockAlertMessage: String {
+        var message = ""
+        let type = PINBlockSeconds(rawValue: blockLength)
+        switch type {
+        case .min:
+            message = AppConfig.UI.Alert.BlockPin.secondsAlertText.localized.format(blockLength)
+        case .med:
+            message = AppConfig.UI.Alert.BlockPin.minutesAlertText.localized.format(blockLength.minutesFromSeconds)
+        case .max:
+            message = AppConfig.UI.Alert.BlockPin.hoursAlertText.localized.format(blockLength.hoursFromSeconds)
+        default: break
+        }
+        
+        return message
     }
     
     var isBlocked: Bool {
@@ -41,7 +58,7 @@ final class PINBlockProvider {
                 let isBlockedByDate = Date() < blockDate
                 
                 if isBlockedByDate == false {
-                    removeBlock()
+                    UserDefaults.standard.removeObject(forKey: AppConfig.UserDefaultsKeys.blockTime)
                 }
                 
                 return isBlockedByDate
@@ -53,7 +70,18 @@ final class PINBlockProvider {
         }
     }
     
-    func removeBlock() {
+    func resetBlock() {
         UserDefaults.standard.removeObject(forKey: AppConfig.UserDefaultsKeys.blockTime)
+        UserDefaults.standard.removeObject(forKey: AppConfig.UserDefaultsKeys.blockLength)
+    }
+}
+
+extension Int {
+    var minutesFromSeconds: Int {
+        return self / 60
+    }
+    
+    var hoursFromSeconds: Int {
+        return self / 60 / 60
     }
 }

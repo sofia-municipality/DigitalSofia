@@ -3,16 +3,19 @@ package com.bulpros.keycloak.phone.providers.rest;
 import com.bulpros.keycloak.phone.Utils;
 import com.bulpros.keycloak.phone.providers.constants.SpiConstants;
 import com.bulpros.keycloak.phone.providers.model.PersonIdentifierResponse;
+import com.google.common.base.Strings;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.annotations.cache.NoCache;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.UserModel;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-
 import java.util.Optional;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class PersonIdentifierResource {
 
@@ -33,12 +36,22 @@ public class PersonIdentifierResource {
                 session.getContext().getRealm(), //
                 String.format(SpiConstants.PNOBG_PREFIX + personIdentifier //
                 ));
+        PersonIdentifierResponse response = new PersonIdentifierResponse();
+
         if (users.isEmpty()) {
-            PersonIdentifierResponse response = new PersonIdentifierResponse(false);
-            return Response.ok(response, APPLICATION_JSON).build();
+            response.setUserExist(false);
+            response.setHasPin(false);
+            response.setHasContactInfo(false);
+            response.setVerified(false);
         } else {
-            PersonIdentifierResponse response = new PersonIdentifierResponse(true);
-            return Response.ok(response, APPLICATION_JSON).build();
+            response.setUserExist(true);
+            response.setHasPin(users.get().getFirstAttribute(SpiConstants.PIN) != null);
+            boolean contactInfo = Strings.isNullOrEmpty(users.get().getEmail()) || Strings.isNullOrEmpty(
+                    users.get().getFirstAttribute(SpiConstants.PHONE_NUMBER)) ? false : true;
+            response.setHasContactInfo(contactInfo);
+            response.setVerified(Boolean.TRUE.toString().equals(users.get().getFirstAttribute(SpiConstants.VERIFIED)));
         }
+        return Response.ok(response, APPLICATION_JSON).build();
     }
+
 }

@@ -8,6 +8,10 @@ import {
   STAFF_REVIEWER,
   STAFF_DESIGNER,
   PAGE_ADMIN,
+  ANALYTICS_VIEWER,
+  ADMIN,
+  ADMIN_ROLES,
+  MY_SERVICES_LOCAL_TAXES_ENABLED,
 } from "../constants/constants";
 import { PAGE_ROUTES } from "../constants/navigation";
 import { useGetBaseUrl } from "../customHooks";
@@ -49,6 +53,14 @@ const TranslationAdministration = lazy(() =>
 const MyServicesAddressRegistration = lazy(() =>
   import("./sm/pages/MyServices/AddressRegistration")
 );
+const MyServicesLocalTaxesAndFees = lazy(() =>
+  import("./sm/pages/MyServices/LocalTaxesAndFees")
+);
+
+const MyServicesLocalTaxesAndFeesDetails = lazy(() =>
+  import("./sm/pages/MyServices/LocalTaxesAndFees/Details")
+);
+
 const LocalTaxesAndFeesReference = lazy(() =>
   import("./sm/pages/RequestService/LocalTaxesAndFees/Reference")
 );
@@ -57,6 +69,7 @@ const LocalTaxesAndFeesPayment = lazy(() =>
 );
 const UserTask = lazy(() => import("./sm/pages/UserTask"));
 const Profile = lazy(() => import("./sm/pages/Profile"));
+const AdminPanelPage = lazy(() => import("./AdminPanel"));
 
 const PrivateRoute = React.memo((props) => {
   const isAuth = useSelector((state) => state.user.isAuthenticated);
@@ -125,15 +138,70 @@ const PrivateRoute = React.memo((props) => {
     [userRoles]
   );
 
-  const ClientReviewerRoute = useMemo(
+  const AnalyticsViewerRoute = useMemo(
     () =>
       ({ component: Component, ...rest }) =>
         (
           <Route
             {...rest}
             render={(props) =>
-              userRoles.includes(STAFF_REVIEWER) ||
+              userRoles.includes(ANALYTICS_VIEWER) ? (
+                <Component {...props} />
+              ) : (
+                <Redirect exact to="/404" />
+              )
+            }
+          />
+        ),
+    [userRoles]
+  );
+
+  const AdminRoute = useMemo(
+    () =>
+      ({ component: Component, ...rest }) =>
+        (
+          <Route
+            {...rest}
+            render={(props) =>
+              userRoles.includes(ADMIN) ? (
+                <Component {...props} />
+              ) : (
+                <Redirect exact to="/404" />
+              )
+            }
+          />
+        ),
+    [userRoles]
+  );
+
+  const ClientRoute = useMemo(
+    () =>
+      ({ component: Component, ...rest }) =>
+        (
+          <Route
+            {...rest}
+            render={(props) =>
               userRoles.includes(CLIENT) ? (
+                <Component {...props} />
+              ) : (
+                <Redirect exact to="/404" />
+              )
+            }
+          />
+        ),
+    [userRoles]
+  );
+
+  const FormRoute = useMemo(
+    () =>
+      ({ component: Component, ...rest }) =>
+        (
+          <Route
+            {...rest}
+            render={(props) =>
+              userRoles.includes(CLIENT) ||
+              userRoles.includes(STAFF_REVIEWER) ||
+              userRoles.includes(STAFF_DESIGNER) ? (
                 <Component {...props} />
               ) : (
                 <Redirect exact to="/404" />
@@ -151,9 +219,25 @@ const PrivateRoute = React.memo((props) => {
           <Route
             {...rest}
             render={(props) =>
-              DRAFT_ENABLED &&
-              (userRoles.includes(STAFF_REVIEWER) ||
-                userRoles.includes(CLIENT)) ? (
+              DRAFT_ENABLED && userRoles.includes(ADMIN) ? (
+                <Component {...props} />
+              ) : (
+                <Redirect exact to="/404" />
+              )
+            }
+          />
+        ),
+    [userRoles]
+  );
+
+  const AdminPanelRoute = useMemo(
+    () =>
+      ({ component: Component, ...rest }) =>
+        (
+          <Route
+            {...rest}
+            render={(props) =>
+              ADMIN_ROLES.some((e) => userRoles.includes(e)) ? (
                 <Component {...props} />
               ) : (
                 <Redirect exact to="/404" />
@@ -175,10 +259,14 @@ const PrivateRoute = React.memo((props) => {
           }
         >
           <Switch>
-            <Route path={`${BASE_ROUTE}form`} component={Form} />
+            <FormRoute path={`${BASE_ROUTE}form`} component={Form} />
             <DraftRoute path={`${BASE_ROUTE}draft`} component={Drafts} />
-            <DesignerRoute path={`${BASE_ROUTE}admin`} component={Admin} />
+            <AdminRoute path={`${BASE_ROUTE}admin`} component={Admin} />
             <DesignerRoute path={`${BASE_ROUTE}formflow`} component={Form} />
+            <AdminPanelRoute
+              path={PAGE_ROUTES.ADMIN_PANEL}
+              component={AdminPanelPage}
+            />
             <PageAdminRoute
               exact
               path={PAGE_ROUTES.SO_ADMINISTRATION}
@@ -223,41 +311,53 @@ const PrivateRoute = React.memo((props) => {
               path={`${BASE_ROUTE}processes`}
               component={Modeler}
             />
-            <ClientReviewerRoute
+            <ClientRoute
               exact
               path={PAGE_ROUTES.MY_SERVICES_ADDRESS_REGISTRATION}
               component={MyServicesAddressRegistration}
             />
-            <ClientReviewerRoute
+            {MY_SERVICES_LOCAL_TAXES_ENABLED && (
+              <ClientRoute
+                exact
+                path={PAGE_ROUTES.MY_SERVICES_LOCAL_TAXES_AND_FEES}
+                component={MyServicesLocalTaxesAndFees}
+              />
+            )}
+
+            {MY_SERVICES_LOCAL_TAXES_ENABLED && (
+              <ClientRoute
+                exact
+                path={PAGE_ROUTES.MY_SERVICES_LOCAL_TAXES_AND_FEES_DETAILS}
+                component={MyServicesLocalTaxesAndFeesDetails}
+              />
+            )}
+
+            <ClientRoute
               exact
               path={PAGE_ROUTES.LOCAL_TAXES_AND_FEES_REFERENCE}
               component={LocalTaxesAndFeesReference}
             />
-            <ClientReviewerRoute
+            <ClientRoute
               exact
               path={PAGE_ROUTES.LOCAL_TAXES_AND_FEES_PAYMENT}
               component={LocalTaxesAndFeesPayment}
             />
-            <ClientReviewerRoute
+            <ClientRoute
               exact
               path={PAGE_ROUTES.USER_TASK}
               component={UserTask}
             />
-            <ClientReviewerRoute
-              exact
-              path={PAGE_ROUTES.PROFILE}
-              component={Profile}
-            />
-            <ClientReviewerRoute
+            <ClientRoute exact path={PAGE_ROUTES.PROFILE} component={Profile} />
+            <AdminRoute
               path={`${BASE_ROUTE}application`}
               component={Application}
             />
-            <ReviewerRoute
+            <ReviewerRoute path={`${BASE_ROUTE}task`} component={ServiceFlow} />
+            <AnalyticsViewerRoute
               path={`${BASE_ROUTE}metrics`}
               component={DashboardPage}
             />
-            <ReviewerRoute path={`${BASE_ROUTE}task`} component={ServiceFlow} />
-            <ReviewerRoute
+            <AnalyticsViewerRoute
               path={`${BASE_ROUTE}insights`}
               component={InsightsPage}
             />

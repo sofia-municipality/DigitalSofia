@@ -63,7 +63,7 @@ class FormioService:
         response = requests.post(url, headers=headers, data=json.dumps(data))
         if response.ok:
             return response.json()
-        raise BusinessException(response.content, HTTPStatus.BAD_REQUEST)
+        raise BusinessException(response.json(), HTTPStatus.BAD_REQUEST)
     
     def update_form(self, form_id, data, formio_token):
         """Put request to formio API to update form."""
@@ -72,16 +72,7 @@ class FormioService:
         response = requests.put(url, headers=headers, data=json.dumps(data))
         if response.ok:
             return response.json()
-        raise BusinessException(response.content, HTTPStatus.BAD_REQUEST)
-    
-    def delete_form(self, form_id, formio_token):
-        """Put request to formio API to update form."""
-        headers = {"Content-Type": "application/json", "x-jwt-token": formio_token}
-        url = f"{self.base_url}/form/{form_id}"
-        response = requests.delete(url, headers=headers)
-        if response.ok:
-            return response.content
-        raise BusinessException(response.content, HTTPStatus.BAD_REQUEST)
+        raise BusinessException(response.json(), HTTPStatus.BAD_REQUEST)
 
     def get_role_ids(self):
         """Get request to Formio API to retrieve role ids."""
@@ -147,19 +138,3 @@ class FormioService:
             return response.json()
         raise BusinessException(response.json(), HTTPStatus.BAD_REQUEST)
         
-    def partial_update_application(self, 
-                                   form_path: str, 
-                                   submission_id: str, 
-                                   formio_token: str,
-                                   data: list):
-        headers = {"Content-Type": "application/json", "x-jwt-token": formio_token}
-        url = f"{self.base_url}/form/{form_path}/submission/{submission_id}"
-
-        current_app.logger.debug("Partial Update Application")
-        current_app.logger.debug(url)
-
-        response = requests.patch(url, headers=headers, data=json.dumps(data))
-        if response.ok:
-            return response.json()
-
-        raise BusinessException(response.content, response.status_code)

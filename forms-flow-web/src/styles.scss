@@ -510,9 +510,23 @@ i.fa.fa-question-circle.text-muted {
     flex-wrap: wrap;
   }
 }
+
 .main-header-wizzard {
   max-width: 1200px;
+  margin-block: 15px !important;
 }
+
+.main-header-wizzard h3 {
+  font-family: 'Sofia Sans';
+}
+
+@media (min-width: 768px) {
+  .main-header-wizzard {
+    margin-block: 25px !important;
+  }
+}
+
+
 .back-icon{
   display: flex;
 }
@@ -976,5 +990,24 @@ box-shadow: 0 0 0 2px rgb(217, 217, 217);
           background-color: #fc4f4f;
           color: #fff;
       }
+  }
+}
+
+.beta-container {
+  font-size: 16px;
+  border-bottom: 1px solid #ea4335;
+  .beta-title {
+    text-align: center;
+    padding: 10px;
+    background-color: #ea4335;
+    color: #ffffff;
+    font-weight: 600;
+  }
+  .beta-description {
+    padding: 10px 10px 10px 20px;
+    font-weight: 500;
+    .beta-link {
+      color: #5268a0;
+    }
   }
 }

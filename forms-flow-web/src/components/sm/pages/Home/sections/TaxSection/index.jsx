@@ -19,10 +19,15 @@ const TaxSection = ({
     aria-labelledby="taxes-section-title"
   >
     <div className={`row flex-column flex-md-row ${styles.sectionContent}`}>
-      <div className={`col-md-5 col-xxl-4 ${styles.taxImgwrapper}`}>
-        <img className={styles.taxImg} src={image} alt="" />
+      <div className={`col-md-6 col-lg-5 col-xl-6 ${styles.taxImgwrapper}`}>
+        <img
+          className={styles.taxImg}
+          src={image}
+          alt=""
+          data-testid="localTaxes-section-image"
+        />
       </div>
-      <div className={`col-md-7 col-xxl-8 ${styles.taxContent}`}>
+      <div className={`col-md-6 col-lg-7 col-xl-6 ${styles.taxContent}`}>
         <h2 className={styles.sectionMainTitle} id="taxes-section-title">
           {title}
         </h2>

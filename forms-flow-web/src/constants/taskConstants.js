@@ -14,7 +14,10 @@ export const DEFAULT_WORKFLOW = {
 };
 
 export const getTaskSearchFilterDefaultParam = () => {
-  let user = JSON.parse(localStorage.getItem("UserDetails") || "{}");
+  const userDetailsString = localStorage.getItem("UserDetails") || "{}";
+  const userDetails =
+    userDetailsString == "undefined" ? "{}" : userDetailsString;
+  let user = JSON.parse(userDetails);
 
   return TASK_LIST_DISABLE_FILTER_ENABLED
     ? {

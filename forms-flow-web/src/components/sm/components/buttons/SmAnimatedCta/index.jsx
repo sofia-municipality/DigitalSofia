@@ -1,5 +1,6 @@
 import React from "react";
 
+import { SM_NEW_DESIGN_ENABLED } from "../../../../../constants/constants";
 import BaseCta from "../BaseCta";
 import styles from "./animated-cta.module.scss";
 
@@ -18,26 +19,36 @@ const SmAnimatedCta = ({
   href,
   hardRedirect,
   onClick,
+  accessibilityProps,
 }) => {
   const animationDirectionClass =
     animationDirection === AnimationDirection.RIGHT
       ? styles.right
       : styles.left;
 
-  const ctaClassname = `${styles.btn} ${borderClassName}`;
+  const ctaClassname = `${styles.btn} ${
+    SM_NEW_DESIGN_ENABLED ? styles.btnNewDesign : ""
+  } ${borderClassName} `;
 
   return (
     <div className={`${styles.btnContainer} ${className}`}>
       <span
-        className={`${styles.circle} ${circleClassName} ${animationDirectionClass}`}
+        className={`${styles.circle} ${
+          SM_NEW_DESIGN_ENABLED ? styles.circleNewDesign : ""
+        } ${circleClassName} ${animationDirectionClass} `}
       />
-      <span className={`${styles.btnLine} ${animationDirectionClass}`} />
+      <span
+        className={`${styles.btnLine} ${
+          SM_NEW_DESIGN_ENABLED ? styles.btnLineNewDesign : ""
+        } ${animationDirectionClass}`}
+      />
       <BaseCta
         className={ctaClassname}
         isLink={isLink}
         href={href}
         hardRedirect={hardRedirect}
         onClick={onClick}
+        accessibilityProps={accessibilityProps}
       >
         {children}
       </BaseCta>

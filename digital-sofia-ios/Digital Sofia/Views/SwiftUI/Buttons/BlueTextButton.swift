@@ -16,7 +16,7 @@ struct BlueTextButton: View {
             action?()
         }) {
             Text(title)
-                .foregroundColor(DSColors.indigo)
+                .foregroundColor(DSColors.Indigo.regular)
                 .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, weight: DSFonts.FontWeight.regular, size: DSFonts.FontSize.medium))
         }
         .padding(.trailing, AppConfig.Dimensions.Padding.large)

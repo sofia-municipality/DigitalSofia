@@ -1,5 +1,6 @@
 package com.bulpros.integrations.configuration.esb;
 
+import lombok.Setter;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -15,10 +16,15 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
+@Setter
 public class EsbGrantRequestEntityConverter
         implements Converter<OAuth2ClientCredentialsGrantRequest, RequestEntity<?>> {
 
+    private HashMap<String, String> customHeaders;
     /**
      * Returns the {@link RequestEntity} used for the Access Token Request.
      *
@@ -56,10 +62,15 @@ public class EsbGrantRequestEntityConverter
         return formParameters;
     }
 
-    private static HttpHeaders getDefaultTokenRequestHeaders() {
+    private HttpHeaders getDefaultTokenRequestHeaders() {
         HttpHeaders headers = new HttpHeaders();
         final MediaType contentType = MediaType.valueOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE);
         headers.setContentType(contentType);
+        if(Objects.nonNull(customHeaders) && customHeaders.size() > 0){
+            for (Map.Entry<String, String> header: customHeaders.entrySet()) {
+                headers.add(header.getKey(), header.getValue());
+            }
+        }
         return headers;
     }
 

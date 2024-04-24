@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: forms-flow-forms-nginx
+  namespace: forms-flow-forms
+  #annotations:
+   # kubernetes.io/ingress.class: "nginx"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: "form-flow-forms-dev"
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: forms-flow-forms-svc
+            port:
+              number: 3001

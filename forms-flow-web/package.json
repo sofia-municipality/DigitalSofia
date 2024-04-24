@@ -12,7 +12,8 @@
     "build": "GENERATE_SOURCEMAP=false node scripts/build.js --max_old_space_size=6144",
     "winBuild": "set \"GENERATE_SOURCEMAP=false\" && node scripts/build.js",
     "eject": "react-scripts eject",
-    "test": "craco test --detectOpenHandles --silent",
+    "test": "react-scripts test --detectOpenHandles --silent",
+    "test:all": "react-scripts test --watchAll=false",
     "preinstall": "npx npm-force-resolutions",
     "coverage": "react-scripts test --coverage --watchAll=false",
     "lint": "eslint src --no-fix --max-warnings 0",
@@ -21,10 +22,7 @@
   "jest": {
     "transformIgnorePatterns": [
       "<rootDir>/node_modules/(?!d3)/"
-    ],
-    "moduleNameMapper": {
-      "@formsflow/service": "<rootDir>/__mocks__/@formsflow/service.js"
-    }
+    ]
   },
   "author": {
     "name": "Abhilash"

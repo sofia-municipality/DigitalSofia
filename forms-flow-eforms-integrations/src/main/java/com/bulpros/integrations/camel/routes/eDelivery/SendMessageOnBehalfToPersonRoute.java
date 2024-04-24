@@ -1,7 +1,7 @@
 package com.bulpros.integrations.camel.routes.eDelivery;
 
-import com.bulpros.integrations.eDelivery.model.SendMessageOnBehalfToPersonRequest;
-import com.bulpros.integrations.eDelivery.model.SendMessageOnBehalfToPersonResponse;
+import com.bulpros.integrations.eDelivery.model.SendMessageOnBehalfOfRequest;
+import com.bulpros.integrations.eDelivery.model.SendMessageOnBehalfOfResponse;
 import com.bulpros.integrations.exceptions.EFormsIntegrationsErrorHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.builder.RouteBuilder;
@@ -25,13 +25,13 @@ public class SendMessageOnBehalfToPersonRoute extends RouteBuilder {
                 .enableCORS(true)
                 .corsHeaderProperty("Access-Control-Allow-Origin", "*");
 
-        rest("/eDelivery/send-message-on-behalf-to-person")
+        rest("/eDelivery/send-message-on-behalf")
                 .post()
                 .consumes(MediaType.APPLICATION_JSON_VALUE)
-                .type(SendMessageOnBehalfToPersonRequest.class)
-                .outType(SendMessageOnBehalfToPersonResponse.class)
+                .type(SendMessageOnBehalfOfRequest.class)
+                .outType(SendMessageOnBehalfOfResponse.class)
                 .route().routeGroup("EDELIVERY").routeId("EDeliverySendMessageOnBehalfToPerson")
-                .to("bean:eDeliveryService?method=sendMessageOnBehalfToPerson(${body})");
+                .to("bean:eDeliveryService?method=sendMessageOnBehalfOf(${body})");
     }
 
 }

@@ -13,3 +13,10 @@ export const setAccessForForm = (data) => (dispatch) => {
     payload: data,
   });
 };
+
+export const openCloseForbiddenModal = (data) => (dispatch) => {
+  dispatch({
+    type: ACTION_CONSTANTS.OPEN_CLOSE_FORBIDDEN_MODAL,
+    payload: data,
+  });
+};

@@ -26,17 +26,6 @@ class UserContext:  # pylint: disable=too-many-instance-attributes
             "role", None
         )
         self._groups: list = token_info.get("groups", None)
-        is_verified = token_info.get("isVerified")
-
-        if is_verified in ['y', 'yes', 't', 'true', 'on', '1']:
-            is_verified = True
-        else:
-            is_verified = False
-        self._is_verified: bool = is_verified
-
-    @property
-    def is_verified(self) -> bool:
-        return self._is_verified
 
     @property
     def tenant_key(self) -> str:

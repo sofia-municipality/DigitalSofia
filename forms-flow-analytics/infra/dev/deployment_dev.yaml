@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: form-flow-analytics
+  namespace : forms-flow-analytics
+  labels:
+    app.kubernetes.io/name: analytics
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: analytics
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: analytics
+    spec:
+      imagePullSecrets:
+        - name: private-registry
+      containers:
+        - name: form-flow-analytics-web
+          image: formsflow/redash:10.1.4
+          ports:
+            - containerPort: 5000
+              name: analytics
+              protocol: TCP
+          env:
+            - name: REDASH_HOST
+              value: "http://digital-analytics.digitalsofia.digital"
+            - name: PYTHONUNBUFFERED
+              value: "0"
+            - name: REDASH_LOG_LEVEL
+              value: "INFO"
+            - name: REDASH_REDIS_URL
+              value: "redis://localhost:6379/0"
+            - name: POSTGRES_USER
+              value: "redis"
+            - name: POSTGRES_PASSWORD
+              value: "jw8s0F4"
+            - name: POSTGRES_DB
+              value: "redisdb"
+            - name: REDASH_COOKIE_SECRET
+              value: "redash-selfhosted"
+            - name: REDASH_SECRET_KEY
+              value: "redash-selfhosted"
+            - name: REDASH_DATABASE_URL
+              value: "postgresql://redis:jw8s0F4@192.168.201.46/redisdb"
+            - name: REDASH_CORS_ACCESS_CONTROL_ALLOW_ORIGIN
+              value: "*"
+            - name: REDASH_REFERRER_POLICY
+              value: "no-referrer-when-downgrade"
+            - name: REDASH_CORS_ACCESS_CONTROL_ALLOW_HEADERS
+              value: "Content-Type, Authorization"
+            - name: REDASH_MULTI_ORG
+              value: "true"
+          args: ["server"]
+        - name: form-flow-analytics-scheluder
+          image: formsflow/redash:10.1.4        
+          resources:
+            requests:
+              memory: 1Gi
+          env:
+            - name: REDASH_DATABASE_URL
+              value: "postgresql://redis:jw8s0F4@192.168.201.46/redisdb"
+            - name: REDASH_REDIS_URL
+              value: "redis://localhost:6379/0"
+            - name: WORKERS_COUNT
+              value: "2"
+            - name: QUEUES
+              value:  "celery"
+            - name: PYTHONUNBUFFERED
+              value: "0"
+            - name: REDASH_COOKIE_SECRET
+              value: "redash-selfhosted"
+            - name: REDASH_MULTI_ORG
+              value: "true"
+          args: [ "scheduler" ]
+        - name: form-flow-analytics-workers
+          image: formsflow/redash:10.1.4        
+          resources:
+            requests:
+              memory: 1Gi
+          env:
+            - name: WORKERS_COUNT
+              value: "2"
+            - name: QUEUES
+              value:  "scheduled_queries,schemas"
+            - name: REDASH_DATABASE_URL
+              value: "postgresql://redis:jw8s0F4@192.168.201.46/redisdb"
+            - name: REDASH_REDIS_URL
+              value: "redis://localhost:6379/0"
+            - name: PYTHONUNBUFFERED
+              value: "0"
+            - name: REDASH_COOKIE_SECRET
+              value: "redash-selfhosted"
+            - name: REDASH_MULTI_ORG
+              value: "true"
+          args: ["worker"]
+        - name: form-flow-analytics-adhoc
+          image: formsflow/redash:10.1.4        
+          resources:
+            requests:
+              memory: 1Gi
+          env:
+            - name: WORKERS_COUNT
+              value: "2"
+            - name: QUEUES
+              value:  "queries"
+            - name: REDASH_DATABASE_URL
+              value: "postgresql://redis:jw8s0F4@192.168.201.46/redisdb"
+            - name: REDASH_REDIS_URL
+              value: "redis://localhost:6379/0"
+            - name: PYTHONUNBUFFERED
+              value: "0"
+            - name: REDASH_COOKIE_SECRET
+              value: "redash-selfhosted"
+            - name: REDASH_MULTI_ORG
+              value: "true"
+          args: ["worker"]
+        - name: redis
+          image: redis:6-alpine
+          ports:
+            - name: redis
+              containerPort: 6379

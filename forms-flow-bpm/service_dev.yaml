@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: forms-flow-bpm-svc
+  namespace: forms-flow-bpm
+  labels:
+    app.kubernetes.io/name: camunda
+spec:
+  selector:
+    app.kubernetes.io/name: camunda
+  ports:
+    - name: forms-flow-bpm-port
+      protocol: TCP
+      port: 8000
+      targetPort: 8000

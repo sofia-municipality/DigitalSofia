@@ -30,17 +30,17 @@ spec:
             - name: FORMIO_URL
               value: "http://forms-flow-forms-svc.forms-flow-forms.svc.cluster.local:3001"
             - name: FORMIO_ROOT_EMAIL
-              value: ""
+              value: "iiliev@digitall.com"
             - name: FORMIO_ROOT_PASSWORD
-              value: ""
+              value: "fd1cnUW2Rp608S2"
             - name: FORMIO_JWT_SECRET
               value: "test-secret"
             - name: JWT_OIDC_WELL_KNOWN_CONFIG
-              value: "http://identity-dev-eservices.egov.bg/auth/realms/forms-flow-ai/.well-known/openid-configuration"
+              value: "http://identity-dev-eservices.egov.bg/auth/realms/eServices/.well-known/openid-configuration"
             - name: JWT_OIDC_JWKS_URI
-              value: "http://identity-dev-eservices.egov.bg/auth/realms/forms-flow-ai/protocol/openid-connect/certs"
+              value: "http://identity-dev-eservices.egov.bg/auth/realms/eServices/protocol/openid-connect/certs"
             - name: JWT_OIDC_ISSUER
-              value: "http://identity-dev-eservices.egov.bg/auth/realms/forms-flow-ai"
+              value: "http://identity-dev-eservices.egov.bg/auth/realms/eServices"
             - name: JWT_OIDC_AUDIENCE
               value: "forms-flow-web"
             - name: JWT_OIDC_CACHING_ENABLED
@@ -48,7 +48,7 @@ spec:
             - name: KEYCLOAK_URL
               value: "http://identity-dev-eservices.egov.bg"
             - name: KEYCLOAK_URL_REALM
-              value: "forms-flow-ai"
+              value: "eServices"
             - name: FORMSFLOW_API_URL
               value: "http://api-dev-eservices.egov.bg"
             - name: FORMSFLOW_DOC_API_URL
@@ -68,8 +68,8 @@ spec:
             - name: FORMSFLOW_API_DB_URL
               value: "postgresql://documents:jw8s0F4@172.23.230.134:5432/documentsdbdev"
             - name: FORMSFLOW_API_DB_USER
-              value: ""
+              value: "documents"
             - name: FORMSFLOW_API_DB_PASSWORD
-              value: ""
+              value: "eva8CEKe9d"
             - name: FORMSFLOW_API_DB_NAME
               value: "documentsdbdev"

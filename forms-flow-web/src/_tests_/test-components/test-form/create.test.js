@@ -8,6 +8,13 @@ import { createMemoryHistory } from "history";
 import configureStore from "redux-mock-store";
 import * as redux from "react-redux";
 
+jest.mock("i18next", () => ({
+  ...jest.requireActual("i18next"),
+  options: {
+    resources: {},
+  },
+}));
+
 let store;
 let mockStore = configureStore([]);
 beforeEach(() => {

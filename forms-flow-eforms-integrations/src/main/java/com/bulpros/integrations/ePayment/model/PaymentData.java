@@ -23,6 +23,7 @@ public class PaymentData {
     private String administrativeServiceUri;
     private String administrativeServiceSupplierUri;
     private String administrativeServiceNotificationURL;
+    private int obligationType = 1;
 
 
 }

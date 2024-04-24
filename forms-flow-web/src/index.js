@@ -37,21 +37,29 @@ ReactDOM.render(
   document.getElementById("app")
 );
 
-// Register service worker and if new changes skip waiting and activate new service worker
-serviceWorkerRegistration.register({
-  onUpdate: (registration) => {
-    const waitingServiceWorker = registration.waiting;
+const parameters = new URLSearchParams(window.location.search);
+const serviceWorkerParam = parameters.get("serviceWorker");
+const shouldRegisterServiceWorker = serviceWorkerParam !== "false";
 
-    if (waitingServiceWorker) {
-      waitingServiceWorker.addEventListener("statechange", (event) => {
-        if (event.target.state === "activated") {
-          window.location.reload();
-        }
-      });
-      waitingServiceWorker.postMessage({ type: "SKIP_WAITING" });
-    }
-  },
-});
+// Register service worker and if new changes skip waiting and activate new service worker
+if (!shouldRegisterServiceWorker) {
+  serviceWorkerRegistration.unregister();
+} else {
+  serviceWorkerRegistration.register({
+    onUpdate: (registration) => {
+      const waitingServiceWorker = registration.waiting;
+
+      if (waitingServiceWorker) {
+        waitingServiceWorker.addEventListener("statechange", (event) => {
+          if (event.target.state === "activated") {
+            window.location.reload();
+          }
+        });
+        waitingServiceWorker.postMessage({ type: "SKIP_WAITING" });
+      }
+    },
+  });
+}
 
 // stop transitions on resize
 let resizeTimer;

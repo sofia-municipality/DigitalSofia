@@ -396,6 +396,7 @@
 "evrotrust_id_scanner_scan_id_card"                     = "ID card or passport is not recognized. Try the following and scan again: find better lightening, try cleaning your camera, hold still the device, use dark background. If your ID document has 2 sides, turn the other side when prompted. Should we try again?";
 "evrotrust_id_scanner_country_not_found"                = "We couldn't recognize a valid Country. Should we try again?";
 "evrotrust_id_scanner_document_not_supported"           = "The ID document is not supported. Should we try again?";
+"evrotrust_id_scanner_country_not_supported"            = "#Държавата не се поддържа. Искате ли да опитате отново?";
 "evrotrust_id_scanner_supported_documents"              = "Supported documents";
 "evrotrust_id_scanner_invalid_data"                     = "Invalid information. Should we try again?";
 "evrotrust_id_scanner_document_screen_scan_not_allowed" = "No screen scanning is allowed.";

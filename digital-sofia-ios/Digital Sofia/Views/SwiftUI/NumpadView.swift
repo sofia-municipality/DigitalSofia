@@ -9,6 +9,7 @@ import SwiftUI
 
 struct NumpadView: View {
     @Binding var reset: Bool
+    @State var isRecordingScreen = false
     
     var shouldShowBiometrics: Bool = false
     var pinCodeLength = 6
@@ -29,13 +30,13 @@ struct NumpadView: View {
                     createDot(active: false)
                 }
             }
+            .padding(.bottom, AppConfig.Dimensions.Custom.numpadPadding)
             
-            Spacer()
-            
-            KeyPad(string: $string, limit: pinCodeLength, shouldShowBiometrics: shouldShowBiometrics, didClickOnBiometrics: didClickOnBiometrics)
-            
-            Spacer()
-            Spacer()
+            KeyPad(string: $string,
+                   isRecording: $isRecordingScreen,
+                   limit: pinCodeLength,
+                   shouldShowBiometrics: shouldShowBiometrics,
+                   didClickOnBiometrics: didClickOnBiometrics)
         }
         .onChange(of: string, perform: { newValue in
             let array = Array(newValue)
@@ -54,12 +55,18 @@ struct NumpadView: View {
                 reset = false
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: UIScreen.capturedDidChangeNotification)) { _ in
+            isRecordingScreen.toggle()
+        }
+        .onAppear {
+            isRecordingScreen = UIScreen.main.isCaptured
+        }
     }
     
     private func createDot(active: Bool) -> some View {
         Circle()
-            .strokeBorder(active ? DSColors.Blue.blue : DSColors.Blue.blue1, lineWidth: 2)
-            .background(Circle().foregroundColor(active ? DSColors.Blue.blue : Color.white))
+            .strokeBorder(active ? DSColors.Blue.regular : DSColors.Blue.blue1, lineWidth: 2)
+            .background(Circle().foregroundColor(active ? DSColors.Blue.regular : Color.white))
             .frame(width: 10, height: 10)
     }
 }

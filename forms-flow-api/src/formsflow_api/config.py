@@ -99,6 +99,7 @@ class _Config:  # pylint: disable=too-few-public-methods
     FORMIO_PASSWORD = os.getenv("FORMIO_ROOT_PASSWORD")
     FORMIO_PROJECT_URL = os.getenv("FORMIO_PROJECT_URL")  # For form.io enterprise
     FORMIO_FILE_RESOURCE_PATH = os.getenv("FORMIO_FILE_RESOURCE_PATH")
+    MATEUS_COMPANY_ID = os.getenv("MATEUS_COMPANY_ID", default=999)
 
     # Keycloak client authorization enabled flag
     KEYCLOAK_ENABLE_CLIENT_AUTH = (
@@ -115,15 +116,27 @@ class _Config:  # pylint: disable=too-few-public-methods
         "FORM_EMBED_JWT_SECRET", "f6a69a42-7f8a-11ed-a1eb-0242ac120002"
     )
 
+    # Firebase Variables
+    FIREBASE_CREDENTIALS_PATH = os.getenv("FIREBASE_CREDENTIALS_PATH", None)
+    OTHER_FILE_DESTINATION = os.getenv("OTHER_FILE_DESTINATION", None)
+    MOBILE_LOGS_FILE_DESTINATION = os.getenv("MOBILE_LOGS_FILE_DESTINATION", None)
+
     # CRON JOB VARIABLES
     CRON_DOCUMENT_TRANSACTION_TIMEOUT = os.getenv(
         "CRON_DOCUMENT_TRANSACTION_TIMEOUT", 30
     )
     EUROTRUST_EXPIRE_TIMEOUT = os.getenv("EUROTRUST_EXPIRE_TIMEOUT", 30)
+    EVROTRUST_IDENTITY_REQUESTS_MAX_RETRIES = os.getenv("EVROTRUST_IDENTITY_REQUESTS_MAX_RETRIES", 15)
+    EVROTRUST_IDENTITY_AUTHENTICATE_TIMEOUT = os.getenv("EVROTRUST_IDENTITY_AUTHENTICATE_TIMEOUT", 3)
     EUROTRUST_IDENTITY_TIMEOUT = os.getenv("EUROTRUST_IDENTITY_TIMEOUT", 30)
 
     FORMSFLOW_DOC_API_URL = os.getenv("FORMSFLOW_DOC_API_URL")
     SIGN_SERVICE_API_URL = os.getenv("SIGN_SERVICE_API_URL")
+    EPAYMENT_SECRET_KEY = os.getenv("EPAYMENT_SECRET_KEY")
+
+    #Hardcoded camunda process definitions
+    CAMUNDA_CHANGE_ADDRESS_PROCESS = os.getenv("CAMUNDA_CHANGE_ADDRESS_PROCESS")
+    REDIS_CONNECTION = os.getenv("REDIS_CONNECTION")
 
 
 class DevConfig(_Config):  # pylint: disable=too-few-public-methods
