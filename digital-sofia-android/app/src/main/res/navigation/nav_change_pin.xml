@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/changePinEnterFragment"
-        android:name="com.digitall.digital_sofia.ui.fragments.settings.pin.enter.ChangePinEnterFragment"
+        android:name="com.digital.sofia.ui.fragments.settings.pin.enter.ChangePinEnterFragment"
         android:label="changePinEnterFragment"
         tools:layout="@layout/fragment_change_pin_enter">
 
@@ -17,13 +17,15 @@
             app:enterAnim="@anim/fragment_scale_enter_front"
             app:exitAnim="@anim/fragment_scale_enter_back"
             app:popEnterAnim="@anim/fragment_scale_exit_back"
-            app:popExitAnim="@anim/fragment_scale_exit_front" />
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/changePinEnterFragment"
+            app:popUpToInclusive="true" />
 
     </fragment>
 
     <fragment
         android:id="@+id/changePinCreateFragment"
-        android:name="com.digitall.digital_sofia.ui.fragments.settings.pin.create.ChangePinCreateFragment"
+        android:name="com.digital.sofia.ui.fragments.settings.pin.create.ChangePinCreateFragment"
         android:label="changePinCreateFragment"
         tools:layout="@layout/fragment_change_pin_create">
 
@@ -41,7 +43,7 @@
 
     <fragment
         android:id="@+id/changePinEnableBiometricFragment"
-        android:name="com.digitall.digital_sofia.ui.fragments.settings.pin.biometric.ChangePinEnableBiometricFragment"
+        android:name="com.digital.sofia.ui.fragments.settings.pin.biometric.ChangePinEnableBiometricFragment"
         android:label="changePinEnableBiometricFragment"
         tools:layout="@layout/fragment_change_pin_enter" />
 

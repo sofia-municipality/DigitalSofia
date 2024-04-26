@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_enter_code"
-    app:startDestination="@id/enterPinFragment">
+    app:startDestination="@id/authEnterPinFragment">
 
     <fragment
-        android:id="@+id/enterPinFragment"
-        android:name="com.digitall.digital_sofia.ui.fragments.auth.pin.AuthEnterPinFragment"
-        android:label="enterPinFragment"
+        android:id="@+id/authEnterPinFragment"
+        android:name="com.digital.sofia.ui.fragments.auth.pin.AuthEnterPinFragment"
+        android:label="authEnterPinFragment"
         tools:layout="@layout/fragment_enter_pin">
 
         <argument
@@ -16,35 +16,23 @@
             android:defaultValue="false"
             app:argType="boolean" />
 
-        <action
-            android:id="@+id/toAutoForgotPinFragment"
-            app:destination="@id/autoForgotPinFragment"
-            app:enterAnim="@anim/fragment_scale_enter_front"
-            app:exitAnim="@anim/fragment_scale_enter_back"
-            app:popEnterAnim="@anim/fragment_scale_exit_back"
-            app:popExitAnim="@anim/fragment_scale_exit_front" />
-
     </fragment>
 
     <fragment
-        android:id="@+id/autoForgotPinFragment"
-        android:name="com.digitall.digital_sofia.ui.fragments.auth.forgot.AuthForgotPinFragment"
-        android:label="autoForgotPinFragment"
-        tools:layout="@layout/fragment_forgot_pin" />
-
-    <fragment
-        android:id="@+id/enterBiometricFragment"
-        android:name="com.digitall.digital_sofia.ui.fragments.auth.biometric.AuthEnterBiometricFragment"
-        android:label="enterBiometricFragment"
+        android:id="@+id/authEnterBiometricFragment"
+        android:name="com.digital.sofia.ui.fragments.auth.biometric.AuthEnterBiometricFragment"
+        android:label="authEnterBiometricFragment"
         tools:layout="@layout/fragment_enter_biometric">
 
         <action
             android:id="@+id/toEnterPinFragment"
-            app:destination="@id/enterPinFragment"
+            app:destination="@id/authEnterPinFragment"
             app:enterAnim="@anim/fragment_scale_enter_front"
             app:exitAnim="@anim/fragment_scale_enter_back"
             app:popEnterAnim="@anim/fragment_scale_exit_back"
-            app:popExitAnim="@anim/fragment_scale_exit_front" />
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/authEnterBiometricFragment"
+            app:popUpToInclusive="true" />
 
     </fragment>
 

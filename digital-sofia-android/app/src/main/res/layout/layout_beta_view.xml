@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:parentTag="FrameLayout">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/beta_view_border"
+        android:clipChildren="true"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/TextStyle.18spRegularMainBetaColor"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="@color/color_beta_red"
+            android:gravity="center"
+            android:singleLine="false"
+            android:text="@string/beta_button_title" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvBetaViewDescription"
+            style="@style/TextStyle.20spRegularMainColor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_20"
+            android:layout_marginTop="@dimen/margin_32"
+            android:layout_marginEnd="@dimen/margin_20"
+            android:layout_marginBottom="@dimen/margin_32"
+            android:gravity="center"
+            android:singleLine="false"
+            android:text="@string/beta_feedback_description" />
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</merge>

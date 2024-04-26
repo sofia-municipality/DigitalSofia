@@ -11,6 +11,7 @@ out/
 build/
 app/build/
 app/libs/
+app/src/main/assets
 local.properties
 proguard/
 *.log

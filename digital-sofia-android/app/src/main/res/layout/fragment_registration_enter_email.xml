@@ -2,7 +2,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_background"
@@ -57,7 +56,7 @@
                 android:singleLine="false"
                 android:text="@string/registration_enter_egn_email_title" />
 
-            <com.digitall.digital_sofia.ui.view.CustomTextInputLayout
+            <com.digital.sofia.ui.view.CustomTextInputLayout
                 android:id="@+id/emailInputLayout"
                 style="@style/DefaultTextInputLayoutStyle"
                 android:layout_width="match_parent"
@@ -76,7 +75,7 @@
                     android:inputType="textAutoComplete"
                     android:maxLength="128" />
 
-            </com.digitall.digital_sofia.ui.view.CustomTextInputLayout>
+            </com.digital.sofia.ui.view.CustomTextInputLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvEmailError"
@@ -106,7 +105,7 @@
                 android:singleLine="false"
                 android:text="@string/registration_enter_phone_input_title" />
 
-            <com.digitall.digital_sofia.ui.view.CustomTextInputLayout
+            <com.digital.sofia.ui.view.CustomTextInputLayout
                 android:id="@+id/phoneInputLayout"
                 style="@style/DefaultTextInputLayoutStyle"
                 android:layout_marginStart="@dimen/margin_32"
@@ -121,9 +120,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="phone"
-                    android:maxLength="128" />
+                    android:maxLength="128"
+                    android:text="+359" />
 
-            </com.digitall.digital_sofia.ui.view.CustomTextInputLayout>
+            </com.digital.sofia.ui.view.CustomTextInputLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvPhoneError"

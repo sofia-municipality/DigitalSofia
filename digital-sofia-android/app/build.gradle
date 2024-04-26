@@ -1,3 +1,9 @@
+/**
+ * Please follow code style when editing project
+ * Please follow principles of clean architecture
+ * Created 2023 by Roman Kryvolapov
+ **/
+
 apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
 apply plugin: 'org.jetbrains.kotlin.kapt'
@@ -8,37 +14,24 @@ apply plugin: 'com.google.firebase.crashlytics'
 
 android {
 
-    namespace 'com.digitall.digital_sofia'
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
+    namespace 'com.digital.sofia'
 
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.digitall.digital_sofia"
-        versionCode 1
-        versionName "Version from 02.11.2023"
+        applicationId "com.digital.sofia"
+        versionCode 24
         minSdk 24
         targetSdk 34
         multiDexEnabled true
         consumerProguardFiles "consumer-rules.pro"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    buildTypes {
-        debug {
-            minifyEnabled false
-            shrinkResources false
-            debuggable true
-            jniDebuggable true
-            renderscriptDebuggable true
-        }
-        release {
-            minifyEnabled true
-            shrinkResources true
-            debuggable false
-            jniDebuggable false
-            renderscriptDebuggable false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
     }
 
     compileOptions {
@@ -57,11 +50,47 @@ android {
 
     lintOptions {
         warning 'MissingTranslation'
-        warning 'InvalidPackage'
         disable "NullSafeMutableLiveData"
     }
 
-    flavorDimensions "default"
+    buildTypes {
+        debug {
+            minifyEnabled false
+            shrinkResources false
+            debuggable true
+            jniDebuggable true
+            renderscriptDebuggable true
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            debuggable false
+            jniDebuggable false
+            renderscriptDebuggable false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    flavorDimensions += "version"
+
+    productFlavors {
+        environmentDev {
+            versionName "12.04.2024 dev environment"
+        }
+        environmentTest {
+            versionName "12.04.2024 test environment"
+        }
+        environmentStage {
+            versionName "12.04.2024 stage environment"
+        }
+        environmentProd {
+            versionName "1.0.0"
+        }
+        all {
+            dimension "version"
+        }
+    }
 
 }
 
@@ -73,40 +102,39 @@ dependencies {
     // android
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.10.0'
+    implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.2'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
     implementation 'androidx.multidex:multidex:2.0.1'
     runtimeOnly 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.core:core-splashscreen:1.0.1'
-    implementation 'androidx.browser:browser:1.6.0'
+    implementation 'androidx.browser:browser:1.7.0'
     implementation 'androidx.biometric:biometric:1.1.0'
     implementation 'javax.inject:javax.inject:1'
 
     // navigation
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.4'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.7.4'
-    implementation 'androidx.navigation:navigation-dynamic-features-fragment:2.7.4'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.7'
+    implementation 'androidx.navigation:navigation-dynamic-features-fragment:2.7.7'
 
     //  di
-    implementation 'io.insert-koin:koin-core-coroutines:3.5.0'
-    implementation 'io.insert-koin:koin-android:3.5.0'
-    implementation 'io.insert-koin:koin-android-compat:3.5.0'
-    implementation 'io.insert-koin:koin-androidx-navigation:3.5.0'
+    implementation 'io.insert-koin:koin-core-coroutines:3.5.3'
+    implementation 'io.insert-koin:koin-android:3.5.3'
+    implementation 'io.insert-koin:koin-android-compat:3.5.3'
+    implementation 'io.insert-koin:koin-androidx-navigation:3.5.3'
 
     // glide
     implementation 'com.github.bumptech.glide:glide:4.16.0'
 
     // lottie
-    implementation 'com.airbnb.android:lottie:6.1.0'
+    implementation 'com.airbnb.android:lottie:6.3.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
     // room
-    implementation 'androidx.room:room-runtime:2.6.0'
-    annotationProcessor 'androidx.room:room-compiler:2.6.0'
-//    kapt "androidx.room:room-compiler:2.5.2"
-    implementation 'androidx.room:room-ktx:2.6.0'
+    implementation 'androidx.room:room-runtime:2.6.1'
+    annotationProcessor 'androidx.room:room-compiler:2.6.1'
+    implementation 'androidx.room:room-ktx:2.6.1'
     implementation "android.arch.lifecycle:extensions:1.1.1"
 
     // androidx preference
@@ -117,32 +145,39 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
 
     // firebase
-    implementation platform('com.google.firebase:firebase-bom:32.5.0')
+    implementation platform('com.google.firebase:firebase-bom:32.7.1')
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-messaging-ktx'
 
     // tests
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'io.insert-koin:koin-test:3.5.0'
+    testImplementation 'io.insert-koin:koin-test:3.5.3'
     testImplementation "androidx.arch.core:core-testing:2.2.0"
-    testImplementation 'io.insert-koin:koin-test-junit4:3.5.0'
-    testImplementation 'org.mockito:mockito-core:5.6.0'
-    testImplementation 'org.mockito.kotlin:mockito-kotlin:5.1.0'
+    testImplementation 'io.insert-koin:koin-test-junit4:3.5.3'
+    testImplementation 'org.mockito:mockito-core:5.10.0'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:5.2.1'
+
+    // lists
+    implementation 'com.hannesdorfmann:adapterdelegates4:4.3.2'
+    implementation 'com.hannesdorfmann:adapterdelegates4-pagination:4.3.2'
 
     // sdk
+    // make sure sdk library is in gitignore
+    // make sure regula.license is in gitignore
     implementation 'com.loopj.android:android-async-http:1.4.11'
     implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
     implementation 'com.quickblox:quickblox-android-sdk-videochat-webrtc:4.1.1'
     implementation 'com.quickblox:quickblox-android-sdk-content:4.1.1'
-    implementation 'com.regula.documentreader.core:mrzrfid:6.8.9148@aar'
-    implementation('com.regula.documentreader:api:6.8.8742@aar') {
+    implementation 'com.regula.documentreader.core:mrzrfid:6.9.9547@aar'
+    implementation('com.regula.documentreader:api:6.9.9406@aar') {
         transitive = true
     }
 
-    // other
-    implementation 'com.hannesdorfmann:adapterdelegates4:4.3.2'
+    // common
     implementation 'com.tbuonomo:dotsindicator:5.0'
     implementation 'com.scottyab:rootbeer-lib:0.1.0'
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    kapt 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
 }

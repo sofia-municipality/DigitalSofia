@@ -21,7 +21,7 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvSettings"
-        style="@style/TextStyle.20spRegularMainColor"
+        style="@style/TextStyle.18spRegularMainColor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
@@ -46,7 +46,7 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvQuestions"
-        style="@style/TextStyle.20spRegularMainColor"
+        style="@style/TextStyle.18spRegularMainColor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
@@ -62,7 +62,7 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvContacts"
-        style="@style/TextStyle.20spRegularMainColor"
+        style="@style/TextStyle.18spRegularMainColor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"

@@ -13,11 +13,12 @@
     <color name="color_blue">#5268A0</color>
     <color name="color_light_blue">#6682C7</color>
     <color name="color_super_light_blue">#E0E6F4</color>
-    <color name="color_green">#729651</color>
+    <color name="color_green">#5E984B</color>
     <color name="color_background">#FFFFFF</color>
     <color name="color_background_30_percents">#AAFFFFFF</color>
-    <color name="color_orange">#FB5622</color>
+    <color name="color_orange">#F1471D</color>
     <color name="color_red">#FF0000</color>
+    <color name="color_beta_red">#EA4335</color>
     <color name="color_success">#3FD945</color>
     <color name="color_transparent">#00FFFFFF</color>
     <color name="color_deemed_light">#80FB5622</color>
@@ -28,6 +29,7 @@
     <color name="color_additional_accent">#3FD945</color>
     <color name="color_switch">#007BFF</color>
     <color name="color_background_error_field">#F0F2F9</color>
+    <color name="color_shadow_bottom_line">#6682C7</color>
 
     <!-- SDK -->
     <color name="evrotrustMainColor1">#5268A0</color>

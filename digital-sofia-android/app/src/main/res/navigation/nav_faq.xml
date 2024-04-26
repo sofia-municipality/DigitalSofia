@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/faqFragment"
-        android:name="com.digitall.digital_sofia.ui.fragments.faq.faq.FaqFragment"
+        android:name="com.digital.sofia.ui.fragments.faq.faq.FaqFragment"
         android:label="faqFragment"
         tools:layout="@layout/fragment_base_web_view" />
 

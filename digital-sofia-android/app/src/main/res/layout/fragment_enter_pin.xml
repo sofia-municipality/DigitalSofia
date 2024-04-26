@@ -8,64 +8,72 @@
     android:background="@color/color_background"
     android:fitsSystemWindows="true">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/contentLayout"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:clipToPadding="false"
+        android:fillViewport="true">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/ivAvatar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/margin_48"
-            android:src="@drawable/img_avatar" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvTitle"
-            style="@style/TextStyle.24spRegularMainColor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginStart="@dimen/margin_32"
-            android:layout_marginTop="@dimen/margin_32"
-            android:layout_marginEnd="@dimen/margin_32"
-            android:text="@string/auth_enter_pin_title" />
-
-
-        <com.digitall.digital_sofia.ui.view.CodeView
-            android:id="@+id/passcodeView"
-            style="@style/PassCodeStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/margin_48"
-            app:itemCount="6" />
-
-        <com.digitall.digital_sofia.ui.view.CodeKeyboardView
-            android:id="@+id/keyboard"
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_marginTop="@dimen/margin_48"
-            android:maxHeight="@dimen/pass_code_keyboard_max_height" />
+            android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnForgotPin"
-            style="@style/ButtonStyle.TransparentBlue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/margin_32"
-            android:text="@string/auth_enter_pin_forgot_title" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivAvatar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/margin_48"
+                android:src="@drawable/img_avatar" />
 
-    </androidx.appcompat.widget.LinearLayoutCompat>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTitle"
+                style="@style/TextStyle.24spRegularMainColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="@dimen/margin_32"
+                android:layout_marginTop="@dimen/margin_32"
+                android:layout_marginEnd="@dimen/margin_32"
+                android:text="@string/auth_enter_pin_title" />
 
-    <com.digitall.digital_sofia.ui.view.LoaderView
+
+            <com.digital.sofia.ui.view.CodeView
+                android:id="@+id/passcodeView"
+                style="@style/PassCodeStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/margin_48"
+                app:itemCount="6" />
+
+            <com.digital.sofia.ui.view.CodeKeyboardView
+                android:id="@+id/keyboard"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/margin_48"
+                android:maxHeight="@dimen/pass_code_keyboard_max_height" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnForgotPin"
+                style="@style/ButtonStyle.TransparentBlue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/margin_32"
+                android:text="@string/auth_enter_pin_forgot_title" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <com.digital.sofia.ui.view.LoaderView
         android:id="@+id/loaderView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="gone" />
 
 </FrameLayout>

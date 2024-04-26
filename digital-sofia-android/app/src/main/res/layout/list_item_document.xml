@@ -9,7 +9,7 @@
     android:layout_marginTop="@dimen/margin_5"
     android:layout_marginEnd="@dimen/margin_20"
     android:layout_marginBottom="@dimen/margin_5"
-    android:background="@drawable/bg_shadow"
+    android:background="@drawable/bg_shadow_with_bottom_line"
     android:fitsSystemWindows="true">
 
     <androidx.appcompat.widget.AppCompatImageView
@@ -29,7 +29,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_8"
         android:layout_marginEnd="@dimen/margin_16"
+        android:ellipsize="end"
+        android:gravity="end"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tvTitle"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/lorem_ipsum_size_2" />
 
@@ -40,6 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_16"
         android:layout_marginEnd="@dimen/margin_16"
+        android:ellipsize="end"
         app:layout_constraintBottom_toBottomOf="@+id/ivDigitalSofia"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ivDigitalSofia"
@@ -56,6 +60,9 @@
         android:layout_marginEnd="@dimen/margin_20"
         android:drawableStart="@drawable/ic_document"
         android:drawablePadding="@dimen/margin_20"
+        android:lines="2"
+        android:maxLines="2"
+        android:singleLine="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivDigitalSofia"
@@ -79,6 +86,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_24"
         android:layout_marginEnd="@dimen/margin_16"
+        android:gravity="end"
         app:layout_constraintBottom_toBottomOf="@+id/tvCreatedOnTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tvCreatedOnTitle"
@@ -93,6 +101,7 @@
         android:layout_marginStart="@dimen/margin_20"
         android:layout_marginTop="@dimen/margin_10"
         android:text="@string/document_signed_on"
+        app:layout_constraintEnd_toEndOf="@+id/tvCreatedOnTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvCreatedOnTitle" />
 
@@ -101,11 +110,11 @@
         style="@style/TextStyle.14spRegularMainColor"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_24"
         android:layout_marginEnd="@dimen/margin_16"
+        android:gravity="end"
         app:layout_constraintBottom_toBottomOf="@+id/tvSignedOnTitle"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tvSignedOnTitle"
+        app:layout_constraintStart_toStartOf="@+id/tvCreatedOnValue"
         app:layout_constraintTop_toTopOf="@+id/tvSignedOnTitle"
         tools:text="@string/lorem_ipsum_size_3" />
 
@@ -116,9 +125,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_20"
         android:layout_marginTop="@dimen/margin_24"
+        android:layout_marginEnd="@dimen/margin_20"
         android:drawableStart="@drawable/ic_open_file"
         android:drawablePadding="@dimen/margin_6"
         android:text="@string/document_view_file"
+        app:layout_constraintEnd_toStartOf="@+id/btnStatus"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvSignedOnTitle" />
 
@@ -129,11 +140,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_20"
         android:layout_marginTop="@dimen/margin_20"
+        android:layout_marginEnd="@dimen/margin_20"
         android:layout_marginBottom="@dimen/margin_24"
         android:drawableStart="@drawable/ic_download_file"
         android:drawablePadding="@dimen/margin_6"
         android:text="@string/document_download_file"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnStatus"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvShowFile" />
 
