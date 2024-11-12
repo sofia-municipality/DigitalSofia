@@ -80,5 +80,14 @@
    <ArchiveAction
       buildConfiguration = "Release"
       revealArchiveInOrganizer = "YES">
+      <PreActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Run Script - Remove bitcode from DocumentReader"
+               scriptText = "# Type a script or drag a script file from your workspace to insert its path.&#10;xcrun bitcode_strip -r ./Pods/DocumentReaderMRZRFID/DocumentReaderCore.xcframework/ios-arm64/DocumentReaderCore.framework/DocumentReaderCore -o ./Pods/DocumentReaderMRZRFID/DocumentReaderCore.xcframework/ios-arm64/DocumentReaderCore.framework/DocumentReaderCore&#10;&#10;">
+            </ActionContent>
+         </ExecutionAction>
+      </PreActions>
    </ArchiveAction>
 </Scheme>

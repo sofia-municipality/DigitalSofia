@@ -115,6 +115,10 @@ abstract class BaseConfirmIdentificationViewModel(
                 toErrorFragment()
             }
 
+            SdkStatus.SDK_SETUP_READY -> {
+                // Do nothing
+            }
+
             else -> {
                 toErrorFragment(evrotrustSDKHelper.errorMessageRes ?: R.string.sdk_error_unknown)
             }

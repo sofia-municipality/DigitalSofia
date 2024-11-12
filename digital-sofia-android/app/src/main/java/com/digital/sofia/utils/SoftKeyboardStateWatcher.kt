@@ -60,13 +60,15 @@ class SoftKeyboardStateWatcher(
         parentView.get()?.removeCallbacks(runnable)
         parentView.get()?.getWindowVisibleDisplayFrame(activityRect)
         activityDiff = height - activityRect.height() - statusBarOffset
-        if (lastObservedHeight != activityDiff && activityDiff > 0) isSoftKeyboardOpened = false
-        if (!isSoftKeyboardOpened && activityDiff > minKeyboardHeight) { // if more than 100 pixels, its probably a keyboard...
-            isSoftKeyboardOpened = true
-            parentView.get()?.post(runnable)
-        } else if (isSoftKeyboardOpened && activityDiff < minKeyboardHeight) {
-            isSoftKeyboardOpened = false
-            notifyOnSoftKeyboardClosed()
+        when {
+            isSoftKeyboardOpened.not() && activityDiff > minKeyboardHeight -> {
+                isSoftKeyboardOpened = true
+                parentView.get()?.post(runnable)
+            }
+            else -> {
+                isSoftKeyboardOpened = false
+                notifyOnSoftKeyboardClosed()
+            }
         }
     }
 

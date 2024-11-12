@@ -8,6 +8,7 @@ package com.digital.sofia.ui.fragments.main.signing
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.digital.sofia.R
+import com.digital.sofia.data.extensions.callOnMainThread
 import com.digital.sofia.domain.models.base.onFailure
 import com.digital.sofia.domain.models.base.onLoading
 import com.digital.sofia.domain.models.base.onRetry
@@ -73,8 +74,9 @@ class SigningViewModel(
 
     companion object {
         private const val TAG = "SigningViewModelTag"
-        private const val UPDATE_DOCUMENTS_COUNT = 16
+        private const val UPDATE_DOCUMENTS_COUNT = 10
         private const val UPDATE_DOCUMENTS_TIMEOUT = 5000L
+        private const val DELAY_500 = 500L
     }
 
     override val isAuthorizationActive: Boolean = true
@@ -88,11 +90,21 @@ class SigningViewModel(
     private val _adapterList = MutableLiveData<List<HomeAdapterMarker>>(emptyList())
     val adapterList = _adapterList.readOnly()
 
+    private val _openEditUserLiveDataEvent = MutableLiveData<Unit>()
+    val openEditUserLiveDataEvent = _openEditUserLiveDataEvent.readOnly()
+
+    private val _openDocumentLiveDataEvent = MutableLiveData<Unit>()
+    val openDocumentLiveDataEvent = _openDocumentLiveDataEvent.readOnly()
+
     @Volatile
     private var cursor: String? = null
 
     @Volatile
     private var isLoading = false
+
+    @Volatile
+    var isUserProfileIdentified = true
+        private set
 
     override fun onFirstAttach() {
         logDebug("onFirstAttach", TAG)
@@ -114,7 +126,7 @@ class SigningViewModel(
             SdkStatus.SDK_SETUP_ERROR,
             SdkStatus.USER_SETUP_ERROR,
             SdkStatus.CRITICAL_ERROR -> {
-                evrotrustTransactionId = null
+                clearData()
                 logout()
             }
 
@@ -124,6 +136,22 @@ class SigningViewModel(
                 sendSignedDocument()
             }
 
+            SdkStatus.USER_STATUS_READY,
+            SdkStatus.ACTIVITY_RESULT_EDIT_PERSONAL_DATA_READY -> {
+                isUserProfileIdentified = true
+                _openDocumentLiveDataEvent.callOnMainThread()
+            }
+
+            SdkStatus.USER_STATUS_NOT_IDENTIFIED -> {
+                isUserProfileIdentified = false
+                _openEditUserLiveDataEvent.callOnMainThread()
+            }
+
+            SdkStatus.ERROR,
+            SdkStatus.ACTIVITY_RESULT_OPEN_SINGLE_DOCUMENT_CANCELLED -> {
+//                preferences.saveLastSelectedTransactionId(null)
+            }
+
             else -> {
                 updateOpenedDocument()
             }
@@ -131,7 +159,7 @@ class SigningViewModel(
     }
 
     fun isLastPage(): Boolean {
-        return  cursor.isNullOrEmpty()
+        return cursor.isNullOrEmpty()
     }
 
     fun isLoading(): Boolean {
@@ -164,7 +192,6 @@ class SigningViewModel(
     private fun updateOpenedDocument() {
         if (evrotrustTransactionId.isNullOrEmpty()) {
             logError("updateOpenedDocument evrotrustTransactionId.isNullOrEmpty()", TAG)
-            showMessage(Message.error(R.string.error_server_error))
             return
         }
         documentsSendSignedUseCase.invoke(
@@ -175,6 +202,7 @@ class SigningViewModel(
                 showLoader()
             }.onSuccess {
                 logDebug("updateOpenedDocument onSuccess", TAG)
+                evrotrustTransactionId = null
                 refreshData()
             }.onRetry {
                 updateOpenedDocument()
@@ -188,9 +216,10 @@ class SigningViewModel(
     private fun sendSignedDocument() {
         if (evrotrustTransactionId.isNullOrEmpty()) {
             logError("sendSignedDocument evrotrustTransactionId.isNullOrEmpty()", TAG)
-            showMessage(Message.error(R.string.error_server_error))
+            counter = 0
             return
         }
+        counter += 1
         sendSignedDocumentJob?.cancel()
         sendSignedDocumentJob = documentsSendSignedUseCase.invoke(
             evrotrustTransactionId = evrotrustTransactionId!!
@@ -201,19 +230,27 @@ class SigningViewModel(
             }.onSuccess {
                 logDebug("sendSignedDocument onSuccess", TAG)
                 counter = 0
-                evrotrustTransactionId = null
+                clearData()
                 refreshData()
             }.onRetry {
                 sendSignedDocument()
             }.onFailure {
                 logError("sendSignedDocument onFailure", it, TAG)
                 if (counter >= UPDATE_DOCUMENTS_COUNT) {
-                    hideLoader()
-                    showErrorState()
+                    viewModelScope.launch {
+                        delay(DELAY_500)
+                        hideLoader()
+                        hideErrorState()
+                        clearData()
+                        showMessage(Message.error(it.serverMessage ?: ""))
+                        refreshData()
+                    }
                 } else {
                     viewModelScope.launch {
                         delay(UPDATE_DOCUMENTS_TIMEOUT)
-                        sendSignedDocument()
+                        evrotrustTransactionId?.let {
+                            sendSignedDocument()
+                        }
                     }
                 }
             }
@@ -254,10 +291,18 @@ class SigningViewModel(
         }.launchInScope(viewModelScope)
     }
 
+    private fun clearData() {
+        evrotrustTransactionId = null
+    }
+
     override fun onNewPendingDocumentEvent(isNotificationEvent: Boolean) {
         if (!isNotificationEvent) {
             refreshData()
             clearNewPendingDocumentEvent()
         }
+    }
+
+    override fun onNewSignedDocumentEvent(isNotificationEvent: Boolean) {
+        clearData()
     }
 }

@@ -96,6 +96,7 @@
 		004D40052ACE901C00B45266 /* ConfirmDataShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004D40042ACE901C00B45266 /* ConfirmDataShareView.swift */; };
 		004E6FC32B7B5601001A3578 /* FileUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004E6FC22B7B5601001A3578 /* FileUploader.swift */; };
 		00511E0E2A866B8F0009D83A /* EvrotrustError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00511E0D2A866B8F0009D83A /* EvrotrustError.swift */; };
+		00552BDF2C4A9C2E00B586AA /* PaymentWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00552BDE2C4A9C2E00B586AA /* PaymentWebView.swift */; };
 		005584262B469911006BFF00 /* UITabBarController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005584252B469911006BFF00 /* UITabBarController+Extension.swift */; };
 		005873B32B57C2D700DE1D06 /* GradientBorderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005873B22B57C2D700DE1D06 /* GradientBorderButton.swift */; };
 		005BDC1B2A3050370027B640 /* PrivacyPolicyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005BDC1A2A3050370027B640 /* PrivacyPolicyView.swift */; };
@@ -242,6 +243,7 @@
 		14F46F36298127DC0063D14F /* Quickblox.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 14F46F32298127B60063D14F /* Quickblox.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		14F46F37298127DE0063D14F /* QuickbloxWebRTC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 14F46F31298127B60063D14F /* QuickbloxWebRTC.framework */; };
 		14F46F38298127DE0063D14F /* QuickbloxWebRTC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 14F46F31298127B60063D14F /* QuickbloxWebRTC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		E3B90B362C4FC34800283C6E /* ExitButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3B90B352C4FC34800283C6E /* ExitButtonView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -351,6 +353,7 @@
 		004D40042ACE901C00B45266 /* ConfirmDataShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmDataShareView.swift; sourceTree = "<group>"; };
 		004E6FC22B7B5601001A3578 /* FileUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUploader.swift; sourceTree = "<group>"; };
 		00511E0D2A866B8F0009D83A /* EvrotrustError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvrotrustError.swift; sourceTree = "<group>"; };
+		00552BDE2C4A9C2E00B586AA /* PaymentWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentWebView.swift; sourceTree = "<group>"; };
 		005584252B469911006BFF00 /* UITabBarController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITabBarController+Extension.swift"; sourceTree = "<group>"; };
 		005873B22B57C2D700DE1D06 /* GradientBorderButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientBorderButton.swift; sourceTree = "<group>"; };
 		005BDC1A2A3050370027B640 /* PrivacyPolicyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyView.swift; sourceTree = "<group>"; };
@@ -507,6 +510,7 @@
 		AF820BFE071D358EEFF73DA3 /* Pods-Digital Sofia.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Digital Sofia.release.xcconfig"; path = "Target Support Files/Pods-Digital Sofia/Pods-Digital Sofia.release.xcconfig"; sourceTree = "<group>"; };
 		B422AC23A97593150D705A15 /* Pods-Digital Sofia.release-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Digital Sofia.release-dev.xcconfig"; path = "Target Support Files/Pods-Digital Sofia/Pods-Digital Sofia.release-dev.xcconfig"; sourceTree = "<group>"; };
 		CA2710DF930425C1E2168ED8 /* Pods-Digital Sofia.debug-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Digital Sofia.debug-dev.xcconfig"; path = "Target Support Files/Pods-Digital Sofia/Pods-Digital Sofia.debug-dev.xcconfig"; sourceTree = "<group>"; };
+		E3B90B352C4FC34800283C6E /* ExitButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExitButtonView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -568,6 +572,7 @@
 				0024992D29FAA04C002FB570 /* BlueBackgroundButton.swift */,
 				000849DE2A77CA9800BF5A64 /* BlueTextButton.swift */,
 				005873B22B57C2D700DE1D06 /* GradientBorderButton.swift */,
+				E3B90B352C4FC34800283C6E /* ExitButtonView.swift */,
 			);
 			path = Buttons;
 			sourceTree = "<group>";
@@ -819,6 +824,15 @@
 			path = Customization;
 			sourceTree = "<group>";
 		};
+		00552BDD2C4A9C1800B586AA /* WebViews */ = {
+			isa = PBXGroup;
+			children = (
+				00D254572B272A3900191DEA /* DSWebView.swift */,
+				00552BDE2C4A9C2E00B586AA /* PaymentWebView.swift */,
+			);
+			path = WebViews;
+			sourceTree = "<group>";
+		};
 		006E53452B5167E00048C745 /* Manager */ = {
 			isa = PBXGroup;
 			children = (
@@ -853,9 +867,8 @@
 		00770D7D2A6AADDF000C2824 /* SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
-				00CC0D1B2BBE7C8000C117E5 /* CustomAlert */,
 				000849E02A77CB0C00BF5A64 /* Buttons */,
-				00D254572B272A3900191DEA /* DSWebView.swift */,
+				00CC0D1B2BBE7C8000C117E5 /* CustomAlert */,
 				00D6E5DB2B511936003BFD5E /* IdentityRequestView.swift */,
 				0024992B29FA9F74002FB570 /* iOSCheckboxToggleStyle.swift */,
 				00ED885D2B69026400256423 /* Keyboard */,
@@ -872,6 +885,7 @@
 				009F44522A80D936003D58CB /* Representable */,
 				009F44552A821678003D58CB /* ShareActivityView.swift */,
 				00ED88612B6902F800256423 /* Sheet */,
+				00552BDD2C4A9C1800B586AA /* WebViews */,
 			);
 			path = SwiftUI;
 			sourceTree = "<group>";
@@ -1340,6 +1354,7 @@
 				14F46F0F29811E460063D14F /* Embed Frameworks */,
 				00511E0C2A8624C10009D83A /* Remove x86_64 arch Run Script  */,
 				F88F83AEC8C989D5C71F4C60 /* [CP] Embed Pods Frameworks */,
+				0000BA512CC0DE9E00A89565 /* dSYM Upload Script  */,
 			);
 			buildRules = (
 			);
@@ -1423,6 +1438,29 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		0000BA512CC0DE9E00A89565 /* dSYM Upload Script  */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+			);
+			name = "dSYM Upload Script ";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/FirebaseCrashlytics/run\"\n";
+		};
 		00511E0C2A8624C10009D83A /* Remove x86_64 arch Run Script  */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1549,6 +1587,7 @@
 				002D85F92B484ED60001EEEB /* LockScreenModifier.swift in Sources */,
 				009E96A62A8E30FC003F7827 /* WelcomeUserView.swift in Sources */,
 				00C7B2DD2B1F180B003E74D5 /* ViewController+ETCustomization.swift in Sources */,
+				00552BDF2C4A9C2E00B586AA /* PaymentWebView.swift in Sources */,
 				00F9051E2AC4412E00F8ACE3 /* RegisterView.swift in Sources */,
 				0024939E29DC3A20007B77F4 /* HTTPHeaders+Extension.swift in Sources */,
 				001700B32A7D3517002B667B /* JSONUtilities.swift in Sources */,
@@ -1599,6 +1638,7 @@
 				003BD1322B10C4D600925A25 /* NotDOBRule.swift in Sources */,
 				0048839029F7F0900065A00B /* DSColors.swift in Sources */,
 				140E46362977F2E700FC85BD /* AppDelegate.swift in Sources */,
+				E3B90B362C4FC34800283C6E /* ExitButtonView.swift in Sources */,
 				003BD1362B10C4F400925A25 /* ValidEmailRule.swift in Sources */,
 				009FD60D29DC144200CFD8B1 /* ParametersEncoding.swift in Sources */,
 				00BEB8482B8F140A00CB8ACF /* WebViewDownloadError.swift in Sources */,
@@ -1827,7 +1867,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Digital Sofia/Digital Sofia.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 67;
+				CURRENT_PROJECT_VERSION = 76;
 				DEVELOPMENT_TEAM = 9VVHAD2T49;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1836,7 +1876,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Digital Sofia/Info.plist";
-				INFOPLIST_KEY_NFCReaderUsageDescription = "";
+				INFOPLIST_KEY_NFCReaderUsageDescription = "We need to use the NFC to scan your documents.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need to use your camera so we can identify you";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We need to unlock your data.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need to use your microphone";
@@ -1851,7 +1891,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Digital-Sofia";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1932,7 +1972,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Digital Sofia/Digital Sofia.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 67;
+				CURRENT_PROJECT_VERSION = 76;
 				DEVELOPMENT_TEAM = 9VVHAD2T49;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1941,7 +1981,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Digital Sofia/Info.plist";
-				INFOPLIST_KEY_NFCReaderUsageDescription = "";
+				INFOPLIST_KEY_NFCReaderUsageDescription = "We need to use the NFC to scan your documents.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need to use your camera so we can identify you";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We need to unlock your data.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need to use your microphone";
@@ -1956,7 +1996,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Digital-Sofia";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2101,7 +2141,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Digital Sofia/Digital Sofia.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 67;
+				CURRENT_PROJECT_VERSION = 76;
 				DEVELOPMENT_TEAM = 9VVHAD2T49;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2110,7 +2150,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Digital Sofia/Info.plist";
-				INFOPLIST_KEY_NFCReaderUsageDescription = "";
+				INFOPLIST_KEY_NFCReaderUsageDescription = "We need to use the NFC to scan your documents.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need to use your camera so we can identify you";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We need to unlock your data.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need to use your microphone";
@@ -2125,7 +2165,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Digital-Sofia";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2148,7 +2188,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Digital Sofia/Digital Sofia.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 67;
+				CURRENT_PROJECT_VERSION = 76;
 				DEVELOPMENT_TEAM = 9VVHAD2T49;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2157,7 +2197,7 @@
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Digital Sofia/Info.plist";
-				INFOPLIST_KEY_NFCReaderUsageDescription = "";
+				INFOPLIST_KEY_NFCReaderUsageDescription = "We need to use the NFC to scan your documents.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need to use your camera so we can identify you";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "We need to unlock your data.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need to use your microphone";
@@ -2172,7 +2212,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Digital-Sofia";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

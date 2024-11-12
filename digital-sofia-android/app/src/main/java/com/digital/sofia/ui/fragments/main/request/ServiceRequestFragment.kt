@@ -8,16 +8,19 @@ package com.digital.sofia.ui.fragments.main.request
 import android.net.Uri
 import android.os.Bundle
 import com.digital.sofia.R
+import com.digital.sofia.data.BuildConfig.PAYMENT_HOST
 import com.digital.sofia.data.BuildConfig.URL_BASE_WEB_VIEW
 import com.digital.sofia.domain.repository.common.PreferencesRepository
 import com.digital.sofia.domain.utils.LogUtil.logDebug
 import com.digital.sofia.domain.utils.LogUtil.logError
 import com.digital.sofia.ui.fragments.base.BaseWebViewFragment
+import com.digital.sofia.ui.fragments.payment.PaymentBottomSheetFragment
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ServiceRequestFragment :
-    BaseWebViewFragment<ServiceRequestViewModel>() {
+    BaseWebViewFragment<ServiceRequestViewModel>(),
+    PaymentBottomSheetFragment.Listener {
 
     companion object {
         private const val TAG = "ServiceRequestFragmentTag"
@@ -45,6 +48,8 @@ class ServiceRequestFragment :
 
     private val preferences: PreferencesRepository by inject()
 
+    private var paymentBottomSheet: PaymentBottomSheetFragment? = null
+
     override fun onCreated(savedInstanceState: Bundle?) {
         try {
             val accessToken = preferences.readAccessToken()?.token
@@ -67,7 +72,8 @@ class ServiceRequestFragment :
                             val pageLanguage = initialPageUri.getQueryParameter("lang")
                             val pageRefreshToken = initialPageUri.getQueryParameter("refreshToken")
                             val isLanguageChanged = pageLanguage != null && pageLanguage != language
-                            val isRefreshTokenChanged = pageRefreshToken != null && pageRefreshToken != refreshToken
+                            val isRefreshTokenChanged =
+                                pageRefreshToken != null && pageRefreshToken != refreshToken
                             if (isLanguageChanged || isRefreshTokenChanged) {
                                 stopWebViewLoading()
                                 loadWebPage(pageUrl = url, shouldClearHistory = true)
@@ -108,4 +114,31 @@ class ServiceRequestFragment :
         }
     }
 
+    override fun needToLoadPage(url: String?): Boolean {
+        val uri = Uri.parse(url)
+        return when {
+            uri.host == PAYMENT_HOST -> {
+                if (paymentBottomSheet == null) {
+                    paymentBottomSheet =
+                        PaymentBottomSheetFragment.newInstance(url = url, listener = this)
+                            .also { bottomSheet ->
+                                bottomSheet.show(
+                                    requireActivity().supportFragmentManager,
+                                    "PaymentBottomSheetFragmentTag"
+                                )
+                            }
+                }
+                false
+            }
+
+            else -> true
+        }
+    }
+
+    override fun operationCompleted() {
+        paymentBottomSheet?.dismiss().also {
+            paymentBottomSheet = null
+            refreshScreen()
+        }
+    }
 }

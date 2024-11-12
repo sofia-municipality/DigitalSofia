@@ -27,6 +27,7 @@ import com.digital.sofia.domain.usecase.user.GetLogLevelUseCase
 import com.digital.sofia.domain.utils.AuthorizationHelper
 import com.digital.sofia.domain.utils.LogUtil.logDebug
 import com.digital.sofia.domain.utils.LogUtil.logError
+import com.digital.sofia.extensions.isFragmentInBackStack
 import com.digital.sofia.extensions.launchInScope
 import com.digital.sofia.extensions.navigateInMainThread
 import com.digital.sofia.extensions.navigateNewRootInMainThread
@@ -118,7 +119,8 @@ abstract class BaseViewModel(
 
     val logoutUserEventLiveData = authorizationHelper.logoutUserEventLiveData
 
-    val newNetworkConnectionChangeEventLiveData = networkConnectionManager.newNetworkConnectionChangeEventLiveData
+    val newNetworkConnectionChangeEventLiveData =
+        networkConnectionManager.newNetworkConnectionChangeEventLiveData
 
     fun onNewAuthorizationEvent() {
         logDebug("onNewAuthorizationEvent", TAG)
@@ -182,7 +184,7 @@ abstract class BaseViewModel(
             getLogLevelUseCase.invoke(
                 personalIdentifier = user.personalIdentificationNumber ?: ""
             ).onEach { result ->
-                result.onSuccess {  logLevel ->
+                result.onSuccess { logLevel ->
                     preferences.saveUser(value = user.copy(isDebug = logLevel.level > 0))
                 }.onRetry {
                     getLogLevel()
@@ -227,9 +229,12 @@ abstract class BaseViewModel(
             toRegistrationFragment()
             return
         }
-        findActivityNavController().navigateInMainThread(
-            NavActivityDirections.toEnterCodeFlowFragment(), viewModelScope
-        )
+        val activityController = findActivityNavController()
+        if (activityController.isFragmentInBackStack(R.id.enterCodeFlowFragment).not()) {
+            findActivityNavController().navigateInMainThread(
+                NavActivityDirections.toEnterCodeFlowFragment(), viewModelScope
+            )
+        }
     }
 
     fun fragmentOnResume() {

@@ -34,6 +34,7 @@ struct DSWebView: View {
     @State private var request: URLRequest?
     @State private var shouldRefresh = false
     @StateObject private var navigationState = WebViewNavigationState()
+    @State private var paymentUrl: PaymentUrl?
     
     init(type: DSWebViewType) {
         self.type = type
@@ -42,7 +43,7 @@ struct DSWebView: View {
     var body: some View {
         ZStack {
             DSColors.background
-
+            
             NetworkStack {
                 WebView(shouldRefresh: $shouldRefresh, request: request, navigationState: navigationState)
             }
@@ -67,6 +68,15 @@ struct DSWebView: View {
         })
         .environmentObject(appState)
         .navigationBarHidden(true)
+        .onAppear {
+            navigationState.paymentStarted = { url in handlePayment(to: url)}
+        }
+        .sheet(item: $paymentUrl, onDismiss: {
+            loadUrl()
+        }, content: { item in
+            PaymentWebView(paymentUrl: item)
+                .environmentObject(networkMonitor)
+        })
     }
     
     private func loadUrl() {
@@ -74,5 +84,9 @@ struct DSWebView: View {
             request = URLRequest(url: url)
             shouldRefresh = true
         }
+    }
+    
+    private func handlePayment(to url: URL?) {
+        paymentUrl = PaymentUrl(url)
     }
 }

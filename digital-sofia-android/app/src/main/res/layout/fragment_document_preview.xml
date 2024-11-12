@@ -32,6 +32,7 @@
                 android:id="@+id/errorView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@color/color_background"
                 android:visibility="gone"
                 app:error_view_button_one_title="@string/try_again"
                 app:error_view_button_two_title="@string/close"
@@ -45,6 +46,7 @@
                 android:id="@+id/loaderView"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:background="@color/color_background"
                 android:visibility="gone"
                 tools:visibility="gone" />
 

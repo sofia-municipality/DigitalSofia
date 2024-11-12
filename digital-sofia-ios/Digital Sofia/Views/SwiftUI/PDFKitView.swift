@@ -49,7 +49,7 @@ struct PDFKitView: View {
 
 struct PDFKitView_Previews: PreviewProvider {
     static var previews: some View {
-        PDFKitView(pdfUrl: URL(string: NetworkConfig.TestData.dummyPDFFileURL))
+        PDFKitView(pdfUrl: URL(string: ""))
     }
 }
 

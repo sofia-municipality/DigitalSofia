@@ -13,7 +13,6 @@ import android.content.ContextWrapper
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.MotionEvent
@@ -33,7 +32,6 @@ import com.digital.sofia.databinding.ActivityBaseBinding
 import com.digital.sofia.domain.repository.common.PreferencesRepository
 import com.digital.sofia.domain.utils.LogUtil.logDebug
 import com.digital.sofia.domain.utils.LogUtil.logError
-import com.digital.sofia.extensions.backgroundColor
 import com.digital.sofia.extensions.hideKeyboard
 import com.digital.sofia.extensions.throwBackPressedEvent
 import com.digital.sofia.extensions.wrap
@@ -41,6 +39,7 @@ import com.digital.sofia.models.common.AlertDialogResult
 import com.digital.sofia.models.common.Message
 import com.digital.sofia.models.common.MessageBannerHolder
 import com.digital.sofia.models.common.StartDestination
+import com.digital.sofia.ui.fragments.base.BaseBottomSheetFragment
 import com.digital.sofia.ui.view.BetaView
 import com.digital.sofia.utils.AlertDialogResultListener
 import com.digital.sofia.utils.AppUncaughtExceptionHandler
@@ -195,7 +194,12 @@ class MainActivity : AppCompatActivity(),
         loginTimer.lockStatusLiveData.observe(this) {
             if (it) {
                 logDebug("lockStatusLiveData onLoginTimerExpired", TAG)
-                viewModel.onLoginTimerExpired()
+                when (val lastVisibleFragment = supportFragmentManager.fragments.last()) {
+                    is BaseBottomSheetFragment<*, *> -> lastVisibleFragment.dismiss().also {
+                        viewModel.onLoginTimerExpired()
+                    }
+                    else -> viewModel.onLoginTimerExpired()
+                }
             }
         }
     }
@@ -226,7 +230,7 @@ class MainActivity : AppCompatActivity(),
                     if (message.positiveButtonText != null) {
                         builder.setPositiveButton(message.positiveButtonText.getString(this)) { dialog, _ ->
                             logDebug("alertDialog result positive", TAG)
-                            dialog.cancel()
+                            dialog.dismiss()
                             alertDialogResultListener?.onAlertDialogResult(
                                 AlertDialogResult(
                                     messageId = message.messageId,

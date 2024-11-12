@@ -1,4 +1,4 @@
-/*
+/* 
   Evrotrust.strings
   EvrotrustSDK
 
@@ -34,6 +34,8 @@
 "evrotrust_language_sq"                 = "Shqip";
 "evrotrust_language_mk"                 = "Македонски";
 "evrotrust_language_ro"                 = "Românesc";
+"evrotrust_language_it"                 = "Italiano";
+"evrotrust_language_fr"                 = "Français";
 
 "evrotrust_bgr"                          = "България";
 "evrotrust_rou"                          = "Румъния";
@@ -353,7 +355,7 @@
 "evrotrust_password_existing_user_info"             = "Въведете тайна парола";
 "evrotrust_password_existing_user_info_long"        = "Моля, въведете тайната парола, която сте задали към момента на регистрацията.";
 "evrotrust_password_existing_user_enter_password"   = "Тайна парола*";
-"evrotrust_password_existing_user_wrong_password"   = "Не е открит такъв потребител или въведената тайна парола е грешна.";
+"evrotrust_password_existing_user_wrong_password"   = "Въведената парола е грешна. Ако не я помните, моля пишете ни за съдействие на support@evrotrust.com.";
 "evrotrust_password_enter_password"                 = "Тайна парола*";
 "evrotrust_password_err"                            = "Паролата трябва да съдържа минимум 6 символа";
 "evrotrust_password_incorrect_password_err"         = "Въвели сте символ, който е недопустим %@\nИзисквания: мин. 6 символа (главни букви и/или малки букви на кирилица или латиница, цифри). Допустими специални символи: (){}[]#:;^,.?!|&_`~@$%%/\\=+-*\"'";

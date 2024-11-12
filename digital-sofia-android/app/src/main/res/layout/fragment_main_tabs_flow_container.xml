@@ -119,15 +119,9 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
+        style="@style/BottomNavigationViewStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:backgroundTint="@color/color_transparent"
-        app:itemIconTint="@color/selector_bottom_navigation"
-        app:itemRippleColor="@color/color_ripple"
-        app:itemTextAppearanceActive="@style/TextStyle.14spRegularMainColor"
-        app:itemTextAppearanceInactive="@style/TextStyle.14spRegularMainColor"
-        app:itemTextColor="@color/selector_bottom_navigation"
-        app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

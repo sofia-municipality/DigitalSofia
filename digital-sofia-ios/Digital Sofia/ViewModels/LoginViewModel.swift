@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 class LoginViewModel {
     var authenticationResult: ((BiometricError?) -> ())?
     var biometricFallbackAction: (() -> ())?
@@ -20,8 +21,6 @@ class LoginViewModel {
         self.authenticationResult = authenticationResult
         self.biometricFallbackAction = biometricFallbackAction
     }
-    
-    
     
     func welcomeView() -> some View {
         return VStack {

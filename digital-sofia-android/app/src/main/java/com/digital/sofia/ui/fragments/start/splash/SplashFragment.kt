@@ -34,7 +34,7 @@ class SplashFragment :
     override fun onAlertDialogResult(result: AlertDialogResult) {
         if (result.isPositive) {
             logDebug("onAlertDialogResult isPositive", TAG)
-            evrotrustSDKHelper.openSettingsScreens(requireActivity())
+            evrotrustSDKHelper.openEditProfile(requireActivity())
         } else {
             logDebug("onAlertDialogResult negative", TAG)
             evrotrustSDKHelper.checkUserStatus()

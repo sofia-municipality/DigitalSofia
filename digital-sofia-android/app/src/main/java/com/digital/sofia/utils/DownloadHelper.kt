@@ -12,6 +12,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import com.digital.sofia.domain.repository.common.PreferencesRepository
 import com.digital.sofia.domain.utils.LogUtil.logDebug
@@ -95,7 +96,18 @@ class DownloadHelper(
             downloadId = downloadManager.enqueue(request)
             if (downloadId != 0L) {
                 val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
-                context.registerReceiver(downloadReceiver, filter)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    context.registerReceiver(
+                        downloadReceiver,
+                        filter,
+                        Context.RECEIVER_EXPORTED
+                    )
+                } else {
+                    context.registerReceiver(
+                        downloadReceiver,
+                        filter
+                    )
+                }
             } else {
                 _onErrorLiveData.callOnMainThread()
             }
