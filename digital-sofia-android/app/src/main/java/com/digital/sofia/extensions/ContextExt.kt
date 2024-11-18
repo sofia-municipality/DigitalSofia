@@ -58,6 +58,12 @@ fun Context.callPhoneNumber(phoneNumber: String) {
     safeStartActivity(intent)
 }
 
+fun Context.sendMail(email: String) {
+    val emailUri = "mailto:$email"
+    val intent = Intent(Intent.ACTION_SENDTO, Uri.parse(emailUri))
+    safeStartActivity(intent)
+}
+
 fun Context.openUrlInBrowser(url: String) {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
     safeStartActivity(intent)

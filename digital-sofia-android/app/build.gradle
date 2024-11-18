@@ -26,11 +26,10 @@ android {
 
     defaultConfig {
         applicationId "com.digital.sofia"
-        versionCode 24
+        versionCode 38
         minSdk 24
         targetSdk 34
         multiDexEnabled true
-        consumerProguardFiles "consumer-rules.pro"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -76,16 +75,16 @@ android {
 
     productFlavors {
         environmentDev {
-            versionName "12.04.2024 dev environment"
+            versionName "03.09.2024 dev environment"
         }
         environmentTest {
-            versionName "12.04.2024 test environment"
+            versionName "03.09.2024 test environment"
         }
         environmentStage {
-            versionName "12.04.2024 stage environment"
+            versionName "24.10.2024 stage environment"
         }
         environmentProd {
-            versionName "1.0.0"
+            versionName "1.0.4"
         }
         all {
             dimension "version"
@@ -100,35 +99,35 @@ dependencies {
     implementation project(':data')
 
     // android
-    implementation 'androidx.core:core-ktx:1.12.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.8.6'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6'
     implementation 'androidx.multidex:multidex:2.0.1'
-    runtimeOnly 'androidx.core:core-ktx:1.12.0'
+    runtimeOnly 'androidx.core:core-ktx:1.13.1'
     implementation 'androidx.core:core-splashscreen:1.0.1'
-    implementation 'androidx.browser:browser:1.7.0'
+    implementation 'androidx.browser:browser:1.8.0'
     implementation 'androidx.biometric:biometric:1.1.0'
     implementation 'javax.inject:javax.inject:1'
 
     // navigation
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.7.7'
-    implementation 'androidx.navigation:navigation-dynamic-features-fragment:2.7.7'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.8.3'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.8.3'
+    implementation 'androidx.navigation:navigation-dynamic-features-fragment:2.8.3'
 
     //  di
-    implementation 'io.insert-koin:koin-core-coroutines:3.5.3'
-    implementation 'io.insert-koin:koin-android:3.5.3'
-    implementation 'io.insert-koin:koin-android-compat:3.5.3'
-    implementation 'io.insert-koin:koin-androidx-navigation:3.5.3'
+    implementation 'io.insert-koin:koin-core-coroutines:3.5.6'
+    implementation 'io.insert-koin:koin-android:3.5.6'
+    implementation 'io.insert-koin:koin-android-compat:3.5.6'
+    implementation 'io.insert-koin:koin-androidx-navigation:3.5.6'
 
     // glide
     implementation 'com.github.bumptech.glide:glide:4.16.0'
 
     // lottie
-    implementation 'com.airbnb.android:lottie:6.3.0'
+    implementation 'com.airbnb.android:lottie:6.5.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
     // room
@@ -141,22 +140,22 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.2.1'
 
     // coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1'
 
     // firebase
-    implementation platform('com.google.firebase:firebase-bom:32.7.1')
+    implementation platform('com.google.firebase:firebase-bom:33.5.1')
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.google.firebase:firebase-messaging-ktx'
 
     // tests
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'io.insert-koin:koin-test:3.5.3'
+    testImplementation 'io.insert-koin:koin-test:3.5.6'
     testImplementation "androidx.arch.core:core-testing:2.2.0"
-    testImplementation 'io.insert-koin:koin-test-junit4:3.5.3'
-    testImplementation 'org.mockito:mockito-core:5.10.0'
-    testImplementation 'org.mockito.kotlin:mockito-kotlin:5.2.1'
+    testImplementation 'io.insert-koin:koin-test-junit4:3.5.6'
+    testImplementation 'org.mockito:mockito-core:5.12.0'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:5.4.0'
 
     // lists
     implementation 'com.hannesdorfmann:adapterdelegates4:4.3.2'

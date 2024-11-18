@@ -5,6 +5,8 @@
  **/
 package com.digital.sofia.utils
 
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import com.digital.sofia.domain.models.common.AppLanguage
 import com.digital.sofia.domain.repository.common.PreferencesRepository
 import com.digital.sofia.domain.utils.LogUtil.logDebug
@@ -46,6 +48,7 @@ class LocalizationManager(
         configuration.setLocale(locale)
         currentContext.get().createConfigurationContext(configuration)
         currentContext.get().resources.updateConfiguration(configuration, displayMetrics)
+        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(languageStr))
         _readyLiveData.callOnMainThread()
         inChange = false
     }

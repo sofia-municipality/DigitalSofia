@@ -6,13 +6,20 @@
 //
 
 import SwiftUI
-import WebKit
+@preconcurrency import WebKit
 
 class WebViewNavigationState: NSObject, ObservableObject {
+    var paymentStarted: ((URL?) -> ())?
     @Published var downloadComplete: Bool?
     @Published var downloadError: WebViewDownloadError?
     
     let webView = CustomWebView()
+    
+    private func openLink(url: URL) {
+        if UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
+        }
+    }
 }
 
 extension WebViewNavigationState: WKNavigationDelegate {
@@ -20,12 +27,44 @@ extension WebViewNavigationState: WKNavigationDelegate {
                  decidePolicyFor navigationAction: WKNavigationAction,
                  preferences: WKWebpagePreferences,
                  decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
-        //        print(navigationAction.request.url?.absoluteString ?? "")
-        
         if navigationAction.shouldPerformDownload {
             decisionHandler(.download, preferences)
         } else {
-            decisionHandler(.allow, preferences)
+            switch navigationAction.navigationType {
+            case .linkActivated:
+                if let url = navigationAction.request.url {
+                    openLink(url: url)
+                }
+                
+                decisionHandler(.cancel, preferences)
+                
+            case .other:
+                guard let url = navigationAction.request.url else {
+                    decisionHandler(.allow, preferences)
+                    return
+                }
+                
+                if url.host == NetworkConfig.Addresses.paymentHost, let paymentStarted = paymentStarted {
+                    paymentStarted(url)
+                    decisionHandler(.cancel, preferences)
+                    return
+                }
+                
+                decisionHandler(.allow, preferences)
+            default:
+                guard let scheme = navigationAction.request.url?.scheme,
+                      let url = navigationAction.request.url else {
+                    decisionHandler(.allow, preferences)
+                    return
+                }
+                
+                switch scheme {
+                case "tel", "mailto":
+                    openLink(url: url)
+                default:
+                    decisionHandler(.allow, preferences)
+                }
+            }
         }
     }
     

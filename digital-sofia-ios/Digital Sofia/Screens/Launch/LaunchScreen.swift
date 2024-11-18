@@ -54,7 +54,8 @@ struct LaunchScreen: View {
     
     private func navigation() -> some View {
         VStack {
-            NavigationLink(destination: InitialView(appState: appState).environmentObject(networkMonitor),
+            NavigationLink(destination: InitialView(appState: appState)
+                .environmentObject(networkMonitor),
                            isActive: $showInitialScreen) { EmptyView() }
             
             NavigationLink(destination: TabbarView()

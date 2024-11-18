@@ -66,6 +66,8 @@ import com.digital.sofia.ui.fragments.main.documents.preview.DocumentPreviewView
 import com.digital.sofia.ui.fragments.main.request.ServiceRequestViewModel
 import com.digital.sofia.ui.fragments.main.services.MyServicesViewModel
 import com.digital.sofia.ui.fragments.main.signing.SigningViewModel
+import com.digital.sofia.ui.fragments.payment.PaymentBottomSheetFragment
+import com.digital.sofia.ui.fragments.payment.PaymentBottomSheetViewModel
 import com.digital.sofia.ui.fragments.permissions.PermissionBottomSheetViewModel
 import com.digital.sofia.ui.fragments.registration.RegistrationFlowViewModel
 import com.digital.sofia.ui.fragments.registration.biometric.RegistrationEnableBiometricViewModel
@@ -1076,6 +1078,22 @@ val viewModelsModule = module {
             firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
             confirmationGetCodeStatusUseCase = get<ConfirmationGetCodeStatusUseCase>(),
             confirmationUpdateCodeStatusUseCase = get<ConfirmationUpdateCodeStatusUseCase>(),
+            getLogLevelUseCase = get<GetLogLevelUseCase>(),
+            networkConnectionManager = get<NetworkConnectionManager>(),
+            updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
+        )
+    }
+
+    viewModel {
+        PaymentBottomSheetViewModel(
+            loginTimer = get<LoginTimer>(),
+            appEventsHelper = get<AppEventsHelper>(),
+            preferences = get<PreferencesRepository>(),
+            localizationManager = get<LocalizationManager>(),
+            authorizationHelper = get<AuthorizationHelper>(),
+            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
+            cryptographyRepository = get<CryptographyRepository>(),
+            firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
             networkConnectionManager = get<NetworkConnectionManager>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),

@@ -15,12 +15,14 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.net.Uri
+import android.net.http.SslError
 import android.os.Bundle
 import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
+import android.webkit.SslErrorHandler
 import android.webkit.ValueCallback
 import android.webkit.WebBackForwardList
 import android.webkit.WebChromeClient
@@ -34,7 +36,9 @@ import com.digital.sofia.R
 import com.digital.sofia.databinding.FragmentBaseWebViewBinding
 import com.digital.sofia.domain.utils.LogUtil.logDebug
 import com.digital.sofia.domain.utils.LogUtil.logError
+import com.digital.sofia.extensions.callPhoneNumber
 import com.digital.sofia.extensions.onClickThrottle
+import com.digital.sofia.extensions.sendMail
 import com.digital.sofia.models.common.Message
 import com.digital.sofia.models.common.StringSource
 import com.digital.sofia.ui.BaseViewModel
@@ -48,6 +52,8 @@ abstract class BaseWebViewFragment<VM : BaseViewModel> :
         private const val FILE_CHOOSER_RESULT_CODE = 12345
         private const val TAG = "BaseWebViewFragmentTag"
         private const val JS_INTERFACE_NAME = "download_files_android"
+        private const val TEL_SCHEME = "tel:"
+        private const val EMAIL_SCHEME = "mailto:"
     }
 
     override fun getViewBinding() = FragmentBaseWebViewBinding.inflate(layoutInflater)
@@ -372,7 +378,20 @@ abstract class BaseWebViewFragment<VM : BaseViewModel> :
             request: WebResourceRequest?
         ): Boolean {
             logDebug("shouldOverrideUrlLoading", TAG)
-            return !needToLoadPage(request?.url.toString())
+            val requestUrl = request?.url.toString()
+            return when {
+                requestUrl.startsWith(TEL_SCHEME) -> {
+                    val phone = requestUrl.removePrefix(TEL_SCHEME)
+                    requireContext().callPhoneNumber(phone)
+                    true
+                }
+                requestUrl.startsWith(EMAIL_SCHEME) -> {
+                    val email = requestUrl.removePrefix(EMAIL_SCHEME)
+                    requireContext().sendMail(email)
+                    true
+                }
+                else -> !needToLoadPage(request?.url.toString())
+            }
         }
 
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {

@@ -13,6 +13,7 @@ import android.animation.ValueAnimator
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.res.Resources
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
@@ -26,6 +27,7 @@ import com.digital.sofia.databinding.BottomSheetBaseLayoutBinding
 import com.digital.sofia.domain.utils.LogUtil.logDebug
 import com.digital.sofia.domain.utils.LogUtil.logError
 import com.digital.sofia.extensions.pxDimen
+import com.digital.sofia.extensions.setBackgroundColorResource
 import com.digital.sofia.models.common.BackFragment
 import com.digital.sofia.models.common.Message
 import com.digital.sofia.models.common.MessageBannerHolder
@@ -50,6 +52,8 @@ abstract class BaseBottomSheetFragment<VB : ViewBinding, VM : BaseViewModel> :
     protected open val isCancelableFromOutside: Boolean = true
 
     private var isPostponedBottomSheet: Boolean = false
+
+    protected open val maxHeight = Resources.getSystem().displayMetrics.heightPixels * 80 / 100
 
     abstract val viewModel: VM
 
@@ -94,6 +98,7 @@ abstract class BaseBottomSheetFragment<VB : ViewBinding, VM : BaseViewModel> :
                 (it as? BottomSheetDialog)
                     ?.findViewById<FrameLayout>(com.google.android.material.R.id.design_bottom_sheet)
                     ?.let { sheet ->
+                        sheet.setBackgroundColorResource(R.color.color_transparent)
                         setupBottomSheet(sheet)
                     }
 
@@ -136,6 +141,9 @@ abstract class BaseBottomSheetFragment<VB : ViewBinding, VM : BaseViewModel> :
         // Setup Watchers
         mSoftKeyboardStateWatcher = SoftKeyboardStateWatcher(requireActivity())
         mSoftKeyboardStateWatcher?.setStatusBarOffset(getStatusBarHeight())
+        val layoutParams = binding.root.layoutParams
+        layoutParams.height = maxHeight
+        binding.root.layoutParams = layoutParams
     }
 
     protected open fun setupNavControllers() {
@@ -192,6 +200,8 @@ abstract class BaseBottomSheetFragment<VB : ViewBinding, VM : BaseViewModel> :
         }
     }
 
+    open fun onStateChange(state: Int) {}
+
     override fun showMessage(message: Message, anchorView: View?) {
         try {
             (requireActivity() as MessageBannerHolder)
@@ -241,6 +251,13 @@ abstract class BaseBottomSheetFragment<VB : ViewBinding, VM : BaseViewModel> :
             if (!isPostponedBottomSheet) {
                 state = BottomSheetBehavior.STATE_EXPANDED
             }
+            addBottomSheetCallback(object: BottomSheetBehavior.BottomSheetCallback() {
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    onStateChange(newState)
+                }
+            })
         }
     }
 
@@ -253,6 +270,10 @@ abstract class BaseBottomSheetFragment<VB : ViewBinding, VM : BaseViewModel> :
             isPostponedBottomSheet = false
             sheetFrame?.post { behavior?.state = BottomSheetBehavior.STATE_EXPANDED }
         }
+    }
+
+    protected fun setExpandedState() {
+        behavior?.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
     /**

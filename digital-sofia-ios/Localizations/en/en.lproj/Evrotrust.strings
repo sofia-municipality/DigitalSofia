@@ -34,6 +34,8 @@
 "evrotrust_language_sq"                 = "Shqip";
 "evrotrust_language_mk"                 = "Македонски";
 "evrotrust_language_ro"                 = "Românesc";
+"evrotrust_language_it"                 = "Italiano";
+"evrotrust_language_fr"                 = "Français";
 
 "evrotrust_bgr"                         = "Bulgaria";
 "evrotrust_rou"                         = "Romania";
@@ -353,7 +355,7 @@
 "evrotrust_password_existing_user_info"             = "Enter secret password";
 "evrotrust_password_existing_user_info_long"        = "Enter the secret password that you have created at the moment of registration.";
 "evrotrust_password_existing_user_enter_password"   = "Secret password*";
-"evrotrust_password_existing_user_wrong_password"   = "User not found or entered secret password is wrong.";
+"evrotrust_password_existing_user_wrong_password"   = "Sorry, entered secret password is wrong. If you don’t remember the password, contact us at support@evrotrust.com.";
 "evrotrust_password_enter_password"                 = "Secret password*";
 "evrotrust_password_err"                            = "Minimum 6 symbols are required.";
 "evrotrust_password_incorrect_password_err"         = "You have entered not allowed symbol %@\nRequirements: min. 6 symbols (capital and small letters on Cyrillic, capital and small letters on Latin, numbers). Special symbols allowed: (){}[]#:;^,.?!|&_`~@$%%/\\=+-*\"'";
@@ -545,7 +547,7 @@
 "evrotrust_document_status_expired"             = "Expired";
 "evrotrust_document_status_canceled"            = "Cancelled";
 "evrotrust_document_status_withdrawn"           = "Withdrawn";
-"evrotrust_document_status_undeliverable"       = "Undeliverable";
+"evrotrust_document_status_undeliverable"       = "Not delivered";
 "evrotrust_document_status_sign_unsuccessful"   = "Sign not successful";
 "evrotrust_document_status_not_ready"           = "On hold";
 

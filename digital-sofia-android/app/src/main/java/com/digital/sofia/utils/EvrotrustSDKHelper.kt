@@ -305,7 +305,7 @@ class EvrotrustSDKHelperImpl(
                     "IsReadyToSign: ${result.isReadyToSign}" +
                     "IsInMaintenance: ${result.isRejected}" +
                     "IsSupervised: ${result.isSupervised}" +
-                    "RejectReason: ${result.rejectReason.name}"
+                    "RejectReason: ${result.rejectReason?.name}"
         )
         setAppStatus(
             when (result.status) {
@@ -573,7 +573,7 @@ class EvrotrustSDKHelperImpl(
             )
             putExtra(
                 EvrotrustConstants.EXTRA_SECURITY_CONTEXT,
-                "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
+                pinCode.hashedPin
             )
         }
         shouldHandleRequestCode = true
@@ -927,13 +927,13 @@ class EvrotrustSDKHelperImpl(
                             val isRejected = result.isRejected
                             val rejectReason = result.rejectReason
                             logDebug(
-                                "editPersonalDataActivityResult isIdentified: $isIdentified isSupervised: $isSupervised isReadyToSign: $isReadyToSign isRejected: $isRejected rejectReason: ${rejectReason.name}",
+                                "editPersonalDataActivityResult isIdentified: $isIdentified isSupervised: $isSupervised isReadyToSign: $isReadyToSign isRejected: $isRejected rejectReason: ${rejectReason?.name}",
                                 TAG
                             )
                             if (isIdentified) {
-                                SdkStatus.ACTIVITY_RESULT_EDIT_PERSONAL_DATA_READY
+                                setAppStatus(SdkStatus.ACTIVITY_RESULT_EDIT_PERSONAL_DATA_READY)
                             } else {
-                                SdkStatus.USER_STATUS_NOT_IDENTIFIED
+                                setAppStatus(SdkStatus.USER_STATUS_NOT_IDENTIFIED)
                             }
                         } else {
                             logError("editPersonalDataActivityResult status null", TAG)

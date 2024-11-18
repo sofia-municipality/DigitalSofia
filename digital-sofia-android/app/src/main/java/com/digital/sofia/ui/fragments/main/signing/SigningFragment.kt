@@ -51,7 +51,8 @@ class SigningFragment :
                     if ((scrollY >= (lastChild.measuredHeight - nestedScrollView.measuredHeight))
                         && scrollY > oldScrollY
                         && !viewModel.isLastPage()
-                        && !viewModel.isLoading()) {
+                        && !viewModel.isLoading()
+                    ) {
                         viewModel.loadMoreDocuments()
                     }
                 }
@@ -83,14 +84,27 @@ class SigningFragment :
         viewModel.adapterList.observe(viewLifecycleOwner) {
             setAdapterData(it)
         }
+        viewModel.openEditUserLiveDataEvent.observe(viewLifecycleOwner) {
+            if (viewModel.isUserProfileIdentified.not()) {
+                evrotrustSDKHelper.openEditProfile(activity = requireActivity())
+            }
+        }
+        viewModel.openDocumentLiveDataEvent.observe(viewLifecycleOwner) {
+            viewModel.evrotrustTransactionId?.let { transactionId ->
+                evrotrustSDKHelper.openDocument(
+                    activity = requireActivity(),
+                    evrotrustTransactionId = transactionId
+                )
+            }
+        }
         evrotrustSDKHelper.errorMessageResLiveData.observe(viewLifecycleOwner) {
             if (it != null && it != 0) {
                 showMessage(Message.error(it))
             }
             viewModel.refreshData()
         }
-        evrotrustSDKHelper.sdkStatusLiveData.observe(viewLifecycleOwner) {
-            viewModel.onSdkStatusChanged(it)
+        evrotrustSDKHelper.sdkStatusLiveData.observe(viewLifecycleOwner) { status ->
+            viewModel.onSdkStatusChanged(status)
         }
     }
 
@@ -103,10 +117,7 @@ class SigningFragment :
     override fun onDocumentClicked(evrotrustTransactionId: String) {
         logDebug("onDocumentClicked evrotrustTransactionId: $evrotrustTransactionId", TAG)
         viewModel.evrotrustTransactionId = evrotrustTransactionId
-        evrotrustSDKHelper.openDocument(
-            activity = requireActivity(),
-            evrotrustTransactionId = evrotrustTransactionId
-        )
+        evrotrustSDKHelper.checkUserStatus()
     }
 
     override fun onResume() {

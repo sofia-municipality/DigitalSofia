@@ -180,7 +180,8 @@ class SplashViewModel(
                 )
             }
 
-            SdkStatus.USER_STATUS_READY -> {
+            SdkStatus.USER_STATUS_READY,
+            SdkStatus.ACTIVITY_RESULT_EDIT_PERSONAL_DATA_READY -> {
                 logDebug("onSdkStatusChanged USER_STATUS_READY", TAG)
                 if (appStatus != AppStatus.REGISTERED) {
                     logError("onSdkStatusChanged not ready", TAG)

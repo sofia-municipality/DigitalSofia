@@ -29,6 +29,7 @@ struct WebView: UIViewRepresentable {
     func updateUIView(_ uiView: WKWebView, context: UIViewRepresentableContext<WebView>) {
         if shouldRefresh {
             loadRequest()
+            shouldRefresh = false
         }
     }
     

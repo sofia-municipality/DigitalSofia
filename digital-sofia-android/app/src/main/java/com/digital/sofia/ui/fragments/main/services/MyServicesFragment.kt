@@ -8,16 +8,19 @@ package com.digital.sofia.ui.fragments.main.services
 import android.net.Uri
 import android.os.Bundle
 import com.digital.sofia.R
+import com.digital.sofia.data.BuildConfig.PAYMENT_HOST
 import com.digital.sofia.data.BuildConfig.URL_BASE_WEB_VIEW
 import com.digital.sofia.domain.repository.common.PreferencesRepository
 import com.digital.sofia.domain.utils.LogUtil.logDebug
 import com.digital.sofia.domain.utils.LogUtil.logError
 import com.digital.sofia.ui.fragments.base.BaseWebViewFragment
+import com.digital.sofia.ui.fragments.payment.PaymentBottomSheetFragment
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MyServicesFragment :
-    BaseWebViewFragment<MyServicesViewModel>() {
+    BaseWebViewFragment<MyServicesViewModel>(),
+    PaymentBottomSheetFragment.Listener {
 
     companion object {
         private const val TAG = "MyServicesFragmentTag"
@@ -44,6 +47,8 @@ class MyServicesFragment :
     override val shouldHandleBackClickHandler: Boolean = false
 
     private val preferences: PreferencesRepository by inject()
+
+    private var paymentBottomSheet: PaymentBottomSheetFragment? = null
 
     override fun onCreated(savedInstanceState: Bundle?) {
         try {
@@ -106,6 +111,34 @@ class MyServicesFragment :
             loadWebPage(url, shouldClearHistory = true)
         } catch (e: IllegalStateException) {
             logError("loadWebPage Exception: ${e.message}", e, TAG)
+        }
+    }
+
+    override fun needToLoadPage(url: String?): Boolean {
+        val uri = Uri.parse(url)
+        return when {
+            uri.host == PAYMENT_HOST -> {
+                if (paymentBottomSheet == null) {
+                    paymentBottomSheet =
+                        PaymentBottomSheetFragment.newInstance(url = url, listener = this)
+                            .also { bottomSheet ->
+                                bottomSheet.show(
+                                    parentFragmentManager,
+                                    "PaymentBottomSheetFragmentTag"
+                                )
+                            }
+                }
+                false
+            }
+
+            else -> true
+        }
+    }
+
+    override fun operationCompleted() {
+        paymentBottomSheet?.dismiss().also {
+            paymentBottomSheet = null
+            refreshScreen()
         }
     }
 }

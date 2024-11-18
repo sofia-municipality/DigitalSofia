@@ -66,6 +66,8 @@ class OpenDocumentViewModel: NSObject {
         return EvrotrustEditAndIdentifyView { [weak self] _, error in
             if let error = error {
                 self?.openDocumentErrorHandler(error.description)
+            } else {
+                self?.userClosedDocumentView()
             }
         }
     }

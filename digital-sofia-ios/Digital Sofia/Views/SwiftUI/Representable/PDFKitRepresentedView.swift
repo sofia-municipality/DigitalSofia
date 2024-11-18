@@ -24,10 +24,6 @@ struct PDFKitRepresentedView: UIViewRepresentable {
         
         if let url = url {
             pdfView.document = PDFDocument(url: url)
-        } else {
-            if let dummyPdf = URL(string: NetworkConfig.TestData.dummyMultiPagePDFFileURL) {
-                pdfView.document = PDFDocument(url: dummyPdf)
-            }
         }
         
         return pdfView

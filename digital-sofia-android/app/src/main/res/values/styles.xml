@@ -17,7 +17,7 @@
     </style>
 
     <style name="Theme.App" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:background">@color/color_background</item>
+<!--        <item name="android:background">@color/color_background</item>-->
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryVariant">@color/color_primary</item>
         <item name="colorOnPrimary">@color/color_primary</item>
@@ -44,9 +44,8 @@
     </style>
 
     <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:layout_marginStart">@dimen/margin_16</item>
-        <item name="android:layout_marginEnd">@dimen/margin_16</item>
         <item name="android:background">@drawable/bg_bottom_sheet_base</item>
+        <item name="behavior_peekHeight">300dp</item>
     </style>
 
     <style name="AppBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
@@ -57,6 +56,16 @@
     <style name="BannerMessageStyle">
         <item name="android:windowEnterAnimation">@anim/banner_slide_down</item>
         <item name="android:windowExitAnimation">@anim/banner_slide_up</item>
+    </style>
+
+    <style name="BottomNavigationViewStyle" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">@color/color_background</item>
+        <item name="itemRippleColor">@color/color_ripple</item>
+        <item name="itemTextAppearanceActive">@style/TextStyle.14spRegularMainColor</item>
+        <item name="itemTextAppearanceInactive">@style/TextStyle.14spRegularMainColor</item>
+        <item name="itemTextColor">@color/selector_bottom_navigation</item>
+        <item name="labelVisibilityMode">labeled</item>
+        <item name="itemIconTint">@color/selector_bottom_navigation</item>
     </style>
 
     <!-- Buttons -->

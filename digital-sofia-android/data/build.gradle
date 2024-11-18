@@ -38,13 +38,11 @@ android {
     buildTypes {
         debug {
             minifyEnabled false
-            debuggable true
             jniDebuggable true
             renderscriptDebuggable true
         }
         release {
             minifyEnabled true
-            debuggable false
             jniDebuggable false
             renderscriptDebuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -68,6 +66,7 @@ android {
             buildConfigField 'String', 'URL_BASE_WEB_VIEW', "\"" + properties['url_base_web_view_dev'] + "\""
             buildConfigField 'String', 'EVROTRUST_APPLICATION_NUMBER', "\"" + properties['evrotrust_application_number_dev'] +"\""
             buildConfigField 'Boolean', 'IS_EVROTRUST_PROD', "false"
+            buildConfigField 'String', 'PAYMENT_HOST', "\"" + properties['payment_test_host'] +"\""
         }
         environmentTest {
             buildConfigField 'String', 'URL_BASE', "\"" + properties['url_base_test'] + "\""
@@ -75,6 +74,7 @@ android {
             buildConfigField 'String', 'URL_BASE_WEB_VIEW', "\"" + properties['url_base_web_view_test'] + "\""
             buildConfigField 'String', 'EVROTRUST_APPLICATION_NUMBER', "\"" + properties['evrotrust_application_number_dev'] +"\""
             buildConfigField 'Boolean', 'IS_EVROTRUST_PROD', "false"
+            buildConfigField 'String', 'PAYMENT_HOST', "\"" + properties['payment_test_host'] +"\""
         }
         environmentStage {
             buildConfigField 'String', 'URL_BASE', "\"" + properties['url_base_stage'] + "\""
@@ -82,13 +82,15 @@ android {
             buildConfigField 'String', 'URL_BASE_WEB_VIEW', "\"" + properties['url_base_web_view_stage'] + "\""
             buildConfigField 'String', 'EVROTRUST_APPLICATION_NUMBER', "\"" + properties['evrotrust_application_number_dev'] +"\""
             buildConfigField 'Boolean', 'IS_EVROTRUST_PROD', "false"
+            buildConfigField 'String', 'PAYMENT_HOST', "\"" + properties['payment_test_host'] +"\""
         }
         environmentProd {
-            buildConfigField 'String', 'URL_BASE', "\"" + properties['url_base_stage'] + "\""
-            buildConfigField 'String', 'URL_AUTH', "\"" + properties['url_auth_stage'] + "\""
-            buildConfigField 'String', 'URL_BASE_WEB_VIEW', "\"" + properties['url_base_web_view_stage'] + "\""
+            buildConfigField 'String', 'URL_BASE', "\"" + properties['url_base_prod'] + "\""
+            buildConfigField 'String', 'URL_AUTH', "\"" + properties['url_auth_prod'] + "\""
+            buildConfigField 'String', 'URL_BASE_WEB_VIEW', "\"" + properties['url_base_web_view_prod'] + "\""
             buildConfigField 'String', 'EVROTRUST_APPLICATION_NUMBER', "\"" + properties['evrotrust_application_number_prod'] +"\""
             buildConfigField 'Boolean', 'IS_EVROTRUST_PROD', "true"
+            buildConfigField 'String', 'PAYMENT_HOST', "\"" + properties['payment_prod_host'] +"\""
         }
         configureEach {
             dimension "version"
@@ -140,7 +142,7 @@ android {
 dependencies {
     implementation project(':domain')
 
-    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.core:core-ktx:1.13.1'
 
     // database
     implementation 'androidx.room:room-runtime:2.6.1'
@@ -151,21 +153,21 @@ dependencies {
     implementation 'androidx.sqlite:sqlite:2.4.0'
 
     // retrofit
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.11.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
     implementation platform('com.squareup.okhttp3:okhttp-bom:4.12.0')
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 
     // coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1'
 
     //  di
-    implementation 'io.insert-koin:koin-android:3.5.3'
+    implementation 'io.insert-koin:koin-android:3.5.6'
 
     // security
     implementation "androidx.security:security-crypto:1.1.0-alpha06"
-    implementation 'androidx.security:security-app-authenticator:1.0.0-alpha03'
+    implementation 'androidx.security:security-app-authenticator:1.0.0-beta01'
     implementation "androidx.security:security-identity-credential:1.0.0-alpha03"
 
     // common
@@ -175,9 +177,9 @@ dependencies {
 
     // tests
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'io.insert-koin:koin-test:3.5.3'
+    testImplementation 'io.insert-koin:koin-test:3.5.6'
     testImplementation "androidx.arch.core:core-testing:2.2.0"
-    testImplementation 'io.insert-koin:koin-test-junit4:3.5.3'
-    testImplementation 'org.mockito:mockito-core:5.10.0'
-    testImplementation 'org.mockito.kotlin:mockito-kotlin:5.2.1'
+    testImplementation 'io.insert-koin:koin-test-junit4:3.5.6'
+    testImplementation 'org.mockito:mockito-core:5.12.0'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:5.4.0'
 }

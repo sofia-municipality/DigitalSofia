@@ -84,3 +84,6 @@
 
 -keep class com.digital.sofia.models.common.** { *; }
 
+-dontwarn com.digital.sofia.data.**
+-dontwarn com.digital.sofia.domain.**
+
