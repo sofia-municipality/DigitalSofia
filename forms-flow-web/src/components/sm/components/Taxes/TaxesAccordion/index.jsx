@@ -11,7 +11,6 @@ import SimpleAccordion from "../../../components/Accordion/SimpleAccordion";
 import TaxesCheckbox from "../TaxesCheckbox";
 import { TaxAccordionContext } from "./context";
 import { useGetFormatters } from "./hooks";
-import { convertToDecimal } from "../../../../../utils";
 import Content from "./TaxesAccordionContent";
 import styles from "./taxesAccordion.module.scss";
 
@@ -78,38 +77,40 @@ const Title = ({ total, title, icon, iconExpanded, isExpanded, showTotal }) => {
     </div>
   );
 };
+// Commented out because of new design
+// const getTotalItemsCount = (items, type) => {
+//   const data = Object.keys(items[type]?.batches).length;
 
-const getTotalItemsCount = (items, type) => {
-  const data = Object.values(items[type]?.data || []).filter(
-    (e) => e?.data?.length
-  );
+//   // Object.values(items[type]?.batches || []).filter(
+//   //   (e) => e?.data?.length
+//   // );
 
-  const itemsCount = data.reduce((acc, item) => {
-    acc += item?.data?.length;
-    return acc;
-  }, 0);
+//   const itemsCount = data.reduce((acc, item) => {
+//     acc += item?.data?.length;
+//     return acc;
+//   }, 0);
 
-  return itemsCount;
-};
+//   return itemsCount;
+// };
 
 const Total = ({
   type,
   className = "",
   selectEnabled,
-  isExpanded,
+  // isExpanded,
   showMainTotalCheckbox = true,
 }) => {
   const { t } = useTranslation();
   const { numberFormatter } = useGetFormatters();
   const { taxAccordionContext = {}, setTaxAccordionContext } =
     useContext(TaxAccordionContext);
-  const { selectedItems = {}, allItems = {} } = taxAccordionContext;
-  const total = allItems[type]?.total;
-  const items = allItems[type]?.data;
+  const { transformedSelectedItems = {}, allItems = {} } = taxAccordionContext;
+  const total = transformedSelectedItems[type]?.total;
+  const items = allItems[type]?.batches;
 
   const shouldDisableCheckbox = () => {
     return Object.entries(items || {}).reduce((acc, [, value]) => {
-      if (value?.data?.length > 0) {
+      if (value) {
         acc = false;
       }
 
@@ -118,28 +119,36 @@ const Total = ({
   };
 
   const isChecked = () => {
-    const selectedDataCount = getTotalItemsCount(selectedItems, type);
-    const totalItemsCount = getTotalItemsCount(allItems, type);
-
+    const selectedDataCount = Object.keys(
+      transformedSelectedItems[type]?.batches
+    ).length;
+    const totalItemsCount = Object.keys(allItems[type]?.batches).length;
     return selectedDataCount === totalItemsCount;
   };
 
   const onChange = (e) => {
     const isChecked = e.target.checked;
-    const newSelectedItems = cloneDeep(selectedItems);
+    const newSelectedItems = cloneDeep(transformedSelectedItems);
 
     if (!isChecked) {
-      Object.keys(newSelectedItems[type].data).forEach((key) => {
-        delete newSelectedItems[type].data[key].data;
-        newSelectedItems[type].data[key].total = 0;
-      });
+      newSelectedItems[type].batches = {};
       newSelectedItems[type].total = 0;
+
+      Object.keys(newSelectedItems[type].batchesTotals).forEach((key) => {
+        newSelectedItems[type].batchesTotals[key] = 0;
+      });
     } else {
-      newSelectedItems[type].data = cloneDeep(items);
-      newSelectedItems[type].total = total;
+      newSelectedItems[type].batches = cloneDeep(items);
+      newSelectedItems[type].total = allItems[type].total;
+      Object.keys(newSelectedItems[type].batchesTotals).forEach((key) => {
+        newSelectedItems[type].batchesTotals[key] =
+          allItems[type].batchesTotals[key];
+      });
     }
 
-    setTaxAccordionContext({ selectedItems: cloneDeep(newSelectedItems) });
+    setTaxAccordionContext({
+      transformedSelectedItems: cloneDeep(newSelectedItems),
+    });
   };
   return (
     <div
@@ -160,12 +169,11 @@ const Total = ({
         <span className={styles.total}>{numberFormatter.format(total)}</span>
         <span className={styles.currency}>{t("currency.lev.short")}</span>
       </div>
-      {selectEnabled && isExpanded && showMainTotalCheckbox ? (
+      {selectEnabled && showMainTotalCheckbox ? (
         <TaxesCheckbox
           className="ml-2"
           onChange={onChange}
           isChecked={isChecked}
-          shouldDisable={false}
           selectEnabled={selectEnabled}
           forceDisable={shouldDisableCheckbox()}
         />
@@ -174,23 +182,27 @@ const Total = ({
   );
 };
 
-const SelectedTotal = ({ className = "", isExpanded, type }) => {
-  const { t } = useTranslation();
-  const { numberFormatter } = useGetFormatters();
-  const { taxAccordionContext = {} } = useContext(TaxAccordionContext);
+const SelectedTotal = ({ className = "" }) => {
+  // Commented out because of new design
+  // const { t } = useTranslation();
+  // const { numberFormatter } = useGetFormatters();
+  // const { taxAccordionContext = {} } = useContext(TaxAccordionContext);
 
-  const getTotalSelectedAmount = () => {
-    const { selectedItems = {} } = taxAccordionContext;
-    const batchSelectedItems = selectedItems[type]?.data || {};
-    const total = Object.values(batchSelectedItems).reduce((acc, item) => {
-      acc += item.total || 0;
-      return convertToDecimal(acc);
-    }, 0);
+  // const getTotalSelectedAmount = () => {
+  //   const { transformedSelectedItems = {} } = taxAccordionContext;
+  //   const batchSelectedItemsTotals =
+  //     transformedSelectedItems[type]?.batchesTotals || {};
+  //   const total = Object.values(batchSelectedItemsTotals).reduce(
+  //     (acc, item) => {
+  //       acc += item || 0;
+  //       return convertToDecimal(acc);
+  //     },
+  //     0
+  //   );
+  //   return total;
+  // };
 
-    return total;
-  };
-
-  return !isExpanded ? (
+  return (
     <div
       className={`d-flex align-items-center justify-content-end 
       ${styles.totalWrapperWithSelect} ${
@@ -198,7 +210,8 @@ const SelectedTotal = ({ className = "", isExpanded, type }) => {
       } ${className}`}
       aria-hidden="true"
     >
-      <div className={styles.totalLabel}>
+      {/*   With the new design we hide this part fo the application*/}
+      {/* <div className={styles.totalLabel}>
         {t("localTaxes.payment.total.selected.amount.label")}
       </div>
       <div className={styles.selectedTotalWrapper}>
@@ -206,9 +219,9 @@ const SelectedTotal = ({ className = "", isExpanded, type }) => {
           {numberFormatter.format(getTotalSelectedAmount())}
         </span>
         <span className={styles.currency}>{t("currency.lev.short")}</span>
-      </div>
+      </div> */}
     </div>
-  ) : null;
+  );
 };
 
 const TaxesAccordion = ({
@@ -225,8 +238,9 @@ const TaxesAccordion = ({
   const { isPhone } = useDevice();
   const { data: items, total } = data;
   const { taxAccordionContext = {} } = useContext(TaxAccordionContext);
-  const { selectedItems = {} } = taxAccordionContext;
-  const isSelectedForPayment = !!selectedItems?.[type]?.total && selectEnabled;
+  const { transformedSelectedItems = {} } = taxAccordionContext;
+  const isSelectedForPayment =
+    !!transformedSelectedItems?.[type]?.total && selectEnabled;
 
   const TitleComponent = useMemo(
     () =>
@@ -253,7 +267,7 @@ const TaxesAccordion = ({
               isExpanded={isExpanded}
               total={total}
               selectEnabled={selectEnabled}
-              showMainTotalCheckbox={false}
+              showMainTotalCheckbox={true}
             />
           )
         : null,

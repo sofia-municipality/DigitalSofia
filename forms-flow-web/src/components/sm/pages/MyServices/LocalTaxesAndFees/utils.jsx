@@ -2,10 +2,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 
-const TaxRecordGroupStatus = {
+export const TaxRecordGroupStatus = {
+  PENDING: "Pending",
   PAID: "Paid",
   CANCELED: "Canceled",
   NEW: "New",
+  EXPIRED: "Expired",
 };
 
 export const getTaxRecordGroupStatusIcon = (status) => {
@@ -17,6 +19,7 @@ export const getTaxRecordGroupStatusIcon = (status) => {
         border: true,
         accessibleName: "myServices.localTaxesGroup.status.paid",
       };
+    case TaxRecordGroupStatus.EXPIRED:
     case TaxRecordGroupStatus.CANCELED:
       return {
         Icon: CloseIcon,
@@ -24,7 +27,7 @@ export const getTaxRecordGroupStatusIcon = (status) => {
         border: true,
         accessibleName: "myServices.localTaxesGroup.status.canceled",
       };
-    case TaxRecordGroupStatus.NEW:
+    case TaxRecordGroupStatus.PENDING:
       return {
         Icon: MoreHorizIcon,
         className: "bg-sm-blue",

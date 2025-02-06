@@ -25,6 +25,7 @@ import SmCta, {
 
 import styles from "./hooks.module.scss";
 import { useState } from "react";
+import { useHistory } from "react-router-dom";
 
 export const useGetAddressCardProps = ({
   t,
@@ -68,6 +69,7 @@ export const useGetAddressCardProps = ({
   const baseUrl = useGetBaseUrl();
   const isAuth = useSelector((state) => state.user.isAuthenticated);
   const [isButtonClicked, setIsButtonClicked] = useState(false);
+  const history = useHistory();
 
   const thirdPartySignitureContentProps = {
     t,
@@ -117,11 +119,19 @@ export const useGetAddressCardProps = ({
           {
             type: SmCtaTypes.SECONDARY,
             text: t("myServices.continue.cta"),
-            isLink: true,
-            href: `${PAGE_ROUTES.DRAFT_EDIT.replace(":formId", formId).replace(
-              ":draftId",
-              draftId
-            )}?behalf=${behalf}`,
+            customHref: `${PAGE_ROUTES.DRAFT_EDIT.replace(
+              ":formId",
+              formId
+            ).replace(":draftId", draftId)}?behalf=${behalf}`,
+            isDraft: true,
+            onClick: () => {
+              history.push(
+                `${PAGE_ROUTES.DRAFT_EDIT.replace(":formId", formId).replace(
+                  ":draftId",
+                  draftId
+                )}?behalf=${behalf}`
+              );
+            },
           },
         ],
       };

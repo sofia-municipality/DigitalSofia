@@ -11,8 +11,8 @@ const MobileAppSection = ({
   ctaItems = [],
 }) => {
   const { t } = useTranslation();
-  const googlePlayCta = ctaItems.find((cta) => cta.ctaId) === "googleplay";
-  const appStoreCta = ctaItems.find((cta) => cta.ctaId) === "appstore";
+  const googlePlayCta = ctaItems.find((cta) => cta.ctaId === "googleplay");
+  const appStoreCta = ctaItems.find((cta) => cta.ctaId === "ios");
 
   return (
     <section

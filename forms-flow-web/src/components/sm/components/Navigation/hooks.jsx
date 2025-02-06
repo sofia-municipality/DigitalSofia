@@ -32,7 +32,7 @@ export const useProfileMenuConfig = () => {
     },
     {
       title: "profile.menu.admin.panel",
-      href: PAGE_ROUTES.ADMIN_PANEL,
+      href: PAGE_ROUTES.SO_ADMINISTRATION,
       Icon: SettingsOutlinedIcon,
       iconColorClass: "text-sm-red",
       condition: () => ADMIN_ROLES.some((e) => userRoles.includes(e)),

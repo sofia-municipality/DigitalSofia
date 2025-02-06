@@ -17,6 +17,7 @@ import SmCta, {
   SmCtaTypes,
   SmCtaSizes,
 } from "../../../../../../components/sm/components/buttons/SmCta";
+import { TaxRecordGroupStatus } from "../utils";
 
 import styles from "./localTaxesAndFeesDetails.module.scss";
 
@@ -24,7 +25,7 @@ const LocalTaxesAndFeesDetails = () => {
   const { t } = useTranslation();
   const { paymentId } = useParams();
   const { data = {}, isLoading, fetch: getPaidTaxData } = useGetPaidTaxesData();
-  const { payments = {}, paymentDate } = data;
+  const { payments = {}, paymentDate, status } = data;
   const taxRecords = Object.entries(payments);
   const date = moment(paymentDate).format("DD.MM.YYYY");
 
@@ -50,7 +51,8 @@ const LocalTaxesAndFeesDetails = () => {
               />
               <div className={styles.content}>
                 <div className="row no-gutters">
-                  {taxRecords?.length ? (
+                  {taxRecords?.length &&
+                  status === TaxRecordGroupStatus.PENDING ? (
                     <div className={`col-12 ${styles.contentHeader}`}>
                       <span className={styles.requestDate}>{`${t(
                         "myServices.localTaxesAndFees.details.date"

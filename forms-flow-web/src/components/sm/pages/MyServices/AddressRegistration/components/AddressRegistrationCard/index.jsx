@@ -1,5 +1,4 @@
-import React from "react";
-
+import { React, useState } from "react";
 import {
   PERMANENT_ADDRESS_FORM_PATH,
   CURRENT_ADDRESS_FORM_PATH,
@@ -11,6 +10,11 @@ import AddressRegistrationCardAccordion from "../AddressRegistrationCardAccordio
 import { useGetAddressCardProps } from "../../hooks";
 import styles from "./addressRegistrationCard.module.scss";
 import { useTranslation } from "react-i18next";
+import Modal from "../../../../../components/Modal/Modal";
+import { draftChildEligibilityCheck } from "../../../../../../../apiManager/services/draftService";
+import { SERVICES_IDS } from "../../../../../../../constants/constants";
+import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const AddressRegistrationCard = ({
   id,
@@ -53,6 +57,10 @@ const AddressRegistrationCard = ({
   onSubmissionResend = () => {},
   onPayInitiated = () => {},
 }) => {
+  const [isChildEligibilityModalTriggered, setChildEligibilityModalTriggered] =
+    useState(false);
+  const history = useHistory();
+
   const { t } = useTranslation();
   const props = useGetAddressCardProps({
     t,
@@ -90,6 +98,8 @@ const AddressRegistrationCard = ({
     onSubmissionResend,
     onPayInitiated,
   });
+  const user = useSelector((state) => state.user.userDetail);
+
   if (!Object.keys(props).length) {
     return null;
   }
@@ -109,6 +119,51 @@ const AddressRegistrationCard = ({
     : formPath?.includes(CURRENT_ADDRESS_FORM_PATH)
     ? t(`current.address.form.title.${behalf || "myBehalf"}`)
     : formName;
+
+  let formType = "";
+  if (formPath?.includes(CURRENT_ADDRESS_FORM_PATH)) {
+    formType = CURRENT_ADDRESS_FORM_PATH;
+  } else if (formPath?.includes(PERMANENT_ADDRESS_FORM_PATH)) {
+    formType = PERMANENT_ADDRESS_FORM_PATH;
+  }
+
+  const checkIfAlreadyChildEligibilityStarted = async (cta) => {
+    const dataPayload = {
+      serviceId: SERVICES_IDS[formType],
+      personIdentifier: user.personIdentifier?.replace("PNOBG-", ""),
+    };
+    try {
+      const res = await draftChildEligibilityCheck(dataPayload);
+      if (res.status === 200) {
+        history.push(cta.customHref);
+      }
+    } catch (error) {
+      if (
+        error &&
+        error.response &&
+        error.response.status &&
+        error.response.status === 422
+      ) {
+        handleModal(true);
+      }
+    }
+  };
+
+  const handleModal = (value) => {
+    setChildEligibilityModalTriggered(value);
+  };
+
+  ctas.map((cta) => {
+    if (cta.isDraft && behalf === "myBehalf") {
+      cta.onClick = () => {
+        checkIfAlreadyChildEligibilityStarted(cta);
+      };
+    } else {
+      return {
+        ...cta,
+      };
+    }
+  });
 
   return (
     <section
@@ -159,6 +214,14 @@ const AddressRegistrationCard = ({
           )}
         </div>
       </div>
+      <Modal
+        modalOpen={isChildEligibilityModalTriggered}
+        description={t("addressRegistratrion.childEligibilityCheck")}
+        showNo={false}
+        onYes={() => {
+          handleModal(false);
+        }}
+      />
     </section>
   );
 };

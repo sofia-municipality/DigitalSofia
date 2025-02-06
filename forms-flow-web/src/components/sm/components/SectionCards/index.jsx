@@ -8,6 +8,7 @@ import NavLink from "../Navigation/NavLink";
 import styles from "./sectionCards.module.scss";
 
 export const SectionCard = ({
+  click,
   link,
   iconSrc,
   iconActiveSrc,
@@ -20,6 +21,7 @@ export const SectionCard = ({
   return (
     <NavLink
       to={link}
+      onClick={click}
       className={`row no-gutters ${
         SM_NEW_DESIGN_ENABLED
           ? styles.servicesSectionNewDesign

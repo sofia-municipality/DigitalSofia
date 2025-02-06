@@ -21,8 +21,10 @@ export const getPaidTaxData = async ({ id, refetch }) => {
   return res.data;
 };
 
-const mapTaxDataForPayment = ({ selectedItems, taxSubject }) => {
-  const batchData = Object.values(selectedItems).map((batch) => batch.data);
+const mapTaxDataForPayment = ({ paymentRequestData, taxSubject }) => {
+  const batchData = Object.values(paymentRequestData).map(
+    (batch) => batch.data
+  );
   const mappedData = batchData.reduce((accBatch, item) => {
     const taxRecords = Object.values(item)
       .filter((item) => item?.data)
@@ -46,5 +48,10 @@ const mapTaxDataForPayment = ({ selectedItems, taxSubject }) => {
 export const payTaxData = async (data) => {
   const mappedData = mapTaxDataForPayment(data);
   const res = await httpPOSTRequest(API.PAY_TAX_DATA, mappedData);
+  return res.data;
+};
+
+export const checkForPayment = async () => {
+  const res = await httpGETRequest(API.TAX_PAYMENT_CHECK);
   return res.data;
 };

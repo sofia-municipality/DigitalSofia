@@ -1,11 +1,20 @@
 import React, { useContext } from "react";
 import { cloneDeep } from "lodash";
 import { useTranslation } from "react-i18next";
-
 import { PAYMENT_RETRY_ENABLED_STATUSES } from "../../../../../constants/constants";
-import { convertToDecimal } from "../../../../../utils";
 import { TaxAccordionContext } from "../TaxesAccordion/context";
 import styles from "./taxesCheckbox.module.scss";
+import {
+  regularSelectAndNotCurrentYearMaxPayOrder,
+  selectCurrentYearMaxPayOrder,
+  unselectCurrentYearHighestPayOrder,
+  unselectNotCurrentYearHighestPayOrder,
+  unselectItemRegularScenario,
+  clearAndReCalculateTotals,
+  skipMissingPayOrdersAndEnableNextCheckbox,
+  currentYearHighestPayOrder,
+  notCurrentYearHighestPayOrder,
+} from "../utils";
 
 const TaxesCheckbox = ({
   className = "",
@@ -13,101 +22,212 @@ const TaxesCheckbox = ({
   isChecked,
   onChange,
   type,
-  shouldDisable = true,
   selectEnabled,
   forceDisable = false,
 }) => {
   const { t } = useTranslation();
   const { taxAccordionContext = {}, setTaxAccordionContext } =
     useContext(TaxAccordionContext);
-  const { selectedItems = {}, allItems = {} } = taxAccordionContext;
+  let {
+    allItems = {},
+    transformedSelectedItems = {},
+    showCheckBoxModalOnce,
+  } = taxAccordionContext;
+  const currentYear = new Date().getFullYear();
 
+  // This is default method to disable each batch item
   const isDisabled = () => {
-    const batchData = allItems[type]?.data?.[item.partidaNo]?.data || [];
-    const selectedBatchData =
-      selectedItems[type]?.data?.[item.partidaNo]?.data || [];
-    const previousObligation = selectedBatchData.find(
-      (e) => e.payOrder === item.payOrder - 1
-    );
+    if (type && item !== undefined) {
+      const {
+        batchGroupPayOrderList,
+        maxPayOrder,
+        minPayOrder,
+        missedPayOrders,
+        batches: selectedBatches,
+      } = transformedSelectedItems[type];
+      const { batches: allBatches } = allItems[type];
+      const highestPayOrderInItemsBatchGroup =
+        batchGroupPayOrderList[item.partidaNo][
+          batchGroupPayOrderList[item.partidaNo].length - 1
+        ].payOrder || 0;
 
-    const payOrderList = batchData.map((e) => e.payOrder);
-    const minPayOrder = payOrderList?.length ? Math.min(...payOrderList) : 0;
+      let previousObligation = false;
+      let currentYearBatchSelected = false;
+      let disableDueToMaxPayOrder = false;
+      let doNotDisableMinPayOrder = false;
 
-    return (
-      !(!!previousObligation || item.payOrder === minPayOrder) && shouldDisable
-    );
+      // Do not disable item payOrder if it is lowest
+      if (item.payOrder === minPayOrder) {
+        doNotDisableMinPayOrder = true;
+      }
+
+      if (
+        Object.keys(missedPayOrders[item.partidaNo]).length > 0 &&
+        missedPayOrders[item.partidaNo].some(
+          (mP) => item.payOrder === mP.next.payOrder
+        )
+      ) {
+        previousObligation = skipMissingPayOrdersAndEnableNextCheckbox(
+          item,
+          missedPayOrders,
+          selectedBatches,
+          previousObligation
+        );
+      }
+
+      const entries = Object.entries(selectedBatches);
+      for (let i = 0; i < entries.length; i++) {
+        const currentBatch = entries[i];
+        // Check if there is an earlier payOrder that is not selected
+        if (currentBatch[1].payOrder === item.payOrder - 1) {
+          previousObligation = true;
+        }
+      }
+
+      // CURRENT YEAR HIGHEST PAYORDER JUST FOR BATCH GROUP
+      // Check if the current item is part of the current year and the previous installment is selected
+      if (
+        Number(item.taxPeriodYear) === currentYear &&
+        item.payOrder === highestPayOrderInItemsBatchGroup
+      ) {
+        const result = currentYearHighestPayOrder(
+          item,
+          selectedBatches,
+          currentYearBatchSelected,
+          previousObligation,
+          allBatches,
+          minPayOrder,
+          doNotDisableMinPayOrder
+        );
+        currentYearBatchSelected = result.currentYearBatchSelected;
+        previousObligation = result.previousObligation;
+        doNotDisableMinPayOrder = result.doNotDisableMinPayOrder;
+      }
+
+      // NOT CURRENT YEAR HIGHEST PAYORDER FOR ALL BATCH GROUPS IN ONE PAYMENT TYPE
+      // Disable items if it's not current year and the max payOrder for all the batch groups is selected
+      if (
+        item.payOrder === maxPayOrder &&
+        Number(item.taxPeriodYear) !== currentYear
+      ) {
+        const result = notCurrentYearHighestPayOrder(
+          item,
+          selectedBatches,
+          disableDueToMaxPayOrder,
+          previousObligation,
+          allBatches
+        );
+        disableDueToMaxPayOrder = result.disableDueToMaxPayOrder;
+        previousObligation = result.previousObligation;
+      }
+
+      //  Determine disable condition based on rules
+      return !(
+        doNotDisableMinPayOrder ||
+        previousObligation ||
+        currentYearBatchSelected ||
+        disableDueToMaxPayOrder
+      );
+    }
+    return false;
   };
 
   const defaultIsChecked = () => {
-    const batchData = selectedItems[type]?.data?.[item.partidaNo]?.data;
-    const selectedItem = (batchData || []).find(
-      (e) =>
-        e.payOrder === item.payOrder &&
-        e.debtInstalmentId === item.debtInstalmentId
-    );
-
-    return !!selectedItem;
+    // eslint-disable-next-line max-len
+    const currentItem = `${item.partidaNo}-${item.payOrder}-${item.instNo}-${item.taxPeriodYear}`;
+    return !!transformedSelectedItems[type].batches[currentItem];
   };
 
-  const defaultOnOnChange = (e) => {
+  // This is default onChange method used only for each batch item
+  const defaultOnChange = (e) => {
     const isChecked = e.target.checked;
-    const newSelectedItems = cloneDeep(selectedItems);
+    let newSelectedItems = cloneDeep(transformedSelectedItems);
+    // Current year and highest payOrder in the batch group only!
+    const highestPayOrderInBatchGroup =
+      transformedSelectedItems[type].batchGroupPayOrderList[item.partidaNo][
+        transformedSelectedItems[type].batchGroupPayOrderList[item.partidaNo]
+          .length - 1
+      ].payOrder || 0;
+    const { maxPayOrder, missedPayOrders } = transformedSelectedItems[type];
 
-    const batchData = selectedItems[type]?.data?.[item.partidaNo]?.data;
+    // Unchecked
     if (!isChecked) {
-      const newData = batchData.filter(
-        (b) =>
-          b.payOrder <= item.payOrder &&
-          b.debtInstalmentId !== item.debtInstalmentId
-      );
+      const unselectCurrentYearHighestPayOrderRule =
+        Number(item.taxPeriodYear) === currentYear &&
+        item.payOrder === highestPayOrderInBatchGroup;
 
-      const unselectedItems =
-        batchData.filter(
-          (b) =>
-            b.payOrder > item.payOrder ||
-            b.debtInstalmentId === item.debtInstalmentId
-        ) || [];
+      const unselectNotCurrentYearHighestPayOrderRule =
+        Number(item.taxPeriodYear) !== currentYear &&
+        item.payOrder === maxPayOrder;
 
-      newSelectedItems[type].data[item.partidaNo].data = newData;
+      // If unselect current year highest payOrder only in current batch group
+      if (unselectCurrentYearHighestPayOrderRule) {
+        newSelectedItems = unselectCurrentYearHighestPayOrder(
+          type,
+          newSelectedItems,
+          item,
+          currentYear,
+          highestPayOrderInBatchGroup
+        );
 
-      const newAmount = unselectedItems.reduce((acc, i) => {
-        acc += convertToDecimal(i.residual + i.interest);
-        return convertToDecimal(acc);
-      }, 0);
+        // If unselect not current year highest payOrder with exact installment number
+      } else if (unselectNotCurrentYearHighestPayOrderRule) {
+        newSelectedItems = unselectNotCurrentYearHighestPayOrder(
+          type,
+          newSelectedItems,
+          item,
+          currentYear,
+          maxPayOrder,
+          allItems
+        );
+        // Regular uncheck
+      } else {
+        newSelectedItems = unselectItemRegularScenario(
+          type,
+          newSelectedItems,
+          item
+        );
+      }
 
-      newSelectedItems[type].data[item.partidaNo].total = convertToDecimal(
-        newSelectedItems[type].data[item.partidaNo].total - newAmount
-      );
-
-      newSelectedItems[type].total = convertToDecimal(
-        newSelectedItems[type].total - newAmount
-      );
+      newSelectedItems = clearAndReCalculateTotals(type, newSelectedItems);
     } else {
-      const newBatchData = newSelectedItems[type].data[item.partidaNo];
-      if (!newBatchData.data) {
-        newSelectedItems[type].data[item.partidaNo].data = [];
+      // Checked
+      // Current year and maxPayOrder in the current batch group with exact installment number
+      const currentYearHighestPayOrderCheck =
+        Number(item.taxPeriodYear) === currentYear &&
+        item.payOrder === highestPayOrderInBatchGroup;
+
+      if (currentYearHighestPayOrderCheck) {
+        newSelectedItems = selectCurrentYearMaxPayOrder(
+          type,
+          newSelectedItems,
+          item
+        );
+      } else {
+        newSelectedItems = regularSelectAndNotCurrentYearMaxPayOrder(
+          allItems,
+          type,
+          newSelectedItems,
+          item,
+          currentYear,
+          maxPayOrder,
+          missedPayOrders
+        );
       }
-
-      if (!newBatchData.total) {
-        newSelectedItems[type].data[item.partidaNo].total = 0;
-      }
-
-      const newAmount = convertToDecimal(item.residual + item.interest);
-
-      newSelectedItems[type].data[item.partidaNo].data.push(cloneDeep(item));
-      newSelectedItems[type].data[item.partidaNo].total = convertToDecimal(
-        newSelectedItems[type].data[item.partidaNo].total + newAmount
-      );
-
-      newSelectedItems[type].total = convertToDecimal(
-        newSelectedItems[type].total + newAmount
-      );
     }
 
-    setTaxAccordionContext({ selectedItems: cloneDeep(newSelectedItems) });
+    let incrementShowCheckBoxModalOnce = showCheckBoxModalOnce;
+    if (!allItems[type].onlyCurrentYearItemsForEachBatchGroup[item.partidaNo]) {
+      ++incrementShowCheckBoxModalOnce;
+    }
+
+    setTaxAccordionContext({
+      transformedSelectedItems: cloneDeep(newSelectedItems),
+      showCheckBoxModalOnce: incrementShowCheckBoxModalOnce,
+    });
   };
 
-  const onCheck = onChange || defaultOnOnChange;
+  const onCheck = onChange || defaultOnChange;
   const isCheckboxChecked = isChecked || defaultIsChecked;
 
   return item.hasPaymentRequest &&

@@ -24,20 +24,25 @@ export const draftCreate = (data, ...rest) => {
   const done = rest.length ? rest[0] : () => {};
   const URL = API.DRAFT_BASE;
   return (dispatch) => {
-    httpPOSTRequest(URL, data)
-      .then((res) => {
-        if (res.data) {
-          dispatch(setDraftSubmission(res.data));
-          done(true);
-        } else {
-          dispatch(setDraftSubmissionError("Error Posting data"));
+    return new Promise((resolve, reject) => {
+      httpPOSTRequest(URL, data)
+        .then((res) => {
+          if (res.data) {
+            dispatch(setDraftSubmission(res.data));
+            done(true);
+            resolve(res); // Resolve promise
+          } else {
+            dispatch(setDraftSubmissionError("Error Posting data"));
+            done(false);
+            reject("Error Posting data"); // Reject with error
+          }
+        })
+        .catch((error) => {
+          dispatch(setDraftSubmissionError(error));
           done(false);
-        }
-      })
-      .catch((error) => {
-        dispatch(setDraftSubmissionError(error));
-        done(false);
-      });
+          reject(error); // Reject the promise
+        });
+    });
   };
 };
 
@@ -46,18 +51,23 @@ export const draftUpdate = (data, ...rest) => {
   const done = draftId && rest.length > 1 ? rest[1] : () => {};
   const URL = replaceUrl(API.DRAFT_UPDATE, "<draft_id>", draftId);
   return (dispatch) => {
-    httpPUTRequest(URL, data)
-      .then((res) => {
-        if (res.data) {
-          done(null, res.data);
-          dispatch(saveLastUpdatedDraft({ ...data }));
-        } else {
-          done("Error Posting data");
-        }
-      })
-      .catch((error) => {
-        done(error);
-      });
+    return new Promise((resolve, reject) => {
+      httpPUTRequest(URL, data)
+        .then((res) => {
+          if (res.data) {
+            done(null, res.data);
+            dispatch(saveLastUpdatedDraft({ ...data })); // Dispatch redux action to save draft state
+            resolve(res); // Resolve promise
+          } else {
+            done("Error Posting data");
+            reject("Error Posting data"); // Reject with error
+          }
+        })
+        .catch((error) => {
+          done(error); // Call the callback with error
+          reject(error); // Reject the promise
+        });
+    });
   };
 };
 
@@ -84,20 +94,25 @@ export const publicDraftCreate = (data, ...rest) => {
   const done = rest.length ? rest[0] : () => {};
   const URL = API.DRAFT_PUBLIC_CREATE;
   return (dispatch) => {
-    httpPOSTRequestWithoutToken(URL, data)
-      .then((res) => {
-        if (res.data) {
-          dispatch(setDraftSubmission(res.data));
-          done(true);
-        } else {
-          dispatch(setDraftSubmissionError("Error Posting data"));
+    return new Promise((resolve, reject) => {
+      httpPOSTRequestWithoutToken(URL, data)
+        .then((res) => {
+          if (res.data) {
+            dispatch(setDraftSubmission(res.data));
+            done(true);
+            resolve(res); // Resolve promise
+          } else {
+            dispatch(setDraftSubmissionError("Error Posting data"));
+            done(false);
+            reject("Error Posting data"); // Reject with error
+          }
+        })
+        .catch((error) => {
+          dispatch(setDraftSubmissionError(error));
           done(false);
-        }
-      })
-      .catch((error) => {
-        dispatch(setDraftSubmissionError(error));
-        done(false);
-      });
+          reject(error); // Reject the promise
+        });
+    });
   };
 };
 
@@ -106,18 +121,23 @@ export const publicDraftUpdate = (data, ...rest) => {
   const done = draftId && rest.length > 1 ? rest[1] : () => {};
   const URL = replaceUrl(API.DRAFT_UPDATE_PUBLIC, "<draft_id>", draftId);
   return (dispatch) => {
-    httpPUTRequestWithoutToken(URL, data)
-      .then((res) => {
-        if (res.data) {
-          done(null, res.data);
-          dispatch(saveLastUpdatedDraft({ ...data }));
-        } else {
-          done("Error Posting data");
-        }
-      })
-      .catch((error) => {
-        done(error);
-      });
+    return new Promise((resolve, reject) => {
+      httpPUTRequestWithoutToken(URL, data)
+        .then((res) => {
+          if (res.data) {
+            done(null, res.data);
+            dispatch(saveLastUpdatedDraft({ ...data }));
+            resolve(res); // Resolve promise
+          } else {
+            done("Error Posting data");
+            reject("Error Posting data"); // Reject with error
+          }
+        })
+        .catch((error) => {
+          done(error);
+          reject(error); // Reject the promise
+        });
+    });
   };
 };
 
@@ -249,4 +269,9 @@ export const FilterDrafts = (params, ...rest) => {
 export const deleteDraftbyId = (draftId) => {
   let url = `${API.DRAFT_BASE}/${draftId}`;
   return httpDELETERequest(url);
+};
+
+export const draftChildEligibilityCheck = (data) => {
+  const URL = API.DRAFT_BASE;
+  return httpPOSTRequest(`${URL}/exists`, data);
 };

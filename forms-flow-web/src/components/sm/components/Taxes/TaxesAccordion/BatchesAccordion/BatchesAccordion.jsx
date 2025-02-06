@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Accordion, Card, Button } from "react-bootstrap";
+import { Accordion, Button } from "react-bootstrap";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import styles from "./simpleAccordion.module.scss";
+import styles from "./batchesAccordion.module.scss";
 
-const SimpleAccordion = ({
+const BatchesAccordion = ({
   id = 0,
   forceOpenClose,
   Title,
-  ExtraTitleInfo,
-  SubTitle,
   Content,
   className,
-  // Commented out because of new design
-  // expandedClassName = "",
-  // borderClassName = "",
   onExpand,
 }) => {
   const accordionHeaderId = `accordion-header-${id}`;
@@ -31,12 +26,6 @@ const SimpleAccordion = ({
 
   return (
     <Accordion activeKey={isExpanded ? "0" : undefined} className={className}>
-      {/* Commented out because of new design */}
-      {/* <Card
-        className={`${styles.accordionCard} ${className} ${borderClassName} ${
-          isExpanded ? expandedClassName : ""
-        }`}
-      > */}
       <Accordion.Toggle
         id={accordionHeaderId}
         className={styles.accordionCta}
@@ -54,30 +43,20 @@ const SimpleAccordion = ({
             <Title isExpanded={isExpanded} />
           </span>
           <div className="d-flex align-items-center">
-            {ExtraTitleInfo ? <ExtraTitleInfo isExpanded={isExpanded} /> : null}
             {isExpanded ? (
-              <KeyboardArrowDownIcon className={styles.icon} />
+              <KeyboardArrowUpIcon className={styles.icon} />
             ) : null}
             {!isExpanded ? (
-              <KeyboardArrowUpIcon className={styles.icon} />
+              <KeyboardArrowDownIcon className={styles.icon} />
             ) : null}
           </div>
         </div>
-        {SubTitle ? <SubTitle isExpanded={isExpanded} /> : null}
       </Accordion.Toggle>
       <Accordion.Collapse eventKey="0">
-        <Card.Body
-          as="section"
-          className={styles.accordionBody}
-          id={accordionContentId}
-          aria-labelledby={accordionHeaderId}
-        >
-          <Content isExpanded={isExpanded} />
-        </Card.Body>
+        <Content isExpanded={isExpanded} className={styles.innerContent} />
       </Accordion.Collapse>
-      {/* </Card> */}
     </Accordion>
   );
 };
 
-export default SimpleAccordion;
+export default BatchesAccordion;

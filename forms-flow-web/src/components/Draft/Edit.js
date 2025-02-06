@@ -125,27 +125,36 @@ const View = React.memo((props) => {
   const enrichForm = useEnrichForm();
 
   const saveDraft = (payload, exitType = exitType) => {
-    if (exitType === "SUBMIT" || processData?.status !== "active") return;
-    let dataChanged = !isEqual(payload.data, lastUpdatedDraft.data);
-    if (draftSubmissionIdRef.current) {
-      if (String(draftSubmissionIdRef.current) !== String(draftId)) return;
-      if (dataChanged) {
-        setDraftSaved(false);
-        if (!showNotification) setShowNotification(true);
-        dispatch(
-          draftUpdate(payload, draftSubmissionIdRef.current, (err) => {
-            if (exitType === "UNMOUNT" && !err && DRAFT_FEEDBACK_ENABLED) {
-              toast.success(t("Submission saved to draft."));
-            }
-            if (!err) {
-              setDraftSaved(true);
-            } else {
-              setDraftSaved(false);
-            }
-          })
-        );
+    return new Promise((resolve, reject) => {
+      if (exitType === "SUBMIT" || processData?.status !== "active") {
+        return resolve();
       }
-    }
+      let dataChanged = !isEqual(payload.data, lastUpdatedDraft.data);
+      if (draftSubmissionIdRef.current) {
+        if (String(draftSubmissionIdRef.current) !== String(draftId)) return;
+        if (dataChanged) {
+          setDraftSaved(false);
+          if (!showNotification) setShowNotification(true);
+          dispatch(draftUpdate(payload, draftSubmissionIdRef.current))
+            .then(() => {
+              if (exitType === "UNMOUNT" && DRAFT_FEEDBACK_ENABLED) {
+                toast.success(t("Submission saved to draft."));
+                setDraftSaved(true);
+                resolve(); // Resolve after draft update success
+              }
+            })
+            .catch((err) => {
+              if (err?.response?.data?.errorMessageTranslation) {
+                toast.error(t(err.response.data.errorMessageTranslation));
+              }
+              setDraftSaved(false);
+              reject(err); // Reject if there's an error
+            });
+        } else {
+          resolve(); // Resolve if no data changed
+        }
+      }
+    });
   };
   const formStatusLoading = useSelector(
     (state) => state.process?.formStatusLoading
@@ -200,14 +209,24 @@ const View = React.memo((props) => {
   }
 
   const manuallySaveDraft = ({ submission }) => {
-    if (DRAFT_ENABLED) {
-      const { data } = submission;
-      const draftData = cloneDeep(data);
-      setDraftData(draftData);
-      draftRef.current = draftData;
-      let payload = getDraftReqFormat(form._id, draftData);
-      saveDraft(payload, exitType.current);
-    }
+    return new Promise((resolve, reject) => {
+      if (DRAFT_ENABLED) {
+        const { data } = submission;
+        const draftData = cloneDeep(data);
+        setDraftData(draftData);
+        draftRef.current = draftData;
+        let payload = getDraftReqFormat(form._id, draftData);
+        saveDraft(payload, exitType.current)
+          .then((res) => {
+            resolve(res);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } else {
+        resolve();
+      }
+    });
   };
 
   const deleteDraft = () => {

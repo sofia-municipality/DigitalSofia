@@ -100,6 +100,7 @@ const API = {
   PAY_TAX_DATA: `${WEB_BASE_URL}/agentws/payment-request`,
   GET_PAY_TAX_GROUP_DATA: `${WEB_BASE_URL}/agentws/obligation`,
   GET_PAY_TAX_DATA: `${WEB_BASE_URL}/agentws/obligation/<taxGroupId>`,
+  TAX_PAYMENT_CHECK: `${WEB_BASE_URL}/agentws/check-for-payment`,
 };
 
 export default API;

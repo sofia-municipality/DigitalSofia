@@ -13,6 +13,7 @@ import { useGetColumnsConfig } from "../hooks";
 import ContentHeader from "../TaxesAccordionContentHeader";
 import ContentFooter from "../TaxesAccordionContentFooter";
 import styles from "./taxesAccordionContent.module.scss";
+import BatchesAccordion from "../BatchesAccordion/BatchesAccordion";
 
 const TaxesAccordionContent = ({
   type,
@@ -43,48 +44,42 @@ const TaxesAccordionContent = ({
       items[0]?.propertyAddress ||
       items[0]?.additional_data;
 
-    return !isPhone ? (
-      <section className={styles.taxContentWrapper} aria-label={key}>
-        <ContentHeader
-          identifier={identifier}
-          total={total}
-          type={type}
-          batchNumber={key}
-          selectEnabled={selectEnabled}
-          showTotal={showTotal}
+    const TitleComponent = ({ isExpanded }) => (
+      <section>
+        {isExpanded ? (
+          <span>{t("localTaxes.batch.modal.collapse.text")}</span>
+        ) : (
+          <span>{t("localTaxes.batch.modal.expand.text")}</span>
+        )}
+      </section>
+    );
+
+    const ContentComponent = () => (
+      <section>
+        <BootstrapTable
+          wrapperClasses={styles.taxRecordTable}
+          keyField={
+            containerType === TaxesContainerType.STATUS
+              ? "payment_id"
+              : "debtInstalmentId"
+          }
+          data={items}
+          columns={columns}
+          rowStyle={rowStyle}
+          bordered={false}
+          headerWrapperClasses={styles.tableHeader}
+          bodyClasses={styles.tableBody}
         />
-        <div className={styles.taxRecord}>
-          <BootstrapTable
-            wrapperClasses={styles.taxRecordTable}
-            keyField={
-              containerType === TaxesContainerType.STATUS
-                ? "payment_id"
-                : "debtInstalmentId"
-            }
-            data={items}
-            columns={columns}
-            rowStyle={rowStyle}
-            bordered={false}
-            headerWrapperClasses={styles.tableHeader}
-            bodyClasses={styles.tableBody}
-          />
-        </div>
         <ContentFooter
           batchNumber={key}
-          selectEnabled={selectEnabled}
-          type={type}
+          // selectEnabled={selectEnabled}
+          // type={type}
         />
       </section>
-    ) : (
-      <section className={styles.taxContentWrapper} aria-label={key}>
-        <ContentHeader
-          identifier={identifier}
-          total={total}
-          type={type}
-          batchNumber={key}
-          selectEnabled={selectEnabled}
-          showTotal={showTotal}
-        />
+    );
+
+    const ContentMobileComponent = () => (
+      <section>
         <ul
           className={styles.taxesMobileWrapper}
           aria-label={t("screen.reader.localTaxesAndFees.list")}
@@ -120,8 +115,48 @@ const TaxesAccordionContent = ({
         </ul>
         <ContentFooter
           batchNumber={key}
-          selectEnabled={selectEnabled}
+          // selectEnabled={selectEnabled}
+          // type={type}
+        />
+      </section>
+    );
+
+    return !isPhone ? (
+      <section className={styles.taxContentWrapper} aria-label={key} key={key}>
+        <ContentHeader
+          identifier={identifier}
+          total={total}
           type={type}
+          batchNumber={key}
+          selectEnabled={selectEnabled}
+          showTotal={showTotal}
+        />
+        <div className={styles.taxRecord}>
+          <BatchesAccordion
+            id={key}
+            key={key}
+            forceOpenClose={"open"}
+            Title={TitleComponent}
+            Content={ContentComponent}
+          />
+        </div>
+      </section>
+    ) : (
+      <section className={styles.taxContentWrapper} aria-label={key}>
+        <ContentHeader
+          identifier={identifier}
+          total={total}
+          type={type}
+          batchNumber={key}
+          selectEnabled={selectEnabled}
+          showTotal={showTotal}
+        />
+        <BatchesAccordion
+          id={key}
+          key={key}
+          forceOpenClose={"open"}
+          Title={TitleComponent}
+          Content={ContentMobileComponent}
         />
       </section>
     );
