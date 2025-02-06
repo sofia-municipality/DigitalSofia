@@ -1,0 +1,12 @@
+{
+    "url":"amqp://guest:guest@rabbitmq//",
+    "queue":"email_queue",
+    "exchange":"email_exchange",
+    "routing_key":"email.send",
+    "type": "topic",
+    "retry_delay": 10,
+    "max_retries": 10,
+    "dead_letter_key":"email.dead",
+    "dead_queue":"email_dead",
+    "dead_exchange":"email_dead"
+}

@@ -13,8 +13,10 @@ from formsflow_api_utils.utils import (
     FILTER_MAPS,
     validate_sort_order_and_order_by,
 )
+from formsflow_api.exceptions import CommonException
 from formsflow_api_utils.utils.enums import DraftStatus
 from formsflow_api_utils.utils.user_context import UserContext, user_context
+from formsflow_api.schemas.region import RegionSchema
 from sqlalchemy import and_, update
 from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.sql.expression import text
@@ -24,7 +26,8 @@ from .audit_mixin import AuditDateTimeMixin
 from .base_model import BaseModel
 from .db import db
 from .form_process_mapper import FormProcessMapper
-from .region import ADDITIONAL_REGION_DATA
+from .region import Region
+
 
 
 class Draft(AuditDateTimeMixin, BaseModel, db.Model):
@@ -246,7 +249,7 @@ class Draft(AuditDateTimeMixin, BaseModel, db.Model):
         )
         return FormProcessMapper.tenant_authorization(result).all()
 
-    def get_application(self):
+    def get_application(self) -> Application:
         return Application.query.get(self.application_id)
     
     def generate_application_json_submission_dict(self, requestorName: str, service: dict) -> dict:
@@ -260,7 +263,9 @@ class Draft(AuditDateTimeMixin, BaseModel, db.Model):
         data = {}
 
         region = self.data.get("region")
-        additional_region_data = ADDITIONAL_REGION_DATA.get(region.get("city_are_code"))
+        region_schema = RegionSchema()
+        region_entity = Region.get_by_city_area_code(region.get("city_are_code"))
+        additional_region_data = region_schema.dump(region_entity, many=False)
         
         current_app.logger.debug(f"Setup region - {additional_region_data}")
         if additional_region_data:
@@ -284,7 +289,18 @@ class Draft(AuditDateTimeMixin, BaseModel, db.Model):
         data["processKey"] = application.form_process_mapper.process_key
 
         current_app.logger.debug(f"Application ID - {application.id}")
-        data["applicationId"] = application.id
+
+        # Check is trusteeSignForm
+        if application.form_process_mapper.form_name == "trusteeSignForm":
+            current_app.logger.debug("Using the application id of the iniator!")
+            initiator_application_id = self.data.get("applicationId")
+            current_app.logger.debug(initiator_application_id)
+
+            # Add guard if for some reason initiator application id is missing
+            data["applicationId"] = initiator_application_id if initiator_application_id else application.id
+        else:
+            data["applicationId"] = application.id
+
         current_app.logger.debug(f"Process Instance ID - {application.process_instance_id}")
         data["processInstanceId"] = application.process_instance_id
 
@@ -306,7 +322,9 @@ class Draft(AuditDateTimeMixin, BaseModel, db.Model):
         region = self.data.get("region")
         current_app.logger.debug(f"Region - {region}")
         if region and region.get("city_are_code"):
-            additional_region_data = ADDITIONAL_REGION_DATA.get(region.get("city_are_code"))
+            region_schema = RegionSchema()
+            region_data = Region.get_by_city_area_code(region.get("city_are_code"))
+            additional_region_data = region_schema.dump(region_data, many=False)
             current_app.logger.debug(additional_region_data)
             if additional_region_data:
                 system_dict["serviceSupplierId"] = additional_region_data.get("id")
@@ -358,3 +376,30 @@ class Draft(AuditDateTimeMixin, BaseModel, db.Model):
             "system": system_dict,
             "user": user_dict
         }
+
+    @classmethod
+    def find_app_for_child(self, form_path: str, created_by: str, tenant: str, process: str):
+        query = text("""SELECT f.form_path, a.id, a.latest_form_id, d.data FROM public.application a
+                        join public.draft d on a.id = d.application_id
+                        join public.form_process_mapper f on f.form_id = a.latest_form_id
+                        where (a.application_status = 'Draft' or a.application_status = 'waitingForThirdPartySigniture')
+                        and f.form_path = :form_path
+                        and a.created_by = :created_by
+                        and f.tenant = :tenant
+                        and f.status = 'active'
+                        and f.process_key = :process
+                        ORDER BY a.id DESC  """)
+
+        cursor = db.session.execute(query, {"form_path": form_path,
+                                            "created_by": created_by,
+                                            "tenant": tenant,
+                                            "process": process
+                                            }).fetchall()
+
+        return cursor
+    
+    @classmethod
+    def get_by_application_id(cls, application_id: str) -> Draft:
+        query = cls.query.filter_by(application_id=application_id)
+        draft = query.one_or_none()
+        return draft

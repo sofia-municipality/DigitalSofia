@@ -1,8 +1,10 @@
 """This manages Application submission Data."""
 
 from __future__ import annotations
+from datetime import datetime
 
 from flask_sqlalchemy.query import Query
+from flask import current_app
 from formsflow_api_utils.utils import (
     DRAFT_APPLICATION_STATUS,
     FILTER_MAPS,
@@ -17,6 +19,7 @@ from .base_model import BaseModel
 from .db import db
 from .form_history_logs import FormHistory
 from .form_process_mapper import FormProcessMapper
+from ..utils.enums import ApplicationStatusEnum
 
 
 class Application(
@@ -216,7 +219,7 @@ class Application(
         total_count = query.count()
         pagination = query.paginate(page=page_no, per_page=limit, error_out=False)
         return pagination.items, total_count
-
+    
     @classmethod
     def find_id_by_user(cls, application_id: int, user_id: str) -> Application:
         """Find application that matches the provided id."""
@@ -760,6 +763,18 @@ class Application(
         query = cls.filter_draft_applications(query=query)
         query = query.filter(Application.created_by == user_id)
         return query.count()
+    
+    @classmethod
+    def select_all_user_applications_count(cls, user_id: str) -> int:
+        query = cls.query.filter_by(created_by=user_id)
+        count = query.count()
+        return count
+    
+    @classmethod
+    def select_all_user_applications_count_without_draft(cls, user_id: str) -> int:
+        query = cls.query.filter(cls.created_by == user_id, cls.application_status != ApplicationStatusEnum.DRAFT.value)
+        count = query.count()
+        return count
 
     @classmethod
     def find_form_parent_id_by_application_id(cls, application_id: int) -> Application:
@@ -791,3 +806,46 @@ class Application(
         )
         query = cls.filter_draft_applications(query=query)
         return query.count()
+
+    @classmethod
+    @user_context
+    def filter_applications_by_specific_statuses(cls, **kwargs) -> int:
+        """Filter applications by specific statuses."""
+        user: UserContext = kwargs["user"]
+        user_id: str = user.user_name
+
+        return cls.query.filter(Application.created_by == user_id, ~Application.application_status.in_([
+            ApplicationStatusEnum.DRAFT.value,
+            ApplicationStatusEnum.CANCELLED.value,
+            ApplicationStatusEnum.WITHDRAWN.value,
+            ApplicationStatusEnum.CANCELLED_THIRD_PARTY_SIGNATURE.value,
+            ApplicationStatusEnum.EXPIRED_INVITATION.value,
+            ApplicationStatusEnum.REJECTED.value,
+            ApplicationStatusEnum.COMPLETED.value,
+            ApplicationStatusEnum.E_DELIVERY_ERROR.value,
+            ApplicationStatusEnum.SUBMISSION_ERROR.value
+        ])).count()
+    
+    @classmethod
+    def find_all_by_user_without_pagination(cls, user_id: str) -> list[Application]:
+        query = cls.query.filter_by(created_by = user_id)
+        applications = query.all()
+        current_app.logger.debug(applications)
+        return applications
+
+    @classmethod
+    @user_context
+    def delete_user_applications(cls, **kwargs):
+        user: UserContext = kwargs["user"]
+        user_id: str = user.user_name
+        user_applications = cls.find_all_by_user_without_pagination(user_id)
+        ids = [application.id for application in user_applications]
+        for application in user_applications[:1]:
+            current_app.logger.debug(application.id)
+            application.delete()
+        return ids
+    
+    @classmethod
+    def select_all_old_draft_applications(cls, time: datetime) -> list[Application]:
+        return cls.query.filter(Application.modified < time, Application.application_status == ApplicationStatusEnum.DRAFT.value)
+    

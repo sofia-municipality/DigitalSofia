@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 import os
 from flask import current_app, request
 from flask_restx import Namespace, Resource, fields
+from formsflow_api.schemas.invalidate_app_flag import InvalidateAppFlagSchema
 from formsflow_api_utils.exceptions import BusinessException
 from formsflow_api_utils.utils import (
     NEW_APPLICATION_STATUS,
@@ -15,18 +16,18 @@ from formsflow_api_utils.utils import (
 )
 from marshmallow.exceptions import ValidationError
 
-from formsflow_api.models.draft import Draft
 from formsflow_api.schemas import (
     ApplicationSchema,
     ApplicationSubmissionSchema,
     DraftListSchema,
     DraftSchema,
+    DraftCheckForChildApp
 )
 from formsflow_api.services import ApplicationService, DraftService
 from formsflow_api.resources.assurance_level_decorator import require_assurance_level
-from formsflow_api.services.external.bpm import BPMService
 from formsflow_api.services.external.redis_manager import RedisManager
 from formsflow_api_utils.utils.user_context import UserContext
+from formsflow_api.models.draft import Draft
 
 API = Namespace("Draft", description="Manage Drafts")
 
@@ -141,6 +142,7 @@ class DraftResource(Resource):
                 "default": "id",
             },
             "sortOrder": {
+
                 "in": "query",
                 "description": "Specify sorting  order.",
                 "default": "desc",
@@ -216,12 +218,9 @@ class DraftResource(Resource):
     def post(**kwargs):
         """Create a new draft."""
         try:
-           
-            # Check for existing, not completed applications for a child.
-            # check_result, check_status = _check_existing_application_for_child(kwargs)
-            # if check_status is not None:  
-            #     return check_result, check_status
-        
+
+            current_app.logger.debug("DRAFT - CREATE")
+
             application_json = request.get_json()
             application_schema = ApplicationSchema()
             application_dict_data = application_schema.load(application_json)
@@ -229,25 +228,92 @@ class DraftResource(Resource):
             draft_schema = DraftSchema()
             draft_dict_data = draft_schema.load(draft_json)
             token = request.headers["Authorization"]
-            
+
             current_app.logger.debug(f"application_dict_data: {application_dict_data}")
             current_app.logger.debug(f"draft_dict_data: {draft_dict_data}")
 
-            res = DraftService.create_new_draft(
-                application_dict_data, draft_dict_data, token
-            )
-            
-            # If the app is on behalf of the child create a Redis cache key
-            # create_app_cache_key(draft_dict_data["data"]["behalf"], request, kwargs.get('user'))
+            service_id = None
+            behalf_data = None
+            target_person_identifier = None
+            child_person_identifier = None
+            is_admin = False
 
-            response = draft_schema.dump(res)
+            if "data" not in draft_dict_data:
+                raise Exception("'data' segment not found in the JSON response.")
+            if "processingUser" in draft_dict_data["data"]:
+                is_admin = True
+            if is_admin:
+                res = DraftService.create_new_draft(
+                    application_dict_data, draft_dict_data, token
+                )
+
+                response = draft_schema.dump(res)
+                return response, HTTPStatus.CREATED
+
+            if "behalf" in draft_dict_data["data"]:
+                behalf_data = draft_dict_data["data"]["behalf"]
+
+            if "childPersonIdentifier" in draft_dict_data["data"]:
+                child_person_identifier = draft_dict_data["data"]["childPersonIdentifier"]
+
+            skip_check_for_child_for_other_person = False
+
+            if (behalf_data == "otherPerson" or behalf_data == "myBehalf") and "otherPersonIdentifier" in \
+                    draft_dict_data["data"]:
+                target_person_identifier = draft_dict_data["data"]["otherPersonIdentifier"]
+
+                if not target_person_identifier:
+                    skip_check_for_child_for_other_person = True
+
+            elif behalf_data == "child" and "property" in draft_dict_data["data"] and draft_dict_data["data"][
+                "property"] == "anotherPersonProperty" and "otherPersonIdentifier" in draft_dict_data["data"]:
+                target_person_identifier = draft_dict_data["data"]["otherPersonIdentifier"]
+
+                if not target_person_identifier:
+                    skip_check_for_child_for_other_person = True
+
+            else:
+                target_person_identifier = draft_dict_data["data"]["personIdentifier"]
+
+            current_app.logger.warning(f"EGN: {target_person_identifier}")
+
+            # Remove the EGN prefix
+            target_person_identifier = target_person_identifier.lower().replace("pnobg-", "")
+            current_app.logger.warning(f"Target Person: {target_person_identifier}; Behalf: {behalf_data}")
+
+            if "serviceId" in draft_dict_data["data"]:
+                service_id = draft_dict_data["data"]["serviceId"]
+                # Check for existing, not completed applications for a child.
+
+                # Пропускаме проверката за дете когато се пуска заявление от името на друго лице
+                # защото на първа стъпка където се създава драфт още няма ЕГН на другото лице.
+                if not skip_check_for_child_for_other_person:
+
+                    # Skip the child check if we have joint custody when creating application for a child
+                    if "trusteeIdentifier" not in draft_dict_data["data"]:
+
+                        check_result, check_status = (
+                            DraftService.check_existing_application_for_child(str(service_id),
+                                                                              target_person_identifier,
+                                                                              child_person_identifier,
+                                                                              **kwargs))
+                        if check_result is not None:
+                            return check_result, check_status
+
+                res = DraftService.create_new_draft(
+                    application_dict_data, draft_dict_data, token
+                )
+
+                response = draft_schema.dump(res)
+            else:
+                raise Exception("Service ID is missing or provided value cannot be recognized.")
 
             return (response, HTTPStatus.CREATED)
         except BusinessException as err:
             current_app.logger.warning(err)
             response, status = err.error, err.status_code
             return response, status
-        except BaseException as draft_err:  # pylint: disable=broad-except
+        except Exception as draft_err:  # pylint: disable=broad-except
             response, status = {
                 "type": "Bad request error",
                 "message": "Invalid submission request passed",
@@ -255,81 +321,6 @@ class DraftResource(Resource):
             current_app.logger.warning(response)
             current_app.logger.warning(draft_err)
             return response, status
-
-# def _check_existing_application_for_child(kwargs):
-#     """Check for existing, not completed applications for a child."""
-
-#     if "user" not in kwargs:
-#         return "User not found in arguments", HTTPStatus.BAD_REQUEST
-    
-#     user = kwargs.get('user')
-
-#     if not user:
-#         return "User not found in arguments", HTTPStatus.BAD_REQUEST
-
-#     token_info = user.token_info
-
-#     # Prepare data input to check for the existing application on behalf of the child
-#     app_check_input = AppCheckInputData(request, user)
-
-#     current_app.logger.debug(f"Checking for existing application on behalf of the child with: personIdentifier:{app_check_input.personIdentifier}; tenantKey:{app_check_input.tenantKey}; processDefinitionId:{app_check_input.processDefinitionId}")
-   
-#     # Check in the redis cache for existing application on behalf of the child           
-#     redis_manager = RedisManager(app_check_input.redis_connection_string)
-#     key_name = redis_manager.BuildKeyName(app_check_input.personIdentifier, app_check_input.tenantKey, app_check_input.processDefinitionId)
-
-#     #Check if there is application started in Redis cache
-#     existing_app_data = redis_manager.GetKeyValue(key_name)
-
-#     if existing_app_data is not None:
-#          return {
-#             "error": "There is at least one unfinished application on behalf of the child.",
-#             "personIdentifier": app_check_input.personIdentifier,
-#             "tenantKey": app_check_input.tenantKey,
-#             "processDefinitionId": app_check_input.processDefinitionId,
-#             "resultSource": "cache"
-#          }, HTTPStatus.UNPROCESSABLE_ENTITY
-
-#     #If for some reason the cache key is not created in REDIS check in Camunda
-#     app_check_result = BPMService.get_apps_not_completed_for_child(app_check_input.token, 
-#                                                                    app_check_input.personIdentifier, 
-#                                                                    app_check_input.tenantKey, 
-#                                                                    app_check_input.processDefinitionId)
-
-#     current_app.logger.debug("RESULT from _check_existing_application_for_child: ")
-#     current_app.logger.debug(app_check_result)
-
-#     if not app_check_result["success"]:
-#         current_app.logger.error(app_check_result["error"])
-#         return app_check_result["error"], HTTPStatus.BAD_REQUEST
-
-#     if app_check_result["data"] != None and len(app_check_result["data"]) > 0:
-#         return {
-#             "error": "There is at least one unfinished application on behalf of the child.",
-#             "data": app_check_result["data"],
-#             "personIdentifier": app_check_input.personIdentifier,
-#             "tenantKey": app_check_input.tenantKey,
-#             "processDefinitionId": app_check_input.processDefinitionId,
-#             "instanceId": app_check_result["data"][0]["id"],
-#             "resultSource": "camunda"
-#          }, HTTPStatus.UNPROCESSABLE_ENTITY
-#     return None, None
-
-# def create_app_cache_key(behalf, request, user):
-    
-#     app_check_input = AppCheckInputData(request, user)
-
-#     # Check if the application is on behalf of a child and set
-#     if behalf is not None and behalf == "child":
-#         redis_manager = RedisManager(app_check_input.redis_connection_string)
-#         key_name = redis_manager.BuildKeyName(app_check_input.personIdentifier, app_check_input.tenantKey, app_check_input.processDefinitionId)
-        
-#         existing_app_data = redis_manager.GetKeyValue(key_name)
-
-#         if not existing_app_data:
-#             redis_manager.CreateKey(key_name, app_check_input.personIdentifier)
-#             current_app.logger.debug(f"Created cache key: {key_name} for {app_check_input.personIdentifier}")
-
 
 
 @cors_preflight("GET,PUT,DELETE,OPTIONS")
@@ -355,6 +346,7 @@ class DraftResourceById(Resource):
 
     @staticmethod
     @auth.require
+    @user_context
     @profiletime
     @API.doc(body=draft)
     @API.response(
@@ -365,13 +357,35 @@ class DraftResourceById(Resource):
         400,
         "BAD_REQUEST:- Invalid request.",
     )
-    def put(draft_id: int):
+    def put(draft_id: int, **kwargs):
         """Update draft details."""
-        draft_json = request.get_json()
+
         try:
+            draft_json = request.get_json()
             draft_schema = DraftSchema()
             dict_data = draft_schema.load(draft_json)
+
+            behalf_data = None
+            target_person_identifier = None
+
+            if "behalf" in dict_data["data"]:
+                behalf_data = dict_data["data"]["behalf"]
+
+            person_identifier = dict_data["data"]["personIdentifier"]
+            person_identifier = person_identifier.lower().replace("pnobg-", "")
+
+            if behalf_data == "otherPerson" and "otherPersonIdentifier" in dict_data["data"]:
+                target_person_identifier = dict_data["data"]["otherPersonIdentifier"]
+                target_person_identifier = target_person_identifier.lower().replace("pnobg-", "")
+
+                if person_identifier == target_person_identifier:
+                    return {
+                        "error": "Other person's EGN must be different from the current user's EGN.",
+                        "errorMessageTranslation": "app_other_person_same_egn"
+                    }, HTTPStatus.UNPROCESSABLE_ENTITY
+
             DraftService.update_draft(draft_id=draft_id, data=dict_data)
+
             return (
                 f"Updated {draft_id} successfully",
                 HTTPStatus.OK,
@@ -581,8 +595,8 @@ class PublicDraftUpdateResourceById(Resource):
             current_app.logger.warning(submission_err)
 
             return response, status
-        
-        
+
+
 @cors_preflight("POST, OPTIONS")
 @API.route("/<int:draft_id>/export/pdf", methods=["POST", "OPTIONS"])
 class ExportPDFFromDraftResource(Resource):
@@ -609,21 +623,85 @@ class ExportPDFFromDraftResource(Resource):
         except BusinessException as err:
             current_app.logger.warning(err.error)
             return err.error, err.status_code
-        
-class AppCheckInputData():
-    token:str
-    user: UserContext
-    tokenInfo: dict
-    personIdentifier: str
-    tenantKey: str
-    processDefinitionId: str
-    redis_connection_string: str
-    
-    def __init__(self, request, user):
-        self.token = request.headers["Authorization"]
-        self.token_info = user.token_info
-        self.personIdentifier = self.token_info["personIdentifier"]
-        self.tenantKey = self.token_info["tenantKey"]
-        self.processDefinitionId = current_app.config.get("CAMUNDA_CHANGE_ADDRESS_PROCESS")
-        self.redis_connection_string = current_app.config.get("REDIS_CONNECTION")
 
+
+@cors_preflight("POST,OPTIONS")
+@API.route("/invalidate", methods=["POST", "OPTIONS"])
+class DraftInvalidateFlag(Resource):
+
+    @staticmethod
+    @auth.require
+    @profiletime
+    @API.response(200, "OK:- Successful request.")
+    @API.response(
+        400,
+        "BAD_REQUEST:- Invalid request.",
+    )
+    @API.response(
+        401,
+        "UNAUTHORIZED:- Authorization header not provided or an invalid token passed.",
+    )
+    def post():
+        current_app.logger.warning("NO NEED TO INVALIDATE REDIS FLAG. REMOVE THE CALLER!!!")
+
+
+@cors_preflight("POST,OPTIONS")
+@API.route("/exists", methods=["POST", "OPTIONS"])
+class DraftCheckExistingForChild(Resource):
+
+    @staticmethod
+    @auth.require
+    @profiletime
+    @user_context
+    @API.response(200, "OK:- Successful request.")
+    @API.response(
+        400,
+        "BAD_REQUEST:- Invalid request.",
+    )
+    @API.response(
+        401,
+        "UNAUTHORIZED:- Authorization header not provided or an invalid token passed.",
+    )
+    def post(**kwargs):
+
+        try:
+
+            request_json = request.get_json()
+            schema = DraftCheckForChildApp()
+            data = schema.load(request_json)
+
+            if not "service_id" in data:
+                return {
+                    "error": "serviceId is required in the body of the request"
+                }, HTTPStatus.BAD_REQUEST
+
+            if not "person_identifier" in data:
+                return {
+                    "error": "person_identifier is required in the body of the request"
+                }, HTTPStatus.BAD_REQUEST
+
+            service_id = data["service_id"]
+            person_identifier = data["person_identifier"]
+
+            if service_id is None:
+                return {
+                    "error": "serviceId is required in the body of the request"
+                }, HTTPStatus.BAD_REQUEST
+
+            if person_identifier is None:
+                return {
+                    "error": "personIdentifier is required in the body of the request"
+                }, HTTPStatus.BAD_REQUEST
+
+            # Check for existing, not completed applications for a child.
+            check_result, check_status = DraftService.check_existing_application_for_child(service_id,
+                                                                                           person_identifier, None,
+                                                                                           **kwargs)
+
+            return check_result, check_status
+
+        except Exception as ex:
+            current_app.logger.error(f"Error in DraftCheckExistingForChild: {ex}")
+            return {
+                "error": f"Error checking for application for child: {ex}"
+            }, HTTPStatus.INTERNAL_SERVER_ERROR

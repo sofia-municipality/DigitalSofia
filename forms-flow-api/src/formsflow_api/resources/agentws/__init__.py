@@ -1,0 +1,13 @@
+# __init__.py
+from .namespace import API
+from .payment_request_post import AgentWSPaymentRequestResource
+from .agentws_get import AgentWSResource
+from .obligation_get import AgentWSObligationPaymentRequestsResource
+from .obligations_get import AgentWSObligationGroupResource
+from .check_payment import AgentWSPaymentCheckResource
+
+API.add_resource(AgentWSResource)
+API.add_resource(AgentWSPaymentRequestResource)
+API.add_resource(AgentWSObligationGroupResource)
+API.add_resource(AgentWSObligationPaymentRequestsResource)
+API.add_resource(AgentWSPaymentCheckResource)

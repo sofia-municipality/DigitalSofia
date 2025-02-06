@@ -1,7 +1,9 @@
 import json
+import decimal
 from datetime import datetime
 from http import HTTPStatus
 from math import fsum
+from enum import Enum
 from random import randrange
 import re
 import base64
@@ -13,7 +15,10 @@ from formsflow_api_utils.utils import UserContext
 
 from formsflow_api.exceptions import EFormIntegrationException
 from formsflow_api.models import PaymentRequest, MateusPaymentRequest
-from formsflow_api.models.region import ADDITIONAL_REGION_DATA
+from formsflow_api.models.mateus_payment_group import MateusPaymentGroup
+from formsflow_api.models.region import Region
+from formsflow_api.transformers import EFormIntegrationsTransformer
+from formsflow_api.schemas import RegionSchema
 
 VALID_ERRORS_BY_METHOD = {
     'get_obligations': [
@@ -30,12 +35,28 @@ VALID_ERRORS_BY_METHOD = {
 }
 
 
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, decimal.Decimal):
+            return str(o)
+        return super().default(o)
+
+
+class EDeliveryUploadType(Enum):
+    ON_BEHALF = "upload/obo/blobs"
+    COMMON = "upload/blobs"
+
+
 class EFormIntegrationsService:
+    transformer: EFormIntegrationsTransformer
 
     def __init__(self):
         current_app.logger.debug("eForm Service")
         current_app.logger.debug("Init")
         self.base_url = current_app.config.get("EFORM_INTEGRATIONS_URL")
+        self.transformer = EFormIntegrationsTransformer()
+        self.eDelivery_file_upload_type = current_app.config.get("EDELIVERY_FILE_UPLOAD_ADDRESS")
+        self.eDelivery_profile_id = current_app.config.get("EDELIVERY_FILE_UPLOAD_PROFILE_ID")
 
     def generateOperationObject(self, operation: str, type: str, xmlns: str, parameters: list):
         return {
@@ -102,11 +123,13 @@ class EFormIntegrationsService:
             url=url,
         )
 
-        ## An error has occurred within the integration error
+        current_app.logger.debug(f"Response status code: {response.status_code}")
+        current_app.logger.debug(f"Response body: {response.json()}")
+
+        # An error has occurred within the integration error
         if response.status_code == 200:
             return response.json()
         else:
-
             is_valid_error, response = self.check_is_valid_error('get_obligations', response)
             if not is_valid_error:
                 return response
@@ -120,6 +143,9 @@ class EFormIntegrationsService:
         try:
             # get data
             data = response.json()
+
+            current_app.logger.warning(f"Data:: {data}")
+
             data = data.get('data')
             data = json.loads(data)
             method_errors = VALID_ERRORS_BY_METHOD.get(source)
@@ -163,21 +189,30 @@ class EFormIntegrationsService:
         if payment_request:
             return payment_request.to_json()
         else:
-            region_index = list(filter(
-                lambda i: ADDITIONAL_REGION_DATA[i]['code'] == data['paymentRequest']['paymentData'][
-                    'administrativeServiceSupplierUri'], ADDITIONAL_REGION_DATA))
-            if len(region_index):
-                region = ADDITIONAL_REGION_DATA[region_index[0]]
-                data['eserviceClientId'] = region['eserviceClientId']
+            # region_index = list(filter(
+            #     lambda i: ADDITIONAL_REGION_DATA[i]['code'] == data['paymentRequest']['paymentData'][
+            #         'administrativeServiceSupplierUri'], ADDITIONAL_REGION_DATA))
+            # if len(region_index):
+            #     region = ADDITIONAL_REGION_DATA[region_index[0]]
+            #     data['eserviceClientId'] = region['eserviceClientId']
 
-            ### Set callbackurl
+            region_entity = Region.get_by_id(data['paymentRequest']['paymentData']['administrativeServiceSupplierUri'])
+
+            if region_entity:
+                region_schema = RegionSchema()
+                region = region_schema.dump(region_entity, many=False)
+                current_app.logger.info("Region data: %s", region)
+                data['eserviceClientId'] = region.get("client_id")
+
+            # Set callback url
             if "paymentRequest" in data and "paymentData" in data["paymentRequest"]:
                 callback_url = current_app.config.get("FORMSFLOW_API_URL")
                 current_app.logger.debug(f"Callback Url - {callback_url}")
-                data["paymentRequest"]["paymentData"]["administrativeServiceNotificationURL"] = f"{callback_url}/payment/payment-status-callback"
-
+                data["paymentRequest"]["paymentData"][
+                    "administrativeServiceNotificationURL"] = f"{callback_url}/payment/payment-status-callback"
 
             url = f"{self.base_url}/integrations/ePayment/register-payment-extended"
+            current_app.logger.info("Request to ePayment for region:: %s", data)
             response = requests.post(
                 url=url,
                 data=json.dumps(data)
@@ -203,10 +238,19 @@ class EFormIntegrationsService:
 
     def get_payment_status(self, payment_id):
         url = f"{self.base_url}/integrations/ePayment/payment-status?paymentId={payment_id}"
+
+        current_app.logger.info("Request to ePayment")
+        current_app.logger.info(url)
+
         response = requests.get(
             url=url
         )
+
+        current_app.logger.info("Response from ePayment")
+
         if response.ok:
+            response_data = response.json()
+            current_app.logger.info("Response JSON data from ePayment: %s", response_data)
             return response.json()
         else:
             error_response = response.json()
@@ -216,13 +260,29 @@ class EFormIntegrationsService:
                 data=error_response["data"]
             )
 
-    def sent_to_eDelivery(self, data):
+    def sent_to_eDelivery(self, recipient_profile_ids, subject, file_ids):
+        url = f"{self.base_url}/integrations/eDelivery/send-message"
 
-        url = f"{self.base_url}/integrations/eDelivery/send-message-on-behalf"
+        # Prepare data to be sent to eDelivery
+        data = {
+            "recipientProfileIds": recipient_profile_ids,
+            "subject": subject,
+            "templateId": "1",
+            "fields": {
+                "e2135802-5e34-4c60-b36e-c86d910a571a": file_ids
+            }
+        }
+
+        # Check if we are using onBehalf upload mechanism
+        if self.eDelivery_file_upload_type == EDeliveryUploadType.ON_BEHALF.value:
+            url = f"{self.base_url}/integrations/eDelivery/send-message-on-behalf"
+            data["senderProfileId"] = self.eDelivery_profile_id
+
         response = requests.post(
             url=url,
             data=json.dumps(data)
         )
+
         if response.ok:
             return response.json()
         else:
@@ -233,103 +293,41 @@ class EFormIntegrationsService:
                 data=error_response["data"]
             )
 
-    def create_payment_from_obligation(self, group, obligation, user: UserContext):
-        reason = str(obligation["taxPeriodYear"]) + "-" + str(obligation["instNo"]) + "-" + str(
-            obligation["partidaNo"])
-        payment_request_id = str(obligation["kindDebtRegId"]) + "-" + reason + str(randrange(100000,999999))
-        region_index = list(filter(lambda i: ADDITIONAL_REGION_DATA[i]['mateus_code'] == obligation['municipalityId'],
-                                   ADDITIONAL_REGION_DATA))
-        personIdentifier = user.token_info["personIdentifier"].split("-")[1]
-        if len(region_index):
-            region = ADDITIONAL_REGION_DATA[region_index[0]]
-            eserviceClientId = region['mateus_eserviceClientId']
-        else:
-            raise BusinessException(
-                "Invalid Municipality", HTTPStatus.BAD_REQUEST
-            )
-        current_date = datetime.utcnow().replace(tzinfo=pytz.utc)
-        current_date_formatted = datetime.isoformat(current_date)
-        expiration_date = datetime.isoformat(current_date.replace(hour=int(current_date.hour) + 1))
-        service_notification_url = f"{current_app.config.get('FORMSFLOW_API_URL')}/payment/payment-status-callback?message=PaymentStatusMessage&fieldId=ePaymentId"
+    def create_payment_from_obligations(self, transformed_obligations, amount, reason, group, payment_id,
+                                        person_identifier, user: UserContext):
+        user_name = user.token_info["name"]
 
-        data = {
-            "paymentRequest": {
-                "actors": [{
-                    "type": "PERSON",
-                    "uid": {
-                        "type": "EGN",
-                        "value": personIdentifier
-                    },
-                    "name": user.token_info["name"],
-                    "participantType": "APPLICANT"
-                }],
-                "paymentData": {
-                    "paymentId": payment_request_id,
-                    "currency": "BGN",
-                    "amount": round(fsum([obligation["residual"], obligation["interest"]]), 2),
-                    "referenceNumber": payment_request_id,
-                    "referenceType": "9",
-                    "referenceDate": current_date_formatted,
-                    "expirationDate": expiration_date,
-                    "reason": reason,
-                    "additionalInformation": json.dumps({
-                        "partidaNo": obligation["partidaNo"],
-                        "propertyAddress": obligation["propertyAddress"],
-                        "kindDebtRegName": obligation["kindDebtRegName"],
-                        "taxPeriodYear": obligation["taxPeriodYear"],
-                        "instNo": obligation["instNo"],
-                        "debtInstalmentId": obligation["debtInstalmentId"],
-                        "paidInstalmentSum": obligation["residual"],
-                        "paidInterestSum": obligation["interest"],
-                        "taxSubjectId": group["tax_subject_id"],
-                        "regionClientId": eserviceClientId,
-                        "regionName": obligation["municipalityName"],
-                        "registerNo": obligation["registerNo"]
-                    }),
-                    "administrativeServiceUri": 2410,
-                    "administrativeServiceSupplierUri": obligation["municipalityId"],
-                    "administrativeServiceNotificationURL": service_notification_url,
-                    "obligationType": obligation["kindDebtRegId"]
-                }
-            },
-            "eserviceClientId": eserviceClientId
-        }
+        # prepare data for payment request
+        data = self.transformer.payment_request(payment_id, amount, reason, person_identifier, user_name)
+
+        current_app.logger.info('Sending payment request to ePayment')
         current_app.logger.info(data)
+
+        # create payment request
         url = f"{self.base_url}/integrations/ePayment/register-payment-extended"
         response = requests.post(
             url=url,
-            data=json.dumps(data)
+            data=json.dumps(data.get("request"))
         )
-        if response.ok:
-            result = response.json()
-            if obligation["propertyAddress"] != " ":
-                additional_data = obligation["propertyAddress"]
-            else:
-                additional_data = obligation["registerNo"]
-            payment_dict = {
-                "payment_id": result["paymentId"],
-                "payment_request_id": payment_request_id,
-                "reason": reason,
-                "access_code": result["accessCode"],
-                "person_identifier": personIdentifier,
-                "status": "Pending",
-                "group_id": group["id"],
-                "amount": float(data["paymentRequest"]["paymentData"]["amount"]),
-                "tax_period_year": int(obligation["taxPeriodYear"]),
-                "partida_no": obligation["partidaNo"],
-                "kind_debt_reg_id": int(obligation["kindDebtRegId"]),
-                "pay_order": int(obligation["payOrder"]),
-                "additional_data": additional_data,
-                "rnu": obligation["rnu"],
-                "municipalityId": obligation["municipalityId"],
-                "residual": obligation["residual"],
-                "interest": obligation["interest"],
-                "debtInstalmentId": obligation["debtInstalmentId"],
 
+        # if payment request is created successfully then store the obligations in the database
+        if response.ok:
+            current_app.logger.info('Payment request created successfully')
+            result = response.json()
+
+            group = {
+                "id": group["id"],
+                "access_code": result["accessCode"],
+                "e_payment_payment_id": result["paymentId"],
+                "status": "Pending"
             }
 
-            current_app.logger.info(payment_dict)
-            MateusPaymentRequest.create_from_dict(payment_dict)
+            current_app.logger.info('Updating payment group in the database')
+            MateusPaymentGroup.update_from_dict(group)
+            current_app.logger.info('Storing obligations in the database')
+            current_app.logger.info(transformed_obligations)
+            MateusPaymentRequest.bulk_insert(transformed_obligations)
+
             return result
         else:
             error_response = response.json()
@@ -355,15 +353,24 @@ class EFormIntegrationsService:
                 data=error_response["data"]
             )
 
-    def eDelivery_upload_blob(self, representedPersonID: str, file):
-        url = f"{self.base_url}/integrations/eDelivery/upload/obo/blobs?type=Storage"
+    def eDelivery_file_upload(self, file):
+        headers = {}
+        url = f"{self.base_url}/integrations/eDelivery/{self.eDelivery_file_upload_type}"
+
+        # Check if we are using onBehalf upload mechanism
+        # Set representedPersonID for eDelivery if we are using onBehalf upload mechanism
+        if self.eDelivery_file_upload_type == EDeliveryUploadType.ON_BEHALF.value:
+            headers["representedPersonID"] = self.eDelivery_profile_id
+
+        current_app.logger.debug(f"Uploading file to eDelivery: {url}")
+        current_app.logger.debug(f"Headers: {headers}")
+
         response = requests.post(
             url=url,
             files=file,
-            headers={
-                "representedPersonID": representedPersonID
-            }
+            headers=headers
         )
+
         if response.ok:
             return response.json()
         else:
@@ -373,6 +380,7 @@ class EFormIntegrationsService:
                 message=error_response["message"],
                 data=error_response["data"]
             )
+
     def eDelivery_upload_blob_from_base64(self, file_path, token):
 
         file = requests.get(url=file_path, headers={
@@ -390,18 +398,31 @@ class EFormIntegrationsService:
         files = re.split(";|,", file["data"]["file"][0]["url"])
         image_binary = base64.b64decode(files[2])
         current_app.logger.info(file["data"]["file"][0]["name"])
-        file_response = self.eDelivery_upload_blob("000696327000001",
-                                                          {'file': (file["data"]["file"][0]["name"],
-                                                                    image_binary)})
+        file_response = self.eDelivery_file_upload({'file': (file["data"]["file"][0]["name"],
+                                                             image_binary)})
         return file_response["blobId"]
+
     def update_mateus_status(self, data):
         current_app.logger.info(data)
+
         url = f"{self.base_url}/integrations/AgentWS/payment/pay"
+
         response = requests.post(
             url=url,
-            data=json.dumps(data)
+            data=json.dumps(data, cls=DecimalEncoder)
         )
+
+        current_app.logger.info(response.json())
+
         if response.ok:
-            return response.json()
+            return {
+                "success": response.ok,
+                "statusCode": response.status_code,
+                "data": response.json()
+            }
         else:
-            return False
+            return {
+                "success": response.ok,
+                "statusCode": response.status_code,
+                "data": response.json()
+            }

@@ -3,12 +3,14 @@ from http import HTTPStatus
 
 from flask import current_app
 from formsflow_api_utils.exceptions import BusinessException
-from sqlalchemy import asc
+from sqlalchemy.orm import aliased
+from sqlalchemy import select, distinct
 
 from . import AddressKRA, Region
 from .base_model import BaseModel
 from .audit_mixin import AuditDateTimeMixin
 from .db import db
+from ..utils import SOFIA_CITY_CODES
 
 
 class AddressKAD(AuditDateTimeMixin,
@@ -18,7 +20,7 @@ class AddressKAD(AuditDateTimeMixin,
 
     id = db.Column(db.Integer, primary_key=True)
     code_nm_grao = db.Column(db.String, nullable=False)
-    code_pa = db.Column(db.String, nullable=False,)
+    code_pa = db.Column(db.String, nullable=False, )
     building_number = db.Column(db.String, nullable=False)
     entrance = db.Column(db.String)
     region_id = db.Column(db.Integer, db.ForeignKey("region.city_are_code"), nullable=False)
@@ -76,10 +78,11 @@ class AddressKAD(AuditDateTimeMixin,
         name_pa = filters.get("name_pa")
         building_number = filters.get("building_number")
         region_id = filters.get("region_id")
-        result = cls.query\
-            .join(AddressKRA, AddressKAD.code_pa == AddressKRA.code_pa and AddressKAD.code_nm_grao == AddressKRA.code_nm_grao)\
-            .filter(AddressKRA.name_pa == name_pa,AddressKAD.region_id == region_id)\
-            .with_entities(AddressKAD.building_number, AddressKAD.region_id)\
+        result = cls.query \
+            .join(AddressKRA,
+                  AddressKAD.code_pa == AddressKRA.code_pa and AddressKAD.code_nm_grao == AddressKRA.code_nm_grao) \
+            .filter(AddressKRA.name_pa == name_pa, AddressKAD.region_id == region_id) \
+            .with_entities(AddressKAD.building_number, AddressKAD.region_id) \
             .distinct(AddressKAD.building_number)
 
         if building_number is not None:
@@ -101,15 +104,35 @@ class AddressKAD(AuditDateTimeMixin,
         return result.items, result.pages, total_count
 
     @classmethod
-    def get_regions_for_streets(cls, streets):
-        filter_values = []
-        for street in streets:
-            filter_values.append(street["name_pa"])
-        result = cls.query \
-            .join(AddressKRA,
-                  AddressKAD.code_pa == AddressKRA.code_pa and AddressKAD.code_nm_grao == AddressKRA.code_nm_grao) \
-            .join(Region, Region.city_are_code == AddressKAD.region_id) \
-            .filter(AddressKRA.name_pa.in_(filter_values)) \
-            .with_entities(AddressKRA.name_pa, AddressKAD.region_id, Region.name.label('region_name')) \
-            .distinct(AddressKRA.name_pa, AddressKAD.region_id ).all()
-        return result
+    def get_regions_for_streets(cls, streets, page_number=None,
+                                limit=None,
+                                **filters):
+
+        kra_alias = aliased(AddressKRA)
+        kad_alias = aliased(AddressKAD)
+
+        filter_values = [street["name_pa"] for street in streets]
+
+        current_app.logger.info('Filter values: %s', filter_values)
+
+        query = db.session.query(
+            distinct(kra_alias.name_pa),  # Select distinct name_pa from kra
+            kra_alias.name_pa,
+            kad_alias.region_id,
+            Region.name.label("region_name")
+        ).join(
+            kra_alias,
+            (kad_alias.code_nm_grao == kra_alias.code_nm_grao) &
+            (kad_alias.code_pa == kra_alias.code_pa)
+        ).join(
+            Region,
+            kad_alias.region_id == Region.city_are_code
+        ).filter(
+            kra_alias.name_pa.in_(filter_values),
+            kad_alias.code_nm_grao.in_(SOFIA_CITY_CODES)
+        )
+
+        total_count = query.count()
+        result = query.paginate(page=page_number, per_page=limit)
+
+        return result.items, result.pages, total_count

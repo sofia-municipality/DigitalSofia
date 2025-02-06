@@ -62,6 +62,16 @@ class KeycloakAdmin(ABC):
     ):
         """Get users in a realm."""
         raise NotImplementedError("Method not implemented")
+    
+    @abstractmethod
+    def delete_user(self, user_id: str):
+        """Delete user by id."""
+        raise NotImplementedError("Method not implemented")
+    
+    @abstractmethod
+    def get_user_groups(self, user_id: str):
+        """Get user groups by user_id."""
+        raise NotImplementedError("Method not implemented")
 
     def sort_results(self, data: List, sort_order: str):
         """Sort results by name."""

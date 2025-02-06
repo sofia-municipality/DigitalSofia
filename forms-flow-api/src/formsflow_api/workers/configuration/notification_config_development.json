@@ -1,0 +1,6 @@
+{
+    "templates_location": "/forms-flow-api/app/src/formsflow_api/static/data/templates",                          
+    "service_url": "http://host.docker.internal:8002/integrations/notifications/post-mail-notification",
+    "support_emails":"support1@support.com;support2@support.com",
+    "notification_schema":"60,300"
+}

@@ -1,0 +1,25 @@
+﻿region,region_id,reference_number_code,code,eik,id,title,api_client_id,api_secret_key
+Средец,1,РСЦ,522,0006963270461,b776f6ae-e43f-4267-a20e-e490b8d9dcbd,Районна администрация - Средец,epayments_ais_client_ae04f7b7-2c5b-49cc-8ab9-1c16caaf1b69,1NQDKD6HUBU242AGMJXVTGE1E7CJ66RQ
+Красно село,2,РКС,523,0006963270526,5fc55943-b9e7-4fd0-978b-756bf5f460aa,Районна администрация - Красно село,epayments_ais_client_3f8fe04a-b1bd-44f6-b346-fd62c45ac99c,1FUPQ2ND4VPZEMIXBDUR6BCGS36LW8ZL
+Възраждане,3,РВЕ,524,0006963270480,63480615-8bfd-4b98-8811-ba2ff8e47720,Районна администрация - Възраждане,epayments_ais_client_d83e30f5-1c39-4e3e-8b59-f9bec1d447bd,AJZZD6MN6WBCSRFGYMUCLHH2MU2UK1MA
+Оборище,4,РОБ,525,0006963270511,d9e5bf6a-f947-4180-a359-7b3a6673fb2d,Районна администрация - Оборище,epayments_ais_client_bccab3f7-c66b-4cf2-a5c2-cf32ad5c63b5,8ZSR67ULJW7L7BLZ8ADBN7ZQBISEYZMK
+Сердика,5,РСР,526,0006963270476,32094c2e-6090-4593-91fe-73fb1800495c,Районна администрация - Сердика,epayments_ais_client_8210888f-d9de-45c3-ae9d-b4ce1290ab5b,URG6KXNDZS4V38IYN8DAEJA2AITHBGAJ
+Подуяне,6,РПД,527,0006963270530,ae688df5-8f0b-461d-82cc-855ec29eae29,Районна администрация - Подуяне,epayments_ais_client_e237112c-152d-4886-952f-e9d534520f2a,YYCCDZ8I3BCM73XIS12MT6S4C5XZYVUZ
+Слатина,7,РСЛ,528,0006963270545,958bd74f-15ef-4546-ba30-3d63f4523871,Районна администрация - Слатина,epayments_ais_client_45a05230-1837-45c4-bedb-4dbd88a404ab,NEGRHCHUIHPDUIBM2FHL464547SFAGIY
+Изгрев,8,РИВ,529,0006963270550,5a4ab6ad-969d-4aa4-844b-b36505d29ef3,Районна администрация - Изгрев,epayments_ais_client_3bb28026-3045-402f-ae55-6a0e545aa273,3V7SVJYJ8HS7ZA4RRTKSBZAMSJMQ1CJA
+Лозенец,9,РЛЦ,530,0006963270564,0ba20c11-f346-4a6d-abae-e315db607132,Районна администрация - Лозенец,epayments_ais_client_32a3dfc6-828e-4a93-8192-08bec8d4bf6d,FW3KJRNTYPKXW3LZ5C5L7C7MTPUF5B85
+Триадица,10,РТР,531,0006963270507,84484d6f-731e-46b8-baaa-b432fd80b363,Районна администрация - Триадица,epayments_ais_client_c801cbf4-9437-45d4-b3df-1b647f3391e0,P1ID2B3TP7H1832IMFJEHQSAFQS4TBR7
+Красна поляна,11,РКП,532,0006963270579,c6b1fdfe-bdd3-44dd-b01a-26a2e909b866,Районна администрация - Красна поляна,epayments_ais_client_db0cedc7-5581-43f4-ace2-8807597da1bc,YEIGWVQE8EZ63QB2A6NNABC2XI3K2YE1
+Илинден,12,РИЛ,533,0006963270583,676e3f8b-b8db-4ba2-8411-c5d6902b5347,Районна администрация - Илинден,epayments_ais_client_0438c09c-8ac5-4698-b4b2-cb87d7107c29,SLG2KFPDUJ1Y5TDQ3HS67LC6LDMP1HNF
+Надежда,13,РНД,534,0006963270598,39ba0a95-ba1d-4d1d-b288-75184a2e928e,Районна администрация - Надежда,epayments_ais_client_8ac9c82f-d15a-4c64-acff-49d8c24c3796,UK6AV2KQ7TL6KV8UIKG2JJITNDI2PEI3
+Искър,14,РИС,535,0006963270603,e14489f6-fa78-4f75-bc83-6c82bd3d8bba,Районна администрация - Искър,epayments_ais_client_a22d1e60-91ca-4aa3-8d87-b98c0345fec8,1RD4XZSJHV3RJDVW6EKEDM5IZ7CK6BWA
+Младост,15,РМЛ,536,0006963270614,514a1c66-0465-4a5f-a522-1f6f8a7b473e,Районна администрация - Младост,epayments_ais_client_80d1d44e-7632-4840-a5c5-e468cc5e794b,WVISFXQW3HZTAP4N7BFBZ86W6QUWCHDX
+Студентски,16,РСТ ,537,0006963270629,c80290e5-b5d5-4106-923d-5fad7c54f252,Районна администрация - Студентски,epayments_ais_client_cc987109-8493-45cd-84e2-5450c4f1d444,GGTUYMMVRUD2YY8S7WPCV4PFKG8KXTDL
+Витоша,17,РВТ,538,0006963270633,9ae3f943-e3c1-42eb-b3b1-dc1ef10cfd50,Районна администрация - Витоша,epayments_ais_client_0e78c072-8997-41a1-8264-15887f8b8613,YKS34T15QDPBMVJBWZCR5PJJ8M3SKYNA
+Овча купел,18,РОК,539,0006963270648,c13a9d40-2892-4b33-8d52-b7d998fb5492,Районна администрация - Овча купел,epayments_ais_client_89757f4f-2c87-4bc8-a112-4b0c5b97438a,7JAUU2UPA4YFKT5YZ28KK4EJ2TJX68BF
+Люлин,19,РЛН,540,0006963270652,2e92a59f-90b0-4f3a-b80d-8710bb9284d9,Районна администрация - Люлин,epayments_ais_client_ceeede6a-1d71-4188-9ddc-0cb49dd0ba07,V26IRQTTEP28NZJGTN25M85VGMFQTQTA
+Връбница,20,РВР,541,0006963270667,0aeda2b9-4ad3-47a5-b3e5-29c13bf82333,Районна администрация - Връбница,epayments_ais_client_c01b2be3-7fab-4f12-af0c-3a6978914528,PQH6X7ZAVIHZ4CHJA5QEYT576CR1ATDR
+Нови Искър,21,РНИ,542,0006963270671,405590af-b287-4803-8a77-ce89ea21cd9e,Районна администрация - Нови Искър,epayments_ais_client_a05553ec-9b11-4852-99f0-a08c3855076e,CFEI2HQQKLY77GBUA1ZZQP4QI4ZE4KDF
+Кремиковци,22,РКР,543,0006963270686,e306fe5f-34a7-4955-97c7-bc725bf865fc,Районна администрация - Кремиковци,epayments_ais_client_93c1a12d-2c03-4c4f-9db2-ed2312719e45,PCW6GNIDXXCGNQ3XHINMZYGLEYFVJLFG
+Панчарево,23,РПН,544,0006963270690,4faefb19-e75b-4308-9e57-5e887fbf1181,Районна администрация - Панчарево,epayments_ais_client_1b7f8cb1-4548-413e-a29c-b0cee68d2e91,UPKXPJQ3NWKLQURYWXA6AGE2FIDWHPS7
+Банкя,24,РБН,545,0006963270495,424c725b-a4d8-483d-bf94-6f38bfe85a75,Районна администрация - Банкя,epayments_ais_client_5a341cc5-b3a8-47cf-8027-249079403b02,SCRKDLR4FDMVM8RQ1IAGHZU4QCHFIEJ7

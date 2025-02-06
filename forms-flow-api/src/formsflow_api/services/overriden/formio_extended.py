@@ -66,7 +66,7 @@ class FormioServiceExtended(FormioService):
                         limit:int = 10,
                         skip:int = 0,
                         status:list = None,
-                        params: list = [],
+                        params: dict = {},
                         select: list = [],
                         created_after: str = None
                         ):

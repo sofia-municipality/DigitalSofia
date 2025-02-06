@@ -28,7 +28,7 @@ spec:
           lifecycle:
             postStart:
               exec:
-                command: ["/bin/sh", "-c",  "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf && apt update && apt -y install cron vim  && env >> /etc/environment && crontab -l | { cat; echo '*/1 * * * * (FLASK_APP=/forms-flow-api/app/manage.py bash -c \"/venv/bin/flask cron expire-documents\") >> /var/log/syslog 2>&1'; echo '*/5 * * * * (FLASK_APP=/forms-flow-api/app/manage.py bash -c \"/venv/bin/flask cron update_obligation_payments_statuses\") >> /var/log/syslog 2>&1'; } | crontab - && service cron start "]
+                command: [ "/bin/sh", "-c",  "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf && apt update && apt -y install cron vim  && env >> /etc/environment && crontab -l | { cat; echo '*/1 * * * * (FLASK_APP=/forms-flow-api/app/manage.py bash -c \"/venv/bin/flask cron expire-documents\") >> /var/log/expire_documents.log 2>&1'; echo '*/5 * * * * (FLASK_APP=/forms-flow-api/app/manage.py bash -c \"/venv/bin/flask cron delete-users\") >> /var/log/delete-users.log 2>&1'; echo '*/5 * * * * (FLASK_APP=/forms-flow-api/app/manage.py bash -c \"/venv/bin/flask cron update_obligation_payments_statuses\") >> /var/log/update_payments.log 2>&1'; echo '*/5 * * * * (FLASK_APP=/forms-flow-api/app/manage.py bash -c \"/venv/bin/flask mateus notify\") >> /var/log/mateus_notify.log 2>&1'; echo '@reboot (FLASK_APP=/forms-flow-api/app/manage.py bash -c \"/venv/bin/flask workers notification-worker\") >> /var/log/notification_worker.log 2>&1';} | crontab - && service cron start " ]
           ports:
             - containerPort: 5000
               name: http-api
@@ -118,11 +118,25 @@ spec:
             - name: MATEUS_COMPANY_ID
               value: "999"
             - name: CAMUNDA_CHANGE_ADDRESS_PROCESS
-              value: "Process_sofiade:66:ab532399-cf36-11ee-80ed-e20c45ea0eb8"
+              value: "Process_sofiade"
             - name: REDIS_CONNECTION
-              value: "redis://host.docker.internal:6379/0"
-            - name: EPAYMENT_SECRET_KEY
-              value: "8F70C29ACBB38F39B0900C26B3A20B0683E62C97A4E578358904686D0023988D0C9873AD23EE87003B36EE5221617FEC0345E3B1138FE1B57EF5DE4771E3CF42"
+              value: "redis://redis-master.redis.svc.cluster.local:6379/0"
+            - name: "REDIS_KEY_TTL"
+              value: "300"
+            - name: REDIS_PASSWORD
+              value: ""
+            - name: REGIONS_SECRET_KEY
+              value: ""
+            - name: MESSAGE_BUS_URL
+              value: "amqp://forms-flow-api:5FmW93M6fWvv@rabbitmq.rabbitmq.svc.cluster.local//"
+            - name: SERVICE_URL
+              value: "http://forms-flow-eforms-integrations-svc.form-flow-eforms-integrations.svc.cluster.local:8002/integrations/notifications/post-mail-notification"
+            - name: "NOTIFICATION_SCHEMA"
+              value: "300,3600,3600,3600,3600"
+            - name: MATEUS_PAYMENT_CLIENT_ID
+              value: ""
+            - name: MATEUS_PAYMENT_CLIENT_SECRET
+              value: ""
       volumes:
         - name: documents
           nfs:

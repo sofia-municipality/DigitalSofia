@@ -91,6 +91,9 @@ class _Config:  # pylint: disable=too-few-public-methods
 
     # eForm Integrations
     EFORM_INTEGRATIONS_URL = os.getenv("EFORM_INTEGRATIONS_URL")
+    EDELIVERY_FILE_UPLOAD_ADDRESS = os.getenv("EDELIVERY_FILE_UPLOAD_ADDRESS", "upload/blobs")
+    # We are using the profile id for the eDelivery file upload when the upload address is onBehalf -> upload/obo/blobs
+    EDELIVERY_FILE_UPLOAD_PROFILE_ID = os.getenv("EDELIVERY_FILE_UPLOAD_PROFILE_ID", "000696327000001")
 
     # Formio url
     FORMIO_URL = os.getenv("FORMIO_URL")
@@ -103,10 +106,10 @@ class _Config:  # pylint: disable=too-few-public-methods
 
     # Keycloak client authorization enabled flag
     KEYCLOAK_ENABLE_CLIENT_AUTH = (
-        str(os.getenv("KEYCLOAK_ENABLE_CLIENT_AUTH", default="false")).lower() == "true"
+            str(os.getenv("KEYCLOAK_ENABLE_CLIENT_AUTH", default="false")).lower() == "true"
     )
     MULTI_TENANCY_ENABLED = (
-        str(os.getenv("MULTI_TENANCY_ENABLED", default="false")).lower() == "true"
+            str(os.getenv("MULTI_TENANCY_ENABLED", default="false")).lower() == "true"
     )
 
     # Formio JWT Secret
@@ -132,12 +135,45 @@ class _Config:  # pylint: disable=too-few-public-methods
 
     FORMSFLOW_DOC_API_URL = os.getenv("FORMSFLOW_DOC_API_URL")
     SIGN_SERVICE_API_URL = os.getenv("SIGN_SERVICE_API_URL")
-    EPAYMENT_SECRET_KEY = os.getenv("EPAYMENT_SECRET_KEY")
 
-    #Hardcoded camunda process definitions
-    CAMUNDA_CHANGE_ADDRESS_PROCESS = os.getenv("CAMUNDA_CHANGE_ADDRESS_PROCESS")
+    # Hardcoded camunda process definitions
+    CAMUNDA_CHANGE_ADDRESS_PROCESS = os.getenv("CAMUNDA_CHANGE_ADDRESS_PROCESS", "Process_sofiade")
     REDIS_CONNECTION = os.getenv("REDIS_CONNECTION")
+    REDIS_KEY_TTL = os.getenv("REDIS_KEY_TTL", 3600)
+    REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")  #90azoHH3e8
 
+    FLASK_ENV = os.getenv("FLASK_ENV", "production")
+
+    # Message Bus Configurations
+    MESSAGE_BUS_URL = os.getenv("MESSAGE_BUS_URL", "amqp://guest:guest@rabbitmq//")
+    MESSAGE_BUS_QUEUE = os.getenv("MESSAGE_BUS_QUEUE", "email_queue")
+    MESSAGE_BUS_EXCHANGE = os.getenv("MESSAGE_BUS_EXCHANGE", "email_exchange")
+    MESSAGE_BUS_ROUTING_KEY = os.getenv("MESSAGE_BUS_ROUTING_KEY", "email.send")
+    MESSAGE_BUS_TYPE = os.getenv("MESSAGE_BUS_TYPE", "topic")
+    MESSAGE_BUS_RETRY_DELAY = os.getenv("MESSAGE_BUS_RETRY_DELAY", 10)
+    MESSAGE_BUS_MAX_RETRIES = os.getenv("MESSAGE_BUS_MAX_RETRIES", 10)
+    MESSAGE_BUS_DEAD_LETTER_KEY = os.getenv("MESSAGE_BUS_DEAD_LETTER_KEY", "email.dead")
+    MESSAGE_BUS_DEAD_QUEUE = os.getenv("MESSAGE_BUS_DEAD_QUEUE", "email_dead")
+    MESSAGE_BUS_DEAD_EXCHANGE = os.getenv("MESSAGE_BUS_DEAD_EXCHANGE", "email_dead")
+
+    # Notification Configurations
+    TEMPLATES_LOCATION = os.getenv("TEMPLATES_LOCATION", "/forms-flow-api/app/src/formsflow_api/static/data/templates")
+    SERVICE_URL = os.getenv("SERVICE_URL",
+                            "http://host.docker.internal:8002/integrations/notifications/post-mail-notification")
+    SUPPORT_EMAILS = os.getenv("SUPPORT_EMAILS", "support1@support.com;support2@support.com")
+    NOTIFICATION_SCHEMA = os.getenv("NOTIFICATION_SCHEMA", "300,3600,3600,3600,3600")
+
+    # Templates Configurations
+    PAYMENT_RESULT = os.getenv("PAYMENT_RESULT", "mdt_payment_status-body-${language}.mako")
+    MATEUS_NOTIFICATION = os.getenv("MATEUS_NOTIFICATION", "mdt_mateus-notification-failed.mako")
+
+    # Regions Configuration
+    REGIONS_ENV = os.getenv("REGIONS_ENV", "stage")
+    REGIONS_SECRET_KEY = os.getenv("REGIONS_SECRET_KEY")
+
+    # Mateus Payment Configuration
+    MATEUS_PAYMENT_CLIENT_ID = os.getenv("MATEUS_PAYMENT_CLIENT_ID", "epayments_ais_client_c7fdbfea-4c1f-47fb-a599-e41a94bb651c")
+    MATEUS_PAYMENT_CLIENT_SECRET = os.getenv("MATEUS_PAYMENT_CLIENT_SECRET", "R111ZAN6ZZVWPBBHD38Q2JMXK2EWWNHU")
 
 class DevConfig(_Config):  # pylint: disable=too-few-public-methods
     """Development environment configuration."""
@@ -186,7 +222,7 @@ class TestConfig(_Config):  # pylint: disable=too-few-public-methods
                 "alg": "RS256",
                 "use": "sig",
                 "n": "AN-fWcpCyE5KPzHDjigLaSUVZI0uYrcGcc40InVtl-rQRDmAh-C2W8H4_Hxhr5VLc6crsJ2LiJTV_E72S03pzpOOaaYV6-"
-                "TzAjCou2GYJIXev7f6Hh512PuG5wyxda_TlBSsI-gvphRTPsKCnPutrbiukCYrnPuWxX5_cES9eStR",
+                     "TzAjCou2GYJIXev7f6Hh512PuG5wyxda_TlBSsI-gvphRTPsKCnPutrbiukCYrnPuWxX5_cES9eStR",
                 "e": "AQAB",
             }
         ]
@@ -200,11 +236,11 @@ class TestConfig(_Config):  # pylint: disable=too-few-public-methods
                 "alg": "RS256",
                 "use": "sig",
                 "n": "AN-fWcpCyE5KPzHDjigLaSUVZI0uYrcGcc40InVtl-rQRDmAh-C2W8H4_Hxhr5VLc6crsJ2LiJTV_E72S03pzpOOaaYV6-"
-                "TzAjCou2GYJIXev7f6Hh512PuG5wyxda_TlBSsI-gvphRTPsKCnPutrbiukCYrnPuWxX5_cES9eStR",
+                     "TzAjCou2GYJIXev7f6Hh512PuG5wyxda_TlBSsI-gvphRTPsKCnPutrbiukCYrnPuWxX5_cES9eStR",
                 "e": "AQAB",
                 "d": "C0G3QGI6OQ6tvbCNYGCqq043YI_8MiBl7C5dqbGZmx1ewdJBhMNJPStuckhskURaDwk4-"
-                "8VBW9SlvcfSJJrnZhgFMjOYSSsBtPGBIMIdM5eSKbenCCjO8Tg0BUh_"
-                "xa3CHST1W4RQ5rFXadZ9AeNtaGcWj2acmXNO3DVETXAX3x0",
+                     "8VBW9SlvcfSJJrnZhgFMjOYSSsBtPGBIMIdM5eSKbenCCjO8Tg0BUh_"
+                     "xa3CHST1W4RQ5rFXadZ9AeNtaGcWj2acmXNO3DVETXAX3x0",
                 "p": "APXcusFMQNHjh6KVD_hOUIw87lvK13WkDEeeuqAydai9Ig9JKEAAfV94W6Aftka7tGgE7ulg1vo3eJoLWJ1zvKM",
                 "q": "AOjX3OnPJnk0ZFUQBwhduCweRi37I6DAdLTnhDvcPTrrNWuKPg9uGwHjzFCJgKd8KBaDQ0X1rZTZLTqi3peT43s",
                 "dp": "AN9kBoA5o6_Rl9zeqdsIdWFmv4DB5lEqlEnC7HlAP-3oo3jWFO9KQqArQL1V8w2D4aCd0uJULiC9pCP7aTHvBhc",

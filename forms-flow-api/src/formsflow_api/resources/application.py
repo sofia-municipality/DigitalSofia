@@ -31,6 +31,7 @@ from formsflow_api.models.db import db
 from formsflow_api.services import ApplicationService, DocumentsService
 from formsflow_api.services.external import BPMService, KeycloakAdminAPIService, EurotrustIntegrationsService
 from formsflow_api.services.overriden import FormioServiceExtended
+from formsflow_api.utils.enums import ApplicationStatusEnum
 
 API = Namespace("Application", description="Application")
 
@@ -379,9 +380,9 @@ class ApplicationResourceById(Resource):
 
         except BaseException as submission_err:  # pylint: disable=broad-except
             response, status = {
-                                   "type": "Bad request error",
-                                   "message": "Invalid request data",
-                               }, HTTPStatus.BAD_REQUEST
+                "type": "Bad request error",
+                "message": "Invalid request data",
+            }, HTTPStatus.BAD_REQUEST
 
             current_app.logger.warning(response)
             current_app.logger.warning(submission_err)
@@ -422,9 +423,25 @@ class ApplicationResourceById(Resource):
             current_app.logger.debug("3. Check if application exists")
             if not application:
                 return {
-                           "type": "Not found",
-                           "message": ""
-                       }, HTTPStatus.NOT_FOUND
+                    "type": "Not found",
+                    "message": "Application not found!"
+                }, HTTPStatus.NOT_FOUND
+
+            ### 3.1. Check if application is processed or not
+            current_app.logger.info(f"Application found with status:: %s", application.application_status)
+            if application.application_status not in [ApplicationStatusEnum.DRAFT.value,
+                                                      ApplicationStatusEnum.WITHDRAWN.value,
+                                                      ApplicationStatusEnum.CANCELLED.value,
+                                                      ApplicationStatusEnum.E_DELIVERY_ERROR.value,
+                                                      ApplicationStatusEnum.SUBMISSION_ERROR.value,
+                                                      ApplicationStatusEnum.SIGN_DOCUMENT_PENDING.value,
+                                                      ApplicationStatusEnum.SIGNATURE_NEEDED.value,
+                                                      ApplicationStatusEnum.CANCELLED_THIRD_PARTY_SIGNATURE.value,
+                                                      ApplicationStatusEnum.REJECTED.value]:
+                return {
+                    "type": "Bad request",
+                    "message": "Cannot delete application. Application already processed!"
+                }, HTTPStatus.BAD_REQUEST
 
             ### 4. Delete process instance
             bpm_response = None
@@ -537,15 +554,15 @@ class ApplicationResourceById(Resource):
             db.session.commit()
 
             return {
-                       "application_id": application_id,
-                       "bpm_response": bpm_response,
-                       "formio_response": formio_response
-                   }, HTTPStatus.ACCEPTED
+                "application_id": application_id,
+                "bpm_response": bpm_response,
+                "formio_response": formio_response
+            }, HTTPStatus.ACCEPTED
         except BusinessException as err:
             response, status = {
-                                   "type": "Bad request error",
-                                   "message": (err),
-                               }, HTTPStatus.BAD_REQUEST
+                "type": "Bad request error",
+                "message": (err),
+            }, HTTPStatus.BAD_REQUEST
 
             current_app.logger.warning(response)
             current_app.logger.warning(err)
@@ -672,17 +689,17 @@ class ApplicationResourceCountByFormId(Resource):
             return response, status
         except KeyError as err:
             response, status = {
-                                   "type": "Bad request error",
-                                   "message": "Invalid application request passed",
-                               }, HTTPStatus.BAD_REQUEST
+                "type": "Bad request error",
+                "message": "Invalid application request passed",
+            }, HTTPStatus.BAD_REQUEST
             current_app.logger.warning(response)
             current_app.logger.warning(err)
             return response, status
         except BaseException as application_err:  # pylint: disable=broad-except
             response, status = {
-                                   "type": "Bad request error",
-                                   "message": "Invalid application request passed",
-                               }, HTTPStatus.BAD_REQUEST
+                "type": "Bad request error",
+                "message": "Invalid application request passed",
+            }, HTTPStatus.BAD_REQUEST
             current_app.logger.warning(response)
             current_app.logger.warning(application_err)
             return response, status
@@ -819,16 +836,16 @@ class ApplicationResourceAvailableForUser(Resource):
                         return {"canEdit": False}, HTTPStatus.FORBIDDEN
 
             BPMService.claim_task(task_id=task_id, data={"assignee": preferred_username, "userId": preferred_username},
-                                   token=request.headers["Authorization"])
+                                  token=request.headers["Authorization"])
             ### 6. Return true if nothing set off
             return {"canEdit": True}, HTTPStatus.OK
 
         except ValidationError as err:
             current_app.logger.warning(err)
             response, status = {
-                                   "type": "Validation error",
-                                   "errors": err.messages,
-                               }, HTTPStatus.BAD_REQUEST
+                "type": "Validation error",
+                "errors": err.messages,
+            }, HTTPStatus.BAD_REQUEST
             return response, status
 
 
@@ -886,17 +903,17 @@ class ApplicationResourcesByIds(Resource):
             return response, status
         except KeyError as err:
             response, status = {
-                                   "type": "Bad request error",
-                                   "message": "Invalid application request passed",
-                               }, HTTPStatus.BAD_REQUEST
+                "type": "Bad request error",
+                "message": "Invalid application request passed",
+            }, HTTPStatus.BAD_REQUEST
             current_app.logger.warning(response)
             current_app.logger.warning(err)
             return response, status
         except BaseException as application_err:  # pylint: disable=broad-except
             response, status = {
-                                   "type": "Bad request error",
-                                   "message": "Invalid application request passed",
-                               }, HTTPStatus.BAD_REQUEST
+                "type": "Bad request error",
+                "message": "Invalid application request passed",
+            }, HTTPStatus.BAD_REQUEST
             current_app.logger.warning(response)
             current_app.logger.warning(application_err)
             return response, status
@@ -973,8 +990,8 @@ class ApplicationResubmitById(Resource):
         except requests.exceptions.ConnectionError as err:
             current_app.logger.warning(err)
             return {
-                       "message": "BPM Service Unavailable",
-                   }, HTTPStatus.SERVICE_UNAVAILABLE
+                "message": "BPM Service Unavailable",
+            }, HTTPStatus.SERVICE_UNAVAILABLE
 
 
 @cors_preflight("POST,OPTIONS")
@@ -1018,9 +1035,9 @@ class ApplicationWithdraw(Resource):
         if not application or not application.process_instance_id:
             current_app.logger.debug("4. Application doesn't exist return not found")
             return {
-                       "type": "Not found",
-                       "message": f"No application with id {application_id} found for user"
-                   }, HTTPStatus.NOT_FOUND
+                "type": "Not found",
+                "message": f"No application with id {application_id} found for user"
+            }, HTTPStatus.NOT_FOUND
 
         ### 4. Application exists get it's current data
         current_app.logger.debug("4. Application exist bpm variables")
@@ -1039,9 +1056,9 @@ class ApplicationWithdraw(Resource):
 
         if not message_name:
             return {
-                       "type": "Bad Request Error",
-                       "message": f"No message bound for supplied role {role}"
-                   }, HTTPStatus.BAD_REQUEST
+                "type": "Bad Request Error",
+                "message": f"No message bound for supplied role {role}"
+            }, HTTPStatus.BAD_REQUEST
 
         message = {
             "messageName": message_name,
@@ -1062,9 +1079,9 @@ class ApplicationWithdraw(Resource):
             ### 8. BPM Response was unssucessfull
             current_app.logger.debug("8. BPM Response was unsuccessful")
             return {
-                       "type": "Bad Request Error",
-                       "message": f"An error occurred when sending message to camunda"
-                   }, HTTPStatus.BAD_REQUEST
+                "type": "Bad Request Error",
+                "message": f"An error occurred when sending message to camunda"
+            }, HTTPStatus.BAD_REQUEST
 
         ### 8. Get invited user by email
         current_app.logger.debug("8. Get email of invited user ")
@@ -1080,9 +1097,9 @@ class ApplicationWithdraw(Resource):
         current_app.logger.debug(f"reference_number = {reference_number}")
         if not reference_number:
             return {
-                       "type": "Bad Request Error",
-                       "message": f"No reference number attached to process instance."
-                   }, HTTPStatus.BAD_REQUEST
+                "type": "Bad Request Error",
+                "message": f"No reference number attached to process instance."
+            }, HTTPStatus.BAD_REQUEST
 
         ### 10. Check if there is a user in keycloak with withdrawn_applicant_email
         current_app.logger.debug("10. Get user by email")
@@ -1095,7 +1112,7 @@ class ApplicationWithdraw(Resource):
             ### 11. No user found to withdraw, everything is okay
             current_app.logger.debug("11. No user found, ergo no application to withdraw")
             return "Withdrawn successfully", HTTPStatus.OK
-        
+
         ### 11. Get user 
         current_app.logger.debug(f"11. Get person identifier")
         withdrawn_user = response[0]
@@ -1151,7 +1168,7 @@ class ApplicationWithdraw(Resource):
         evrotrust_thread_id = formio_data.get("evrotrustThreadId")
         evrotrust_status = formio_data.get("status")
         withdrawn_application_id = formio_data.get("applicationId", None)
-        
+
         ### 17. This is in the case that the first user has submitted his own email
         if withdrawn_application_id == application_id:
             current_app.logger.debug("17. This is in the case that the first user has submitted his own email")
@@ -1176,7 +1193,6 @@ class ApplicationWithdraw(Resource):
         )
         current_app.logger.debug(formio_response)
 
-        
         ### 19. Delete application, application history and draft row within python DB
         current_app.logger.debug("19. Deleting application from Python DB")
         if withdrawn_application_id:
@@ -1215,7 +1231,8 @@ class ApplicationResubmitById(Resource):
                 application_id
             )
             bpm_service = BPMService()
-            bpm_service.unclaim_task(task_id=application.get('task_variable'), data={}, token=request.headers["Authorization"])
+            bpm_service.unclaim_task(task_id=application.get('task_variable'), data={},
+                                     token=request.headers["Authorization"])
             bpm_service.claim_task(task_id=application.get('task_variable'),
                                    data={"userId": submission_data['assignee']},
                                    token=request.headers["Authorization"])
@@ -1237,5 +1254,5 @@ class ApplicationResubmitById(Resource):
         except requests.exceptions.ConnectionError as err:
             current_app.logger.warning(err)
             return {
-                       "message": "BPM Service Unavailable",
-                   }, HTTPStatus.SERVICE_UNAVAILABLE
+                "message": "BPM Service Unavailable",
+            }, HTTPStatus.SERVICE_UNAVAILABLE

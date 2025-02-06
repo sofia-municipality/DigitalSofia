@@ -1,0 +1,8 @@
+{
+  "user_email": "user@email.com",
+  "user_name": "Ivan Ivanov",
+  "payment_status": "success",
+  "message_type": "PAYMENT_RESULT",
+  "person_dentifier": "123456789",
+  "language": "bg"
+}

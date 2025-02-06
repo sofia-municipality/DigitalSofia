@@ -49,6 +49,7 @@ class KeycloakAdminAPIService:
             f"{current_app.config.get('KEYCLOAK_URL')}/auth/admin/realms/"
             f"{current_app.config.get('KEYCLOAK_URL_REALM')}"
         )
+        self._delete_user_url = f"{current_app.config.get('KEYCLOAK_URL')}/auth/realms/{current_app.config.get('KEYCLOAK_URL_REALM')}/user/delete"
 
         self.bpm_token_api = current_app.config.get("BPM_TOKEN_API")
 
@@ -282,3 +283,25 @@ class KeycloakAdminAPIService:
             return response.json()
         
         return None
+    
+    def delete_user_by_bearer(self, bearer_token):
+        current_app.logger.debug(bearer_token)
+        url = self._delete_user_url
+        headers = {
+            "Authorization": f"{bearer_token}"
+        }
+
+        response = requests.post(url, headers=headers)
+        current_app.logger.debug('Delete response from Keycloak')
+        current_app.logger.debug(response.text)
+
+    def delete_user_by_id(self, user_id: str):
+        current_app.logger.debug(f"Send delete request for {user_id}")
+        delete_path = f"users/{user_id}"
+        self.delete_request(delete_path)
+
+    def get_user_groups_by_user_id(self, user_id: str):
+        current_app.logger.debug("Getting user groups")
+        get_path = f"users/{user_id}/groups"
+        data = self.get_request(get_path)
+        return data

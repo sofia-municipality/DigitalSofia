@@ -36,3 +36,24 @@ class UsersListSchema(Schema):
 
         fields = ("firstName", "lastName", "email", "id", "username", "role")
         unknown = EXCLUDE
+
+
+class UserStatusSchema(Schema):
+    identificationNumber = fields.Str()
+    country = fields.Str()
+    firstName = fields.Str()
+    middleName = fields.Str()
+    lastName = fields.Str()
+    firstNameLatin = fields.Str()
+    middleNameLatin = fields.Str()
+    lastNameLatin = fields.Str()
+    phone = fields.Str()
+    isIdentified = fields.Bool()
+    isRejected = fields.Bool()
+    isSupervised = fields.Bool()
+    isReadyToSign = fields.Bool()
+    rejectReason = fields.Int()
+
+
+class UserStatusChangeTransactionSchema(Schema):
+    identification_number = fields.Str()

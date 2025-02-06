@@ -6,10 +6,6 @@ class MateusPaymentRequestSchema(Schema):
     created = fields.Str()
     modified = fields.Str()
 
-    person_identifier = fields.Str(required=True)
-    status = fields.Str(required=True)
-    payment_id = fields.Str(required=True)
-    access_code = fields.Str(required=True)
     group_id = fields.Int(required=True)
     amount = fields.Number(required=True)
     tax_period_year = fields.Int(required=True)

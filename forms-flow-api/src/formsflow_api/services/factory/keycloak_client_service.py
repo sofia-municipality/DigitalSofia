@@ -135,3 +135,10 @@ class KeycloakClientService(KeycloakAdmin):
         if role:
             user_list = self.__populate_user_roles(user_list)
         return (user_list, users_count)
+    
+    def delete_user(self, user_id: str):
+        self.client.delete_user_by_id(user_id)
+
+    def get_user_groups(self, user_id: str):
+        groups_data = self.client.get_user_groups_by_user_id(user_id)
+        return groups_data

@@ -1,6 +1,6 @@
 """This exposes application service."""
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import lru_cache
 from http import HTTPStatus
 from typing import Dict, Set
@@ -27,10 +27,13 @@ from formsflow_api.schemas import (
     AggregatedApplicationSchema,
     AggregatedApplicationsSchema,
     ApplicationSchema,
+    ApplicationWithReceiptsSchema,
     FormProcessMapperSchema,
 )
+from formsflow_api.schemas.receipt_schemas import ReceiptSchema
 from formsflow_api.services.external import BPMService
-
+from formsflow_api.services.receipts import ReceiptService
+from formsflow_api.services.overriden.formio_extended import FormioServiceExtended
 from .form_process_mapper import FormProcessMapperService
 
 application_schema = ApplicationSchema()
@@ -200,11 +203,40 @@ class ApplicationService:  # pylint: disable=too-many-public-methods
             user_name=user_name,
         )
         draft_count = Draft.get_draft_count()
+        applications_with_receipts = ApplicationService.get_receipts_of_applications(applications)
         return (
-            application_schema.dump(applications, many=True),
+            applications_with_receipts,
             get_all_applications_count,
             draft_count,
         )
+    
+    @staticmethod
+    def get_receipts_of_applications(applications: list[Application]) -> list[dict]:
+        applications_with_receipts = []
+        resp_schema = ApplicationWithReceiptsSchema()
+        receipt_schema = ReceiptSchema()
+        receipts_service = ReceiptService()
+        for application in applications:
+            if application.application_status == "Готова за предоставяне":
+                application_receipts = receipts_service.get_application_receipts(str(application.id), application.process_tenant)
+                receipts_response = []
+                receipts_response = [
+                    receipt_schema.dump({
+                        "_id": receipt["_id"],
+                        "form": receipt["form"],
+                        "name": receipt["data"]["file"][0]["name"],
+                    }) for receipt in application_receipts
+                ]
+
+                application_dict = dict(application._mapping)
+                application_dict["receipts"] = receipts_response
+                applications_with_receipts.append(resp_schema.dump(application_dict))
+
+            else:
+                applications_with_receipts.append(resp_schema.dump(application))
+
+        
+        return applications_with_receipts
 
     @staticmethod
     @user_context
@@ -637,7 +669,7 @@ class ApplicationService:  # pylint: disable=too-many-public-methods
             )
         assert application_count is not None
         return application_count
-
+    
     @staticmethod
     def resubmit_application(application_id: int, payload: Dict, token: str):
         """Resubmit application and update process variables."""
@@ -662,3 +694,90 @@ class ApplicationService:  # pylint: disable=too-many-public-methods
                 "No process definition or execution matches the parameters.",
                 HTTPStatus.BAD_REQUEST,
             )
+
+    @staticmethod
+    def check_user_for_unfinished_applications():
+        """Check if user has unfinished applications."""
+
+        applications = Application.filter_applications_by_specific_statuses()
+
+        current_app.logger.debug("Checking for unfinished applications: %s", applications)
+
+        if applications:
+            raise BusinessException(
+                {
+                    "error": "User has unfinished application",
+                    "status": HTTPStatus.CONFLICT.phrase
+                },
+                HTTPStatus.CONFLICT
+            )
+
+    @staticmethod
+    @user_context
+    def get_all_user_applications(**kwargs) -> list[Application]:
+        user: UserContext = kwargs["user"]
+        user_id: str = user.user_name
+        user_applications = Application.find_all_by_user_without_pagination(user_id)
+        return user_applications
+    
+    @staticmethod
+    def get_all_user_applications_count(user_id: str) -> int:
+        count = Application.select_all_user_applications_count(user_id)
+        return count
+    
+    @staticmethod
+    def get_user_not_draft_applications_count(user_id: str) -> int:
+        count = Application.select_all_user_applications_count_without_draft(user_id)
+        return count
+
+    @staticmethod
+    def delete_unactive_draft_applications():
+        current_time = datetime.utcnow()
+        expired = current_time - timedelta(days=30)
+        expired_draft_applications = Application.select_all_old_draft_applications(expired)
+        for application in expired_draft_applications:
+            current_app.logger.debug(f"Start deleting of application {application.id}")
+            draft = Draft.get_by_application_id(application.id)
+            draft.delete()
+            application.delete()
+
+    @staticmethod
+    def check_user_have_signed_documents(user_identifier: str) -> bool:
+        """This method is related to automatic deletion of the users."""
+        related_formio_form_paths_and_data_keys = (
+            ("sofia-generated-files", "data.userId__eq"),
+        )
+        formio_client = FormioServiceExtended()
+        formio_token = formio_client.generate_formio_token()
+        for path, property in related_formio_form_paths_and_data_keys:
+            submissions, _ = formio_client.get_submissions(
+                form_path=path,
+                formio_token=formio_token,
+                params={property: user_identifier, "data.signatureSource__eq": "digitalSofia"}
+            )
+            if len(submissions) != 0:
+                return True
+            
+        return False
+    
+    @staticmethod
+    def get_user_file_submissions(user_identifier: str) -> list[dict]:
+        """This method returns all file submissions for an user."""
+        formio_client = FormioServiceExtended()
+        formio_token = formio_client.generate_formio_token()
+        submissions = []
+        for i in range(6):
+            paginated_submissions, status_code = formio_client.get_submissions(
+                form_path="sofia-generated-files",
+                formio_token=formio_token,
+                params={"data.userId__eq": user_identifier},
+                limit=20,
+                skip=i*20
+            )
+
+            if isinstance(paginated_submissions, str) or isinstance(paginated_submissions, bytes) or len(paginated_submissions) == 0:
+                break
+
+            submissions = submissions + paginated_submissions
+
+        return submissions

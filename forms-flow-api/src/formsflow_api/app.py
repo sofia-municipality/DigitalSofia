@@ -29,7 +29,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from formsflow_api import config, models
 from formsflow_api.models import db, ma
 from formsflow_api.resources import API
-from formsflow_api.commands import SeedBlueprint, CronBlueprint
+from formsflow_api.commands import SeedBlueprint, CronBlueprint, WorkersBlueprint, MateusBlueprint
 from formsflow_api.services import FirebaseService
 
 
@@ -39,6 +39,8 @@ def create_app(run_mode=os.getenv("FLASK_ENV", "production")):
 
     app.register_blueprint(SeedBlueprint)
     app.register_blueprint(CronBlueprint)
+    app.register_blueprint(WorkersBlueprint)
+    app.register_blueprint(MateusBlueprint)
 
     app.wsgi_app = ProxyFix(app.wsgi_app)
     app.config.from_object(config.CONFIGURATION[run_mode])

@@ -2,6 +2,8 @@
 
 from marshmallow import EXCLUDE, Schema, fields, validate
 
+from formsflow_api.schemas.receipt_schemas import ReceiptSchema
+
 
 class ApplicationListReqSchema(Schema):
     """This is a general class for paginated request schema."""
@@ -65,6 +67,11 @@ class ApplicationSchema(Schema):
     web_form_url = fields.Str(data_key="webFormUrl", load_only=True)
     is_resubmit = fields.Bool(data_key="isResubmit", dump_only=True)
     event_name = fields.Str(data_key="eventName", dump_only=True)
+    person_identifier = fields.Int(data_key="personIdentifier")
+
+
+class ApplicationWithReceiptsSchema(ApplicationSchema):
+    receipts = fields.List(fields.Nested(ReceiptSchema), default=[])
 
 
 class ApplicationUpdateSchema(Schema):

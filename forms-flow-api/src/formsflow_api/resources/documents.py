@@ -177,6 +177,7 @@ class DocumentResource(Resource):
                     "validUntill": submission_data.get("validUntill"),
                     "signed": submission_data.get("signed"),
                     "rejected": submission_data.get("rejected"),
+                    "generated": submission_data.get("generated"),
                     "applicationId": submission_data.get("applicationId"),
                     "evrotrustThreadId": submission_data.get("evrotrustThreadId"),
                     "evrotrustTransactionId": submission_data.get("evrotrustTransactionId"),
@@ -191,11 +192,11 @@ class DocumentResource(Resource):
             )
 
         response, formio_status = {
-                                      "documents": returned_submissions,
-                                      "pagination": {
-                                          "cursor": next_cursor
-                                      }
-                                  }, formio_status
+            "documents": returned_submissions,
+            "pagination": {
+                "cursor": next_cursor
+            }
+        }, formio_status
         return response, formio_status
 
 
@@ -251,9 +252,9 @@ class DocumentServeBase64(Resource):
 
             if (person_identifier != user_id) or (not file_data):
                 return {
-                           "type": "Not found",
-                           "message": f"No document with supplied formioId {submission_formio_id} found"
-                       }, HTTPStatus.NOT_FOUND
+                    "type": "Not found",
+                    "message": f"No document with supplied formioId {submission_formio_id} found"
+                }, HTTPStatus.NOT_FOUND
 
             file = file_data['url']
             file = re.split(";|,", file)
@@ -276,20 +277,20 @@ class DocumentServeBase64(Resource):
             current_app.logger.error(err.status_code)
             if err.status_code == 400:
                 response, status = {
-                                       "type": "Not found",
-                                       "message": f"No document with supplied formioId {submission_formio_id} found",
-                                   }, HTTPStatus.BAD_REQUEST
+                    "type": "Not found",
+                    "message": f"No document with supplied formioId {submission_formio_id} found",
+                }, HTTPStatus.BAD_REQUEST
             else:
                 if err.status_code == 401:
                     response, status = {
-                                           "type": "Invalid Token Error",
-                                           "message": "Access to formsflow.ai API Denied. Check if the bearer token is passed for Authorization or has expired.",
-                                       }, HTTPStatus.UNAUTHORIZED
+                        "type": "Invalid Token Error",
+                        "message": "Access to formsflow.ai API Denied. Check if the bearer token is passed for Authorization or has expired.",
+                    }, HTTPStatus.UNAUTHORIZED
                 else:
                     response, status = {
-                                           "type": "Bad request error",
-                                           "message": "Internal server error",
-                                       }, HTTPStatus.BAD_REQUEST
+                        "type": "Bad request error",
+                        "message": "Internal server error",
+                    }, HTTPStatus.BAD_REQUEST
 
             return response, status
 
@@ -324,16 +325,16 @@ class DocumentCheckStatus(Resource):
 
             if not status:
                 raise BusinessException(
-                    f"No status found {response['status']}", 
+                    f"No status found",
                     HTTPStatus.NOT_FOUND
                 )
 
-            # If the transaciton exists, update it 
+            # If the transaction exists, update it
             if transaction:
                 transaction.update_status_send_notification(new_status=status)
                 document_service.update_document_status_in_formio(
                     formio_id=transaction.formio_id,
-                    tenant_key=tenant_key, 
+                    tenant_key=tenant_key,
                     status=status
                 )
 
@@ -353,7 +354,7 @@ class DocumentCheckStatus(Resource):
             return (
                 {
                     "status": status.formio_status
-                }, 
+                },
                 HTTPStatus.OK
             )
         except BusinessException as err:
@@ -388,7 +389,7 @@ class AuthenticateResource(Resource):
         try:
             document_client = DocumentsService()
             identity_request = document_client.get_identity_request_by_transaction_id(transaction_id=transaction_id,
-                                                                    tenant_key=tenant_key)
+                                                                                      tenant_key=tenant_key)
             current_app.logger.debug(identity_request)
 
             if identity_request is None:
@@ -416,11 +417,11 @@ class AuthenticateResource(Resource):
                     "Invalid Personal Identifier bound to user.", HTTPStatus.BAD_REQUEST
                 )
 
-            #document_client = DocumentsService()
-            #identity_request = document_client.get_identity_request(
+            # document_client = DocumentsService()
+            # identity_request = document_client.get_identity_request(
             #    person_identifier=person_identifier,
             #    tenant_key=tenant_key
-            #) !!!!!!!!!!!!
+            # ) !!!!!!!!!!!!
 
             person_identifier = match[0]
             current_app.logger.debug(f"3. Person identifier is {person_identifier}")
@@ -439,9 +440,9 @@ class AuthenticateResource(Resource):
             if not status:
                 current_app.logger.debug("7. No status valid status found within our system")
                 return {
-                           "type": "Invalid Status",
-                           "message": "Invalid status returned from EuroTrust",
-                       }, HTTPStatus.BAD_REQUEST
+                    "type": "Invalid Status",
+                    "message": "Invalid status returned from EuroTrust",
+                }, HTTPStatus.BAD_REQUEST
 
             current_app.logger.debug(f"7. Get Identity Request")
 
@@ -462,9 +463,9 @@ class AuthenticateResource(Resource):
             if status.formio_status != "signed":
                 current_app.logger.debug(f"9. File is not signed return a bad request")
                 return {
-                           "type": "Not signed",
-                           "message": "Status for transaction is not signed",
-                       }, HTTPStatus.BAD_REQUEST
+                    "type": "Not signed",
+                    "message": "Status for transaction is not signed",
+                }, HTTPStatus.BAD_REQUEST
 
             ### TODO: Update user attributes with new keycloak changes
             current_app.logger.debug(f"9. Get signed file from eurotrust")
@@ -573,12 +574,11 @@ class AuthenticateResource(Resource):
                     data=payload
                 )
 
-
             formio_service = FormioServiceExtended()
             formio_token = formio_service.get_formio_access_token()
             file_form_id = formio_service.fetch_form_id_by_path(tenant_key + '-generated-files', formio_token)
 
-            #current_app.logger.debug(signed_file_dict.keys())
+            # current_app.logger.debug(signed_file_dict.keys())
 
             signing_date = datetime.datetime.now().isoformat()
 
@@ -607,7 +607,6 @@ class AuthenticateResource(Resource):
             }
 
             formio_service.post_submission(data=data, formio_token=formio_token)
-
 
             ## 6. Remove identity request
             current_app.logger.debug("Delete identity request")
@@ -661,19 +660,9 @@ class DocumentVerifyIdentity(Resource):
     @user_context
     @API.doc(
         params={
-            "status": {
+            "lang": {
                 "in": "query",
-                "description": "Status filter. Valid statuses are: " + ",".join(VALID_STATUSES),
-                "default": None
-            },
-            "createdAfter": {
-                "in": "query",
-                "description": "Created after filter: ",
-                "default": None
-            },
-            "cursor": {
-                "in": "query",
-                "description": "Current page",
+                "description": "Language for the document",
                 "default": None
             },
         }
@@ -684,6 +673,9 @@ class DocumentVerifyIdentity(Resource):
         url_path = f"users?username=pnobg-{person_identifier}&exact={True}"
         response = keycloak_client.get_request(url_path=url_path)
         current_app.logger.debug(f"Response - {response}")
+
+        # get language from request or use default
+        language = request.args.get("lang", "bg")
 
         if not response:
             ### 11. No user found
@@ -726,7 +718,8 @@ class DocumentVerifyIdentity(Resource):
 
         identity_request = document_client.create_identity_request(
             person_identifier=person_identifier,
-            tenant_key=tenant_key
+            tenant_key=tenant_key,
+            language=language
         )
 
         identity_request_data = {
