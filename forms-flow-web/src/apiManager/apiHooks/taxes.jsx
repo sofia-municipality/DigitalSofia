@@ -10,7 +10,7 @@ import {
   getPaidTaxData,
 } from "../services/taxServices";
 import { capitalizeFirstLetter } from "../../utils";
-import { EPAYMENT_REDIRECT_URL } from "../../constants/constants";
+import { EPAYMENT_ACCESS_CODE_LOGIN_URL } from "../../constants/constants";
 
 export const useGetTaxReference = (limit = 300) =>
   useApiCall(getTaxData, limit);
@@ -74,14 +74,17 @@ const groupByBatchNumber = (data = {}) => {
 
 export const useGetPaidTaxesData = (reqData) => {
   const { data, ...rest } = useApiCall(getPaidTaxData, reqData, false);
-  const mappedData = groupByBatchNumber(data);
-  return { data: mappedData, ...rest };
+  const mappedData = groupByBatchNumber(data?.groups || {});
+  return { data: { ...mappedData, status: data?.status || "" }, ...rest };
 };
 
 export const usePayTaxData = (reqData) => {
   const { data, ...rest } = useApiCall(payTaxData, reqData, false);
+
   if (data) {
-    window.location.href = EPAYMENT_REDIRECT_URL;
+    window.location.href = `${EPAYMENT_ACCESS_CODE_LOGIN_URL}?code=${
+      data.accessCode || ""
+    }`;
   }
 
   return { data, ...rest };

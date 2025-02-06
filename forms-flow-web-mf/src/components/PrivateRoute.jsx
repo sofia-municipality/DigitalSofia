@@ -1,6 +1,12 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, Suspense, lazy, useMemo } from "react";
-import { Route, Switch, Redirect, useParams } from "react-router-dom";
+import {
+  Route,
+  Switch,
+  Redirect,
+  useParams,
+  useHistory,
+} from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   BASE_ROUTE,
@@ -32,7 +38,8 @@ import {
   ENABLE_TRANSLATIONS_ADMINISTRATION_MODULE,
   TASK_PAGE_NEW_DESIGN_ENABLED,
   MULTI_LANGUAGE_ENABLED,
-  LANGUAGE
+  LANGUAGE,
+  CLIENT,
 } from "../constants/constants";
 
 import Loading from "../containers/Loading";
@@ -85,8 +92,8 @@ const PrivateRoute = React.memo((props) => {
   const userRoles = useSelector((state) => state.user.roles || []);
   const { tenantId } = useParams();
   const redirecUrl = MULTITENANCY_ENABLED ? `/tenant/${tenantId}/` : `/`;
-
   const [kcInstance, setKcInstance] = React.useState(getKcInstance());
+  const history = useHistory();
 
   const authenticate = (instance, store) => {
     store.dispatch(
@@ -94,7 +101,7 @@ const PrivateRoute = React.memo((props) => {
     );
     dispatch(setUserAuth(instance.isAuthenticated()));
     store.dispatch(setUserToken(instance.getToken()));
-    MULTI_LANGUAGE_ENABLED && 
+    MULTI_LANGUAGE_ENABLED &&
       store.dispatch(setLanguage(instance.getUserData()?.locale || LANGUAGE));
     //Set Cammunda/Formio Base URL
     setApiBaseUrlToLocalStorage();
@@ -133,14 +140,26 @@ const PrivateRoute = React.memo((props) => {
         authenticate(kcInstance, props.store);
       } else {
         instance.initKeycloak((authenticated) => {
-          if(!authenticated)
-          {
-           toast.error("Unauthorized Access.",{autoClose: 3000}); 
-           setTimeout(function() {
-            instance.userLogout();
-          }, 3000);
-          }
-          else{
+          if (!authenticated) {
+            if (!instance?.kc?.resourceAccess) {
+              history.push("/access-denied");
+            } else {
+              const currentUserRoles =
+                instance?.kc?.resourceAccess[instance?.kc?.clientId]?.roles;
+              if (
+                currentUserRoles?.length === 0 ||
+                (currentUserRoles?.length === 1 &&
+                  currentUserRoles?.includes(CLIENT))
+              ) {
+                history.push("/access-denied");
+              } else {
+                toast.error("Unauthorized Access.", { autoClose: 3000 });
+                setTimeout(function () {
+                  instance.userLogout();
+                }, 3000);
+              }
+            }
+          } else {
             authenticate(instance, props.store);
             publish("FF_AUTH", instance);
           }
@@ -222,6 +241,7 @@ const PrivateRoute = React.memo((props) => {
         ),
     [userRoles]
   );
+
 
   const ReviewerRoute = useMemo(
     () =>
@@ -337,11 +357,9 @@ const PrivateRoute = React.memo((props) => {
             )}
 
             <Route exact path={BASE_ROUTE}>
-             {userRoles.length && <Redirect
-                to={
-                  redirectUrlToHomePageBasedOnRole()
-                }
-              />}
+              {userRoles.length && (
+                <Redirect to={redirectUrlToHomePageBasedOnRole()} />
+              )}
             </Route>
             <Route path="/404" exact={true} component={NotFound} />
             <Redirect from="*" to="/404" />

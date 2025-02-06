@@ -1,17 +1,19 @@
 package com.bulpros.integrations.eDelivery.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
-@Getter
-@Setter
+import java.util.ArrayList;
+import java.util.HashMap;
+
+@Data
 public class SendMessageRequest {
+    ArrayList<Integer> recipientProfileIds;
+    String subject;
+    String referencedOrn;
+    String additionalIdentifier;
 
-    private DcMessageDetails messageDetails;
-    private EProfileType receiverType;
-    private String receiverUniqueIdentifier;
-    private String receiverPhone;
-    private String receiverEmail;
-    private String serviceOID;
-    private String operatorEGN;
+    String templateId;
+    @JsonProperty("fields")
+    HashMap<String, Object> fields;
 }

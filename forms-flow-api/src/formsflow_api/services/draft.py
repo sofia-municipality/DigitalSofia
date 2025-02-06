@@ -11,10 +11,12 @@ from formsflow_api_utils.utils import ANONYMOUS_USER, DRAFT_APPLICATION_STATUS
 from formsflow_api_utils.utils.enums import FormProcessMapperStatus
 from formsflow_api_utils.utils.user_context import UserContext, user_context
 
+from formsflow_api.exceptions import CommonException
 from formsflow_api.models import Application, Draft, FormProcessMapper
 from formsflow_api.schemas import DraftSchema
 from formsflow_api.services.overriden import FormioServiceExtended
 from formsflow_api.services.document_meta_data import DocumentMetaData
+from formsflow_api.services.external.bpm import BPMService
 
 from .application import ApplicationService
 from flask import current_app, request
@@ -183,7 +185,7 @@ class DraftService:
                 f"Mapper does not exist with formId - {application_payload['form_id']}.",
                 HTTPStatus.BAD_REQUEST,
             )
-        
+
         if (mapper.status == FormProcessMapperStatus.INACTIVE.value) or (
                 not token and not mapper.is_anonymous
         ):
@@ -195,25 +197,23 @@ class DraftService:
             raise BusinessException(
                 "Tenant authentication failed.", HTTPStatus.FORBIDDEN
             )
-        
+
         application_payload["form_process_mapper_id"] = mapper.id
 
         application_payload["application_status"] = DRAFT_APPLICATION_STATUS
         application_payload["submission_id"] = None
 
         application = cls.__create_draft_application(application_payload)
-        
+
         if not application:
             response, status = {
-                                   "type": "Internal server error",
-                                   "message": "Unable to create application",
-                               }, HTTPStatus.INTERNAL_SERVER_ERROR
+                "type": "Internal server error",
+                "message": "Unable to create application",
+            }, HTTPStatus.INTERNAL_SERVER_ERROR
             raise BusinessException(response, status)
-        
+
         draft_payload["application_id"] = application.id
         draft = cls.__create_draft(draft_payload)
-
-        
 
         return draft
 
@@ -229,9 +229,9 @@ class DraftService:
             return draft_schema.dump(draft)
 
         response, status = {
-                               "type": "Bad request error",
-                               "message": f"Invalid request data - draft id {draft_id} does not exist",
-                           }, HTTPStatus.BAD_REQUEST
+            "type": "Bad request error",
+            "message": f"Invalid request data - draft id {draft_id} does not exist",
+        }, HTTPStatus.BAD_REQUEST
         raise BusinessException(response, status)
 
     @staticmethod
@@ -245,9 +245,9 @@ class DraftService:
             draft.update(data)
         else:
             response, status = {
-                                   "type": "Bad request error",
-                                   "message": f"Invalid request data - draft id {draft_id} does not exist",
-                               }, HTTPStatus.BAD_REQUEST
+                "type": "Bad request error",
+                "message": f"Invalid request data - draft id {draft_id} does not exist",
+            }, HTTPStatus.BAD_REQUEST
             raise BusinessException(response, status)
 
     @staticmethod
@@ -287,9 +287,9 @@ class DraftService:
         draft = Draft.make_submission(draft_id, data, user_id)
         if not draft:
             response, status = {
-                                   "type": "Bad request error",
-                                   "message": f"Invalid request data - draft id {draft_id} does not exist",
-                               }, HTTPStatus.BAD_REQUEST
+                "type": "Bad request error",
+                "message": f"Invalid request data - draft id {draft_id} does not exist",
+            }, HTTPStatus.BAD_REQUEST
             raise BusinessException(response, status)
 
         application = Application.find_by_id(draft.application_id)
@@ -316,9 +316,9 @@ class DraftService:
             draft.delete()
         else:
             response, status = {
-                                   "type": "Bad request error",
-                                   "message": f"Invalid request data - draft id {draft_id} does not exist",
-                               }, HTTPStatus.BAD_REQUEST
+                "type": "Bad request error",
+                "message": f"Invalid request data - draft id {draft_id} does not exist",
+            }, HTTPStatus.BAD_REQUEST
             raise BusinessException(response, status)
 
     @staticmethod
@@ -407,8 +407,8 @@ class DraftService:
 
             ### Should we get metadata
             if relevant_path_name.startswith("changeofpernamentaddress") or relevant_path_name.startswith(
-                    "changeofcurrentaddress")or relevant_path_name.startswith(
-                    "trusteesignform"):
+                    "changeofcurrentaddress") or relevant_path_name.startswith(
+                "trusteesignform"):
                 current_app.logger.debug("Generate metadata dict")
                 ### Get metadata
                 xml_file_name = os.path.join(current_app.static_folder, 'data', 'xml', 'change_address_template.xml')
@@ -431,8 +431,8 @@ class DraftService:
 
             if xml_string and json_string:
                 requestorName = draft.data.get("firstName") + " " + draft.data.get("lastName")
-                service = {"serviceId" : draft.data.get("serviceId"),
-                           "serviceName" : draft.data.get("serviceName")}
+                service = {"serviceId": draft.data.get("serviceId"),
+                        "serviceName": draft.data.get("serviceName")}
                 # # Add the metadata
                 json_submission_data = draft.generate_application_json_submission_dict(requestorName, service)
                 json_submission_data.pop('document', None)
@@ -496,9 +496,9 @@ class DraftService:
                     str(person_identifier))
         except PdfReadError as err:
             response, status = {
-                                   "type": "Bad request error",
-                                   "message": "PDF file error.",
-                               }, HTTPStatus.BAD_REQUEST
+                "type": "Bad request error",
+                "message": "PDF file error.",
+            }, HTTPStatus.BAD_REQUEST
 
             current_app.logger.debug(url)
             current_app.logger.debug(request.get_json())
@@ -510,7 +510,167 @@ class DraftService:
             message = template.format(type(err).__name__, err.args)
             current_app.logger.debug(message)
             response, status = {
-                                   "type": "Bad request error",
-                                   "message": str(err),
-                               }, HTTPStatus.BAD_REQUEST
+                "type": "Bad request error",
+                "message": str(err),
+            }, HTTPStatus.BAD_REQUEST
             raise BusinessException(response, status)
+
+    @staticmethod
+    def __exists_application_for_child(form_path: str, created_by: str, tenant: str, process: str, child_person_identifier: str = None):
+        current_app.logger.warning("DraftService:__exists_application_for_child")
+
+        child_result = Draft.find_app_for_child(form_path, 
+                                                created_by, 
+                                                tenant,
+                                                process)
+
+        current_app.logger.debug(f"child_result: {child_result}")
+
+        # Remove prefix from the EGN to compare without prefixes
+        if child_person_identifier:
+            child_person_identifier = child_person_identifier.lower().replace("pnobg-", "")
+
+        for record in child_result:
+            current_app.logger.warning(f"record in child_result: {record}")
+
+            # При споделено попечителство няма данни за behalf и няма данни в базата за драфт.
+            # Да се провери тогава дали няма вече в камундата дали има вече 
+            # подадено заявление за същото дете.
+            # Ако подаваме заявление от лично качество, тогава ако лицето има 
+            # поне едно подадено заявление за дете, не разрешаваме да продължи.
+            if not "behalf" in record[3]:
+                current_app.logger.warning("check for not completed application in camunda (no behalf data)")
+
+                app_check_result = BPMService.get_apps_not_completed_for_child(
+                    personIdentifier=created_by,
+                    tenantId=tenant,
+                    definitionId=process)
+
+                current_app.logger.warning(f"app_check_result: {app_check_result}")
+
+                if not app_check_result["success"]:
+                    current_app.logger.warning(f"app_check_result ERROR: {app_check_result['error']}")
+                    raise CommonException(app_check_result["error"])
+
+                # Има поне едно заявление
+                if app_check_result["data"] is not None and len(app_check_result["data"]) > 0:
+                    
+                    if not child_person_identifier:
+                        # Не би трябвало да се влиза в този клон.
+                        current_app.logger.warning(f"provided child_person_identifier is empty when there is no behalf property.")
+                        return True
+                    else: 
+                        # Ако подаваме заявление за второ дете се проверява дали вече няма подадено
+                        # вече заявление за същото дете.
+                        for record in app_check_result["data"]:
+                            current_app.logger.warning(f"record in app_check_result['data']: {record}")
+
+                            variables = BPMService.get_process_variables(
+                                                    process_instance_id=record["id"], 
+                                                    token=None)
+                            
+                            current_app.logger.warning("executed BPMService.get_process_variables")
+
+                            # Може да бъде върнато като обект или като стринг
+                            existing_child_pi = variables.get("childPersonIdentifier")
+
+                            current_app.logger.info(f"existing_child_pi: {existing_child_pi}")
+
+                            if isinstance(existing_child_pi, str):
+                                existing_child_pi = existing_child_pi.lower().replace("pnobg-", "")
+                            else:
+                                existing_child_pi = existing_child_pi.get("value").lower().replace("pnobg-", "")
+
+                            if existing_child_pi == child_person_identifier:
+                                return True
+                        
+            # При заявление от името на дете да се провери дали вече не е
+            # подадено заявление за същото дете, като се провери за същото ЕГН.
+            # Ако се подава от лично качество тогава нямаме childPersonIdentifier 
+            # в данните и ако има поне едно заявление от името на дете се връща True
+            elif record[3]["behalf"] == "child":
+                if not child_person_identifier:
+                    return True
+                else:
+                    existing_child_pi = record[3]["childPersonIdentifier"]
+                    existing_child_pi = existing_child_pi.lower().replace("pnobg-", "")
+                
+                    if existing_child_pi == child_person_identifier:
+                        return True
+
+        return False
+
+    @staticmethod
+    @user_context
+    def check_existing_application_for_child(service_id: str, for_person_identifier: str, child_person_identifier: str, **kwargs):
+        """Check for existing, not completed applications for a child."""
+
+        try:
+            # 'serviceId': 2079  / sofia-changeofpernamentaddress - Постоянен адрес
+            # 'serviceId': 2107 / sofia-changeofcurrentaddress - Текущ адрес
+
+            current_app.logger.debug("check_existing_application_for_child")
+
+            if for_person_identifier == "":
+                return "Target person identifier is required", HTTPStatus.BAD_REQUEST
+
+            if "user" not in kwargs:
+                return "User not found in arguments", HTTPStatus.BAD_REQUEST
+
+            if service_id is None or service_id == 0:
+                return "serviceId is required", HTTPStatus.BAD_REQUEST
+
+            form_path = None
+
+            current_app.logger.debug(f"ServiceID: {service_id}")
+
+            if service_id == "2079":
+                form_path = "sofia-changeofpernamentaddress"
+
+            if service_id == "2107":
+                form_path = "sofia-changeofcurrentaddress"
+
+            if form_path is None:
+                return "form_path cannot be extracted from the serviceId", HTTPStatus.BAD_REQUEST
+
+            user = kwargs.get('user')
+
+            if not user:
+                return "User not found in arguments", HTTPStatus.BAD_REQUEST
+
+            # Remove the EGN prefix
+            target_person_identifier = for_person_identifier.lower().replace("pnobg-", "")
+
+            # Prepare data input to check for the existing application on behalf of the child
+            process_definition = current_app.config.get("CAMUNDA_CHANGE_ADDRESS_PROCESS")
+            tenant = user.token_info["tenantKey"]
+
+            child_exists_result = DraftService.__exists_application_for_child(form_path,
+                                                                        f"pnobg-{target_person_identifier}",
+                                                                        tenant,
+                                                                        process_definition, 
+                                                                        child_person_identifier)
+
+            current_app.logger.debug(
+                f"Checking for existing application on behalf of the child with: RESULT:{child_exists_result} "
+                f"personIdentifier:{target_person_identifier}; "
+                f"tenantKey:{tenant}; processDefinitionId:{process_definition}")
+
+            if child_exists_result:
+                return {
+                    "error": "There is at least one unfinished application on behalf of the child.",
+                    "errorMessageTranslation": "app_on_behalf_child_error",
+                    "personIdentifier": target_person_identifier,
+                    "tenantKey": tenant,
+                    "formPath": form_path,
+                    "processDefinition": process_definition,
+                    "resultSource": "database"
+                }, HTTPStatus.UNPROCESSABLE_ENTITY
+
+            return None, HTTPStatus.OK
+
+        except Exception as ex:
+            current_app.logger.error(f"Error check_existing_application_for_child: {ex}")
+            return {
+                "error": ex
+            }, HTTPStatus.INTERNAL_SERVER_ERROR

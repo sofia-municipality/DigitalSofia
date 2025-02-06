@@ -14,6 +14,7 @@ import { useDispatch } from "react-redux";
 import { setLanguage } from "../actions/languageSetAction";
 import { initPubSub } from "../actions/pubSubActions";
 import { push } from "connected-react-router";
+import AccessDenied from "./AccessDenied";
 
 const BaseRouting = React.memo(
   ({ store, publish, subscribe, getKcInstance }) => {
@@ -45,7 +46,7 @@ const BaseRouting = React.memo(
     }, [tenant]);
 
     React.useEffect(() => {
-      if(isAuth) {
+      if (isAuth) {
         publish("ES_ROUTE", location);
       }
       
@@ -74,6 +75,11 @@ const BaseRouting = React.memo(
                 />
               </Route>
               <Route path="/404" exact={true} component={NotFound} />
+              <Route
+                path="/access-denied"
+                exact={true}
+                component={AccessDenied}
+              />
               <Redirect from="*" to="/404" />
             </Switch>
             {isAuth ? <Footer /> : null}

@@ -11,8 +11,10 @@ from formsflow_api.models.application import Application
 from formsflow_api.models.draft import Draft
 from formsflow_api.services.overriden import FormioServiceExtended
 from formsflow_api.services.external import BPMService
+from formsflow_api.services.acstre import EU_STATUSES
 from formsflow_api.schemas.services import ServicesListSchema
 
+EU_STATUSES_NAMES = [status["name"] for status in EU_STATUSES]
 
 API = Namespace("Services", description="Personal Services")
 
@@ -76,9 +78,11 @@ class ServicesResource(Resource):
 
         # specify forms
         # Get Application
-        query = Application.query.filter_by(
+        query = (Application.query.filter_by(
             created_by=user.user_name
-        ).order_by(Application.id.desc())
+        ).filter(
+            Application.application_status.notin_(EU_STATUSES_NAMES)
+        ).order_by(Application.id.desc()))
 
         total = query.count()
         pagination = query.paginate(page=page_number, per_page=limit)

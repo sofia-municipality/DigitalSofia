@@ -6,8 +6,7 @@ import { PAGE_NAMES, PAGE_BLOCKS } from "../../../../constants/pages";
 import { useGetPageBlocks } from "../../../../apiManager/apiHooks";
 import Loading from "../../../../containers/Loading";
 import PageContainer from "../../components/PageContainer";
-import SmCta, { SmCtaTypes } from "../../components/buttons/SmCta";
-
+import ContactsAccordion from "../../components/ContactsAccordion";
 import styles from "./contacts.module.scss";
 
 const Contacts = () => {
@@ -20,7 +19,6 @@ const Contacts = () => {
     useGetPageBlocks(PAGE_NAMES.CONTACTS_PAGE, userLanguage) || {};
 
   const contactsBlock = pageBlocks[contactsPageBlocks.CONTACTS_BLOCK];
-
   return contactsBlock ? (
     <PageContainer>
       <div className={`${styles.contactsContainer}`}>
@@ -31,21 +29,43 @@ const Contacts = () => {
                 {t("contacts.page.title")}
               </h1>
             </div>
+          </div>
+          <div className="row mb-3">
             <div className="col-12">
               <p className={styles.description}>
                 {t("contacts.page.description")}
               </p>
             </div>
+          </div>
+          <div className="row">
+            <div className="col-12">
+              <p className={styles.contactViaEmail}>
+                {t("contacts.page.contactViaEmail")}
+                <a
+                  href="mailto:address@sofia.bg"
+                  className="ml-1 linkSystemBlue"
+                >
+                  address@sofia.bg
+                </a>
+              </p>
+            </div>
+          </div>
+
+          <div className="row">
             <div className="col-12">
               <div className={styles.contactsContent}>
                 <div className={styles.contactsContentTitle}>
                   {t("contacts.page.contacts.title")}
                 </div>
-                <div>
-                  {contactsBlock?.items?.map((item, index) => (
-                    <ContactItem key={index} {...item} />
-                  ))}
-                </div>
+                {contactsBlock?.items?.map((items, index) => (
+                  <ContactsAccordion
+                    id={index}
+                    key={index}
+                    data={items}
+                    forceOpenClose={"open"}
+                    className={styles.contactsAccordion}
+                  />
+                ))}
               </div>
             </div>
           </div>
@@ -56,21 +76,5 @@ const Contacts = () => {
     <Loading />
   );
 };
-
-const ContactItem = ({ title, phone, link }) => (
-  <SmCta
-    className="p-0 w-100"
-    href={link}
-    type={SmCtaTypes.TRANSPARENT}
-    target="_blank"
-    isLink
-    hardRedirect
-  >
-    <div className={`row no-gutters w-100 ${styles.contactsItem}`}>
-      <div className={`col-md-4 ${styles.contactsItemRegion}`}>{title}</div>
-      <div className={`col-md-8 ${styles.phone}`}>{phone}</div>
-    </div>
-  </SmCta>
-);
 
 export default Contacts;

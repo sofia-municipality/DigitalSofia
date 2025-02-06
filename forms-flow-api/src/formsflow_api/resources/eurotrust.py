@@ -1,23 +1,36 @@
 import re
 from datetime import datetime, timedelta
 from http import HTTPStatus
+import traceback
+
 from flask import current_app, request
 from flask_restx import Namespace, Resource, fields
 from marshmallow.exceptions import ValidationError
+
 from formsflow_api_utils.utils.user_context import UserContext, user_context
 from formsflow_api_utils.exceptions import BusinessException
-from formsflow_api_utils.utils import (
-    cors_preflight,
-    auth,
-    cache,
-    profiletime
+from formsflow_api_utils.utils import cors_preflight, auth, profiletime
+from formsflow_api.services.external import (
+    EurotrustIntegrationsService,
+    FirebaseService,
+    KeycloakAdminAPIService,
 )
-from formsflow_api.services.external import EurotrustIntegrationsService, FirebaseService, KeycloakAdminAPIService
-from formsflow_api.services import FormioServiceExtended, DocumentsService, ApplicationService
+from formsflow_api.services import (
+    FormioServiceExtended,
+    DocumentsService,
+    ApplicationService,
+)
 from formsflow_api.schemas import DocumentSignRequest, DocumentSignCallback
-from formsflow_api.models import DocumentTransaction, DocumentStatus, Application
+from formsflow_api.schemas.user import (
+    UserStatusSchema,
+    UserStatusChangeTransactionSchema,
+)
+from formsflow_api.models import DocumentTransaction, DocumentStatus
 from formsflow_api.models.db import db
 from formsflow_api.exceptions import EurotrustException
+from formsflow_api.utils.enums import DocumentStatusesEnum
+from formsflow_api.services.receipts import ReceiptService
+from formsflow_api.services.user_status_transaction import UserStatusTransactionService
 
 
 API = Namespace("Eurotrust", description="Integration with eurotrust")
@@ -30,16 +43,13 @@ sign_request = API.model(
         "content": fields.String(),
         "contentType": fields.String(),
         "fileName": fields.String(),
-        "originFormFormioId": fields.String()
+        "originFormFormioId": fields.String(),
     },
 )
 
 transaction = API.model(
     "EurotrustTransaction",
-    {
-        "transactionID": fields.String(),
-        "identificationNumber": fields.String()
-    },
+    {"transactionID": fields.String(), "identificationNumber": fields.String()},
 )
 
 transaction_dict = API.model(
@@ -48,8 +58,8 @@ transaction_dict = API.model(
         "threadID": fields.String(),
         "transactions": fields.List(
             fields.Nested(transaction, description="List of transactions.")
-        )
-    }    
+        ),
+    },
 )
 
 
@@ -86,7 +96,7 @@ class EurotrustSignResource(Resource):
                 raise BusinessException(
                     "Invalid Personal Identifier bound to user.", HTTPStatus.BAD_REQUEST
                 )
-            
+
             person_identifier = match[0]
             document_json = request.get_json()
             document_schema = DocumentSignRequest()
@@ -99,63 +109,75 @@ class EurotrustSignResource(Resource):
             document_service_client = DocumentsService()
 
             document_timeout = current_app.config.get("EUROTRUST_EXPIRE_TIMEOUT")
-            valid_untill = (datetime.now() + timedelta(minutes=int(document_timeout)))
+            valid_untill = datetime.now() + timedelta(minutes=int(document_timeout))
             response = document_service_client.send_document_to_sign_eurotrust(
                 tenant_key=tenant_key,
                 content=data["content"],
                 content_type=data["content_type"],
                 filename=data["file_name"],
                 user_identifier=person_identifier,
-                expire_at=valid_untill
+                expire_at=valid_untill,
             )
 
-            eurotrust_response = response.get('response') 
-            transactions = eurotrust_response.get('transactions')
+            eurotrust_response = response.get("response")
+            transactions = eurotrust_response.get("transactions")
             current_app.logger.debug(transactions)
 
             # Get pending status
             pending_status = document_service_client.get_document_status("Pending")
 
-            
             keycloak_client = KeycloakAdminAPIService()
             url_path = f"users?username=pnobg-{person_identifier}&exact={True}"
             keycloak_users = keycloak_client.get_request(url_path)
 
             firebase_user_registration_token = None
             if keycloak_users:
-                keycloak_user = keycloak_users[0]    
+                keycloak_user = keycloak_users[0]
 
                 keycloak_user_attributes = keycloak_user.get("attributes")
-                firebase_user_registration_attribute = keycloak_user_attributes.get("fcm", None)
+                firebase_user_registration_attribute = keycloak_user_attributes.get(
+                    "fcm", None
+                )
                 if firebase_user_registration_attribute:
-                    firebase_user_registration_token = firebase_user_registration_attribute[0]
-                    current_app.logger.debug(f"User has fcm - {firebase_user_registration_token}")    
-                
+                    firebase_user_registration_token = (
+                        firebase_user_registration_attribute[0]
+                    )
+                    current_app.logger.debug(
+                        f"User has fcm - {firebase_user_registration_token}"
+                    )
+
                 firebase_client = FirebaseService()
 
             signature_source = data.get("signature_source", None)
             # create Transactions in DB
             for transaction in transactions:
-                current_app.logger.debug(f"Creating transaction with {transaction['transactionID']} - {data.get('origin_form_formio_id', None)}")
-                document_transaction = document_service_client.create_document_transaction(
-                    transaction_id=transaction['transactionID'],
-                    thread_id=eurotrust_response["threadID"],
-                    tenant_key=tenant_key,
-                    status_id=pending_status.id,
-                    application_id=data.get('application_id', None),
-                    formio_id=data['formio_id'],
-                    user_email=user.user_name,
-                    origin_form_formio_id=data.get("origin_form_formio_id", None),
-                    signature_source=signature_source
+                current_app.logger.debug(
+                    f"Creating transaction with {transaction['transactionID']} - {data.get('origin_form_formio_id', None)}"
                 )
-                
+                document_transaction = (
+                    document_service_client.create_document_transaction(
+                        transaction_id=transaction["transactionID"],
+                        thread_id=eurotrust_response["threadID"],
+                        tenant_key=tenant_key,
+                        status_id=pending_status.id,
+                        application_id=data.get("application_id", None),
+                        formio_id=data["formio_id"],
+                        user_email=user.user_name,
+                        origin_form_formio_id=data.get("origin_form_formio_id", None),
+                        signature_source=signature_source,
+                    )
+                )
 
                 current_app.logger.debug(f"Signature Source - |{signature_source}|")
-                current_app.logger.debug(f"FCM TOken - |{firebase_user_registration_token}|")
-                if firebase_user_registration_token and signature_source in ["digitalSofia"]:
+                current_app.logger.debug(
+                    f"FCM TOken - |{firebase_user_registration_token}|"
+                )
+                if firebase_user_registration_token and signature_source in [
+                    "digitalSofia"
+                ]:
                     firebase_client.send_status_change_message(
-                        transaction=document_transaction, 
-                        firebase_user_registration_token=firebase_user_registration_token
+                        transaction=document_transaction,
+                        firebase_user_registration_token=firebase_user_registration_token,
                     )
 
                 db.session.add(document_transaction)
@@ -163,16 +185,24 @@ class EurotrustSignResource(Resource):
             # Update status in formio
             formio_client = FormioServiceExtended()
             update_data = [
-                formio_client.generate_rfc6902_object("/data/status",pending_status.formio_status),
-                formio_client.generate_rfc6902_object("/data/evrotrustTransactionId", transactions[0]['transactionID']),
-                formio_client.generate_rfc6902_object("/data/evrotrustThreadId", eurotrust_response["threadID"]),
-                formio_client.generate_rfc6902_object("/data/validUntill", valid_untill.isoformat()),
-                formio_client.generate_rfc6902_object("/data/signatureSource", data.get("signature_source"))
+                formio_client.generate_rfc6902_object(
+                    "/data/status", pending_status.formio_status
+                ),
+                formio_client.generate_rfc6902_object(
+                    "/data/evrotrustTransactionId", transactions[0]["transactionID"]
+                ),
+                formio_client.generate_rfc6902_object(
+                    "/data/evrotrustThreadId", eurotrust_response["threadID"]
+                ),
+                formio_client.generate_rfc6902_object(
+                    "/data/validUntill", valid_untill.isoformat()
+                ),
+                formio_client.generate_rfc6902_object(
+                    "/data/signatureSource", data.get("signature_source")
+                ),
             ]
             document_service_client.update_document_in_formio(
-                tenant_key=tenant_key, 
-                resource_id=data['formio_id'], 
-                data=update_data 
+                tenant_key=tenant_key, resource_id=data["formio_id"], data=update_data
             )
 
             db.session.commit()
@@ -180,9 +210,9 @@ class EurotrustSignResource(Resource):
         except ValidationError as err:
             current_app.logger.warning(err)
             response, status = {
-                                   "type": "Bad request error",
-                                   "message": err.messages
-                               }, HTTPStatus.BAD_REQUEST
+                "type": "Bad request error",
+                "message": err.messages,
+            }, HTTPStatus.BAD_REQUEST
             return response, status
         except EurotrustException as err:
             current_app.logger.warning(err)
@@ -201,13 +231,12 @@ class EurotrustSignResource(Resource):
 @API.route("/document/<string:transaction_id>/status/", methods=["GET", "OPTIONS"])
 class EurotrustDocumentStatusResource(Resource):
 
-    
     @staticmethod
     @auth.require
     @profiletime
     @user_context
     @API.response(200, "OK: - Successful request.")
-    def get(transaction_id:str, **kwargs):
+    def get(transaction_id: str, **kwargs):
         try:
             user: UserContext = kwargs["user"]
             tenant_key = user.tenant_key
@@ -215,45 +244,46 @@ class EurotrustDocumentStatusResource(Resource):
             # Get document entry if exists
             transaction = DocumentTransaction.query.filter(
                 DocumentTransaction.transaction_id == transaction_id,
-                DocumentTransaction.tenant_key == tenant_key
+                DocumentTransaction.tenant_key == tenant_key,
             ).first()
 
             if not transaction:
-                raise BusinessException("Can't find transaction with specified transaction id", HTTPStatus.NOT_FOUND)
+                raise BusinessException(
+                    "Can't find transaction with specified transaction id",
+                    HTTPStatus.NOT_FOUND,
+                )
 
             document_service = DocumentsService()
-            new_status = document_service.get_document_transaction_status_in_eurotrust(transaction_id=transaction_id)
+            new_status = document_service.get_document_transaction_status_in_eurotrust(
+                transaction_id=transaction_id
+            )
 
             if not new_status:
                 raise BusinessException(
-                    f"No status found {response['status']}", 
-                    HTTPStatus.NOT_FOUND
+                    f"No status found {response['status']}", HTTPStatus.NOT_FOUND
                 )
-            
-            
+
             if new_status.title == "Signed":
                 client = DocumentsService()
-                response = client.set_signed_file_from_eurotrust(transaction=transaction)
+                response = client.set_signed_file_from_eurotrust(
+                    transaction=transaction
+                )
 
-            # If the transaciton exists, update it 
+            # If the transaciton exists, update it
             if transaction:
                 transaction.update_status_send_notification(new_status=new_status)
 
                 ### Updating status for application in camunda
                 is_status_pending = new_status.title == "Pending"
-                current_app.logger.debug(f"Should we generate a message for camunda - {is_status_pending}")
+                current_app.logger.debug(
+                    f"Should we generate a message for camunda - {is_status_pending}"
+                )
                 if not is_status_pending:
                     ApplicationService.update_message_for_application_by_status(
-                        status=new_status,
-                        transaction=transaction
+                        status=new_status, transaction=transaction
                     )
 
-            return (
-                {
-                    "status": new_status.formio_status
-                }, 
-                HTTPStatus.OK
-            )
+            return ({"status": new_status.formio_status}, HTTPStatus.OK)
         except EurotrustException as err:
             current_app.logger.debug("EurotrustException found")
             current_app.logger.debug(f"Error error - {err.error}")
@@ -261,19 +291,14 @@ class EurotrustDocumentStatusResource(Resource):
             current_app.logger.debug(f"Error data - {err.data}")
 
             if err.data == "443 unknown status: [Document not found]":
-                return (
-                    {
-                        "status": "signing"
-                    },
-                    200
-                )
+                return ({"status": "signing"}, 200)
 
             return {
                 "type": "Bad request error",
                 "message": err.error,
             }, err.status_code
         except BusinessException as err:
-            current_app.logger.warning(err.error)            
+            current_app.logger.warning(err.error)
             response, status = {
                 "type": "Bad request error",
                 "message": err.error,
@@ -285,7 +310,6 @@ class EurotrustDocumentStatusResource(Resource):
 @cors_preflight("POST,OPTIONS")
 @API.route("/document/ready", methods=["POST", "OPTIONS"])
 class EurotrustCallbackResource(Resource):
-
 
     @staticmethod
     @API.response(200, "OK:- Successful request.")
@@ -309,51 +333,180 @@ class EurotrustCallbackResource(Resource):
             # Get transaction if not found throw an exception to be handled
             if not transaction:
                 raise BusinessException(
-                    f"No transaction found with specified transaction id {data['transaction_id']}", 
-                    HTTPStatus.NOT_FOUND
+                    f"No transaction found with specified transaction id {data['transaction_id']}",
+                    HTTPStatus.NOT_FOUND,
                 )
-            
 
             ### 4. Is it a valid status
             ### Get status throw exception if not found
-            new_status = DocumentStatus.query.filter_by(eurotrust_status=data["status"]).first()
+            new_status = DocumentStatus.query.filter_by(
+                eurotrust_status=data["status"]
+            ).first()
             if not new_status:
                 raise BusinessException(
-                    f"No status found {data['status']}", 
-                    HTTPStatus.NOT_FOUND
+                    f"No status found {data['status']}", HTTPStatus.NOT_FOUND
                 )
 
             ### 5. Update formio status
             document_service = DocumentsService()
             document_service.update_document_status_in_formio(
-                    transaction.formio_id, 
-                    tenant_key=transaction.tenant_key,
-                    status=new_status
-                )
-            
-            ### 6. The new status is signed, update 
+                transaction.formio_id,
+                tenant_key=transaction.tenant_key,
+                status=new_status,
+            )
+
+            ### 6. The new status is signed, update
             if new_status.title == "Signed":
                 client = DocumentsService()
                 client.set_signed_file_from_eurotrust(transaction=transaction)
-            
-            ### 7. Update transaction 
+
+            ### 7. Update transaction
             transaction.update_status_send_notification(new_status=new_status)
-            
+
             ### 8. Updating status for application in camunda
             is_status_pending = new_status.title == "Pending"
-            current_app.logger.debug(f"Should we generate a message for camunda - {is_status_pending}")
+            current_app.logger.debug(
+                f"Should we generate a message for camunda - {is_status_pending}"
+            )
             if not is_status_pending:
                 ApplicationService.update_message_for_application_by_status(
-                    status=new_status,
-                    transaction=transaction
+                    status=new_status, transaction=transaction
                 )
 
             return ({"response": "Callback received"}, HTTPStatus.OK)
         except BusinessException as err:
-            current_app.logger.warning(err)            
+            current_app.logger.warning(err)
             response, status = {
                 "type": "Bad request error",
                 "message": err.error,
             }, err.status_code
 
             return response, status
+
+
+@cors_preflight("GET,OPTIONS")
+@API.route("/delivery/receipt/<string:thread_id>/status/", methods=["GET", "OPTIONS"])
+class EurotrustReceiptStatusResource(Resource):
+    @staticmethod
+    @auth.require
+    @user_context
+    @API.response(200, "ОК")
+    def get(thread_id: str, **kwargs):
+        try:
+            user: UserContext = kwargs["user"]
+            tenant_key = user.tenant_key
+
+            # Get document entry if exists
+            transaction: DocumentTransaction = DocumentTransaction.query.filter(
+                DocumentTransaction.thread_id == thread_id,
+                DocumentTransaction.tenant_key == tenant_key,
+            ).first()
+
+            if not transaction:
+                raise BusinessException(
+                    "Can't find receipts with specified thread id", HTTPStatus.NOT_FOUND
+                )
+
+            document_service = DocumentsService()
+            status_in_eurotrust = (
+                document_service.get_document_status_transaction_in_eurotrust(thread_id)
+            )
+
+            if status_in_eurotrust.title != DocumentStatusesEnum.DELIVERING:
+                document_service.update_document_status_in_formio(
+                    transaction.formio_id,
+                    tenant_key=transaction.tenant_key,
+                    status=status_in_eurotrust,
+                )
+
+                receipts_service = ReceiptService()
+                receipts_service.download_and_save_receipts(
+                    transaction.transaction_id,
+                    transaction.tenant_key,
+                    transaction.application_id,
+                )
+
+                transaction.delete()
+
+                return ({"status": status_in_eurotrust.formio_status}, HTTPStatus.OK)
+
+            # Return 443 according SM-1634
+            return {"status": status_in_eurotrust.formio_status}, 443
+
+        except BusinessException as err:
+            current_app.logger.warning(err.error)
+            response, status = {
+                "type": "Bad request error",
+                "message": err.error,
+            }, err.status_code
+
+            return response, status
+
+
+@cors_preflight("POST,OPTIONS")
+@API.route("/user-status-callback", methods=["POST", "OPTIONS"])
+class EurotrustUserStatusCallbackResource(Resource):
+    @staticmethod
+    @profiletime
+    @API.response(201, "OK")
+    def post():
+        callback_data = request.get_json()
+
+        current_app.logger.debug("User status callback data")
+        current_app.logger.debug(callback_data)
+
+        schema = UserStatusSchema()
+        errors = schema.validate(callback_data)
+        if errors:
+            current_app.logger.debug(errors)
+            return "You are not sending validate data", HTTPStatus.BAD_REQUEST
+
+        keycloak_client = KeycloakAdminAPIService()
+        url_path = f"users?username={callback_data['identificationNumber']}"
+        keycloak_users = keycloak_client.get_request(url_path)
+        current_app.logger.debug(keycloak_users)
+        keycloack_user = keycloak_users[0]
+        fcm_list = keycloack_user.get("attributes", {}).get("fcm")
+        current_app.logger.debug("user fcm list")
+        current_app.logger.debug(fcm_list)
+
+        user_fcm = fcm_list[0]
+
+        firebase_service = FirebaseService()
+        stringified_data = {key: str(value) for key, value in callback_data.items()}
+        resp = firebase_service.send_user_status_change_message(stringified_data, user_fcm)
+        
+        current_app.logger.debug("Firebase notification resp")
+        current_app.logger.debug(resp)
+
+        try:
+            UserStatusTransactionService.delete_user_status_transaction(callback_data['identificationNumber'])
+        except:
+            current_app.logger.debug("User status transaction not found!")
+
+        return "OK", HTTPStatus.CREATED
+
+
+@cors_preflight("POST,OPTIONS")
+@API.route("/user-status-transaction", methods=["POST", "OPTIONS"])
+class EurotrustUserStatusCallbackTransactionResource(Resource):
+    @staticmethod
+    @profiletime
+    @API.response(201, "OK")
+    def post():
+        transaction_data = request.get_json()
+
+        current_app.logger.debug("User status callback transaction data")
+        current_app.logger.debug(transaction_data)
+
+        schema = UserStatusChangeTransactionSchema()
+        errors = schema.validate(transaction_data)
+        if errors:
+            current_app.logger.debug(errors)
+            return "You are not sending validate data", HTTPStatus.BAD_REQUEST
+
+        UserStatusTransactionService.create_user_status_transaction(
+            transaction_data["identification_number"]
+        )
+
+        return "OK", HTTPStatus.CREATED

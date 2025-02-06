@@ -76,40 +76,57 @@ def seed_page_blocks():
 @SeedBlueprint.cli.command('regions')
 def seed_regions():
     Region.delete_all()
+
     regions_filename = os.path.join(current_app.static_folder, 'data', 'seeds', 'Regions_SO.csv')
+    regions_additional_data_filename = os.path.join(current_app.static_folder, 'data', 'seeds',
+                                                    f'regions_additional_data_{current_app.config.get("REGIONS_ENV")}.csv')
     regions_codes_filename = os.path.join(current_app.static_folder, 'data', 'seeds', 'Райони-код,реф.номера.csv')
-    regions = []
 
-    with open(regions_filename, 'r') as file:
-        csv_reader = csv.reader(file)
-        next(csv_reader, None)  # skip the headers
-        for row in csv_reader:
-            regions.append({
-                "name": row[0].rstrip(),
-                "code": row[1],
-                "city_are_code": int(row[2]),
-            })
+    regions = {}
 
-    with open(regions_codes_filename, 'r') as file:
-        csv_reader = csv.reader(file)
-        next(csv_reader, None)  # skip the headers
-        for row in csv_reader:
-            index = [elem["city_are_code"] for elem in regions].index(int(row[1]))
-            if regions[index] is not None:
-                regions[index]["reference_number_code"] = row[2]
-                region = Region.create_from_dict(regions[index])
-                if region:
-                    current_app.logger.info(region)
-                    db.session.add(region)
-        print("Committing regions")
-        db.session.commit()
-        print("Committed")
+    def read_csv_to_dict(filename, key_index, value_indices):
+        current_app.logger.info(f"Reading {filename} {key_index} {value_indices}")
+        with open(filename, 'r') as file:
+            csv_reader = csv.reader(file)
+            next(csv_reader, None)  # skip the headers
+            result = {}
+            for row in csv_reader:
+                if len(row) > max(key_index, *value_indices.values()):
+                    result[int(row[key_index])] = {k: row[v] for k, v in value_indices.items()}
+                else:
+                    current_app.logger.error(f"Row does not have enough elements: {row}")
+            return result
+
+    regions_data = read_csv_to_dict(regions_filename, 2, {"name": 0, "code": 1, "city_are_code": 2})
+    additional_data = read_csv_to_dict(regions_additional_data_filename, 1,
+                                       {"ais_code": 3, "eik": 4, "id": 5, "title": 6, "client_id": 7, "secret_key": 8})
+    codes_data = read_csv_to_dict(regions_codes_filename, 1, {"reference_number_code": 2})
+
+    for city_are_code, region in regions_data.items():
+        if city_are_code in additional_data:
+            region.update(additional_data[city_are_code])
+        if city_are_code in codes_data:
+            region.update(codes_data[city_are_code])
+        regions[city_are_code] = region
+
+    for region_info in regions.values():
+        current_app.logger.info(region_info)
+        region = Region.create_from_dict(region_info)
+        if region:
+            current_app.logger.info(region)
+            db.session.add(region)
+
+    print("Committing regions")
+    # db.session.commit()
+    print("Committed")
 
 
 @SeedBlueprint.cli.command('addresses-kad')
 def seed_addresses_from_kad():
     AddressKAD.delete_all()
-    address_kad_filename = os.path.join(current_app.static_folder, 'data', 'seeds', 'KAD-2023-01-10.csv')
+    address_kad_filename = os.path.join(current_app.static_folder, 'data', 'seeds', 'KAD-2024-10-02.csv')
+
+    current_app.logger.debug(f"address_kad_filename: {address_kad_filename}")
 
     with open(address_kad_filename, 'r') as file:
         csv_reader = csv.reader(file)
@@ -140,7 +157,9 @@ def seed_addresses_from_kad():
 @SeedBlueprint.cli.command('addresses-kra')
 def seed_addresses():
     AddressKRA.delete_all()
-    address_kra_filename = os.path.join(current_app.static_folder, 'data', 'seeds', 'KPA-2023-01-10.csv')
+    address_kra_filename = os.path.join(current_app.static_folder, 'data', 'seeds', 'KPA-2024-10-02.csv')
+
+    current_app.logger.debug(f"address_kra_filename: {address_kra_filename}")
 
     with open(address_kra_filename, 'r') as file:
         csv_reader = csv.reader(file)

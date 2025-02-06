@@ -13,7 +13,7 @@ class AddressService:
         sort_by = query_params.get("order_by", 'name_pa')
         sort_order = query_params.get("sort_order", 'asc')
         name_pa = query_params.get("name_pa", None)
-        addresses, page_count, total = AddressKRA.get_all(
+        addresses = AddressKRA.get_all(
             page_number,
             limit,
             sort_by,
@@ -21,8 +21,12 @@ class AddressService:
             name_pa=name_pa
         )
 
+        current_app.logger.debug("Addresses from KRA: %d", len(addresses))
+
         schema = AddressKRASchema()
-        addresses_with_regions = AddressKAD.get_regions_for_streets(schema.dump(addresses, many=True))
+        addresses_with_regions, page_count, total = AddressKAD.get_regions_for_streets(
+            schema.dump(addresses, many=True), page_number,
+            limit)
         # current_app.logger.info(addresses_with_regions)
         return schema.dump(addresses_with_regions, many=True), page_count, total
 

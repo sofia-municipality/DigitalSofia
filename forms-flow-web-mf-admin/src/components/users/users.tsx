@@ -91,12 +91,11 @@ const Users = React.memo((props: any) => {
     setActivePage(page);
     setSizePerPage(sizePerPage);
   };
-  const customTotal = (from, to, size) => (
+  const customTotal = (from, to, total) => (
     <span className="react-bootstrap-table-pagination-total" role="main">
-      <Translation>{(t) => t("Showing")}</Translation> {from}{" "}
-      <Translation>{(t) => t("to")}</Translation> {to}{" "}
-      <Translation>{(t) => t("of")}</Translation> {size}{" "}
-      <Translation>{(t) => t("Results")}</Translation>
+      <Translation>
+        {(t) => t("so.translations.table.total.text", { from, to, total })}
+      </Translation>
     </span>
   );
   const customDropUp = ({ options, currSizePerPage, onSizePerPageChange }) => {
@@ -201,7 +200,13 @@ const Users = React.memo((props: any) => {
               <div key={i} className="chip-element mr-2">
                 <OverlayTrigger
                   placement="bottom"
-                  overlay={ !KEYCLOAK_ENABLE_CLIENT_AUTH ? <Tooltip id="tooltip">{item?.path}</Tooltip> : <></>}
+                  overlay={
+                    !KEYCLOAK_ENABLE_CLIENT_AUTH ? (
+                      <Tooltip id="tooltip">{item?.path}</Tooltip>
+                    ) : (
+                      <></>
+                    )
+                  }
                 >
                   <span className="chip-label">
                     {item?.name}{" "}
@@ -306,7 +311,7 @@ const Users = React.memo((props: any) => {
                   <div className="done-button">
                     {roles.length > 0 && (
                       <Button onClick={addUserPermission}>
-                        <Translation>{(t) => t("Done")}</Translation> 
+                        <Translation>{(t) => t("Done")}</Translation>
                       </Button>
                     )}
                   </div>

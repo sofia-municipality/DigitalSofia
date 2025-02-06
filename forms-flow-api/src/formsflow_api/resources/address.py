@@ -86,7 +86,7 @@ class RegionsResource(Resource):
     )
     def get():
         """Retrieve regions"""
-        schema = RegionSchema()
+        schema = RegionSchema(only=("name", "code", "city_are_code", "reference_number_code"))
         return schema.dump(Region.get_all(), many=True)
 
 

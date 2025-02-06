@@ -1,9 +1,21 @@
+from flask import current_app
 import redis
 
 class RedisManager:
-    def __init__(self, connection_string):
-        # Parse the connection string
-        self.redis = redis.Redis.from_url(connection_string)
+    def __init__(self, connection_string, user:str=None, password:str=None):
+        
+        try:
+            # Parse the connection string
+            self.redis = redis.Redis.from_url(url=connection_string)
+            
+            if password is not None:
+                self.redis = redis.Redis.from_url(url=connection_string, password=password)
+
+            if not self.Ping():
+                raise Exception(f"Cannot connect to redis with connection string: '{connection_string}'")
+            
+        except Exception as ex:
+            raise Exception(f"Cannot connect to redis with connection string: '{connection_string}', error: {ex}")
     
     def ExistKey(self, key: str) -> bool:
         # Check if a key exists in Redis

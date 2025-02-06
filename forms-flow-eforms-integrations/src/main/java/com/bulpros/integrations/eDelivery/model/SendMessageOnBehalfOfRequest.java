@@ -8,15 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 @Data
-public class SendMessageOnBehalfOfRequest {
-    ArrayList<Integer> recipientProfileIds;
+public class SendMessageOnBehalfOfRequest extends  SendMessageRequest{
     String senderProfileId;
-    String subject;
-    String referencedOrn;
-    String additionalIdentifier;
-
-    String templateId;
-    @JsonProperty("fields")
-    HashMap<String, Object> fields;
-
 }

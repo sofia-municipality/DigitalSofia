@@ -12,8 +12,7 @@ import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
 import { toast } from "react-toastify";
 import DraftOperations from "./DraftOperations";
-import { HelperServices} from "@formsflow/service";
-
+import { HelperServices } from "@formsflow/service";
 
 let statusFilter, idFilter, nameFilter, modifiedDateFilter;
 
@@ -44,7 +43,11 @@ function timeFormatter(cell) {
 const nameFormatter = (cell) => {
   const name = startCase(cell);
   return (
-    <label className="text-truncate w-100" title={name} style={{ maxWidth: "600px" }}>
+    <label
+      className="text-truncate w-100"
+      title={name}
+      style={{ maxWidth: "600px" }}
+    >
       {startCase(name)}
     </label>
   );
@@ -112,7 +115,7 @@ export const columns = (
     {
       dataField: "formUrl",
       text: <Translation>{(t) => t("Action")}</Translation>,
-      formatter: (cell,row) => <DraftOperations cell={cell} row={row}/>,
+      formatter: (cell, row) => <DraftOperations cell={cell} row={row} />,
       headerStyle: () => {
         return { width: "20%" };
       },
@@ -142,6 +145,7 @@ export const columns = (
             calendarAriaLabel={t("Select the date")}
             dayAriaLabel="Select the day"
             clearAriaLabel="Click to clear"
+            locale="bg-BG"
           />
         );
       },

@@ -21,6 +21,8 @@ from .identity_request import IdentityRequest
 from .other_file import OtherFile
 from .mateus_payment_group import MateusPaymentGroup
 from .mateus_payment_request import MateusPaymentRequest
+from .user_status_transaction import UserStatusTransaction
+from .login_event import LoginEventModel
 
 __all__ = [
     "db",
@@ -32,7 +34,6 @@ __all__ = [
     "Draft",
     "DocumentTransaction",
     "DocumentStatus",
-    "SigningStatus",
     "FAQ",
     "AuthType",
     "Authorization",
@@ -46,5 +47,7 @@ __all__ = [
     "IdentityRequest",
     "OtherFile",
     "MateusPaymentGroup",
-    "MateusPaymentRequest"
+    "MateusPaymentRequest",
+    "UserStatusTransaction",
+    "LoginEventModel",
 ]

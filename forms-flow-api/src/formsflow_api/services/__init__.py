@@ -24,6 +24,7 @@ from formsflow_api.services.document_meta_data import DocumentMetaData
 from formsflow_api.services.acstre import AcstreService
 from formsflow_api.services.other_file_service import OtherFileService
 from formsflow_api.services.obligation import ObligationService
+from formsflow_api.services.payment_validation import PaymentValidationService
 
 __all__ = [
     "AcstreService",
@@ -48,5 +49,6 @@ __all__ = [
     "DocumentMetaData",
     "FormioServiceExtended",
     "OtherFileService",
-    "ObligationService"
+    "ObligationService",
+    "PaymentValidationService"
 ]

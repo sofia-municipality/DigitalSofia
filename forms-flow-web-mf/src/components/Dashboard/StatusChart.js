@@ -117,7 +117,7 @@ const ChartForm = React.memo((props) => {
                       height: "25px",
                     }}
                   ></span>
-                  <div className="legent-text">{entry.statusName}</div>
+                  <div className="legent-text">{t(entry.statusName)}</div>
                 </div>
               ))}
             </div>

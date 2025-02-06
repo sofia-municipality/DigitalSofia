@@ -3,6 +3,7 @@ package com.bulpros.integrations.eDelivery.service;
 import com.bulpros.integrations.eDelivery.model.SearchProfileResponse;
 import com.bulpros.integrations.eDelivery.model.SendMessageOnBehalfOfRequest;
 import com.bulpros.integrations.eDelivery.model.SendMessageOnBehalfOfResponse;
+import com.bulpros.integrations.eDelivery.model.SendMessageRequest;
 import com.bulpros.integrations.eDelivery.model.UploadFileOnBehalfOfResponse;
 import com.bulpros.integrations.esb.tokenManager.EsbTokenManager;
 import lombok.RequiredArgsConstructor;
@@ -52,9 +53,14 @@ public class EDeliveryService {
     @Value("${com.bulpros.eDelivery.send.message.on-behalf-of.url}")
     private String sendMessageOnBehalfOfUrl;
 
-
     @Value("${com.bulpros.eDelivery.upload.obo.blobs.url}")
     private String uploadOnBehalfOfBlobUrl;
+
+    @Value("${com.bulpros.eDelivery.send.message.url}")
+    private String sendMessageUrl;
+
+    @Value("${com.bulpros.eDelivery.upload.blobs.url}")
+    private String uploadBlobUrl;
 
     public SearchProfileResponse searchUserProfile(String identifier, String targetGroup) {
         HashMap<String, String> customHeaders = new HashMap<>();
@@ -72,6 +78,23 @@ public class EDeliveryService {
 
     public UploadFileOnBehalfOfResponse uploadFileOnBehalfOf(Exchange exchange) {
 
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = createEDeliveryBlobRequestBody(exchange, true);
+
+        ResponseEntity<UploadFileOnBehalfOfResponse> responseFileId = restTemplateEsb
+                .postForEntity(uploadOnBehalfOfBlobUrl, requestEntity, UploadFileOnBehalfOfResponse.class);
+        return responseFileId.getBody();
+    }
+
+    public UploadFileOnBehalfOfResponse uploadFile(Exchange exchange) {
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = createEDeliveryBlobRequestBody(exchange, false);
+
+        ResponseEntity<UploadFileOnBehalfOfResponse> responseFileId = restTemplateEsb
+                .postForEntity(uploadBlobUrl, requestEntity, UploadFileOnBehalfOfResponse.class);
+        return responseFileId.getBody();
+    }
+
+    private HttpEntity<MultiValueMap<String, Object>> createEDeliveryBlobRequestBody(Exchange exchange, boolean onBehalfOf) {
         Message message = exchange.getIn();
         String fileName = "";
         DataHandler dh = null;
@@ -83,9 +106,12 @@ public class EDeliveryService {
         } catch (MessagingException e){
             log.error("Could not extract file name from request!");
         }
-        String representedPersonId = message.getHeader("representedPersonId").toString();
+
         HashMap<String, String> customHeaders = new HashMap<>();
-        customHeaders.put("representedPersonId", representedPersonId);
+        if(onBehalfOf){
+            String representedPersonId = message.getHeader("representedPersonId").toString();
+            customHeaders.put("representedPersonId", representedPersonId);
+        }
         HttpHeaders headers = prepareHeaderWithBearerToken(customHeaders);
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
@@ -108,14 +134,8 @@ public class EDeliveryService {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("file", fileEntity);
 
-        HttpEntity<MultiValueMap<String, Object>> requestEntity =
-                new HttpEntity<>(body, headers);
-
-        ResponseEntity<UploadFileOnBehalfOfResponse> responseFileId = restTemplateEsb
-                .postForEntity(uploadOnBehalfOfBlobUrl, requestEntity, UploadFileOnBehalfOfResponse.class);
-        return responseFileId.getBody();
+        return new HttpEntity<>(body, headers);
     }
-
 
     public SendMessageOnBehalfOfResponse sendMessageOnBehalfOf(SendMessageOnBehalfOfRequest sendMessageOnBehalfOfRequest) {
         HashMap<String, String> customHeaders = new HashMap<>();
@@ -126,6 +146,18 @@ public class EDeliveryService {
 
         UriComponentsBuilder request = UriComponentsBuilder.fromHttpUrl(sendMessageOnBehalfOfUrl);
         HttpEntity<SendMessageOnBehalfOfRequest> body = new HttpEntity<>(sendMessageOnBehalfOfRequest, headers);
+        ResponseEntity<String> response =
+                restTemplateEsb.exchange(request.toUriString(), HttpMethod.POST, body, String.class);
+
+        return new SendMessageOnBehalfOfResponse(Integer.parseInt(response.getBody()));
+    }
+
+    public SendMessageOnBehalfOfResponse sendMessage(SendMessageRequest sendMessageRequest) {
+        HttpHeaders headers = prepareHeaderWithBearerToken(new HashMap<>());
+        headers.add("content-type", "application/json");
+
+        UriComponentsBuilder request = UriComponentsBuilder.fromHttpUrl(sendMessageUrl);
+        HttpEntity<SendMessageRequest> body = new HttpEntity<>(sendMessageRequest, headers);
         ResponseEntity<String> response =
                 restTemplateEsb.exchange(request.toUriString(), HttpMethod.POST, body, String.class);
 

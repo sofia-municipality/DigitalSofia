@@ -21,6 +21,7 @@ class DraftSchema(Schema):
     created_by = fields.Str(data_key="CreatedBy", dump_only=True)
     process_key = fields.Str(data_key="processKey", dump_only=True)
     process_name = fields.Str(data_key="processName", dump_only=True)
+    person_identifier = fields.Int(data_key="personIdentifier")
 
 
 class DraftListSchema(Schema):
@@ -44,3 +45,8 @@ class DraftListSchema(Schema):
     )
     sort_order = fields.Str(data_key="sortOrder", required=False)
     order_by = fields.Str(data_key="sortBy", required=False)
+
+
+class DraftCheckForChildApp(Schema):
+    service_id = fields.Str(data_key="serviceId")
+    person_identifier = fields.Str(data_key="personIdentifier")    

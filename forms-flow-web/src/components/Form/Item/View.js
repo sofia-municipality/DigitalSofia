@@ -217,38 +217,65 @@ const View = React.memo((props) => {
    * Draft is updated only if the form is updated from the last saved form data.
    */
   const saveDraft = (payload, exitType = exitType) => {
-    if (exitType === "SUBMIT") return;
-    let dataChanged = !isEqual(payload.data, lastUpdatedDraft.data);
-    if (dataChanged) {
-      if (draftSubmissionIdRef.current && isDraftCreatedRef.current) {
-        setDraftSaved(false);
-        dispatch(
-          draftUpdateMethod(payload, draftSubmissionIdRef.current, (err) => {
-            if (
-              exitType === "UNMOUNT" &&
-              !err &&
-              isAuthenticated &&
-              DRAFT_FEEDBACK_ENABLED
-            ) {
-              toast.success(t("Submission saved to draft."));
-            }
-            if (!err) {
-              setDraftSaved(true);
-            } else {
-              setDraftSaved(false);
-            }
-          })
-        );
-      } else if (
-        !isDraftCreated &&
-        !DRAFT_CREATE_ON_INIT_ENABLED &&
-        DRAFT_ENABLED
-      ) {
-        dispatch(draftCreateMethod(payload, setIsDraftCreated));
+    return new Promise((resolve, reject) => {
+      if (exitType === "SUBMIT") {
+        return resolve(); // Immediately resolve for submission case
       }
-    }
-  };
 
+      let dataChanged = !isEqual(payload.data, lastUpdatedDraft.data);
+      if (dataChanged) {
+        if (draftSubmissionIdRef.current && isDraftCreatedRef.current) {
+          setDraftSaved(false);
+          dispatch(draftUpdateMethod(payload, draftSubmissionIdRef.current))
+            .then(() => {
+              if (
+                exitType === "UNMOUNT" &&
+                isAuthenticated &&
+                DRAFT_FEEDBACK_ENABLED
+              ) {
+                toast.success(t("Submission saved to draft."));
+              }
+              setDraftSaved(true);
+              resolve(); // Resolve after draft update success
+            })
+            .catch((err) => {
+              if (err?.response?.data?.errorMessageTranslation) {
+                toast.error(t(err.response.data.errorMessageTranslation));
+              }
+              setDraftSaved(false);
+              reject(err); // Reject if there's an error
+            });
+        } else if (
+          !isDraftCreated &&
+          !DRAFT_CREATE_ON_INIT_ENABLED &&
+          DRAFT_ENABLED
+        ) {
+          // Handle draft creation case
+          dispatch(draftCreateMethod(payload, setIsDraftCreated))
+            .then(() => resolve()) // Resolve after creation
+            .catch((err) => {
+              let shouldShowError = false;
+              if (formRef?.current?.getComponent("shouldShowError")) {
+                shouldShowError = formRef?.current
+                  ?.getComponent("shouldShowError")
+                  .getValue();
+              }
+              if (
+                err?.response?.data?.errorMessageTranslation &&
+                shouldShowError
+              ) {
+                toast.error(t(err.response.data.errorMessageTranslation));
+              }
+              reject(err); // Reject if there's an error
+            });
+        } else {
+          resolve(); // Resolve if no data changed or no action is required
+        }
+      } else {
+        resolve(); // Resolve if no data changed
+      }
+    });
+  };
   useEffect(() => {
     if (draftSubmissionId) {
       draftSubmissionIdRef.current = draftSubmissionId;
@@ -369,14 +396,24 @@ const View = React.memo((props) => {
   }, [publicFormStatus]);
 
   const manuallySaveDraft = ({ submission }) => {
-    if (DRAFT_ENABLED) {
-      const { data } = submission;
-      const draftData = cloneDeep(data);
-      setDraftData(draftData);
-      draftRef.current = draftData;
-      let payload = getDraftReqFormat(validFormId, draftData);
-      saveDraft(payload, exitType.current);
-    }
+    return new Promise((resolve, reject) => {
+      if (DRAFT_ENABLED) {
+        const { data } = submission;
+        const draftData = cloneDeep(data);
+        setDraftData(draftData);
+        draftRef.current = draftData;
+        let payload = getDraftReqFormat(validFormId, draftData);
+        saveDraft(payload, exitType.current)
+          .then((res) => {
+            resolve(res);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      } else {
+        resolve();
+      }
+    });
   };
 
   if (isActive || isPublicStatusLoading || formStatusLoading) {

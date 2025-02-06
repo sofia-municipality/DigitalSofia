@@ -54,3 +54,10 @@ class ApplicationHistory(ApplicationAuditDateTimeMixin, BaseModel, db.Model):
                 cls.submitted_by,
             )
         )
+
+    @classmethod
+    def select_application_histories_by_application_id(cls, application_id: int) -> list[ApplicationHistory]:
+        query = cls.query.filter_by(application_id=application_id)
+        application_histories = query.all()
+        return application_histories
+    

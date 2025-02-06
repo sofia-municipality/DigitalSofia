@@ -14,34 +14,68 @@ import { useDevice } from "../../../../../../../customHooks";
 
 import styles from "./taxesPayCta.module.scss";
 
-const PayCta = ({ className }) => {
+const PayCta = ({ className, checkForInitiatedPayment }) => {
   const { fetch: payData, error, isLoading, resetError } = usePayTaxData();
+
   const { t } = useTranslation();
   const { isPhone } = useDevice();
   const { numberFormatter } = useGetFormatters();
   const { taxAccordionContext, setTaxAccordionContext } =
     useContext(TaxAccordionContext);
   const {
-    selectedItems = {},
+    transformedSelectedItems = {},
     isPaymentInProgress,
     taxSubject,
   } = taxAccordionContext;
-  const selectedTotal = Object.values(selectedItems).reduce((acc, item) => {
-    acc += item.total || 0;
-    return convertToDecimal(acc);
-  }, 0);
+  const selectedTotal = Object.values(transformedSelectedItems).reduce(
+    (acc, item) => {
+      acc += item.total || 0;
+      return convertToDecimal(acc);
+    },
+    0
+  );
 
-  const onClick = () => {
-    setTaxAccordionContext({ isPaymentInProgress: true });
-    payData({ selectedItems, taxSubject });
+  const reTransformDataForRequest = (paymentRequestData) => {
+    let requestData = {};
+    Object.entries(paymentRequestData).forEach(([type, batchData]) => {
+      requestData[type] = { total: batchData.total, data: {} };
+      Object.entries(batchData.batches).forEach(([key, value]) => {
+        if (!requestData[type].data[key.split("-")[0]]) {
+          requestData[type].data[key.split("-")[0]] = {};
+        }
+        if (!requestData[type].data[key.split("-")[0]].data) {
+          requestData[type].data[key.split("-")[0]].data = [];
+        }
+        if (!requestData[type].data[key.split("-")[0]].total) {
+          requestData[type].data[key.split("-")[0]].total = 0;
+        }
+        requestData[type].data[key.split("-")[0]].total =
+          batchData.batchesTotals[key.split("-")[0]];
+
+        requestData[type].data[key.split("-")[0]].data.push(value);
+      });
+    });
+    return requestData;
   };
+
+  const onClick = async () => {
+    checkForInitiatedPayment && (await checkForInitiatedPayment());
+    setTaxAccordionContext({ isPaymentInProgress: true });
+    // Transform data again to right data structure
+    const paymentRequestData = reTransformDataForRequest(
+      transformedSelectedItems
+    );
+    payData({ paymentRequestData, taxSubject });
+  };
+
+  const errorMessage = error?.response?.data?.key || "form.error.modal.message";
 
   return (
     <>
       {error ? (
         <Modal
           title={t("form.error.modal.title")}
-          message={t("form.error.modal.message")}
+          message={t(errorMessage)}
           borderColor="red"
           modalOpen={!!error}
           textAlign="center"

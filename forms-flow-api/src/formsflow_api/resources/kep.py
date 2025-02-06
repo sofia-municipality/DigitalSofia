@@ -165,7 +165,7 @@ class KEPSignResource(Resource):
             should_save_file = data.get("shouldSave")
             current_app.logger.debug(f"Should save - {should_save_file}")
             if should_save_file:
-                application_id = data.get("originalApplicationId")
+                application_id = data.get("applicationId")
                 if application_id:
                     other_file_service = OtherFileService()
                     additional_path = f"{application_id}/"

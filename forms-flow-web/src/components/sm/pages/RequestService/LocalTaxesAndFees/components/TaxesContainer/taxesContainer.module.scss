@@ -3,7 +3,7 @@
 @import "./../../../../../../../assets/styles/typography.scss";
 
 .localTaxesContainer {
-  background-color: #FAFAFA;
+  background-color: #fafafa;
   min-height: 100vh;
 
   display: flex;
@@ -19,8 +19,9 @@
 .localTaxesContent {
   width: 100%;
   max-width: 1200px;
-  background-color: #F5F5F5;
-  box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 2px 12px rgba(12, 14, 25, 0.12);
+  background-color: #f5f5f5;
+  box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24),
+    0px 2px 12px rgba(12, 14, 25, 0.12);
   min-height: 90vh;
   display: flex;
   justify-content: space-between;
@@ -60,7 +61,7 @@
 }
 
 .referenceFooter {
-  position: fixed;
+  position: sticky;
   bottom: 0;
   right: 0;
   width: 100%;
@@ -69,7 +70,13 @@
   background-color: $sm-white;
   padding-block: 20px;
   border-top: 1px solid transparent;
-  border-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, #DBD8DD 25.01%, #E2DFE3 74.99%, rgba(255, 255, 255, 0) 100%);
+  border-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    #dbd8dd 25.01%,
+    #e2dfe3 74.99%,
+    rgba(255, 255, 255, 0) 100%
+  );
   border-image-slice: 1;
 
   & > div {
@@ -79,7 +86,7 @@
 
   @include screen-size(medium) {
     margin-top: 30px;
-    position: relative;
+    position: sticky;
     padding-block: 30px;
   }
 }
@@ -99,7 +106,7 @@
 }
 
 .infoMessageWrapper {
-  margin-block: 10px;
+  margin-block: 20px 10px;
 }
 
 .infoMessageWrapperReference {
@@ -107,17 +114,24 @@
 }
 
 .infoMessage {
-  border: 1px solid $sm-red;
   background-color: $sm-white;
   padding: 20px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 15px;
-
+  border-radius: 2px;
   @include screen-size(medium) {
     align-items: center;
   }
+}
+
+.imRed {
+  border: 1px solid $sm-red;
+}
+
+.imGrey {
+  border: 1px solid $sm-indigo-0;
 }
 
 .infoMessageText {

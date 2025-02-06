@@ -77,6 +77,7 @@ class ApplicationDocumentProcessedRequest(Schema):
 
         self.other_files = other_files
 
+
 class ApplicationProcessingCreateRequest(Schema):
     """This class manages aggregated application response schema."""
 

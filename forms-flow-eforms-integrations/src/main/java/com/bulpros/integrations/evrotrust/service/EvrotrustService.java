@@ -2,12 +2,14 @@ package com.bulpros.integrations.evrotrust.service;
 
 import com.bulpros.integrations.evrotrust.model.CheckSignDocumentsStatusResponse;
 import com.bulpros.integrations.evrotrust.model.ConfirmPersonalDataRequest;
+import com.bulpros.integrations.evrotrust.model.DeliveryDocumentExtendedRequest;
 import com.bulpros.integrations.evrotrust.model.DeliveryDocumentRequest;
 import com.bulpros.integrations.evrotrust.model.DeliveryReceiptsStatusRequest;
 import com.bulpros.integrations.evrotrust.model.EvrotrustCheckSignDocumentsStatusRequest;
 import com.bulpros.integrations.evrotrust.model.EvrotrustConfirmPersonalDataRequest;
 import com.bulpros.integrations.evrotrust.model.EvrotrustConfirmPersonalDataResponse;
 import com.bulpros.integrations.evrotrust.model.EvrotrustDeliveryDocumentRequest;
+import com.bulpros.integrations.evrotrust.model.EvrotrustDeliveryDocumentResponse;
 import com.bulpros.integrations.evrotrust.model.EvrotrustDeliveryReceiptsStatusRequest;
 import com.bulpros.integrations.evrotrust.model.EvrotrustDeliveryReceiptsStatusResponse;
 import com.bulpros.integrations.evrotrust.model.EvrotrustSignDocumentDataRequest;
@@ -41,6 +43,7 @@ import org.bouncycastle.crypto.params.ParametersWithIV;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -240,51 +243,34 @@ public class EvrotrustService {
     }
 
 
-    public String deliverDocument(Exchange exchange) throws Exception {
+    public EvrotrustDeliveryDocumentResponse deliverDocument(DeliveryDocumentExtendedRequest extendedRequest) throws Exception {
         String key = Base64.getEncoder().encodeToString(publicKey.getInputStream().readAllBytes());
-        String contentType = exchange.getMessage().getHeader(Exchange.CONTENT_TYPE, String.class);
-
         MultiValueMap<String, String> fileMap = new LinkedMultiValueMap<>();
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         EvrotrustDeliveryDocumentRequest request = null;
-        byte[] file = null;
+        byte[] file = Base64.getDecoder().decode(extendedRequest.getDocumentToDeliver().getContent());
 
-        if (contentType != null && contentType.startsWith("multipart/form-data")) {
-            InputStream inputStream = exchange.getMessage().getBody(InputStream.class);
+        ContentDisposition contentDisposition = ContentDisposition
+                .builder("form-data")
+                .name("document")
+                .filename(extendedRequest.getDocumentToDeliver().getName())
+                .build();
+        fileMap.add(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString());
+        HttpEntity<byte[]> fileEntity = new HttpEntity<>(file, fileMap);
+        body.add("document", fileEntity);
 
-            MimeMultipart multipart = new MimeMultipart(new ByteArrayDataSource(inputStream, contentType));
-            for (int i = 0; i < multipart.getCount(); i++) {
-                BodyPart part = multipart.getBodyPart(i);
-                if (part.getFileName() != null) {
-                    String filename = part.getFileName();
-                    InputStream fileContent = part.getInputStream();
-                    ContentDisposition contentDisposition = ContentDisposition
-                            .builder("form-data")
-                            .name("document")
-                            .filename(filename)
-                            .build();
-                    fileMap.add(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString());
-                    file = fileContent.readAllBytes();
-                    HttpEntity<byte[]> fileEntity = new HttpEntity<>(file, fileMap);
-                    body.add("document", fileEntity);
-                } else {
-                    String fieldValue = part.getContent().toString();
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    DeliveryDocumentRequest deliveryDocumentRequest = objectMapper.readValue(fieldValue,
-                            DeliveryDocumentRequest.class);
-                    request = new EvrotrustDeliveryDocumentRequest(key, vendorNumber, vendorAPIKey, deliveryDocumentRequest, file);
-                    body.add("data", request);
-                }
-            }
-        }
-            HttpHeaders headers = getRequestHeader(request);
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        ModelMapper  modelMapper = new ModelMapper();
+        DeliveryDocumentRequest deliveryDocumentRequest = modelMapper.map(extendedRequest, DeliveryDocumentRequest.class);
+        request = new EvrotrustDeliveryDocumentRequest(key, vendorNumber, vendorAPIKey, deliveryDocumentRequest, file);
+        body.add("data", request);
 
-            HttpEntity<MultiValueMap<String, Object>> requestEntity
-                    = new HttpEntity<>(body, headers);
-                ResponseEntity<String> responseFileId = restTemplate
-                        .postForEntity(evrotrustUrl + documentOnlineUrl, requestEntity, String.class);
-                return responseFileId.getBody();
+        HttpHeaders headers = getRequestHeader(request);
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+        ResponseEntity<EvrotrustDeliveryDocumentResponse> responseFileId = restTemplate
+                .postForEntity(evrotrustUrl + documentOnlineUrl, requestEntity, EvrotrustDeliveryDocumentResponse.class);
+        return responseFileId.getBody();
     }
 
     public EvrotrustDeliveryReceiptsStatusResponse getDeliveryReceiptsStatus(DeliveryReceiptsStatusRequest deliveryReceiptsStatusRequest) throws Exception {

@@ -68,8 +68,12 @@ export const capitalizeFirstLetter = (string) => {
   return string.charAt(0).toUpperCase() + string.slice(1);
 };
 
-export const convertToDecimal = (value, fractionDigits = 2) =>
-  Number(value.toFixed(fractionDigits));
+export const convertToDecimal = (value, fractionDigits = 2) => {
+  if (Math.sign(value) < 0) {
+    value = 0;
+  }
+  return Number(value.toFixed(fractionDigits));
+};
 
 export const MOBILE_APP_TYPES = {
   BOTH: "BOTH",

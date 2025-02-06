@@ -192,6 +192,9 @@ class BPMService(BaseBPMService):
         return cls.post_request(url, token, payload=data)
     
     def create_process_variable(cls, process_instance_id, token, variable_name, payload):
+        current_app.logger.info("create_process_variable")
+        current_app.logger.info(cls._get_url_(BPMEndpointType.DEFAULT_PROCESS_INSTANCE))
+        current_app.logger.info(process_instance_id)
         url = (
             cls._get_url_(BPMEndpointType.DEFAULT_PROCESS_INSTANCE)
             + process_instance_id
@@ -293,48 +296,54 @@ class BPMService(BaseBPMService):
             - Filter by Tenant ID: tenantIdIn={tenantId}
             - Filter by processDefinitionId: Process_sofiade:66:ab532399-cf36-11ee-80ed-e20c45ea0eb8
         """
+        try:
+            if not personIdentifier:
+                current_app.logger.error("personIdentifier is required for BPMService.get_apps_not_completed_for_child")
+                return {
+                    "success": False,
+                    "error": "personIdentifier is required for BPMService.get_apps_not_completed_for_child"
+                }
 
-        if not personIdentifier:
-            current_app.logger.error("personIdentifier is required for BPMService.get_apps_not_completed_for_child")
-            return {
-                "success": False,
-                "error": "personIdentifier is required for BPMService.get_apps_not_completed_for_child"
+
+            if not tenantId:
+                current_app.logger.error("tenantId is required for BPMService.get_apps_not_completed_for_child")
+                return {
+                    "success": False,
+                    "error": "tenantId is required for BPMService.get_apps_not_completed_for_child"
+                }            
+
+            if not definitionId:
+                current_app.logger.error("definitionId is required for BPMService.get_apps_not_completed_for_child")
+                return {
+                    "success": False,
+                    "error": "definitionId is required for BPMService.get_apps_not_completed_for_child"
+                }            
+
+            # pnobg-9308241146
+            egn = personIdentifier[6:]
+
+            if len(egn) != 10:
+                current_app.logger.error(f"Invalid EGN is provided: {egn}")
+                return {
+                    "success": False,
+                    "error": f"Invalid EGN is provided: {egn}"
+                }   
+
+            url = cls._get_url_(BPMEndpointType.DEFAULT_PROCESS_INSTANCE) + f"?variables=personIdentifier_like_%-{egn},applicationStatus_neq_Completed,behalf_eq_child&&tenantIdIn={tenantId}&processKey={definitionId}"
+
+            current_app.logger.debug(url)
+
+            data = cls.get_request(url, token = None)
+
+            current_app.logger.warning(f"get_apps_not_completed_for_child egn:{egn}: {data}") 
+
+            return{
+                "success": True,
+                "data": data
             }
-
-
-        if not tenantId:
-            current_app.logger.error("tenantId is required for BPMService.get_apps_not_completed_for_child")
-            return {
+        
+        except Exception as ex:
+            return{
                 "success": False,
-                "error": "tenantId is required for BPMService.get_apps_not_completed_for_child"
-            }            
-
-        if not definitionId:
-            current_app.logger.error("definitionId is required for BPMService.get_apps_not_completed_for_child")
-            return {
-                "success": False,
-                "error": "definitionId is required for BPMService.get_apps_not_completed_for_child"
-            }            
-
-        # pnobg-9308241146
-        egn = personIdentifier[6:]
-
-        if len(egn) != 10:
-            current_app.logger.error(f"Invalid EGN is provided: {egn}")
-            return {
-                "success": False,
-                "error": f"Invalid EGN is provided: {egn}"
-            }   
-
-        url = cls._get_url_(BPMEndpointType.DEFAULT_PROCESS_INSTANCE) + f"?variables=personIdentifier_like_%-{egn},applicationStatus_neq_Completed,behalf_eq_child&&tenantIdIn={tenantId}&processDefinitionId={definitionId}"
-
-        current_app.logger.debug(url)
-
-        data = cls.get_request(url, token = None)
-
-        current_app.logger.debug(data) 
-
-        return{
-            "success": True,
-            "data": data
-        }
+                "error": ex,
+            }

@@ -163,11 +163,11 @@ class ExternalServicesServeFile(Resource):
             # roles = realm_access.get("roles", [])
             # current_app.logger.debug(user.user_name)
             # current_app.logger.debug(roles)
-            # if "axterAdmin" not in roles:
+            # if "acstreAdmin" not in roles:
             #     return (
             #         {
             #             "type": "Invalid Role Error",
-            #             "message": "Authorized Account is not an axterAdmin."
+            #             "message": "Authorized Account is not an acstreAdmin."
             #         },
             #         HTTPStatus.UNAUTHORIZED
             #     )

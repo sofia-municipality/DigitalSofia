@@ -14,7 +14,8 @@ public class ConfirmPersonalDataRequest extends BaseModelConfirmPersonalDataRequ
     @Getter
     @Setter
     public static class Document {
-        private Date dateExpire;
+        private Date    dateExpire;
+        private String  language;
     }
 
 }

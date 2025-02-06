@@ -4,10 +4,10 @@
 
 .taxesAccordion {
   background-color: $sm-white;
-  box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24), 0px 1px 4px rgba(12, 14, 25, 0.08);
+  box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24),
+    0px 1px 4px rgba(12, 14, 25, 0.08);
   border-radius: 2px;
   border: 1px solid transparent;
-
   padding: 20px 10px;
 
   &.selected {
@@ -15,13 +15,17 @@
   }
 
   @include screen-size(medium) {
-    background-color: #FCFCFC;
+    background-color: #fcfcfc;
 
-    &:hover, &.expanded {
+    &:hover,
+    &.expanded {
       background-color: $sm-white;
 
       & .totalLabel.showOnHover {
         display: block;
+      }
+      .taxContentWrapper .taxRecord {
+        background-color: #ffffff;
       }
     }
   }
@@ -69,7 +73,7 @@
 }
 
 .currency {
-  font-family: 'Sofia Sans';
+  font-family: "Sofia Sans";
   font-style: normal;
   font-weight: 400;
   font-size: 14px;
@@ -79,7 +83,7 @@
 }
 
 .selectedTotal {
-  color: $sm-red-6 !important
+  color: $sm-red-6 !important;
 }
 
 .selectedTotalWrapper {

@@ -483,3 +483,8 @@ export const CHECK_ASSURANCE_LEVEL_ENABLED =
   CHECK_ASSURANCE_LEVEL_VARIABLE === true
     ? true
     : false;
+
+export const SERVICES_IDS = {
+  changeofcurrentaddress: "2107",
+  changeofpernamentaddress: "2079",
+};

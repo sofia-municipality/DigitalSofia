@@ -16,6 +16,7 @@ import {
   MULTITENANCY_ENABLED,
   SM_NEW_DESIGN_ENABLED,
   SERVICES_NAMES,
+  SERVICES_IDS,
 } from "../../../../../constants/constants";
 import { fetchBPMFormList } from "../../../../../apiManager/services/bpmFormServices";
 import { useNavigateTo, useLogin } from "../../../../../customHooks";
@@ -24,8 +25,9 @@ import SmAnimatedCta, {
   AnimationDirection,
 } from "../../../components/buttons/SmAnimatedCta";
 import { useFormRestrictionsCheck } from "../../../../../customHooks";
-
+import { draftChildEligibilityCheck } from "../../../../../apiManager/services/draftService";
 import styles from "./addressRegistration.module.scss";
+import Modal from "../../../components/Modal/Modal";
 
 const sections = [
   {
@@ -64,6 +66,10 @@ const AddressRegistration = () => {
   const navigateToForm = useNavigateTo(
     `${baseUrl}?${FORM_PREFILLED_DATA_INPUT_NAME}=:formPreffiledInputValue`
   );
+  const user = useSelector((state) => state.user.userDetail);
+
+  const [isChildEligibilityModalTriggered, setChildEligibilityModalTriggered] =
+    useState(false);
 
   const { search } = useLocation();
 
@@ -124,7 +130,7 @@ const AddressRegistration = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onCtaClick = async (formPath, inputValue) => {
+  const doRegularFlow = async (formPath, inputValue) => {
     let fullFormPath = formPath;
     if (MULTITENANCY_ENABLED && tenantId) {
       fullFormPath = `${tenantId}-${fullFormPath}`;
@@ -147,9 +153,45 @@ const AddressRegistration = () => {
     }
   };
 
+  const checkIfAlreadyChildEligibilityStarted = async (
+    formPath,
+    inputValue
+  ) => {
+    const dataPayload = {
+      serviceId: SERVICES_IDS[formPath],
+      personIdentifier: user.personIdentifier?.replace("PNOBG-", ""),
+    };
+    try {
+      const res = await draftChildEligibilityCheck(dataPayload);
+      if (res.status === 200) {
+        await doRegularFlow(formPath, inputValue);
+      }
+    } catch (error) {
+      if (
+        error &&
+        error.response &&
+        error.response.status &&
+        error.response.status === 422
+      ) {
+        handleModal(true);
+      }
+    }
+  };
+
+  const onCtaClick = async (formPath, inputValue) => {
+    if (inputValue === "myBehalf") {
+      await checkIfAlreadyChildEligibilityStarted(formPath, inputValue);
+    } else {
+      await doRegularFlow(formPath, inputValue);
+    }
+  };
+
+  const handleModal = (value) => {
+    setChildEligibilityModalTriggered(value);
+  };
+
   const CtaComponent = SM_NEW_DESIGN_ENABLED ? SmAnimatedCta : SmCta;
   const ctaClassName = SM_NEW_DESIGN_ENABLED ? styles.ctaNewDesign : styles.cta;
-
   return (
     <PageContainer>
       <div className={styles.addressWrapper}>
@@ -206,7 +248,7 @@ const AddressRegistration = () => {
                         accessibilityProps={{
                           "aria-label": t(
                             // eslint-disable-next-line
-                          `screen.reader.addressRegistration.cta.primaryAddress.${section[FORM_PREFILLED_DATA_INPUT_NAME]}`
+                            `screen.reader.addressRegistration.cta.primaryAddress.${section[FORM_PREFILLED_DATA_INPUT_NAME]}`
                           ),
                         }}
                         onClick={() =>
@@ -250,6 +292,14 @@ const AddressRegistration = () => {
             <Loading />
           )}
         </div>
+        <Modal
+          modalOpen={isChildEligibilityModalTriggered}
+          description={t("addressRegistratrion.childEligibilityCheck")}
+          showNo={false}
+          onYes={() => {
+            handleModal(false);
+          }}
+        />
       </div>
     </PageContainer>
   );

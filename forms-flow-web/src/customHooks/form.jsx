@@ -33,7 +33,7 @@ export const useEnrichForm = () => {
   const deviceSize = useDevice();
 
   const enrichForm = useCallback(
-    (formRef, saveDraft = () => {}, draftId) => {
+    (formRef, saveDraft = () => Promise.resolve(), draftId) => {
       const searchParams = querystring.parse(search.replace("?", "")) || {};
       if (formRef?.current) {
         if (draftId) {

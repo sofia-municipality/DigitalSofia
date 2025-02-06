@@ -1,0 +1,4 @@
+{
+    "PAYMENT_RESULT": "mdt_payment_status-body-${language}.mako",
+    "MATEUS_NOTIFICATION":"mdt_mateus-notification-failed.mako"
+}

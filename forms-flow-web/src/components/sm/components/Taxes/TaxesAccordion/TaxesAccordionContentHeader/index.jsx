@@ -5,6 +5,7 @@ import { cloneDeep } from "lodash";
 import { useGetFormatters } from "../hooks";
 import { TAX_CATEGORIES } from "../../../../../../constants/constants";
 import { convertToDecimal } from "../../../../../../utils";
+import { filter } from "../../utils";
 import TaxesCheckbox from "../../TaxesCheckbox";
 import { TaxAccordionContext } from "../context";
 import styles from "./taxesAccordionContentHeader.module.scss";
@@ -20,44 +21,137 @@ const TaxesAccordionContentHeader = ({
   const { numberFormatter } = useGetFormatters();
   const { taxAccordionContext = {}, setTaxAccordionContext } =
     useContext(TaxAccordionContext);
-  const { selectedItems = {}, allItems = {} } = taxAccordionContext;
-  const batchData = allItems[type]?.data?.[batchNumber]?.data;
-  const batchDataTotal = allItems[type]?.data?.[batchNumber]?.total;
+  let {
+    transformedSelectedItems = {},
+    allItems = {},
+    showCheckBoxModalOnce,
+  } = taxAccordionContext;
+
+  const batchDataTotal = Number(
+    transformedSelectedItems[type]?.batchesTotals[batchNumber]
+  );
 
   const shouldDisableCheckbox = () => {
-    const batchData = allItems[type]?.data?.[batchNumber]?.data;
-    return !batchData?.length;
+    const batchDataLength = Object.keys(allItems[type]?.batches).length;
+    return !batchDataLength;
   };
 
   const isChecked = () => {
-    const selectedBatchData = selectedItems[type]?.data?.[batchNumber]?.data;
-    const batchData = allItems[type]?.data?.[batchNumber]?.data;
-    return batchData?.length === selectedBatchData?.length;
+    const selectedBatchData = filter(
+      transformedSelectedItems[type]?.batches,
+      (key) => key.includes(batchNumber)
+    );
+    const batchData = filter(allItems[type]?.batches, (key) =>
+      key.includes(batchNumber)
+    );
+    return (
+      Object.keys(batchData).length === Object.keys(selectedBatchData).length
+    );
+  };
+
+  const clearAndReCalculateTotals = (newSelectedItems) => {
+    // Clean current totals for each batch number
+    Object.keys(newSelectedItems[type].batchesTotals).forEach((key) => {
+      newSelectedItems[type].batchesTotals[key] = 0;
+    });
+
+    // Clean group total
+    newSelectedItems[type].total = 0;
+
+    // Calculate all batches totals
+    Object.entries(newSelectedItems[type].batches).forEach(([, value]) => {
+      newSelectedItems[type].batchesTotals[value.partidaNo] += convertToDecimal(
+        value.residual + value.interest
+      );
+    });
+
+    // Calculate group total
+    Object.entries(newSelectedItems[type].batchesTotals).forEach(
+      ([, value]) => {
+        newSelectedItems[type].total += convertToDecimal(value);
+      }
+    );
+
+    return newSelectedItems;
   };
 
   const onChange = (e) => {
     const isChecked = e.target.checked;
-    const newSelectedItems = cloneDeep(selectedItems);
+    let newSelectedItems = cloneDeep(transformedSelectedItems);
 
     if (!isChecked) {
-      delete newSelectedItems[type].data[batchNumber].data;
-      newSelectedItems[type].data[batchNumber].total = 0;
-      newSelectedItems[type].total = convertToDecimal(
-        newSelectedItems[type].total - batchDataTotal
-      );
-    } else {
-      const alreadySelectedAmount =
-        selectedItems[type]?.data?.[batchNumber]?.total || 0;
+      // Lowest payOrder in the unselected batch group
+      const lowestPayOrderInDeselectedBatchGroup =
+        newSelectedItems[type].batchGroupPayOrderList[batchNumber][0]
+          .payOrder || 0;
 
-      newSelectedItems[type].data[batchNumber].data = cloneDeep(batchData);
-      newSelectedItems[type].data[batchNumber].total = batchDataTotal;
-      newSelectedItems[type].total = convertToDecimal(
-        newSelectedItems[type].total +
-          convertToDecimal(batchDataTotal - alreadySelectedAmount)
-      );
+      // If all batches are in the current year select only in the current batch group
+      if (allItems[type].onlyCurrentYearItemsForEachBatchGroup[batchNumber]) {
+        newSelectedItems[type].batches = filter(
+          newSelectedItems[type]?.batches,
+          (key, value) => {
+            return value.partidaNo !== batchNumber;
+          }
+        );
+      } else {
+        // Filter all batch groups based on deselected item's payOrder
+        newSelectedItems[type].batches = filter(
+          newSelectedItems[type]?.batches,
+          (key, value) => {
+            return (
+              value.payOrder < lowestPayOrderInDeselectedBatchGroup &&
+              value.partidaNo !== batchNumber
+            );
+          }
+        );
+      }
+
+      newSelectedItems = clearAndReCalculateTotals(newSelectedItems);
+    } else {
+      // Highest payOrder in the selected batch group
+      const highestPayOrderInSelectedBatchGroup =
+        newSelectedItems[type].batchGroupPayOrderList[batchNumber][
+          newSelectedItems[type].batchGroupPayOrderList[batchNumber].length - 1
+        ].payOrder || 0;
+
+      // If all batches are in the current year select only in the current batch group
+      if (allItems[type].onlyCurrentYearItemsForEachBatchGroup[batchNumber]) {
+        filter(allItems[type]?.batches, (key, value) => {
+          if (value.partidaNo === batchNumber) {
+            newSelectedItems[type].batches[key] = value;
+          }
+        });
+      } else {
+        // Filter all batch groups based on selected item's payOrder
+        newSelectedItems[type].batches = filter(
+          allItems[type]?.batches,
+          (key, value) => {
+            return value.payOrder <= highestPayOrderInSelectedBatchGroup;
+          }
+        );
+      }
+
+      newSelectedItems = clearAndReCalculateTotals(newSelectedItems);
     }
 
-    setTaxAccordionContext({ selectedItems: cloneDeep(newSelectedItems) });
+    let incrementShowCheckBoxModalOnce = showCheckBoxModalOnce;
+
+    // Modal should be shown:
+    // if there is more than one batch group
+    // if current batch group contains not only current year batches
+    if (
+      !(
+        allItems[type].onlyOneBatchForType ||
+        allItems[type].onlyCurrentYearItemsForEachBatchGroup[batchNumber]
+      )
+    ) {
+      ++incrementShowCheckBoxModalOnce;
+    }
+
+    setTaxAccordionContext({
+      transformedSelectedItems: cloneDeep(newSelectedItems),
+      showCheckBoxModalOnce: incrementShowCheckBoxModalOnce,
+    });
   };
 
   return (
@@ -68,11 +162,22 @@ const TaxesAccordionContentHeader = ({
         {[TAX_CATEGORIES.REAL_ESTATE, TAX_CATEGORIES.HOUSEHOLD_WASTE].includes(
           type
         ) ? (
-          <div className={styles.taxRecordIdentifierLabel}>
-            {t("localTaxes.reference.category.content.header.address")}
+          <>
+            <div className={styles.taxRecordIdentifierLabel}>
+              {t("localTaxes.reference.category.content.header.address")}
+            </div>
+            <div className={styles.taxRecordIdentifier}>{identifier}</div>
+          </>
+        ) : [TAX_CATEGORIES.VEHICLE].includes(type) ? (
+          <div className={styles.regNumberContainer}>
+            <span className={styles.regNumber}>
+              <span
+                className={`sm-body-2-regular ${styles.regNumberBlueLine}`}
+              ></span>
+              <span className={styles.regNumberText}>{identifier}</span>
+            </span>
           </div>
         ) : null}
-        <div className={styles.taxRecordIdentifier}>{identifier}</div>
       </div>
       {showTotal && (
         <div className="col-12 col-md-7 d-flex justify-content-end align-items-center">
@@ -88,7 +193,6 @@ const TaxesAccordionContentHeader = ({
               className={styles.checkbox}
               onChange={onChange}
               isChecked={isChecked}
-              shouldDisable={false}
               selectEnabled={selectEnabled}
               forceDisable={shouldDisableCheckbox()}
             />

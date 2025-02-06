@@ -62,7 +62,7 @@ const Dashboard = React.memo(() => {
 
   const activePage = useSelector((state) => state.metrics.pageno);
   const limit = useSelector((state) => state.metrics.limit);
-  const totalItems = useSelector((state) => state.metrics.totalItems);
+  const total = useSelector((state) => state.metrics.totalItems);
   const pageRange = useSelector((state) => state.metrics.pagination.numPages);
   const redirectUrl = MULTITENANCY_ENABLED ? `/tenant/${tenantKey}/` : "/";
   const submissionStatusCountLoader = useSelector(
@@ -73,9 +73,9 @@ const Dashboard = React.memo(() => {
   );
   const dateRange = useSelector((state) => state.metrics.submissionDate);
   const [selectedLimitValue, setSelectedLimitValue] = useState(limit);
-  let numberofSubmissionListFrom =
-      activePage === 1 ? 1 : ((activePage - 1) * limit) + 1;
-  let numberofSubmissionListTo = activePage === 1 ? limit : limit * activePage;
+  let from =
+    activePage === 1 ? 1 : (activePage - 1) * (limit + 1);
+  let to = activePage === 1 ? limit : limit * activePage;
   const [isAscending, setIsAscending] = useState(true);
   const [searchBy, setSearchBy] = useState("created");
   const [sortsBy, setSortsBy] = useState("formName");
@@ -92,7 +92,7 @@ const Dashboard = React.memo(() => {
     { value: "9", label: "9" },
     { value: "12", label: "12" },
     { value: "30", label: "30" },
-    { value: totalItems, label: "All" },
+    { value: total, label: "All" },
   ];
   // Function to handle search text
   const handleSearch = () => {
@@ -115,7 +115,7 @@ const Dashboard = React.memo(() => {
   };
   // Function to handle page limit change for submission data
   const handleLimitChange = (limit) => {
-    const newPageNumber = Math.ceil(totalItems / limit);
+    const newPageNumber = Math.ceil(total / limit);
     if (newPageNumber < activePage) {
       dispatch(setMetricsSubmissionPageChange(newPageNumber));
     }
@@ -139,8 +139,29 @@ const Dashboard = React.memo(() => {
     setShowClearButton(searchText);
     setSelectedLimitValue(limit);
     /*eslint max-len: ["error", { "code": 170 }]*/
-    dispatch(fetchMetricsSubmissionCount(fromDate, toDate, searchBy, searchText, activePage, limit, sortsBy, sortOrder, (err, data) => { }));
-  }, [dispatch, activePage, limit, sortsBy, sortOrder, dateRange, searchText, searchBy]);
+    dispatch(
+      fetchMetricsSubmissionCount(
+        fromDate,
+        toDate,
+        searchBy,
+        searchText,
+        activePage,
+        limit,
+        sortsBy,
+        sortOrder,
+        (err, data) => {}
+      )
+    );
+  }, [
+    dispatch,
+    activePage,
+    limit,
+    sortsBy,
+    sortOrder,
+    dateRange,
+    searchText,
+    searchBy,
+  ]);
 
   useEffect(() => {
     setSHowSubmissionData(submissionsList[0]);
@@ -182,7 +203,7 @@ const Dashboard = React.memo(() => {
     return [
       {
         name: "Metrics",
-        count: totalItems,
+        count: total,
         onClick: () => dispatch(push(`${redirectUrl}metrics`)),
         icon: "line-chart",
       },
@@ -275,6 +296,7 @@ const Dashboard = React.memo(() => {
                 dayAriaLabel="Select the day"
                 clearAriaLabel="Clear value"
                 clearIcon={null}
+                locale="bg-BG"
               />
               <div className="ml-3">
                 {isAscending ? (
@@ -357,18 +379,22 @@ const Dashboard = React.memo(() => {
                   </DropdownButton>
                 </span>
                 <span className="ml-2 mb-3">
-                  {t("Showing")} {numberofSubmissionListFrom} {t("to")}{" "}
-                  {numberofSubmissionListTo > totalItems
-                    ? totalItems
-                    : numberofSubmissionListTo}{" "}
-                  {t("of")} {totalItems}
+                  <Translation>
+                    {(t) =>
+                      t("so.translations.table.total.text", {
+                        from,
+                        to,
+                        total,
+                      })
+                    }
+                  </Translation>
                 </span>
               </div>
               <div className="d-flex align-items-center">
                 <Pagination
                   activePage={activePage}
                   itemsCountPerPage={limit}
-                  totalItemsCount={totalItems}
+                  totalItemsCount={total}
                   pageRangeDisplayed={pageRange < 5 ? pageRange : 5}
                   itemClass="page-item"
                   linkClass="page-link"
@@ -377,38 +403,36 @@ const Dashboard = React.memo(() => {
               </div>
             </div>
           ) : null}
-           {metricsStatusLoadError && <LoadError />}
-        {noOfApplicationsAvailable > 0 && (
-          <div className="col-12">
-            {isMetricsStatusLoading || metricsDateRangeLoader ? (
-              <Loading />
-            ) : (
-              <Modal
-                show={show}
-                size="lg"
-                onHide={() => setShow(false)}
-                aria-labelledby="example-custom-modal-styling-title"
-              >
-                <Modal.Header closeButton>
-                  <Modal.Title id="example-custom-modal-styling-title">
-                    {t("Submission Status")}
-                  </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <StatusChart
-                    submissionsStatusList={submissionsStatusList}
-                    submissionData={showSubmissionData}
-                    getStatusDetails={getStatusDetails}
-                    submissionStatusCountLoader={submissionStatusCountLoader}
-                  />
-                </Modal.Body>
-              </Modal>
-            )}
-          </div>
-        )}
+          {metricsStatusLoadError && <LoadError />}
+          {noOfApplicationsAvailable > 0 && (
+            <div className="col-12">
+              {isMetricsStatusLoading || metricsDateRangeLoader ? (
+                <Loading />
+              ) : (
+                <Modal
+                  show={show}
+                  size="lg"
+                  onHide={() => setShow(false)}
+                  aria-labelledby="example-custom-modal-styling-title"
+                >
+                  <Modal.Header closeButton>
+                    <Modal.Title id="example-custom-modal-styling-title">
+                      {t("Submission Status")}
+                    </Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <StatusChart
+                      submissionsStatusList={submissionsStatusList}
+                      submissionData={showSubmissionData}
+                      getStatusDetails={getStatusDetails}
+                      submissionStatusCountLoader={submissionStatusCountLoader}
+                    />
+                  </Modal.Body>
+                </Modal>
+              )}
+            </div>
+          )}
         </div>
-
-       
 
         <Route path={"/metrics/:notAvailable"}>
           {" "}

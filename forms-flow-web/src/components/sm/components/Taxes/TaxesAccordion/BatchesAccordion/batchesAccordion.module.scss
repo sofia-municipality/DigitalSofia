@@ -1,0 +1,84 @@
+@import "../../../../../../assets/styles/mixins.scss";
+@import "../../../../../../assets/styles/themes.scss";
+@import "../../../../../../assets/styles/typography.scss";
+
+.accordion:hover {
+  background-color: #ffffff;
+}
+
+.innerContent {
+  box-shadow: 0px 0px 1px rgba(12, 14, 25, 0.24),
+    0px 1px 4px rgba(12, 14, 25, 0.08);
+  border-radius: 2px;
+}
+
+.accordionCard {
+  padding: 20px;
+  background-color: #ffffff !important;
+  &:hover {
+    background-color: #ffffff;
+  }
+}
+
+.accordionCta {
+  background-color: transparent !important;
+  border: none !important;
+  text-align: start;
+  width: 100%;
+
+  font-family: "Sofia Sans";
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 29px;
+  padding: 0 !important;
+
+  &:focus {
+    box-shadow: none !important;
+  }
+}
+
+.headerTitle {
+  font-family: Sofia Sans;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 19.6px;
+  text-align: left;
+  color: $sm-indigo-4;
+
+  @include screen-size(medium) {
+    font-size: 14px;
+  }
+}
+
+.icon {
+  color: $sm-indigo-dark;
+}
+
+.accordionCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  &:hover {
+    background-color: #ffffff;
+  }
+}
+
+.accordionBody {
+  background-color: #fcfcfc !important;
+
+  margin-top: 10px;
+  padding: 0 !important;
+
+  font-family: "Sofia Sans";
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 140%;
+
+  color: $sm-indigo-dark;
+  @include screen-size(medium) {
+    font-size: 16px;
+  }
+  &:hover {
+    background-color: #ffffff;
+  }
+}

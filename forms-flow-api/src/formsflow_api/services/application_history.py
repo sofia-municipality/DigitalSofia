@@ -37,3 +37,11 @@ class ApplicationHistoryService:
             )
             history_response.append(history)
         return history_response
+    
+    @staticmethod
+    def delete_application_history_by_application_id(application_id: int) -> None:
+        application_histories = ApplicationHistory.select_application_histories_by_application_id(application_id)
+        if application_histories:
+            for app_hist in application_histories:
+                current_app.logger.debug(f"Delete application history {app_hist.id}")
+                app_hist.delete()

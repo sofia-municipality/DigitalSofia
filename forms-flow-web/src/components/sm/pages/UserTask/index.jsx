@@ -37,8 +37,11 @@ import {
 import { getCustomSubmission } from "../../../../apiManager/services/FormServices";
 import { getFormioRoleIds } from "../../../../apiManager/services/userservices";
 import { useGetBaseUrl } from "../../../../customHooks";
+import Modal from "../../components/Modal/Modal";
+import { useTranslation } from "react-i18next";
 
 const UserTask = React.memo(() => {
+  const { t } = useTranslation();
   const { taskId } = useParams();
   const {
     fetch: checkApplicationPermissions,
@@ -211,6 +214,12 @@ const UserTask = React.memo(() => {
     /*TODO split render*/
     return (
       <div className="service-task-details">
+        <Modal
+          modalOpen={!canEdit}
+          description={t("addressRegistration.childPermittedCheck")}
+          showNo={false}
+          showYes={false}
+        />
         <LoadingOverlay
           active={
             (taskAssignee !== currentUser &&

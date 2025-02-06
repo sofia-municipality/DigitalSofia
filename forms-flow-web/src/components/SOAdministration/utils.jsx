@@ -5,6 +5,7 @@ import TextArea from "./components/TextArea";
 import FileInput from "./components/FileInput";
 import EditableInputs from "./components/EditableInputs";
 import RichText from "./components/RichText";
+import EditableInputGroups from "./components/EditableInputGroups";
 
 export const getInputByType = (
   { fieldId, type, content, fromApi, props = {} },
@@ -101,6 +102,15 @@ export const getInputByType = (
     );
   } else if (type === "richtext") {
     return <RichText name={fieldId} defaultValue={defaultValue} />;
+  } else if (type === "array_objects_contacts") {
+    return (
+      <EditableInputGroups
+        defaultValue={defaultValue}
+        props={props}
+        fieldId={fieldId}
+        content={content}
+      />
+    );
   } else {
     return (
       <Form.Control

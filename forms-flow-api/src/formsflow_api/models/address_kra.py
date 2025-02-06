@@ -7,6 +7,7 @@ from formsflow_api_utils.exceptions import BusinessException
 from .base_model import BaseModel
 from .audit_mixin import AuditDateTimeMixin
 from .db import db
+from ..utils import SOFIA_CITY_CODES, replace_road_types
 
 
 class AddressKRA(AuditDateTimeMixin,
@@ -62,8 +63,13 @@ class AddressKRA(AuditDateTimeMixin,
         result = cls.query.with_entities(AddressKRA.name_pa).distinct()
         name_pa = filters.get("name_pa")
         if name_pa is not None:
+            name_pa, vid_pa = replace_road_types(name_pa)
             search = "%{}%".format(name_pa.upper())
-            result = result.filter(AddressKRA.name_pa.like(search))
+            if len(vid_pa):
+                result = result.filter(AddressKRA.name_pa.like(search), AddressKRA.vid_pa.in_(vid_pa))
+            else:
+                result = result.filter(AddressKRA.name_pa.like(search))
+            result = result.filter(AddressKRA.code_nm_grao.in_(SOFIA_CITY_CODES))
 
         if sort_by and sort_order:
             try:
@@ -74,7 +80,7 @@ class AddressKRA(AuditDateTimeMixin,
                 raise BusinessException(
                     "Invalid sort or order.", HTTPStatus.BAD_REQUEST
                 )
-        total_count = result.count()
+
         result = result.paginate(page=page_number, per_page=limit)
 
-        return result.items, result.pages, total_count
+        return result.items

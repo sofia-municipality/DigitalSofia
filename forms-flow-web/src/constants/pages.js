@@ -296,26 +296,81 @@ export const PAGE_BLOCK_ATTRIBUTES = {
       {
         fieldId: "items",
         label: "form.label.items",
-        type: "array_objects",
+        type: "array_objects_contacts",
         fromApi: true,
         content: [
           {
             type: "object",
             content: [
               {
-                fieldId: "title",
+                fieldId: "region",
                 label: "form.label.region",
-                type: "text",
-              },
-              {
-                fieldId: "phone",
-                label: "form.label.phone",
                 type: "text",
               },
               {
                 fieldId: "link",
                 label: "form.label.link",
                 type: "text",
+              },
+              {
+                fieldId: "mdtName",
+                label: "form.label.department",
+                type: "text",
+              },
+              {
+                fieldId: "mdtPhone1",
+                label: "form.label.phone",
+                type: "number",
+              },
+              {
+                fieldId: "mdtPhone2",
+                label: "form.label.phone",
+                type: "number",
+              },
+              {
+                fieldId: "mdtPhone3",
+                label: "form.label.phone",
+                type: "number",
+              },
+              {
+                fieldId: "mdtPhone4",
+                label: "form.label.phone",
+                type: "number",
+              },
+              {
+                fieldId: "mdtPhone5",
+                label: "form.label.phone",
+                type: "number",
+              },
+              {
+                fieldId: "graoName",
+                label: "form.label.department",
+                type: "text",
+              },
+              {
+                fieldId: "graoPhone1",
+                label: "form.label.phone",
+                type: "number",
+              },
+              {
+                fieldId: "graoPhone2",
+                label: "form.label.phone",
+                type: "number",
+              },
+              {
+                fieldId: "graoPhone3",
+                label: "form.label.phone",
+                type: "number",
+              },
+              {
+                fieldId: "graoPhone4",
+                label: "form.label.phone",
+                type: "number",
+              },
+              {
+                fieldId: "graoPhone5",
+                label: "form.label.phone",
+                type: "number",
               },
             ],
           },
