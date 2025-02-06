@@ -1,7 +1,6 @@
 package com.bulpros.integrations.camel.routes.eDelivery;
 
-import com.bulpros.integrations.eDelivery.model.SendMessageInReplyToRequest;
-import com.bulpros.integrations.eDelivery.model.SendMessageInReplyToResponse;
+import com.bulpros.integrations.eDelivery.model.UploadFileOnBehalfOfResponse;
 import com.bulpros.integrations.exceptions.EFormsIntegrationsErrorHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.builder.RouteBuilder;
@@ -11,9 +10,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class SendMessageInReplyToRoute extends RouteBuilder {
+public class UploadOnBehalfOfFileRoute extends RouteBuilder {
 
-    @Override
     public void configure() {
         onException(Exception.class)
                 .handled(true)
@@ -21,17 +19,18 @@ public class SendMessageInReplyToRoute extends RouteBuilder {
 
         restConfiguration().component("servlet")
                 .clientRequestValidation(true)
-                .bindingMode(RestBindingMode.json)
+                .dataFormatProperty("prettyPrint", "true")
                 .enableCORS(true)
                 .corsHeaderProperty("Access-Control-Allow-Origin", "*");
 
-        rest("/eDelivery/send-message-in-reply-to")
+        rest("/eDelivery/upload/obo/blobs")
                 .post()
-                .consumes(MediaType.APPLICATION_JSON_VALUE)
-                .type(SendMessageInReplyToRequest.class)
-                .outType(SendMessageInReplyToResponse.class)
-                .route().routeGroup("EDELIVERY").routeId("EDeliverySendMessageInReplay")
-                .to("bean:eDeliveryService?method=sendMessageInReplyTo(${body})");
+                .bindingMode(RestBindingMode.off)
+                .consumes(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .outType(UploadFileOnBehalfOfResponse.class)
+                .route().routeGroup("EDELIVERY").routeId("EDeliveryUploadFileOnBehalfOf")
+                .to("bean:eDeliveryService?method=uploadFileOnBehalfOf")
+                .marshal().json();
     }
 
 }
