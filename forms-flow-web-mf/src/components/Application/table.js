@@ -7,15 +7,18 @@ import {
   customFilter,
   FILTER_TYPES,
 } from "react-bootstrap-table2-filter";
-import { AWAITING_ACKNOWLEDGEMENT } from "../../constants/applicationConstants";
 import { Translation } from "react-i18next";
 import DateRangePicker from "@wojtekmaj/react-daterange-picker";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
 import { toast } from "react-toastify";
-import { HelperServices} from "@formsflow/service";
+import { HelperServices } from "@formsflow/service";
 
-import { APPLICATION_STATUS_LABEL, DEFAULT_APPLICATION_STATUS_LABEL } from "../../constants/formEmbeddedConstants";
+import {
+  APPLICATION_STATUS_LABEL,
+  DEFAULT_APPLICATION_STATUS_LABEL,
+} from "../../constants/formEmbeddedConstants";
+import { getFormSubmission } from "../../apiManager/services/FormServices";
 
 let statusFilter, idFilter, nameFilter, modifiedDateFilter;
 
@@ -27,11 +30,14 @@ export const defaultSortedBy = [
 ];
 
 const getApplicationStatusOptions = (rows, t) => {
-  const selectOptions = rows.filter(option => APPLICATION_STATUS_LABEL[option]).map((option) => {
-    return { 
-      value: option, 
-      label: t(APPLICATION_STATUS_LABEL[option]) };
-  });
+  const selectOptions = rows
+    .filter((option) => APPLICATION_STATUS_LABEL[option])
+    .map((option) => {
+      return {
+        value: option,
+        label: t(APPLICATION_STATUS_LABEL[option]),
+      };
+    });
   return selectOptions;
 };
 
@@ -47,31 +53,54 @@ const linkApplication = (cell, row, redirectUrl) => {
   );
 };
 
-const linkSubmission = (cell, row, redirectUrl) => {
-  // here isResubmit key is also checked for "url" and "buttonText"
-  const url = row.isClientEdit || row.isResubmit
-    ? `${redirectUrl}form/${row.formId}/submission/${row.submissionId}/edit`
-    : `${redirectUrl}form/${row.formId}/submission/${row.submissionId}`;
-  const buttonText = row.isClientEdit || row.isResubmit ? (
-    row.applicationStatus === AWAITING_ACKNOWLEDGEMENT ? (
-      "Acknowledge"
-    ) : (
-      <Translation>{(t) => t("Edit")}</Translation>
-    )
-  ) : (
-    <Translation>{(t) => t("View")}</Translation>
-  );
-  const icon =  row.isClientEdit || row.isResubmit ? "fa fa-edit" : "fa fa-eye";
+const ReceiptButton = ({ formId, name, receiptId }) => {
+  const handleClick = async () => {
+    const resp = await getFormSubmission(formId, receiptId);
+    const dataUrl = resp.data.file[0].url;
+
+    const newWindow = window.open("", "_blank");
+
+    newWindow.document.write(`
+      <html>
+        <head>
+          <title>PDF Viewer</title>
+        </head>
+        <body>
+          <h1>Receipt</h1>
+          <iframe 
+            src="${dataUrl}" 
+            width="100%" 
+            height="1000px" 
+            style="border: none;">
+          </iframe>
+        </body>
+      </html>
+    `);
+
+    newWindow.document.close();
+  };
+
   return (
-    <div onClick={() => window.open(url, "_blank")}>
-      <span style={{ color: "blue", cursor: "pointer" }}>
-        <span>
-          <i className={icon} />
-          &nbsp;
-        </span>
-        {buttonText}
-      </span>
-    </div>
+    <button className="btn btn-link" key={receiptId} onClick={handleClick}>
+      {name}
+    </button>
+  );
+};
+
+const Receipts = ({ row }) => {
+  const receiptsList = row.receipts;
+
+  return (
+    <section>
+      {receiptsList.map((rec) => (
+        <ReceiptButton
+          key={rec._id}
+          formId={rec.form}
+          name={rec.name}
+          receiptId={rec._id}
+        />
+      ))}
+    </section>
   );
 };
 
@@ -83,7 +112,11 @@ function timeFormatter(cell) {
 const nameFormatter = (cell) => {
   const name = startCase(cell);
   return (
-    <label className="text-truncate w-100" style={{ maxWidth: "550px" }} title={name}>
+    <label
+      className="text-truncate w-100"
+      style={{ maxWidth: "550px" }}
+      title={name}
+    >
       {startCase(name)}
     </label>
   );
@@ -169,7 +202,9 @@ export const columns = (
       text: <Translation>{(t) => t("Application Status")}</Translation>,
       sort: true,
       formatter: (cell) => {
-        return t(APPLICATION_STATUS_LABEL[cell] || DEFAULT_APPLICATION_STATUS_LABEL);
+        return t(
+          APPLICATION_STATUS_LABEL[cell] || DEFAULT_APPLICATION_STATUS_LABEL
+        );
       },
       filter:
         applicationStatus?.length > 0 &&
@@ -185,9 +220,10 @@ export const columns = (
         }),
     },
     {
-      dataField: "formUrl",
-      text: <Translation>{(t) => t("Link To Form Submission")}</Translation>,
-      formatter: (cell, row) => linkSubmission(cell, row, redirectUrl),
+      dataField: "receipts",
+      text: <Translation>{(t) => t("Link To Receipts")}</Translation>,
+      headerClasses: "receiptsColumn",
+      formatter: (_, row) => <Receipts row={row} />,
     },
 
     {
@@ -215,6 +251,7 @@ export const columns = (
             calendarAriaLabel={t("Select the date")}
             dayAriaLabel="Select the day"
             clearAriaLabel="Click to clear"
+            locale="bg-BG"
           />
         );
       },

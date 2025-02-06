@@ -94,6 +94,28 @@ export const getFormSubmissionByFormPath = async ({ path, submissionId }) => {
   return res.data;
 };
 
+export const getFormSubmission = async (formId, submissionId) => {
+  const URL = API.GET_FORM_SUBMISSION.replace(
+    "<form_id>",
+    formId
+  ).replace("<submission_id>", submissionId);
+  const res = await RequestService.httpGETRequest(URL, null, null, false, {
+    "X-Jwt-Token": localStorage.getItem("formioToken"),
+  });
+  return res.data;
+};
+
+export const getFormIdByPath = async (path) => {
+  const URL = API.GET_FORM_ID_BY_PATH.replace(
+    "<form_path>",
+    path
+  );
+  const res = await RequestService.httpGETRequest(URL, null, null, false, {
+    "X-Jwt-Token": localStorage.getItem("formioToken"),
+  });
+  return res.data;
+};
+
 export const updateFormSubmissionByFormPath = async ({
   path,
   submissionId,

@@ -79,6 +79,8 @@ const API = {
   GENERATE_PDF: `${WEB_BASE_URL}/draft/<draftId>/export/pdf`,
   GET_FORM_SUBMISSIONS_BY_PATH: `${AppConfig.projectUrl}/<form_path>/submission`,
   GET_FORM_SUBMISSION_BY_FORM_PATH: `${AppConfig.projectUrl}/<form_path>/submission/<submission_id>`,
+  GET_FORM_SUBMISSION: `${AppConfig.projectUrl}/form/<form_id>/submission/<submission_id>`,
+  GET_FORM_ID_BY_PATH: `${AppConfig.projectUrl}/<form_path>?select=_id`,
 };
 
 export default API;

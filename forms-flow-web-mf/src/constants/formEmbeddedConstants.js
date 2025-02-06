@@ -1,4 +1,6 @@
 export const APPLICATION_STATUS = {
+  NEW: "New",
+  DRAFT: "Draft",
   DRAFT_IN_PROGRESS: "draftInProgress",
   DRAFT_FILLED: "draftFilled",
   WAITING_FOR_THIRD_PARTY_SIGNUTURE: "waitingForThirdPartySigniture",
@@ -14,9 +16,9 @@ export const APPLICATION_STATUS = {
   PAID: "paid",
   COMPLETED: "Completed",
   CANCELED: "canceled",
-  // formsflow default statuses
-  NEW: "New",
-  DRAFT: "Draft",
+  CANCELLED_PAYMENT: "cancelledPayment",
+  SUBMISSION_ERROR: "submissionError",
+  EDELIVERY_ERROR: "edeliveryError",
 };
 
 export const APPLICATION_STATUS_LABEL = {
@@ -43,9 +45,15 @@ export const APPLICATION_STATUS_LABEL = {
     "myServices.status.waitingForPayment.label",
   [APPLICATION_STATUS.PAID]: "myServices.status.paid.label",
   [APPLICATION_STATUS.COMPLETED]: "myServices.status.completed.label",
-  [APPLICATION_STATUS.CANCELED]: "myServices.status.cancelled.label",
-  [APPLICATION_STATUS.NEW]: "В процес на обработка",
+  [APPLICATION_STATUS.CANCELED]: "myServices.status.draftFilled.label",
+  [APPLICATION_STATUS.NEW]: "myServices.status.formSubmitted.label",
   [APPLICATION_STATUS.DRAFT]: "myServices.status.draftInProgress.label",
+  [APPLICATION_STATUS.SUBMISSION_ERROR]:
+    "myServices.status.submissionError.label",
+  [APPLICATION_STATUS.EDELIVERY_ERROR]:
+    "myServices.status.submissionError.label",
+  [APPLICATION_STATUS.CANCELLED_PAYMENT]:
+    "myServices.status.formSubmitted.label",
 };
 
-export const DEFAULT_APPLICATION_STATUS_LABEL = "В процес на обработка";
+export const DEFAULT_APPLICATION_STATUS_LABEL = "myServices.status.formSubmitted.label";
