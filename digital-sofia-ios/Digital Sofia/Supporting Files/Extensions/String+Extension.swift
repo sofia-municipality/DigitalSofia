@@ -118,3 +118,9 @@ extension String {
         return (self as NSString).pathExtension
     }
 }
+
+extension Bool {
+    init(from: String) {
+        self = (from as NSString).boolValue
+    }
+}

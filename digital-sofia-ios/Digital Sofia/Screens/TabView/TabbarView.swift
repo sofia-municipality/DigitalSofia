@@ -85,6 +85,8 @@ struct TabbarView: View, KeyboardReadable {
         }
         .onAppear {
             showMenu = false
+            UserDefaults.standard.removeObject(forKey: AppConfig.UserDefaultsKeys.userInitiatedForgottenPasswordFlow)
+            KeychainDatastore.standard.delete(key: AppConfig.KeychainKeys.newUserPin)
         }
         .onChange(of: selectedTab) { newValue in
             showMenu = false

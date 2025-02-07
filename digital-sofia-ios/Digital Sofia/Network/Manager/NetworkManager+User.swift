@@ -39,6 +39,21 @@ extension NetworkManager {
             .store(in: &cancellables)
     }
     
+    static func checkUserForDeletion(completion: @escaping (NetworkResponse<Bool>) -> ()) {
+        provider.runRequest(type: EmptyEntity.self, service: KeycloakService.checkUserForDeletion)
+            .sink(receiveCompletion: { result in
+                switch result {
+                case .finished:
+                    break
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            }) { response in
+                completion(.success(true))
+            }
+            .store(in: &cancellables)
+    }
+    
     static func changeFCM(completion: @escaping (NetworkResponse<Bool>) -> ()) {
         let parameters = ChangeFcmParameters(fcm: fcm)
         provider.runRequest(type: EmptyEntity.self, service: KeycloakService.changeFCM(parameters: parameters))

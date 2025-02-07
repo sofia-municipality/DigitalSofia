@@ -1,9 +1,9 @@
-/* 
+/*
  Localizable.strings
  Digital Sofia
  
  Created by Mehmed Kadir on 25.01.23.
-
+ 
  */
 
 "continue_button_title"                  =  "Continue";
@@ -19,6 +19,7 @@
 "signed_on_date"                         =  "Signed on";
 "expired_on_date"                        =  "Expired on";
 "rejected_on_date"                       =  "Rejected on";
+"delivered_on_date"                      =  "Delivered on";
 "open_file"                              =  "Open file";
 "download_file"                          =  "Download";
 "settings_title"                         =  "Settings";
@@ -58,6 +59,8 @@
 "document_status_rejected"               =  "Rejected";
 "document_status_failed"                 =  "Failed";
 "document_status_withdrawn"              =  "Withdrawn";
+"document_status_delivering"             =  "Delivering";
+"document_status_delivered"              =  "Delivered";
 "relaod_button_title"                    =  "Reload";
 "empty_state_title"                      =  "Sorry, there is no information.";
 "empty_state_details"                    =  "Try reloading the screen to see the missing data.";
@@ -141,3 +144,7 @@
 "network_error_no_internet_connection"   =  "Please, check your internet connection.";
 "network_error_invalid_user_data"        =  "Wrong data is entered.";
 "network_error_logout_count_exceeded"    =  "Sorry, too many tries for login. Please, try again later";
+"understood_button_title"                =  "I agree";
+"notification_permission_title_text"     =  "The Digital Sofia application makes it possible to request, process, track and perform municipal administrative services digitally.";
+"notification_permission_subtitle_text"  =  "For the application to work properly, please be sure to allow your notifications.";
+"st_sdk_authentication_failed_text"      = "Your identification is under review. We will notify you when the process is finished.";

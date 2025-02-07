@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ConfirmDataShareView: View {
+    // MARK: Properties
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var identityConfig: IdentityRequestConfig
@@ -16,6 +17,7 @@ struct ConfirmDataShareView: View {
     private let verticalPadding = AppConfig.Dimensions.Padding.XXXL
     private let horizontalPadding = AppConfig.Dimensions.Padding.XXXL
     
+    // MARK: Properties
     var body: some View {
         IdentityRequestView(content: {
             VStack(spacing: verticalPadding) {

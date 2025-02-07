@@ -39,6 +39,22 @@ extension EvrotrustCheckUserStatusResult {
                 "confirmedEmail": confirmedEmail,
                 "rejectReason": rejectReason.rawValue]
     }
+    
+    var formattedDescription: String {
+        let text =
+        """
+        -----------------------------------
+        Evrotrust check user status result:
+        successfulCheck: \(self.successfulCheck),
+        identified: \(self.identified),
+        readyToSign: \(self.readyToSign),
+        supervised: \(self.supervised),
+        rejected: \(self.rejected),
+        rejectReason: \(self.rejectReason)
+        -----------------------------------
+        """
+        return text
+    }
 }
 
 extension EvrotrustSetupProfileResult {

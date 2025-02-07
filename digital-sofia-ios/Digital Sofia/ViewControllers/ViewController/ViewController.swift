@@ -67,6 +67,24 @@ class ViewController: BaseViewController {
         }
     }
     
+    func showSdkUserAuthFailedView() {
+        addSwiftUI(someView: ETSdkAuthenticationFailedView().environmentObject(appState))
+    }
+    
+    func showResetPINView(readyToSign: Bool) {
+        addSwiftUI(someView: ForgottenPIN(isResetPin: false, readyToSign: readyToSign)
+            .environmentObject(appState)
+            .environmentObject(networkMonitor)
+            .environmentObject(IdentityRequestConfig()))
+    }
+    
+    func showConfirmDataShareView() {
+        addSwiftUI(someView: ConfirmDataShareView()
+            .environmentObject(appState)
+            .environmentObject(networkMonitor)
+            .environmentObject(IdentityRequestConfig()))
+    }
+    
     private func showNewUserStateAlert(with message: String) {
         appState.alertItem = AlertProvider.errorAlertWithCompletion(message: message, completion: { [weak self] in
             self?.setNewUserState()

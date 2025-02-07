@@ -11,7 +11,7 @@ struct DocumentsHistoryView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var networkMonitor: NetworkMonitor
     
-    @StateObject private var viewModel = DocumentsViewModel(statuses: [.signed, .expired, .rejected, .failed])
+    @StateObject private var viewModel = DocumentsViewModel(statuses: [.signed, .expired, .rejected, .failed, .delivered])
     @State private var openDocument = false
     @State private var openDownloadedDocument = false
     @State private var selectedDocumentURL: URL?

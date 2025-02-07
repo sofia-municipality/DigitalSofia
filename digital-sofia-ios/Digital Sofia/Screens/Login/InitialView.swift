@@ -14,6 +14,7 @@ struct InitialView: View {
     @State private var showRegister = false
     @State private var showHome = false
     @State private var showTagAlert = false
+    //    @State private var showNotificationPermission = false
     
     var body: some View {
         BetaTagScreenCover(isPresented: $showTagAlert) {
@@ -41,6 +42,14 @@ struct InitialView: View {
                     HStack {
                         GradientBorderButton(title: AppConfig.UI.Titles.Button.enter.localized) {
                             showRegister = true
+                            //                            PermissionProvider.getNotificationsStatus { status in
+                            //                                switch status {
+                            //                                case .notDetermined:
+                            //                                    showNotificationPermission = true
+                            //                                default:
+                            //                                    showRegister = true
+                            //                                }
+                            //                            }
                         }
                     }
                 })
@@ -66,6 +75,17 @@ struct InitialView: View {
                 .environmentObject(appState)
                 .environmentObject(networkMonitor),
                            isActive: $showHome) { EmptyView() }
+            
+            //            NavigationLink(destination: NotificationPermissionAgreementView()
+            //                .environmentObject(appState)
+            //                .environmentObject(networkMonitor),
+            //                           isActive: $showNotificationPermission) { EmptyView() }
+            
+            NavigationLink(destination: RegisterView()
+                .environmentObject(networkMonitor)
+                .environmentObject(appState)
+                .environmentObject(KeyboardInactivityHandlerConfig()),
+                           isActive: $showRegister) { EmptyView() }
         }
     }
 }

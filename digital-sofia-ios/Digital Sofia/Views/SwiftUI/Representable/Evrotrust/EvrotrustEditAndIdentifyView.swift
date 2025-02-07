@@ -55,7 +55,11 @@ final class EvrotrustEditAndIdentifyViewCoordinator: NSObject, EvrotrustEditPers
         LoggingHelper.logSDKEditUserResult(result: result)
         switch result.status {
         case EvrotrustResultStatus.OK:
-            parent.completion?(true, nil)
+            if result.readyToSign == true {
+                parent.completion?(true, nil)
+            } else {
+                parent.completion?(false, .userNotReadyToSign)
+            }
         case .errorInput:
             parent.completion?(false, .errorInput)
         case .userCanceled:

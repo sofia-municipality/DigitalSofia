@@ -35,6 +35,25 @@ struct DocumentNotificationModel: Codable {
     }
 }
 
+struct UserStatusNotificationModel: Codable, Equatable {
+    let isIdentified: Bool
+    let isReadyToSign: Bool
+    
+    private enum CodingKeys: String, CodingKey {
+        case isIdentified, isReadyToSign
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        let identified = try container.decode(String.self, forKey: .isIdentified)
+        let readyToSign = try container.decode(String.self, forKey: .isReadyToSign)
+        
+        isIdentified = Bool(from: identified.lowercased())
+        isReadyToSign = Bool(from: readyToSign.lowercased())
+    }
+}
+
 struct FirebaseConsoleNotificationModel: Codable {
     let aps: AlertModel
     

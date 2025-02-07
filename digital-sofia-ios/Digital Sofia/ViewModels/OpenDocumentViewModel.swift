@@ -14,14 +14,14 @@ enum OpenDocumentCheckUserStatusType {
 
 class OpenDocumentViewModel: NSObject {
     var openDocumentUserDecision: (EvrotrustUserDecision?) -> ()
-    var openDocumentErrorHandler: (String) -> ()
+    var openDocumentErrorHandler: (Error) -> ()
     var checkUserStatusResult: (OpenDocumentCheckUserStatusType) -> ()
     var receivedDocumentStatus: (DocumentStatusResponse?) -> ()
     var verifyIdentityRequest: (DocumentStatusResponse?) -> ()
     var userClosedDocumentView: () -> ()
     
     init(openDocumentUserDecision: @escaping (EvrotrustUserDecision?) -> Void,
-         openDocumentErrorHandler: @escaping (String) -> Void,
+         openDocumentErrorHandler: @escaping (Error) -> Void,
          checkUserStatusResult: @escaping (OpenDocumentCheckUserStatusType) -> Void,
          receivedDocumentStatus: @escaping (DocumentStatusResponse?) -> Void,
          verifyIdentityRequest: @escaping (DocumentStatusResponse?) -> Void,
@@ -46,7 +46,7 @@ class OpenDocumentViewModel: NSObject {
                 case .userCancelled:
                     self?.userClosedDocumentView()
                 default:
-                    self?.openDocumentErrorHandler(error.description)
+                    self?.openDocumentErrorHandler(error)
                 }
             } else {
                 self?.openDocumentUserDecision(decision)
@@ -57,7 +57,7 @@ class OpenDocumentViewModel: NSObject {
     func openETSetup() -> some View {
         return EvrotrustSetupView(shouldAddUserInformation: true) { [weak self] _, error in
             if let error = error {
-                self?.openDocumentErrorHandler(error.description)
+                self?.openDocumentErrorHandler(error)
             }
         }
     }
@@ -65,7 +65,7 @@ class OpenDocumentViewModel: NSObject {
     func openEditProfile() -> some View {
         return EvrotrustEditAndIdentifyView { [weak self] _, error in
             if let error = error {
-                self?.openDocumentErrorHandler(error.description)
+                self?.openDocumentErrorHandler(error)
             } else {
                 self?.userClosedDocumentView()
             }
@@ -88,11 +88,11 @@ class OpenDocumentViewModel: NSObject {
                     case .success(_):
                         self?.verifyIdentityRequest(nil)
                     case .failure(let networkError):
-                        self?.openDocumentErrorHandler(networkError.description)
+                        self?.openDocumentErrorHandler(networkError)
                     }
                 }
             case .failure(let networkError):
-                self?.openDocumentErrorHandler(networkError.description)
+                self?.openDocumentErrorHandler(networkError)
             }
         }
     }
@@ -103,7 +103,18 @@ class OpenDocumentViewModel: NSObject {
             case .success(let response):
                 self?.receivedDocumentStatus(response)
             case .failure(let networkError):
-                self?.openDocumentErrorHandler(networkError.description)
+                self?.openDocumentErrorHandler(networkError)
+            }
+        }
+    }
+    
+    func sendReceipt(threadId: String?) {
+        NetworkManager.getReceiptStatus(threadId: threadId ?? "") { [weak self] response in
+            switch response {
+            case .success(let response):
+                self?.receivedDocumentStatus(response)
+            case .failure(let networkError):
+                self?.openDocumentErrorHandler(networkError)
             }
         }
     }
@@ -112,6 +123,7 @@ class OpenDocumentViewModel: NSObject {
 extension OpenDocumentViewModel: EvrotrustCheckUserStatusDelegate {
     func evrotrustCheckUserStatusDelegateDidFinish(_ result: EvrotrustCheckUserStatusResult!) {
         LoggingHelper.logSDKCheckUserStatusResult(result: result)
+        print(result.formattedDescription)
         switch (result.status) {
         case .sdkNotSetUp:
             EvrotrustError.sdkNotSetupHandler()
@@ -121,17 +133,17 @@ extension OpenDocumentViewModel: EvrotrustCheckUserStatusDelegate {
             
         case EvrotrustResultStatus.OK:
             if result.successfulCheck {
-                if result.identified == false {
+                if result.identified == false || result.rejected == true {
                     checkUserStatusResult(.showEditProfile)
                 } else {
                     checkUserStatusResult(.showDocument)
                 }
             } else {
-                openDocumentErrorHandler(AppConfig.UI.Alert.welcomeUserErrorTitle.localized)
+                openDocumentErrorHandler(NetworkError.message(AppConfig.UI.Alert.welcomeUserErrorTitle.localized))
             }
             
         default:
-            openDocumentErrorHandler(AppConfig.UI.Alert.welcomeUserErrorTitle.localized)
+            openDocumentErrorHandler(NetworkError.message(AppConfig.UI.Alert.welcomeUserErrorTitle.localized))
         }
     }
 }

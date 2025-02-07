@@ -19,6 +19,7 @@
 "signed_on_date"                         =  "Подписан на";
 "expired_on_date"                        =  "Изтекъл на";
 "rejected_on_date"                       =  "Отказан на";
+"delivered_on_date"                      =  "Връчен на";
 "open_file"                              =  "Виж файл";
 "download_file"                          =  "Изтегли";
 "settings_title"                         =  "Настройки";
@@ -58,6 +59,8 @@
 "document_status_rejected"               =  "Отказан";
 "document_status_failed"                 =  "Неуспешен";
 "document_status_withdrawn"              =  "Оттеглен";
+"document_status_delivering"             =  "Връчване";
+"document_status_delivered"              =  "Връчен";
 "relaod_button_title"                    =  "Презареди";
 "empty_state_title"                      =  "В момента няма намерена информация.";
 "empty_state_details"                    =  "Опитайте да презаредите екрана, за да видите информацията";
@@ -141,3 +144,7 @@
 "network_error_no_internet_connection"   =  "Моля, проверете връзката с интернет.";
 "network_error_invalid_user_data"        =  "Грешно въведени данни.";
 "network_error_logout_count_exceeded"    =  "Прекалено много опити за вход. Моля, опитайте по-късно.";
+"understood_button_title"                =  "Разбрах";
+"notification_permission_title_text"     =  "Приложението Digital Sofia дава възможност да се заявяват, обработват, проследяват и изпълняват дигитално общински административни услуги.";
+"notification_permission_subtitle_text"  =  "За удобната работа на приложението, моля задължително активирайте вашите нотификации.";
+"st_sdk_authentication_failed_text"      = "Вашата идентификация се разглежда в момента. Ще ви информираме веднага, след като процесът приключи.";

@@ -19,6 +19,7 @@ struct DSColors {
     struct Text {
         static let indigoDark = Color(hex: "403A52")
         static let placeholder = Color(hex: "6C757D")
+        static let notificationRed = Color(hex: "D04925")
     }
     
     struct Blue {

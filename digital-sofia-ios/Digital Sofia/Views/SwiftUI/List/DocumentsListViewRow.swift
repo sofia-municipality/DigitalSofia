@@ -114,6 +114,9 @@ struct DocumentsListViewRow: View {
         case .rejected:
             dateString = document.rejected
             localisedDescription = AppConfig.UI.Documents.rejectedOn.localized
+        case .delivered:
+            dateString = document.generated
+            localisedDescription = AppConfig.UI.Documents.deliveredOn.localized
         default: break
         }
         
@@ -190,8 +193,9 @@ struct DocumentsListViewRow: View {
     
     private func statusButton() -> some View {
         let buttonTitle = document.docStatus.localisedDescription
-        let buttonBgColor = document.docStatus == .signed ? DSColors.green : DSColors.red
-        let buttonIcon = document.docStatus == .signed ? ImageProvider.check : ImageProvider.close
+        let isActive = document.docStatus == .signed || document.docStatus == .delivered
+        let buttonBgColor = isActive ? DSColors.green : DSColors.red
+        let buttonIcon = isActive ? ImageProvider.check : ImageProvider.close
         
         return HStack {
             Image(buttonIcon)

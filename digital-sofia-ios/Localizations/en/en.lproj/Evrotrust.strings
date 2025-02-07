@@ -1,4 +1,4 @@
-/* 
+/*
   Evrotrust.strings
   EvrotrustSDK
 
@@ -292,7 +292,7 @@
 "evrotrust_sc_error_registration_deactivated"   = "The device is de-activated. You should register it again.";
 "evrotrust_sc_error_no_internet"                = "Not connected to internet. Please try again.";
 "evrotrust_access_temporarily_denied"           = "The access is temporarily blocked. Try again in 5 min";
-"evrotrust_user_not_identified"                 = "You should be identified to finish the request. The identification can be made in the Settings section.";
+"evrotrust_user_not_identified"                 = "You need to update your personal information. Please pass through the identification process.";
 "evrotrust_user_not_found"                      = "User not found";
 "evrotrust_user_identification_document_issue"  = "A problem occurred with the identification document. Please try again.";
 "evrotrust_user_under_eighteen"                 = "Person must be at least 18 years old.";
@@ -328,12 +328,12 @@
 
 "evrotrust_search_user_info"                                    = "Check if you have an Evrotrust account";
 "evrotrust_search_user_info_long"                               = "Please choose just one of the identifiers below";
-"evrotrust_search_user_not_registered"                          = "Evrotrust Profile for this identifier is not found. Click No.";
-"evrotrust_search_user_registered"                              = "You have completed Evrotrust registration. Click Yes.";
-"evrotrust_search_user_not_identified"                          = "You have started Evrotrust registration and have scanned an ID card. To sign documents you should proceed to successful face recognition, validate a phone number and an e-mail address. Click Yes.";
-"evrotrust_search_user_not_supervised"                          = "You have completed Evrotrust registration, supervision is in progress. Click Yes.";
-"evrotrust_search_user_phone_not_confirmed"                     = "You have started Evrotrust registration. To sign documents you should also validate a phone number. Click Yes.";
-"evrotrust_search_user_email_not_confirmed"                     = "You have started Evrotrust registration. To sign documents you should also validate an e-mail address. Click Yes.";
+"evrotrust_search_user_not_registered"                          = "Profile with such identifier is not found.";
+"evrotrust_search_user_registered"                              = "You have Evrotrust registration.";
+"evrotrust_search_user_not_identified"                          = "You have Evrotrust registration.";
+"evrotrust_search_user_not_supervised"                          = "You have Evrotrust registration, supervision is in progress. Please try again later.";
+"evrotrust_search_user_phone_not_confirmed"                     = "You have Evrotrust registration.";
+"evrotrust_search_user_email_not_confirmed"                     = "You have Evrotrust registration.";
 
 "evrotrust_create_pin_info1"        = "Create your PIN";
 "evrotrust_create_pin_info2"        = "Re-enter your PIN";
@@ -406,6 +406,7 @@
 "evrotrust_id_scanner_error_identification_number_used" = "The Personal ID number you entered is already in use";
 "evrotrust_id_scanner_error_user_not_found"             = "Invalid information";
 "evrotrust_id_scanner_no_internet"                      = "Not connected to internet. Should we try again?";
+"evrotrust_id_scanner_missing_profile_picture"          = "Unsuccessful document scanning. Please try again.";
 
 "evrotrust_personal_info_form_info"                             = "Enter the required personal data from your ID document, if the data is missing or incorrect";
 "evrotrust_personal_info_form_last_name_latin"                  = "Last name (Latin)";
@@ -484,7 +485,9 @@
 "evrotrust_auto_identification_session_expired"         = "Your authentication session has expired. Should we try again?";
 "evrotrust_auto_identification_slowdown_fail"           = "Your identification was unsuccessful due to a delay. Should we try again?";
 "evrotrust_auto_identification_success"                 = "Congratulations! Successful identification";
+"evrotrust_auto_identification_waiting_supervising"     = "Identification is in review";
 "evrotrust_auto_identification_fail_new_user"           = "Identification failed";
+"evrotrust_auto_identification_under_review"            = "Your identification is under review. We will inform you shortly for the result.";
 
 "evrotrust_video_identification_title"                  = "Identification";
 "evrotrust_video_identification_info"                   = "Identification";
@@ -545,7 +548,7 @@
 "evrotrust_document_status_rejected"            = "Suspended";
 "evrotrust_document_status_delivered"           = "Delivered";
 "evrotrust_document_status_expired"             = "Expired";
-"evrotrust_document_status_canceled"            = "Cancelled";
+"evrotrust_document_status_canceled"            = "Failed";
 "evrotrust_document_status_withdrawn"           = "Withdrawn";
 "evrotrust_document_status_undeliverable"       = "Not delivered";
 "evrotrust_document_status_sign_unsuccessful"   = "Sign not successful";

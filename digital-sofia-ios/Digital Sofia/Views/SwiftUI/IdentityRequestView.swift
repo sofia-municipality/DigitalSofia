@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import EvrotrustSDK
 
 class IdentityRequestConfig: ObservableObject {
     @Published var fetchRequest: Bool = false
@@ -49,17 +50,14 @@ struct IdentityRequestView<Content: View>: View {
         }
         .onAppear {
             openDocumentViewModel = OpenDocumentViewModel(openDocumentUserDecision: { decision in
-                openDocument = false
-                
+                closeDocumentDetails()
                 switch decision {
                 case .approved:
                     isLoading = true
-                    
                     if type != .authenticate {
                         oldSecurityContext = UserProvider.currentUser?.securityContext ?? ""
                         UserProvider.shared.update(pin: identityConfig.newPin)
                     }
-                    
                     openDocumentViewModel?.verifyIdentityRequest(transactionId: etTransactionId, type: type)
                 default:
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -73,8 +71,8 @@ struct IdentityRequestView<Content: View>: View {
                 
             }, openDocumentErrorHandler: { error in
                 if type == .authenticate {
-                    appState.alertItem = AlertProvider.errorAlertWithCompletion(message: error.description, completion: {
-                        if openDocument { openDocument = false }
+                    appState.alertItem = AlertProvider.errorAlertWithCompletion(message: error.baseDescription, completion: {
+                        if openDocument { closeDocumentDetails() }
                         reinitialise()
                     })
                 } else {
@@ -118,7 +116,8 @@ struct IdentityRequestView<Content: View>: View {
                     }
                 }
             }, userClosedDocumentView: {
-                if openDocument { openDocument = false }
+                if openEditProfile { openEditProfile = false }
+                if openDocument { closeDocumentDetails() }
                 reinitialise()
             })
         }
@@ -138,7 +137,6 @@ struct IdentityRequestView<Content: View>: View {
         
         dataShareViewModel.getIdentityRequest() { transactionId, error in
             isLoading = false
-            
             if let transactionId = transactionId {
                 etTransactionId = transactionId
                 openDocumentViewModel?.checkUserStatus()
@@ -188,5 +186,12 @@ struct IdentityRequestView<Content: View>: View {
     private func reinitialise() {
         if isLoading { isLoading = false }
         if identityConfig.fetchRequest { identityConfig.fetchRequest = false }
+    }
+    
+    private func closeDocumentDetails() {
+        openDocument = false
+        if String(describing: UIApplication.topMostViewController()).contains("EvrotrustDocumentDetailsViewController") {
+            UIApplication.topMostViewController()?.navigationController?.popToRootViewController(animated: true)
+        }
     }
 }

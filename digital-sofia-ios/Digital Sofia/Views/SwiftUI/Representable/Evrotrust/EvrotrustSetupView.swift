@@ -73,15 +73,20 @@ final class EvrotrustSetupViewCoordinator: NSObject, EvrotrustSetupViewControlle
         switch result.status {
         case EvrotrustResultStatus.OK:
             if result.userSetUp {
-                if result.identified == true {
-                    if result.personalIdentificationNumber == parent.user?.personalIdentificationNumber {
-                        UserProvider.shared.updateUserWithETInfo(result: result)
-                        parent.completion?(true, nil)
+                if result.personalIdentificationNumber == parent.user?.personalIdentificationNumber {
+                    if result.identified == true {
+                        if result.readyToSign == true {
+                            UserProvider.shared.updateUserWithETInfo(result: result)
+                            parent.completion?(true, nil)
+                        } else {
+                            parent.completion?(false, .userNotReadyToSign)
+                        }
+                        
                     } else {
-                        parent.completion?(false, .errorInput)
+                        parent.completion?(false, .editUser)
                     }
                 } else {
-                    parent.completion?(false, .editUser)
+                    parent.completion?(false, .errorInput)
                 }
             } else {
                 parent.completion?(false, .userNotSetUp)

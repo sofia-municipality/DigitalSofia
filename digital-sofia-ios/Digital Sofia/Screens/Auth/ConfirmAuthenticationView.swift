@@ -53,6 +53,7 @@ struct ConfirmAuthenticationView: View {
     @State private var showETSetup = false
     @State private var showConfirmDataShare = false
     @State private var showTabbar = false
+    @State private var showETAuthenticationFailedView = false
     @StateObject private var viewModel = ConfirmAuthenticationViewModel()
     
     private let verticalPadding = AppConfig.Dimensions.Padding.XXXL
@@ -114,10 +115,15 @@ struct ConfirmAuthenticationView: View {
     
     private func navigation() -> some View {
         VStack {
-            NavigationLink(destination: EvrotrustFullSetupView(shouldAddUserInformation: true, completion: { success, error in
+            NavigationLink(destination: EvrotrustFullSetupView(shouldAddUserInformation: true,
+                                                               completion: { success, error in
                 if let error = error {
                     showETSetup = false
-                    type = error == .userCancelled ? .decline : .error
+                    if error == .userNotReadyToSign {
+                        showETAuthenticationFailedView = true
+                    } else {
+                        type = error == .userCancelled ? .decline : .error
+                    }
                 } else {
                     if success == true {
                         showETSetup = false
@@ -128,6 +134,7 @@ struct ConfirmAuthenticationView: View {
                     }
                 }
             })
+                .environmentObject(appState)
                 .ignoresSafeArea(),
                            isActive: $showETSetup) { EmptyView() }
             
@@ -141,11 +148,18 @@ struct ConfirmAuthenticationView: View {
                 .environmentObject(networkMonitor)
                 .environmentObject(IdentityRequestConfig()),
                            isActive: $showConfirmDataShare) { EmptyView() }
+            
+            NavigationLink(destination: ETSdkAuthenticationFailedView(shouldDismiss: true,
+                                                                      onReadyToSign: {
+                showConfirmDataShareScreen()
+            })
+                .environmentObject(appState),
+                           isActive: $showETAuthenticationFailedView) { EmptyView() }
         }
     }
     
     private func showConfirmDataShareScreen() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
             if UserProvider.isVerified {
                 viewModel.register { error in
                     isLoading = false
@@ -156,7 +170,7 @@ struct ConfirmAuthenticationView: View {
                     }
                 }
             } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
                     isLoading = false
                     showConfirmDataShare = true
                 }

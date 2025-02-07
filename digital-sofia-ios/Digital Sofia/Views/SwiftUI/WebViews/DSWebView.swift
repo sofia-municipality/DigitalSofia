@@ -50,7 +50,13 @@ struct DSWebView: View {
             .environmentObject(networkMonitor)
         }
         .onAppear {
-            loadUrl()
+            if let topVC = UIApplication.topMostViewController() {
+                if !String(describing: topVC).contains("CAMImagePickerCameraViewController") {
+                    loadUrl()
+                }
+            } else {
+                loadUrl()
+            }
         }
         .onChange(of: appState.language) { newValue in
             loadUrl()

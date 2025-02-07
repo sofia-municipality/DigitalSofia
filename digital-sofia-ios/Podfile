@@ -3,8 +3,8 @@ use_frameworks!
 
 target 'Digital Sofia' do
     pod "AFNetworking", "4.0.1"
-    pod 'DocumentReader', '6.9.3102'
-    pod 'DocumentReaderMRZRFID', '6.9.7951'
+    pod 'DocumentReader', '7.4.3826'
+    pod 'DocumentReaderMRZRFID', '7.4.9825'
     pod 'Firebase/Core'
     pod 'Firebase/Messaging'
     pod 'Firebase/Crashlytics'
