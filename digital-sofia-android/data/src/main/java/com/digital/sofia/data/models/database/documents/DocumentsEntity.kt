@@ -19,6 +19,7 @@ data class DocumentsEntity(
     val created: String?,
     val formioId: String?,
     val rejected: String?,
+    val generated: String?,
     val modified: String?,
     val fileName: String?,
     val validUntill: String?,

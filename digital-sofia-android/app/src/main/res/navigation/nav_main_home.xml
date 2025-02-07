@@ -7,9 +7,21 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.digital.sofia.ui.fragments.main.signing.SigningFragment"
+        android:name="com.digital.sofia.ui.fragments.main.pending.PendingFragment"
         android:label="homeFragment"
         tools:layout="@layout/fragment_home">
     </fragment>
+
+    <action
+        android:id="@+id/toProfileVerificationWaitFlowFragment"
+        app:destination="@id/nav_profile_verification_wait"
+        app:enterAnim="@anim/fragment_scale_enter_front"
+        app:exitAnim="@anim/fragment_scale_enter_back"
+        app:popEnterAnim="@anim/fragment_scale_exit_back"
+        app:popExitAnim="@anim/fragment_scale_exit_front"
+        app:popUpTo="@id/homeFragment"
+        app:popUpToInclusive="true" />
+
+    <include app:graph="@navigation/nav_profile_verification_wait" />
 
 </navigation>

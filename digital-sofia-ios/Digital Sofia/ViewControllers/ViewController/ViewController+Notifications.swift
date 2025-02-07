@@ -52,6 +52,11 @@ extension ViewController {
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(documentNotificationHandler(_:)),
+                                               name: NSNotification.Name.pendingDeliveryDocumentNotification,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(documentNotificationHandler(_:)),
                                                name: NSNotification.Name.signedDocumentNotification,
                                                object: nil)
         

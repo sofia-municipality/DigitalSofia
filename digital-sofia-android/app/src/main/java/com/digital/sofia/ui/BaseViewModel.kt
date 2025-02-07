@@ -37,6 +37,7 @@ import com.digital.sofia.models.common.ErrorState
 import com.digital.sofia.models.common.LoadingState
 import com.digital.sofia.models.common.Message
 import com.digital.sofia.models.common.NetworkState
+import com.digital.sofia.models.common.NotificationModel
 import com.digital.sofia.models.common.StringSource
 import com.digital.sofia.models.common.UiState
 import com.digital.sofia.utils.AppEventsHelper
@@ -45,7 +46,6 @@ import com.digital.sofia.utils.LocalizationManager
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
 import com.digital.sofia.utils.SingleLiveEvent
-import com.digital.sofia.utils.UpdateDocumentsHelper
 import com.google.firebase.messaging.RemoteMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.onEach
@@ -57,7 +57,6 @@ abstract class BaseViewModel(
     private val loginTimer: LoginTimer,
     private val appEventsHelper: AppEventsHelper,
     private val preferences: PreferencesRepository,
-    private val updateDocumentsHelper: UpdateDocumentsHelper,
     private val localizationManager: LocalizationManager,
     private val cryptographyRepository: CryptographyRepository,
     private val updateFirebaseTokenUseCase: UpdateFirebaseTokenUseCase,
@@ -113,8 +112,6 @@ abstract class BaseViewModel(
 
     val newTokenEventLiveData = firebaseMessagingServiceHelper.newTokenEventLiveData
 
-    val newAuthorizationEventLiveData = updateDocumentsHelper.newAuthorizationEventLiveData
-
     val newTokensEventLiveData = authorizationHelper.newTokensEventLiveData
 
     val logoutUserEventLiveData = authorizationHelper.logoutUserEventLiveData
@@ -141,6 +138,8 @@ abstract class BaseViewModel(
         clearNewSignedDocumentEvent()
     }
 
+    open fun onNewUserProfileStatusChangeEvent(notificationModel: NotificationModel?) {}
+
     fun stopListenNetworkState() {
         networkConnectionManager.stopListenNetworkState()
     }
@@ -151,6 +150,10 @@ abstract class BaseViewModel(
 
     fun clearNewSignedDocumentEvent() {
         appEventsHelper.hasNewSignedDocumentEvent = false
+    }
+
+    fun clearNewUserProfileStatusChangeEvent() {
+        appEventsHelper.hasNewUserProfileStatusChangeEvent = false
     }
 
     fun checkNetworkConnection() {
@@ -245,7 +248,6 @@ abstract class BaseViewModel(
 
     fun fragmentOnPause() {
         logDebug("fragmentOnPause", TAG)
-        updateDocumentsHelper.stopUpdateData()
     }
 
     fun showLoader(message: String? = null) {
@@ -424,19 +426,29 @@ abstract class BaseViewModel(
         super.onCleared()
     }
 
-    fun checkAppEvents() {
+    fun checkAppEvents(notificationModel: NotificationModel? = null) {
         if (isAuthorizationActive) {
-            if (appEventsHelper.hasNewAuthorizationEvent) {
-                appEventsHelper.hasNewAuthorizationEvent = false
-                onNewAuthorizationEvent()
-            }
+            when {
+                appEventsHelper.hasNewAuthorizationEvent -> {
+                    appEventsHelper.hasNewAuthorizationEvent = false
+                    onNewAuthorizationEvent()
+                }
 
-            if (appEventsHelper.hasNewPendingDocumentEvent) {
-                onNewPendingDocumentEvent(isNotificationEvent = appEventsHelper.isNotificationEvent)
-            }
+                appEventsHelper.hasNewPendingDocumentEvent -> onNewPendingDocumentEvent(
+                    isNotificationEvent = appEventsHelper.isNotificationEvent
+                )
 
-            if (appEventsHelper.hasNewSignedDocumentEvent) {
-                onNewSignedDocumentEvent(isNotificationEvent = appEventsHelper.isNotificationEvent)
+                appEventsHelper.hasNewSignedDocumentEvent -> onNewSignedDocumentEvent(
+                    isNotificationEvent = appEventsHelper.isNotificationEvent
+                )
+            }
+        }
+
+        when {
+            appEventsHelper.hasNewUserProfileStatusChangeEvent -> {
+                onNewUserProfileStatusChangeEvent(
+                    notificationModel = notificationModel
+                )
             }
         }
     }

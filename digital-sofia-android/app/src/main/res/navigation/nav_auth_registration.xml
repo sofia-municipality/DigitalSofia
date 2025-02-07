@@ -12,6 +12,34 @@
         tools:layout="@layout/fragment_registration_start">
 
         <action
+            android:id="@+id/toNotificationsInformationFragment"
+            app:destination="@id/registrationNotificationsInformationFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/registrationStartFragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/toEnterEgnFragment"
+            app:destination="@id/registrationEnterEgnFragment"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/registrationStartFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/registrationNotificationsInformationFragment"
+        android:name="com.digital.sofia.ui.fragments.registration.notifications.RegistrationNotificationsFragment"
+        android:label="registrationNotificationsInformationFragment"
+        tools:layout="@layout/fragment_registration_notifications_information">
+
+        <action
             android:id="@+id/toEnterEgnFragment"
             app:destination="@id/registrationEnterEgnFragment"
             app:enterAnim="@anim/fragment_scale_enter_front"
@@ -190,6 +218,16 @@
             app:popUpTo="@id/registrationConfirmIdentificationFragment"
             app:popUpToInclusive="true" />
 
+        <action
+            android:id="@+id/toProfileVerificationWaitFlowFragment"
+            app:destination="@id/nav_profile_verification_wait"
+            app:enterAnim="@anim/fragment_scale_enter_front"
+            app:exitAnim="@anim/fragment_scale_enter_back"
+            app:popEnterAnim="@anim/fragment_scale_exit_back"
+            app:popExitAnim="@anim/fragment_scale_exit_front"
+            app:popUpTo="@id/registrationConfirmIdentificationFragment"
+            app:popUpToInclusive="true" />
+
     </fragment>
 
     <fragment
@@ -288,5 +326,7 @@
             app:popUpToInclusive="true" />
 
     </fragment>
+
+    <include app:graph="@navigation/nav_profile_verification_wait" />
 
 </navigation>

@@ -11,10 +11,11 @@ struct PendingDocumentsView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var networkMonitor: NetworkMonitor
     
-    @StateObject private var viewModel = DocumentsViewModel(statuses: [.signing])
+    @StateObject private var viewModel = DocumentsViewModel(statuses: [.signing, .delivering])
     @State private var openDocument = false
     @State private var openETSetup = false
     @State private var openEditProfile = false
+    @State private var openETAuthenticationFailedView = false
     
     @State private var selectedDocument: DocumentModel?
     @State private var openDocumentViewModel: OpenDocumentViewModel?
@@ -46,20 +47,25 @@ struct PendingDocumentsView: View {
             .environmentObject(networkMonitor)
         }
         .onAppear {
-            viewModel.successfullyFetchedDocuments = {
-                appState.hasPendingDocuments = viewModel.documents.count > 0
-            }
-            
             openDocumentViewModel = OpenDocumentViewModel(openDocumentUserDecision: { decision in
                 if openDocument { openDocument = false }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     viewModel.isLoading = true
-                    openDocumentViewModel?.sendDocumentStatus(transactionId: selectedDocument?.evrotrustTransactionId)
+                    if selectedDocument?.docStatus == .delivering {
+                        openDocumentViewModel?.sendReceipt(threadId: selectedDocument?.evrotrustThreadId)
+                    } else {
+                        openDocumentViewModel?.sendDocumentStatus(transactionId: selectedDocument?.evrotrustTransactionId)
+                    }
                 }
             }, openDocumentErrorHandler: { error in
-                appState.alertItem = AlertProvider.errorAlertWithCompletion(message: error.description, completion: {
+                if let etError = error as? EvrotrustError, etError == .userNotReadyToSign {
                     documentStatusCompletion()
-                })
+                    openETAuthenticationFailedView = true
+                } else {
+                    appState.alertItem = AlertProvider.errorAlertWithCompletion(message: error.baseDescription, completion: {
+                        documentStatusCompletion()
+                    })
+                }
             }, checkUserStatusResult: { state in
                 switch state {
                 case .showDocument:
@@ -88,7 +94,11 @@ struct PendingDocumentsView: View {
                 }
             }, verifyIdentityRequest: { _ in
             }, userClosedDocumentView: {
-                documentStatusCompletion()
+                if selectedDocument?.docStatus == .delivering {
+                    openDocumentViewModel?.sendReceipt(threadId: selectedDocument?.evrotrustThreadId)
+                } else {
+                    documentStatusCompletion()
+                }
             })
         }
         .refreshable {
@@ -190,10 +200,20 @@ struct PendingDocumentsView: View {
             
             NavigationLink(destination: openDocumentViewModel?.openEditProfile(),
                            isActive: $openEditProfile) { EmptyView() }
+            
+            NavigationLink(destination: ETSdkAuthenticationFailedView(shouldDismiss: true, onReadyToSign: {
+                openETAuthenticationFailedView = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    documentStatusCompletion()
+                }
+            })
+                .environmentObject(appState),
+                           isActive: $openETAuthenticationFailedView) { EmptyView() }
         }
     }
     
     private func documentStatusCompletion() {
+        if openEditProfile { openEditProfile = false }
         if openDocument { openDocument = false }
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {

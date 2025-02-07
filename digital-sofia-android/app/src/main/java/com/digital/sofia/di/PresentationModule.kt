@@ -13,23 +13,23 @@ package com.digital.sofia.di
 
 import com.digital.sofia.mappers.common.CreateCodeResponseErrorToStringMapper
 import com.digital.sofia.mappers.documents.DocumentsUiMapper
-import com.digital.sofia.mappers.forms.UnsignedDocumentUiMapper
+import com.digital.sofia.mappers.forms.PendingDocumentUiMapper
 import com.digital.sofia.ui.fragments.main.documents.list.DocumentsAdapter
 import com.digital.sofia.ui.fragments.main.documents.list.DocumentsDelegate
 import com.digital.sofia.ui.fragments.main.documents.list.DocumentsHeaderDelegate
-import com.digital.sofia.ui.fragments.main.signing.list.SigningAdapter
-import com.digital.sofia.ui.fragments.main.signing.list.SigningDelegate
+import com.digital.sofia.ui.fragments.main.pending.list.PendingAdapter
+import com.digital.sofia.ui.fragments.main.pending.list.PendingDelegate
 import com.digital.sofia.utils.CurrentContext
 import org.koin.dsl.module
 
 val presentationModule = module {
-    single<SigningAdapter> {
-        SigningAdapter(
-            signingDelegate = get<SigningDelegate>()
+    single<PendingAdapter> {
+        PendingAdapter(
+            pendingDelegate = get<PendingDelegate>()
         )
     }
-    single<SigningDelegate> {
-        SigningDelegate()
+    single<PendingDelegate> {
+        PendingDelegate()
     }
     single<DocumentsAdapter> {
         DocumentsAdapter(
@@ -53,8 +53,8 @@ val presentationModule = module {
             currentContext = get<CurrentContext>(),
         )
     }
-    single<UnsignedDocumentUiMapper>{
-        UnsignedDocumentUiMapper(
+    single<PendingDocumentUiMapper>{
+        PendingDocumentUiMapper(
             currentContext = get<CurrentContext>(),
         )
     }

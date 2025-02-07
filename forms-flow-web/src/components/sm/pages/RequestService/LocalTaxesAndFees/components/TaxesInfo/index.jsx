@@ -3,11 +3,13 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { usePageTitleRef } from "../../../../../../../customHooks";
+import {
+  usePageTitleRef,
+  useGetUserEvrotrustName,
+} from "../../../../../../../customHooks";
 import { PAGE_ROUTES } from "../../../../../../../constants/navigation";
 import SmCta, { SmCtaTypes } from "../../../../../components/buttons/SmCta";
 import { useGetFormatters } from "../../../../../components/Taxes/TaxesAccordion/hooks";
-
 import styles from "./taxesInfo.module.scss";
 
 const TaxesInfo = ({
@@ -21,7 +23,8 @@ const TaxesInfo = ({
   const headingRef = usePageTitleRef();
   const { numberFormatter } = useGetFormatters();
   const userDetails = useSelector((state) => state.user.userDetail);
-  const { fullName, name, personIdentifier = "" } = userDetails || {};
+  const { name, personIdentifier = "" } = userDetails || {};
+  const evrotrustFullName = useGetUserEvrotrustName();
 
   return (
     <div className="container-fluid">
@@ -51,7 +54,7 @@ const TaxesInfo = ({
               </SmCta>
             </div>
             <div className={`${styles.namesWrapper} mt-4`}>
-              <span className={styles.names}>{fullName || name}</span>
+              <span className={styles.names}>{evrotrustFullName || name}</span>
               <span className={styles.personIdentifierLabel}>
                 {t("localTaxes.reference.taxInfo.personIdentifierLabel")}
               </span>

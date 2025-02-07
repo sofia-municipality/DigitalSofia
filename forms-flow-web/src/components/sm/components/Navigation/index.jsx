@@ -139,7 +139,6 @@ const Navigation = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [hideContent, setHideContent] = useState(false);
   const { pathname } = useLocation();
-  const [hideMobileBetaOnScroll, setHideMobileBetaOnScroll] = useState(false);
 
   const withNavAnimation = ROUTES_WITH_NAV_ANIMATION.some((route) =>
     matchPath(pathname, { path: route, exact: true })
@@ -178,24 +177,6 @@ const Navigation = () => {
     }
   }, [isExpanded]);
 
-  const handleScroll = (event) => {
-    if (event.target.offsetWidth < 991) {
-      if (event.target.scrollTop > 68) {
-        setHideMobileBetaOnScroll(true);
-      } else if (event.target.scrollTop < 68) {
-        setHideMobileBetaOnScroll(false);
-      }
-    }
-  };
-
-  useEffect(() => {
-    document.getElementById("app").addEventListener("scroll", handleScroll);
-    return () => {
-      document
-        .getElementById("app")
-        .removeEventListener("scroll", handleScroll);
-    };
-  }, []);
   return (
     <>
       <Link
@@ -215,21 +196,6 @@ const Navigation = () => {
       >
         Skip to main content
       </Link>
-      <section
-        className={`container-fluid d-flex beta-container ${
-          smallNav ? "small" : ""
-        } ${hideMobileBetaOnScroll ? "hideBeta" : ""}`}
-      >
-        <div className="row w-100">
-          <div className="col-xs-3 beta-title d-flex justify-content-center align-content-center">
-            <span className="align-self-center">BETA</span>
-          </div>
-          <div className="col-xs-9 beta-description">
-            {t("navigation.beta.description")}
-            <span className="beta-link"> address@sofia.bg</span>
-          </div>
-        </div>
-      </section>
       <Navbar
         sticky="top"
         bg="white"

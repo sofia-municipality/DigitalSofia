@@ -13,6 +13,7 @@ public enum EvrotrustError: Error {
     case userNotSetUp
     case sdkNotSetUp
     case editUser
+    case userNotReadyToSign
     
     public var description: String {
         switch self {
@@ -24,6 +25,8 @@ public enum EvrotrustError: Error {
             return AppConfig.ErrorLocalisations.Evrotrust.userNotSetUp.localized
         case .sdkNotSetUp:
             return AppConfig.ErrorLocalisations.Evrotrust.sdkNotSetUp.localized
+        case .userNotReadyToSign:
+            return AppConfig.UI.Evrotrust.etUserNotReadyToSign.evrotrustLocalized
         default: return ""
         }
     }

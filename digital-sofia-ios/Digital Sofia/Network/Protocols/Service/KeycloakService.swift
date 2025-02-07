@@ -10,7 +10,12 @@ import UIKit
 enum KeycloakService: ServiceProtocol {
     
     var baseURL: URL {
-        return URL(string: NetworkConfig.Addresses.tokenServer)!
+        switch self {
+        case .checkUserForDeletion, .deleteUser:
+            return URL(string: NetworkConfig.Addresses.baseServer)!
+        default:
+            return URL(string: NetworkConfig.Addresses.tokenServer)!
+        }
     }
     
     var path: String {
@@ -23,8 +28,8 @@ enum KeycloakService: ServiceProtocol {
             return NetworkConfig.EP.Keycloak.verifyPersonalId.format(egn)
         case .changePIN:
             return NetworkConfig.EP.Keycloak.changePIN
-        case .deleteUser:
-            return NetworkConfig.EP.Keycloak.deleteUser
+        case .deleteUser, .checkUserForDeletion:
+            return NetworkConfig.EP.API.deleteUser
         case .updateAuthenticationCodeStatus:
             return NetworkConfig.EP.Keycloak.updateAuthenticationCodeStatus
         case .getAuthenticationCode:
@@ -38,10 +43,12 @@ enum KeycloakService: ServiceProtocol {
     
     var method: SMHTTPMethod {
         switch self {
-        case .verifyPersonalId, .getAuthenticationCode, .checkDebugMode:
+        case .verifyPersonalId, .getAuthenticationCode, .checkDebugMode, .checkUserForDeletion:
             return .get
-        case .register, .changePIN, .deleteUser, .updateAuthenticationCodeStatus, .firstRegister, .changeFCM:
+        case .register, .changePIN, .updateAuthenticationCodeStatus, .firstRegister, .changeFCM:
             return .post
+        case .deleteUser:
+            return .delete
         }
     }
     
@@ -57,7 +64,7 @@ enum KeycloakService: ServiceProtocol {
             return .requestParameters(parameters.getDictionary())
         case .changeFCM(let parameters):
             return .requestParameters(parameters.getDictionary())
-        case .verifyPersonalId, .deleteUser, .getAuthenticationCode, .checkDebugMode:
+        case .verifyPersonalId, .deleteUser, .getAuthenticationCode, .checkDebugMode, .checkUserForDeletion:
             return .requestPlain
         }
     }
@@ -77,7 +84,7 @@ enum KeycloakService: ServiceProtocol {
     
     var parametersEncoding: ParametersEncoding {
         switch self {
-        case .register, .verifyPersonalId, .deleteUser, .getAuthenticationCode, .checkDebugMode:
+        case .register, .verifyPersonalId, .deleteUser, .getAuthenticationCode, .checkDebugMode, .checkUserForDeletion:
             return .url
         case .firstRegister, .updateAuthenticationCodeStatus, .changePIN, .changeFCM:
             return .json
@@ -89,6 +96,7 @@ enum KeycloakService: ServiceProtocol {
     case verifyPersonalId(egn: String)
     case changePIN(parameters: ChangePinParameters)
     case deleteUser
+    case checkUserForDeletion
     case updateAuthenticationCodeStatus(parameters: UpdateStatusCodeParameters)
     case getAuthenticationCode
     case changeFCM(parameters: ChangeFcmParameters)

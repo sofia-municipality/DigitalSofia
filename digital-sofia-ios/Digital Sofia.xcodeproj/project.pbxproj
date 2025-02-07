@@ -34,6 +34,7 @@
 		001700B52A7D3540002B667B /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 001700B42A7D3540002B667B /* User.swift */; };
 		001700BC2A7D40A6002B667B /* KeychainWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 001700BA2A7D40A6002B667B /* KeychainWrapper.swift */; };
 		001700BD2A7D40A6002B667B /* KeychainItemAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 001700BB2A7D40A6002B667B /* KeychainItemAccessibility.swift */; };
+		001AE14B2CE49B6B00E394DD /* NotificationPermissionAgreementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 001AE14A2CE49B6B00E394DD /* NotificationPermissionAgreementView.swift */; };
 		001C038D2A94B79000C7982D /* ChangePINView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 001C038C2A94B79000C7982D /* ChangePINView.swift */; };
 		001C038F2A94B7A600C7982D /* RegisterPINView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 001C038E2A94B7A600C7982D /* RegisterPINView.swift */; };
 		001C03922A94B80700C7982D /* PINView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 001C03912A94B80700C7982D /* PINView.swift */; };
@@ -96,6 +97,9 @@
 		004D40052ACE901C00B45266 /* ConfirmDataShareView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004D40042ACE901C00B45266 /* ConfirmDataShareView.swift */; };
 		004E6FC32B7B5601001A3578 /* FileUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004E6FC22B7B5601001A3578 /* FileUploader.swift */; };
 		00511E0E2A866B8F0009D83A /* EvrotrustError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00511E0D2A866B8F0009D83A /* EvrotrustError.swift */; };
+		005502A92D2BC6D600E4E962 /* ETSdkAuthenticationFailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005502A82D2BC6D600E4E962 /* ETSdkAuthenticationFailedView.swift */; };
+		005502AC2D2BC9ED00E4E962 /* ETSdkAuthenticationFailedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005502AB2D2BC9ED00E4E962 /* ETSdkAuthenticationFailedViewModel.swift */; };
+		005502AE2D2BD43A00E4E962 /* SDKAuthFailedStatusParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005502AD2D2BD43A00E4E962 /* SDKAuthFailedStatusParameters.swift */; };
 		00552BDF2C4A9C2E00B586AA /* PaymentWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00552BDE2C4A9C2E00B586AA /* PaymentWebView.swift */; };
 		005584262B469911006BFF00 /* UITabBarController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005584252B469911006BFF00 /* UITabBarController+Extension.swift */; };
 		005873B32B57C2D700DE1D06 /* GradientBorderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005873B22B57C2D700DE1D06 /* GradientBorderButton.swift */; };
@@ -121,9 +125,11 @@
 		007DB4872A962D35009B2FAB /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 007DB4862A962D35009B2FAB /* BaseViewController.swift */; };
 		007DB4892A963F47009B2FAB /* PINBlockProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 007DB4882A963F47009B2FAB /* PINBlockProvider.swift */; };
 		0082A5482A93A9AD00F865AB /* TopSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0082A5472A93A9AD00F865AB /* TopSheet.swift */; };
+		00848A122D2E93D000F84950 /* Error+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00848A112D2E93CA00F84950 /* Error+Extension.swift */; };
 		008534392A2F0D8E00FE4364 /* BiometricAuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 008534382A2F0D8E00FE4364 /* BiometricAuthenticationView.swift */; };
 		0085343D2A2F4F9A00FE4364 /* CustomToggleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0085343C2A2F4F9A00FE4364 /* CustomToggleView.swift */; };
 		008534412A2F720F00FE4364 /* ProfileDeleteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 008534402A2F720F00FE4364 /* ProfileDeleteView.swift */; };
+		00853BD52CEFB29100626FA4 /* NetworkManager+Receipts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00853BD42CEFB29100626FA4 /* NetworkManager+Receipts.swift */; };
 		00898FA12B56881B00400013 /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00898FA02B56881B00400013 /* APIService.swift */; };
 		00898FA32B56A97D00400013 /* IdentityRequestViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00898FA22B56A97D00400013 /* IdentityRequestViewViewModel.swift */; };
 		008C26D22BD1394300B30D7E /* Evrotrust.strings in Resources */ = {isa = PBXBuildFile; fileRef = 008C26CE2BD1394300B30D7E /* Evrotrust.strings */; };
@@ -176,6 +182,7 @@
 		00BFACC62A8A2ADE00A7E78C /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00BFACC52A8A2ADE00A7E78C /* LoginViewModel.swift */; };
 		00BFACC82A8A355500A7E78C /* RegisterBiometricsAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00BFACC72A8A355500A7E78C /* RegisterBiometricsAuthView.swift */; };
 		00BFDFF92AE2B69D008C4FCE /* UserVerification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00BFDFF82AE2B69D008C4FCE /* UserVerification.swift */; };
+		00C023012CFEED5700CF15B9 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C023002CFEED5700CF15B9 /* SettingsViewModel.swift */; };
 		00C479732A2DD58E00D21825 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C479722A2DD58E00D21825 /* ProfileView.swift */; };
 		00C479752A2DF9B600D21825 /* FiraSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00C479742A2DF9B600D21825 /* FiraSans-Regular.ttf */; };
 		00C479772A2E01BB00D21825 /* CustomNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00C479762A2E01BB00D21825 /* CustomNavigationBar.swift */; };
@@ -290,6 +297,7 @@
 		001700B42A7D3540002B667B /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		001700BA2A7D40A6002B667B /* KeychainWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainWrapper.swift; sourceTree = "<group>"; };
 		001700BB2A7D40A6002B667B /* KeychainItemAccessibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainItemAccessibility.swift; sourceTree = "<group>"; };
+		001AE14A2CE49B6B00E394DD /* NotificationPermissionAgreementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPermissionAgreementView.swift; sourceTree = "<group>"; };
 		001C038C2A94B79000C7982D /* ChangePINView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePINView.swift; sourceTree = "<group>"; };
 		001C038E2A94B7A600C7982D /* RegisterPINView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterPINView.swift; sourceTree = "<group>"; };
 		001C03912A94B80700C7982D /* PINView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PINView.swift; sourceTree = "<group>"; };
@@ -353,6 +361,9 @@
 		004D40042ACE901C00B45266 /* ConfirmDataShareView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmDataShareView.swift; sourceTree = "<group>"; };
 		004E6FC22B7B5601001A3578 /* FileUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUploader.swift; sourceTree = "<group>"; };
 		00511E0D2A866B8F0009D83A /* EvrotrustError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvrotrustError.swift; sourceTree = "<group>"; };
+		005502A82D2BC6D600E4E962 /* ETSdkAuthenticationFailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ETSdkAuthenticationFailedView.swift; sourceTree = "<group>"; };
+		005502AB2D2BC9ED00E4E962 /* ETSdkAuthenticationFailedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ETSdkAuthenticationFailedViewModel.swift; sourceTree = "<group>"; };
+		005502AD2D2BD43A00E4E962 /* SDKAuthFailedStatusParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKAuthFailedStatusParameters.swift; sourceTree = "<group>"; };
 		00552BDE2C4A9C2E00B586AA /* PaymentWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentWebView.swift; sourceTree = "<group>"; };
 		005584252B469911006BFF00 /* UITabBarController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITabBarController+Extension.swift"; sourceTree = "<group>"; };
 		005873B22B57C2D700DE1D06 /* GradientBorderButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientBorderButton.swift; sourceTree = "<group>"; };
@@ -378,9 +389,11 @@
 		007DB4862A962D35009B2FAB /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		007DB4882A963F47009B2FAB /* PINBlockProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PINBlockProvider.swift; sourceTree = "<group>"; };
 		0082A5472A93A9AD00F865AB /* TopSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopSheet.swift; sourceTree = "<group>"; };
+		00848A112D2E93CA00F84950 /* Error+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Error+Extension.swift"; sourceTree = "<group>"; };
 		008534382A2F0D8E00FE4364 /* BiometricAuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricAuthenticationView.swift; sourceTree = "<group>"; };
 		0085343C2A2F4F9A00FE4364 /* CustomToggleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomToggleView.swift; sourceTree = "<group>"; };
 		008534402A2F720F00FE4364 /* ProfileDeleteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDeleteView.swift; sourceTree = "<group>"; };
+		00853BD42CEFB29100626FA4 /* NetworkManager+Receipts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NetworkManager+Receipts.swift"; sourceTree = "<group>"; };
 		00898FA02B56881B00400013 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
 		00898FA22B56A97D00400013 /* IdentityRequestViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentityRequestViewViewModel.swift; sourceTree = "<group>"; };
 		008C26C12BD138F600B30D7E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -435,6 +448,7 @@
 		00BFACC52A8A2ADE00A7E78C /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		00BFACC72A8A355500A7E78C /* RegisterBiometricsAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterBiometricsAuthView.swift; sourceTree = "<group>"; };
 		00BFDFF82AE2B69D008C4FCE /* UserVerification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserVerification.swift; sourceTree = "<group>"; };
+		00C023002CFEED5700CF15B9 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		00C479722A2DD58E00D21825 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		00C479742A2DF9B600D21825 /* FiraSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "FiraSans-Regular.ttf"; sourceTree = "<group>"; };
 		00C479762A2E01BB00D21825 /* CustomNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationBar.swift; sourceTree = "<group>"; };
@@ -553,6 +567,7 @@
 				002DD7972B18C0910090B8A0 /* LoginFromPortalNotificationView.swift */,
 				00BFACC32A8A0C6700A7E78C /* LoginPINView.swift */,
 				00BFACC12A8A005400A7E78C /* LoginWithBiometricsView.swift */,
+				001AE14A2CE49B6B00E394DD /* NotificationPermissionAgreementView.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -587,6 +602,7 @@
 				00BB8BEE2A7A8472006F7474 /* DocumentsParameters.swift */,
 				006E53432B51679E0048C745 /* FirstRegisterParameters.swift */,
 				00E830E42B289B8F00BEDB45 /* UpdateStatusCodeParameters.swift */,
+				005502AD2D2BD43A00E4E962 /* SDKAuthFailedStatusParameters.swift */,
 			);
 			path = Parameters;
 			sourceTree = "<group>";
@@ -660,6 +676,7 @@
 				003BD13B2B10E50C00925A25 /* Bundle+Extension.swift */,
 				0048838C29F7F03B0065A00B /* Color+Extension.swift */,
 				00B3041229F94144000D413C /* Date+Extension.swift */,
+				00848A112D2E93CA00F84950 /* Error+Extension.swift */,
 				001DF0AF2B6A39860040E2D2 /* EvrotrustResult+Extension.swift */,
 				002B9AC62A7BD4C500B60DBD /* Notification+Extension.swift */,
 				00B2F67C2B51AABE003EACCD /* SequenceExtension.swift */,
@@ -746,7 +763,7 @@
 				008534402A2F720F00FE4364 /* ProfileDeleteView.swift */,
 				00C479782A2E100600D21825 /* ProfileLanguageView.swift */,
 				00C479722A2DD58E00D21825 /* ProfileView.swift */,
-				00B3041629F94B2B000D413C /* SettingsView.swift */,
+				00C023022CFEED5F00CF15B9 /* SettingsView */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -824,6 +841,15 @@
 			path = Customization;
 			sourceTree = "<group>";
 		};
+		005502AA2D2BC9E200E4E962 /* ETSdkAuthenticationFailedView */ = {
+			isa = PBXGroup;
+			children = (
+				005502A82D2BC6D600E4E962 /* ETSdkAuthenticationFailedView.swift */,
+				005502AB2D2BC9ED00E4E962 /* ETSdkAuthenticationFailedViewModel.swift */,
+			);
+			path = ETSdkAuthenticationFailedView;
+			sourceTree = "<group>";
+		};
 		00552BDD2C4A9C1800B586AA /* WebViews */ = {
 			isa = PBXGroup;
 			children = (
@@ -839,6 +865,7 @@
 				002493A129DC3AA3007B77F4 /* NetworkManager.swift */,
 				006E53482B5168050048C745 /* NetworkManager+Documents.swift */,
 				006E534A2B5168220048C745 /* NetworkManager+Login.swift */,
+				00853BD42CEFB29100626FA4 /* NetworkManager+Receipts.swift */,
 				006E53462B5167F60048C745 /* NetworkManager+Register.swift */,
 				006E534C2B5168A00048C745 /* NetworkManager+User.swift */,
 			);
@@ -920,6 +947,7 @@
 		009F5AD62B5E9ED300672F21 /* Auth */ = {
 			isa = PBXGroup;
 			children = (
+				005502AA2D2BC9E200E4E962 /* ETSdkAuthenticationFailedView */,
 				009F5AD72B5E9EE900672F21 /* ConfirmAuthenticationView.swift */,
 				009F5AD92B5EA85F00672F21 /* EvrotrustFullSetupView.swift */,
 			);
@@ -1131,6 +1159,15 @@
 				00A908D52B0390E000664B9F /* WelcomeUserViewModel.swift */,
 			);
 			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		00C023022CFEED5F00CF15B9 /* SettingsView */ = {
+			isa = PBXGroup;
+			children = (
+				00B3041629F94B2B000D413C /* SettingsView.swift */,
+				00C023002CFEED5700CF15B9 /* SettingsViewModel.swift */,
+			);
+			path = SettingsView;
 			sourceTree = "<group>";
 		};
 		00C7B2D92B1F16A5003E74D5 /* ViewController */ = {
@@ -1556,6 +1593,7 @@
 				000849E32A77E6E300BF5A64 /* AuthParameters.swift in Sources */,
 				009FD60C29DC144200CFD8B1 /* NetworkResponse.swift in Sources */,
 				009FD62A29DC144200CFD8B1 /* ProviderProtocol.swift in Sources */,
+				005502AE2D2BD43A00E4E962 /* SDKAuthFailedStatusParameters.swift in Sources */,
 				002493D129DC5869007B77F4 /* ViewController.swift in Sources */,
 				002493AC29DC4F62007B77F4 /* String+Extension.swift in Sources */,
 				00B1491F29FC0237005D4DDD /* BottomSheet.swift in Sources */,
@@ -1584,6 +1622,7 @@
 				00B1491A29FBEDAB005D4DDD /* AlertProvider.swift in Sources */,
 				006E534D2B5168A00048C745 /* NetworkManager+User.swift in Sources */,
 				00DE3E1429DD60D3006C5E80 /* KeychainProvider.swift in Sources */,
+				00C023012CFEED5700CF15B9 /* SettingsViewModel.swift in Sources */,
 				002D85F92B484ED60001EEEB /* LockScreenModifier.swift in Sources */,
 				009E96A62A8E30FC003F7827 /* WelcomeUserView.swift in Sources */,
 				00C7B2DD2B1F180B003E74D5 /* ViewController+ETCustomization.swift in Sources */,
@@ -1614,6 +1653,7 @@
 				00A908D22B0390AF00664B9F /* DataShareViewModel.swift in Sources */,
 				009FD62B29DC144200CFD8B1 /* ServiceProtocol.swift in Sources */,
 				00EFE7E72B1E16AC0015B19D /* LoginCodeViewModel.swift in Sources */,
+				001AE14B2CE49B6B00E394DD /* NotificationPermissionAgreementView.swift in Sources */,
 				00DE3E2529DD9089006C5E80 /* TabbarView.swift in Sources */,
 				002493A929DC4CCE007B77F4 /* AppConfig.swift in Sources */,
 				007491EA2B5E789F00E4D429 /* KeycloakService.swift in Sources */,
@@ -1638,6 +1678,7 @@
 				003BD1322B10C4D600925A25 /* NotDOBRule.swift in Sources */,
 				0048839029F7F0900065A00B /* DSColors.swift in Sources */,
 				140E46362977F2E700FC85BD /* AppDelegate.swift in Sources */,
+				005502A92D2BC6D600E4E962 /* ETSdkAuthenticationFailedView.swift in Sources */,
 				E3B90B362C4FC34800283C6E /* ExitButtonView.swift in Sources */,
 				003BD1362B10C4F400925A25 /* ValidEmailRule.swift in Sources */,
 				009FD60D29DC144200CFD8B1 /* ParametersEncoding.swift in Sources */,
@@ -1679,9 +1720,11 @@
 				00B2F67D2B51AABE003EACCD /* SequenceExtension.swift in Sources */,
 				00A908D62B0390E000664B9F /* WelcomeUserViewModel.swift in Sources */,
 				00DE3E2329DD8F58006C5E80 /* DocumentsHistoryView.swift in Sources */,
+				005502AC2D2BC9ED00E4E962 /* ETSdkAuthenticationFailedViewModel.swift in Sources */,
 				003311842B7A7911007F99A3 /* URLRequest+Extension.swift in Sources */,
 				008534412A2F720F00FE4364 /* ProfileDeleteView.swift in Sources */,
 				002B9AC92A7BDCA900B60DBD /* UINavigationController+Extension.swift in Sources */,
+				00848A122D2E93D000F84950 /* Error+Extension.swift in Sources */,
 				006403702B4EC44500600EBA /* ViewDidLoadModifier.swift in Sources */,
 				00E830E72B289CEA00BEDB45 /* UpdateStatusCodeResponse.swift in Sources */,
 				002C90FC2A306D74005E803C /* BiometricError.swift in Sources */,
@@ -1705,6 +1748,7 @@
 				009F5AD82B5E9EE900672F21 /* ConfirmAuthenticationView.swift in Sources */,
 				00A02E942B693543009AF9BA /* Logging+Evrotrust.swift in Sources */,
 				00A908CE2B03903A00664B9F /* DeleteProfileViewModel.swift in Sources */,
+				00853BD52CEFB29100626FA4 /* NetworkManager+Receipts.swift in Sources */,
 				00770D792A6A8342000C2824 /* DatastoreProtocol.swift in Sources */,
 				00CC0D1D2BBE7F0900C117E5 /* BetaTagView.swift in Sources */,
 				00022EE02B69285000EF59D2 /* LoggingHelper.swift in Sources */,
@@ -1867,7 +1911,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Digital Sofia/Digital Sofia.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 76;
+				CURRENT_PROJECT_VERSION = 88;
 				DEVELOPMENT_TEAM = 9VVHAD2T49;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1891,7 +1935,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.1;
+				MARKETING_VERSION = 1.2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Digital-Sofia";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1972,7 +2016,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Digital Sofia/Digital Sofia.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 76;
+				CURRENT_PROJECT_VERSION = 88;
 				DEVELOPMENT_TEAM = 9VVHAD2T49;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1996,7 +2040,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.1;
+				MARKETING_VERSION = 1.2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Digital-Sofia";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2141,7 +2185,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Digital Sofia/Digital Sofia.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 76;
+				CURRENT_PROJECT_VERSION = 88;
 				DEVELOPMENT_TEAM = 9VVHAD2T49;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2165,7 +2209,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.1;
+				MARKETING_VERSION = 1.2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Digital-Sofia";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2188,7 +2232,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Digital Sofia/Digital Sofia.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 76;
+				CURRENT_PROJECT_VERSION = 88;
 				DEVELOPMENT_TEAM = 9VVHAD2T49;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2212,7 +2256,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.1;
+				MARKETING_VERSION = 1.2.3;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.Digital-Sofia";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

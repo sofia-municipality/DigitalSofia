@@ -22,7 +22,7 @@ import com.digital.sofia.utils.FirebaseMessagingServiceHelper
 import com.digital.sofia.utils.LocalizationManager
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
-import com.digital.sofia.utils.UpdateDocumentsHelper
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.onEach
 
 class DeleteProfileConfirmViewModel(
@@ -32,7 +32,6 @@ class DeleteProfileConfirmViewModel(
     preferences: PreferencesRepository,
     authorizationHelper: AuthorizationHelper,
     localizationManager: LocalizationManager,
-    updateDocumentsHelper: UpdateDocumentsHelper,
     cryptographyRepository: CryptographyRepository,
     updateFirebaseTokenUseCase: UpdateFirebaseTokenUseCase,
     getLogLevelUseCase: GetLogLevelUseCase,
@@ -44,7 +43,6 @@ class DeleteProfileConfirmViewModel(
     appEventsHelper = appEventsHelper,
     authorizationHelper = authorizationHelper,
     localizationManager = localizationManager,
-    updateDocumentsHelper = updateDocumentsHelper,
     cryptographyRepository = cryptographyRepository,
     updateFirebaseTokenUseCase = updateFirebaseTokenUseCase,
     getLogLevelUseCase = getLogLevelUseCase,
@@ -74,10 +72,13 @@ class DeleteProfileConfirmViewModel(
                 hideErrorState()
                 toRegistrationFragment()
             }.onRetry {
-                logout()
-            }.onFailure {
-                logError("deleteUser onFailure", it, TAG)
-                showMessage(Message.error(R.string.error_server_error))
+                deleteUser()
+            }.onFailure { failure ->
+                logError("deleteUser onFailure", failure, TAG)
+                when (failure.responseCode) {
+                    409 -> showMessage(Message.error(R.string.profile_delete_error_description))
+                    else -> showMessage(Message.error(R.string.error_server_error))
+                }
                 hideLoader()
                 hideErrorState()
             }

@@ -101,6 +101,8 @@ const API = {
   GET_PAY_TAX_GROUP_DATA: `${WEB_BASE_URL}/agentws/obligation`,
   GET_PAY_TAX_DATA: `${WEB_BASE_URL}/agentws/obligation/<taxGroupId>`,
   TAX_PAYMENT_CHECK: `${WEB_BASE_URL}/agentws/check-for-payment`,
+  DELETE_PROFILE: `${WEB_BASE_URL}/user/delete`,
+  USER_LOGIN_EVENT: `${WEB_BASE_URL}/user/login-event`,
 };
 
 export default API;

@@ -47,16 +47,16 @@ class DocumentPreviewFragment :
 
     override fun onCreated() {
         try {
-            val documentUrl = args.documentUrl
-            logDebug("pdfView from documentUrl: $documentUrl", TAG)
-            if (documentUrl.isEmpty()) {
+            val documentFormIOId = args.documentFormIOId
+            logDebug("pdfView from documentFormIOId: $documentFormIOId", TAG)
+            if (documentFormIOId.isEmpty()) {
                 showErrorState(
                     title = StringSource.Text("Document url not found"),
                     showActionOneButton = false,
                 )
                 return
             }
-            viewModel.documentUrl = documentUrl
+            viewModel.setDocumentFormIOId(documentFormIOId = documentFormIOId)
             viewModel.downloadDocument()
         } catch (e: IllegalStateException) {
             logError("loadWebPage Exception: ${e.message}", e, TAG)

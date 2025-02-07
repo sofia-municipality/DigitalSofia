@@ -43,6 +43,9 @@
     <string name="sdk_error_cancelled">Activity is cancelled. You can try again.</string>
     <string name="sdk_error_unknown">Unknown error, try again or restart the application</string>
     <string name="sdk_error_critical">Critical error, try again or restart the application</string>
+    <string name="sdk_error_user_not_verified">User not verified, try again.</string>
+    <string name="sdk_error_user_profile_information_not_complete">User information is incomplete, you must update your user information to continue</string>
+    <string name="sdk_error_user_profile_rejected">User information was rejected, you must provide new information to continue</string>
 
     <!-- Blocked -->
     <string name="error_blocked_title">Entrance blocked</string>
@@ -167,7 +170,7 @@
     <string name="profile_delete_confirm_button">Delete</string>
 
     <!-- Profile delete error -->
-    <string name="profile_delete_error_description">"The profile can't be deleted. There is a pending task. When it's completed, you can delete your profile.”</string>
+    <string name="profile_delete_error_description">The profile can\'t be deleted. There is a pending task. When it\'s completed, you can delete your profile.</string>
 
     <!-- Registration start -->
     <string name="start_title">Welcome to Digital Sofia</string>
@@ -286,6 +289,7 @@
     <string name="document_signed_on">Signed on</string>
     <string name="document_rejected_on">Rejected on</string>
     <string name="document_expired_on">Expired on</string>
+    <string name="document_delivered_on">Delivered on</string>
     <string name="document_status_signed">Signed</string>
     <string name="document_status_wait_sign">Awaiting signature</string>
     <string name="document_status_expired">Expired</string>
@@ -295,6 +299,8 @@
     <string name="document_status_unknown">Unknown</string>
     <string name="document_status_failed">Failed</string>
     <string name="document_status_withdrawn">Withdrawn</string>
+    <string name="document_status_delivering">Delivering</string>
+    <string name="document_status_generated">Delivered</string>
     <string name="document_view_file">View File</string>
     <string name="document_download_file">Download</string>
 
@@ -332,6 +338,14 @@
     <string name="beta_button_title">beta</string>
     <string name="beta_feedback_email">address@sofia.bg</string>
 
+    <!-- Notifications information -->
+    <string name="notifications_information_button_title">I agree</string>
+    <string name="notifications_information_title">Welcome to Digital Sofia</string>
+    <string name="notifications_information_description">The Digital Sofia application makes it possible to request, process, track and perform municipal administrative services digitally.</string>
+    <string name="notifications_information_disclaimer">For the application to work properly, please be sure to allow your notifications.</string>
+
+    <!-- Profile verification wait -->
+    <string name="profile_verification_wait_message">Your identification is under review. We will notify you when the process is finished.</string>
 
     <!-- Lorem ipsum -->
     <string name="lorem_ipsum_size_1">Lorem ipsum</string>

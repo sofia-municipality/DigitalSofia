@@ -78,7 +78,7 @@ const Dashboard = React.memo(() => {
   const [selectedLimitValue, setSelectedLimitValue] = useState(limit);
   let numberofSubmissionListFrom =
     //eslint-disable-next-line
-      activePage === 1 ? 1 : ((activePage - 1) * limit) + 1;
+    activePage === 1 ? 1 : (activePage - 1) * limit + 1;
   let numberofSubmissionListTo = activePage === 1 ? limit : limit * activePage;
   const [isAscending, setIsAscending] = useState(true);
   const [searchBy, setSearchBy] = useState("created");
@@ -98,6 +98,12 @@ const Dashboard = React.memo(() => {
     { value: "30", label: "30" },
     { value: totalItems, label: "All" },
   ];
+  const langOptions = {
+    bg: "bg-BG",
+    en: "en-EN",
+  };
+  const userLanguage = useSelector((state) => state.user.lang);
+
   // Function to handle search text
   const handleSearch = () => {
     dispatch(setMetricsSubmissionPageChange(1));
@@ -300,6 +306,7 @@ const Dashboard = React.memo(() => {
                 dayAriaLabel="Select the day"
                 clearAriaLabel="Clear value"
                 clearIcon={null}
+                locale={langOptions[userLanguage]}
               />
               <div className="ml-3">
                 {isAscending ? (

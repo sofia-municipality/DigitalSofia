@@ -116,7 +116,7 @@ export const useTokenExpireTimer = () => {
     minutes,
     hours,
     // eslint-disable-next-line
-    timeLeft: ((((hours * 60) + minutes) * 60) + seconds) * 1000,
+    timeLeft: ((hours * 60 + minutes) * 60 + seconds) * 1000,
     initialTime: expirationDate.getTime() - initialDate?.getTime(),
   };
 };
@@ -150,4 +150,21 @@ export const useCheckUserAssuranceLevel = () => {
     },
     [userAssuranceLevel]
   );
+};
+
+export const useGetUserEvrotrustName = () => {
+  const user = useSelector((state) => state?.user?.userDetail);
+  const userLanguage = useSelector((state) => state.user.lang);
+  const [evrotrustFullName, setEvrotrustFullName] = useState("");
+  useEffect(() => {
+    if (userLanguage) {
+      if (userLanguage === "bg") {
+        setEvrotrustFullName(user.evroTrustNames);
+      } else if (userLanguage === "en") {
+        setEvrotrustFullName(user.evroTrustLatinnames);
+      }
+    }
+  }, [userLanguage, user.evroTrustLatinnames, user.evroTrustNames]);
+
+  return evrotrustFullName;
 };

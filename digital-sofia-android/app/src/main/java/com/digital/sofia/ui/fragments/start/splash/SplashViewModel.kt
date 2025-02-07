@@ -5,6 +5,7 @@
  **/
 package com.digital.sofia.ui.fragments.start.splash
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import com.digital.sofia.BuildConfig
 import com.digital.sofia.NavActivityDirections
@@ -24,17 +25,20 @@ import com.digital.sofia.domain.usecase.user.GetLogLevelUseCase
 import com.digital.sofia.domain.utils.AuthorizationHelper
 import com.digital.sofia.domain.utils.LogUtil.logDebug
 import com.digital.sofia.domain.utils.LogUtil.logError
+import com.digital.sofia.extensions.navigateInMainThread
 import com.digital.sofia.extensions.navigateNewRootInMainThread
 import com.digital.sofia.models.common.Message
 import com.digital.sofia.models.common.StringSource
 import com.digital.sofia.ui.BaseViewModel
+import com.digital.sofia.ui.fragments.registration.confirm.RegistrationConfirmIdentificationFragmentDirections
+import com.digital.sofia.ui.fragments.registration.confirm.RegistrationConfirmIdentificationViewModel
+import com.digital.sofia.ui.fragments.registration.confirm.RegistrationConfirmIdentificationViewModel.Companion
 import com.digital.sofia.utils.AppEventsHelper
 import com.digital.sofia.utils.EvrotrustSDKHelper
 import com.digital.sofia.utils.FirebaseMessagingServiceHelper
 import com.digital.sofia.utils.LocalizationManager
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
-import com.digital.sofia.utils.UpdateDocumentsHelper
 
 class SplashViewModel(
     private val preferences: PreferencesRepository,
@@ -43,7 +47,6 @@ class SplashViewModel(
     appEventsHelper: AppEventsHelper,
     authorizationHelper: AuthorizationHelper,
     localizationManager: LocalizationManager,
-    updateDocumentsHelper: UpdateDocumentsHelper,
     cryptographyRepository: CryptographyRepository,
     updateFirebaseTokenUseCase: UpdateFirebaseTokenUseCase,
     getLogLevelUseCase: GetLogLevelUseCase,
@@ -55,7 +58,6 @@ class SplashViewModel(
     appEventsHelper = appEventsHelper,
     authorizationHelper = authorizationHelper,
     localizationManager = localizationManager,
-    updateDocumentsHelper = updateDocumentsHelper,
     cryptographyRepository = cryptographyRepository,
     updateFirebaseTokenUseCase = updateFirebaseTokenUseCase,
     getLogLevelUseCase = getLogLevelUseCase,
@@ -105,6 +107,33 @@ class SplashViewModel(
         }
     }
 
+    fun proceedNext(appStatus: AppStatus) {
+        when (appStatus) {
+            AppStatus.PROFILE_VERIFICATION_FORGOTTEN_PIN -> toForgottenPinRegistrationFlowFragment()
+            AppStatus.PROFILE_VERIFICATION_REGISTRATION -> toRegistrationFlowFragment()
+            AppStatus.PROFILE_VERIFICATION_DOCUMENTS -> toMainTabsFlowFragment()
+            else -> toRegistrationFlowFragment()
+        }
+    }
+
+    fun handleError(appStatus: AppStatus, @StringRes errorMessageRes: Int) {
+        when (appStatus) {
+            AppStatus.PROFILE_VERIFICATION_FORGOTTEN_PIN,
+            AppStatus.PROFILE_VERIFICATION_REGISTRATION,
+            AppStatus.PROFILE_VERIFICATION_DOCUMENTS -> showMessage(
+                Message(
+                    title = StringSource.Res(R.string.oops_with_dots),
+                    message = StringSource.Res(errorMessageRes),
+                    type = Message.Type.ALERT,
+                    positiveButtonText = StringSource.Res(R.string.ok),
+                    negativeButtonText = StringSource.Res(R.string.cancel),
+                )
+            )
+
+            else -> {}
+        }
+    }
+
     fun onSdkStatusChanged(sdkStatus: SdkStatus) {
         val appStatus = preferences.readAppStatus()
         logDebug(
@@ -120,11 +149,6 @@ class SplashViewModel(
                     preferences.saveAppStatus(AppStatus.REGISTERED)
                     logDebug("onSdkStatusChanged DEBUG_FORCE_ENTER_TO_ACCOUNT", TAG)
                     toEnterCodeFragment()
-                    return
-                }
-                if (appStatus != AppStatus.REGISTERED) {
-                    logDebug("onSdkStatusChanged SDK_SETUP_READY toRegistrationFragment", TAG)
-                    toRegistrationFragment()
                     return
                 }
                 if (pinCode == null) {
@@ -170,8 +194,8 @@ class SplashViewModel(
                 showMessage(
                     Message(
                         title = StringSource.Res(R.string.oops_with_dots),
-                        message = StringSource.Text(
-                            "User information is incomplete, you must update your user information to continue"
+                        message = StringSource.Res(
+                            R.string.sdk_error_user_profile_information_not_complete
                         ),
                         type = Message.Type.ALERT,
                         positiveButtonText = StringSource.Res(R.string.ok),
@@ -180,9 +204,36 @@ class SplashViewModel(
                 )
             }
 
+            SdkStatus.ACTIVITY_RESULT_EDIT_PERSONAL_NOT_VERIFIED,
+            SdkStatus.USER_PROFILE_PROCESSING,
+            SdkStatus.USER_PROFILE_IS_SUPERVISED -> {
+                when (appStatus) {
+                    AppStatus.PROFILE_VERIFICATION_FORGOTTEN_PIN,
+                    AppStatus.PROFILE_VERIFICATION_DOCUMENTS,
+                    AppStatus.PROFILE_VERIFICATION_REGISTRATION,
+                    AppStatus.REGISTERED-> toVerificationWaitFragment()
+
+                    else -> {}
+                }
+            }
+
+            SdkStatus.USER_PROFILE_REJECTED -> showMessage(
+                Message(
+                    title = StringSource.Res(R.string.oops_with_dots),
+                    message = StringSource.Res(
+                        R.string.sdk_error_user_profile_rejected
+                    ),
+                    type = Message.Type.ALERT,
+                    positiveButtonText = StringSource.Res(R.string.ok),
+                    negativeButtonText = StringSource.Res(R.string.cancel),
+                )
+            )
+
+            SdkStatus.USER_PROFILE_VERIFIED,
             SdkStatus.USER_STATUS_READY,
             SdkStatus.ACTIVITY_RESULT_EDIT_PERSONAL_DATA_READY -> {
                 logDebug("onSdkStatusChanged USER_STATUS_READY", TAG)
+
                 if (appStatus != AppStatus.REGISTERED) {
                     logError("onSdkStatusChanged not ready", TAG)
                     toRegistrationFragment()
@@ -223,6 +274,43 @@ class SplashViewModel(
         logDebug("toEnterCodeFragment", TAG)
         findActivityNavController().navigateNewRootInMainThread(
             NavActivityDirections.toEnterCodeFlowFragment(),
+            viewModelScope
+        )
+    }
+
+    private fun toVerificationWaitFragment() {
+        logDebug("toVerificationWaitFragment", TAG)
+        findFlowNavController().navigateInMainThread(
+            NavActivityDirections.toProfileVerificationWaitFlowFragment(),
+            viewModelScope
+        )
+    }
+
+    private fun toMainTabsFlowFragment() {
+        logDebug("toMainTabsFragment", TAG)
+        preferences.saveAppStatus(AppStatus.REGISTERED)
+        findActivityNavController().navigateNewRootInMainThread(
+            NavActivityDirections.toMainTabsFlowFragment(),
+            viewModelScope
+        )
+    }
+
+    private fun toRegistrationFlowFragment() {
+        logDebug("toRegistrationFlowFragment", TAG)
+        if (preferences.readUser()?.isVerified == true) {
+            toMainTabsFlowFragment()
+        } else {
+            findActivityNavController().navigateNewRootInMainThread(
+                NavActivityDirections.toRegistrationFlowFragment(),
+                viewModelScope
+            )
+        }
+    }
+
+    private fun toForgottenPinRegistrationFlowFragment() {
+        logDebug("toForgottenPinRegistrationFlowFragment", TAG)
+        findActivityNavController().navigateNewRootInMainThread(
+            NavActivityDirections.toForgotPinRegistrationFlowFragment(),
             viewModelScope
         )
     }

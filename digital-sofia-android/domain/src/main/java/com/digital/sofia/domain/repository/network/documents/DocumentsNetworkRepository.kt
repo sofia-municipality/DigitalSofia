@@ -9,6 +9,7 @@ import com.digital.sofia.domain.models.base.ResultEmittedData
 import com.digital.sofia.domain.models.common.DownloadProgress
 import com.digital.sofia.domain.models.documents.DocumentAuthenticationRequestModel
 import com.digital.sofia.domain.models.documents.DocumentModel
+import com.digital.sofia.domain.models.documents.DocumentStatusModel
 import com.digital.sofia.domain.models.documents.DocumentsWithPaginationModel
 import kotlinx.coroutines.flow.Flow
 import java.io.File
@@ -22,15 +23,20 @@ interface DocumentsNetworkRepository {
 
     fun downloadFile(
         file: File,
-        documentUrl: String,
+        documentFormIOId: String,
     ): Flow<ResultEmittedData<DownloadProgress>>
 
-    fun sendOpenedDocument(
+    fun checkSignedDocumentStatus(
         evrotrustTransactionId: String,
-    ): Flow<ResultEmittedData<Unit>>
+    ): Flow<ResultEmittedData<DocumentStatusModel>>
+
+    fun checkDeliveredDocumentStatus(
+        evrotrustThreadId: String,
+    ): Flow<ResultEmittedData<DocumentStatusModel>>
 
     fun requestIdentity(
         personalIdentificationNumber: String,
+        language: String,
     ): Flow<ResultEmittedData<DocumentModel>>
 
     fun authenticateDocument(

@@ -20,7 +20,7 @@ import Loading from "../containers/Loading";
 import NotFound from "./NotFound";
 
 const Form = lazy(() => import("./Form"));
-const ServiceFlow = lazy(() => import("./ServiceFlow"));
+// const ServiceFlow = lazy(() => import("./ServiceFlow"));
 const DashboardPage = lazy(() => import("./Dashboard"));
 const InsightsPage = lazy(() => import("./Insights"));
 const Application = lazy(() => import("./Application"));
@@ -102,23 +102,23 @@ const PrivateRoute = React.memo((props) => {
     [userRoles]
   );
 
-  const ReviewerRoute = useMemo(
-    () =>
-      ({ component: Component, ...rest }) =>
-        (
-          <Route
-            {...rest}
-            render={(props) =>
-              userRoles.includes(STAFF_REVIEWER) ? (
-                <Component {...props} />
-              ) : (
-                <Redirect exact to="/404" />
-              )
-            }
-          />
-        ),
-    [userRoles]
-  );
+  // const ReviewerRoute = useMemo(
+  //   () =>
+  //     ({ component: Component, ...rest }) =>
+  //       (
+  //         <Route
+  //           {...rest}
+  //           render={(props) =>
+  //             userRoles.includes(STAFF_REVIEWER) ? (
+  //               <Component {...props} />
+  //             ) : (
+  //               <Redirect exact to="/404" />
+  //             )
+  //           }
+  //         />
+  //       ),
+  //   [userRoles]
+  // );
 
   const PageAdminRoute = useMemo(
     () =>
@@ -352,7 +352,7 @@ const PrivateRoute = React.memo((props) => {
               path={`${BASE_ROUTE}application`}
               component={Application}
             />
-            <ReviewerRoute path={`${BASE_ROUTE}task`} component={ServiceFlow} />
+            {/* <ReviewerRoute path={`${BASE_ROUTE}task`} component={ServiceFlow} /> */}
             <AnalyticsViewerRoute
               path={`${BASE_ROUTE}metrics`}
               component={DashboardPage}
@@ -364,9 +364,11 @@ const PrivateRoute = React.memo((props) => {
             <Route exact path={BASE_ROUTE}>
               <Redirect
                 to={
-                  userRoles.includes(STAFF_REVIEWER)
-                    ? `${redirecUrl}task`
-                    : `${redirecUrl}form`
+                  `${redirecUrl}form`
+                  // old code
+                  // userRoles.includes(STAFF_REVIEWER)
+                  // ? `${redirecUrl}task`
+                  // : `${redirecUrl}form`
                 }
               />
             </Route>

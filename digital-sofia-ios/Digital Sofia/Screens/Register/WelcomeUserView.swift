@@ -22,27 +22,19 @@ struct WelcomeUserView: View {
     var body: some View {
         VStack(spacing: AppConfig.Dimensions.Padding.XXL) {
             navigation()
-            
             loginViewModel?.welcomeView()
                 .padding(.bottom, AppConfig.Dimensions.Padding.XXL)
-            
             stateImage()
-            
             titleLabel()
-            
             detailsLabel()
-            
             Spacer()
             Spacer()
-            
             welcomeView
-            
             Spacer()
         }
         .padding([.leading, .trailing], AppConfig.Dimensions.Padding.XXL)
         .onAppear {
             self.loginViewModel = LoginViewModel()
-            
             if viewModel.state == .success {
                 NotificationCenter.default.post(name: NSNotification.Name.checkPendingDocumentsNotification,
                                                 object: nil,

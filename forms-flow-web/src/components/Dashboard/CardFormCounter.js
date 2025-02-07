@@ -33,7 +33,10 @@ const CardFormCounter = React.memo((props) => {
                   </Tooltip>
                 )}
               >
-                <span className="form-title">{formName}</span>
+                <span className="form-title">
+                  {" "}
+                  <Translation>{(t) => t(formName)}</Translation>
+                </span>
               </OverlayTrigger>
             </div>
 

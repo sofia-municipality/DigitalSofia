@@ -90,7 +90,7 @@ extension NetworkManager {
                         completion(.failure(error))
                     }
                 }) { response in
-                    UserProvider.shared.updateUserToken(info: response, shouldVerify:  UserProvider.isVerified == false)
+                    UserProvider.shared.updateUserToken(info: response, shouldVerify: UserProvider.isVerified == false)
                     completion(.success(true))
                 }
                 .store(in: &cancellables)
@@ -109,6 +109,23 @@ extension NetworkManager {
                 }
             }) { response in
                 completion(.success(response))
+            }
+            .store(in: &cancellables)
+    }
+    
+    static func subscribeToETUserUpdates(completion: @escaping (NetworkResponse<Bool>) -> ()) {
+        let parameters = SDKAuthFailedStatusParameters(identificationNumber: user?.personalIdentificationNumber ?? "")
+        provider.runRequest(type: EmptyEntity.self, service: APIService.sdkAuthFailedStatus(parameters: parameters))
+            .sink(receiveCompletion: { result in
+                switch result {
+                case .finished:
+                    break
+                case .failure(let error):
+                    print(error)
+                    completion(.failure(error))
+                }
+            }) { response in
+                completion(.success(true))
             }
             .store(in: &cancellables)
     }

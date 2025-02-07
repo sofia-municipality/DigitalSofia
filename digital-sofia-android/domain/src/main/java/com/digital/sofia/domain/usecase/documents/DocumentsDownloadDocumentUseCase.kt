@@ -29,12 +29,12 @@ class DocumentsDownloadDocumentUseCase(
 
     fun invoke(
         file: File,
-        documentUrl: String,
+        documentFormIOId: String,
     ): Flow<ResultEmittedData<DownloadProgress>> {
-        logDebug("downloadDocument documentUrl: $documentUrl", TAG)
+        logDebug("downloadDocument documentFormIOId: $documentFormIOId", TAG)
         return documentsNetworkRepository.downloadFile(
             file = file,
-            documentUrl = documentUrl,
+            documentFormIOId = documentFormIOId,
         )
     }
 

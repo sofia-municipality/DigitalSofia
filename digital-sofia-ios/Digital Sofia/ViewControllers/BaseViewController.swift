@@ -60,7 +60,7 @@ class BaseViewController: UIViewController {
     }
     
     func checkPendingDocuments() {
-        let parameters = DocumentsParameters(statuses: [.signing], cursor: nil)
+        let parameters = DocumentsParameters(statuses: [.signing, .delivering], cursor: nil)
         
         NetworkManager.getDocuments(parameters: parameters) { [weak self] response in
             switch response {

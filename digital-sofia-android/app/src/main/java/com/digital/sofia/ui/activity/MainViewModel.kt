@@ -10,7 +10,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
-import android.util.Log
 import androidx.annotation.CallSuper
 import androidx.lifecycle.viewModelScope
 import com.digital.sofia.BuildConfig
@@ -22,16 +21,12 @@ import com.digital.sofia.domain.models.base.onSuccess
 import com.digital.sofia.domain.repository.common.CryptographyRepository
 import com.digital.sofia.domain.repository.common.PreferencesRepository
 import com.digital.sofia.domain.usecase.firebase.UpdateFirebaseTokenUseCase
-import com.digital.sofia.domain.usecase.logout.LogoutUseCase
 import com.digital.sofia.domain.usecase.logs.UploadLogsUseCase
 import com.digital.sofia.domain.usecase.user.GetLogLevelUseCase
 import com.digital.sofia.domain.utils.AuthorizationHelper
-import com.digital.sofia.domain.utils.LogEvrotrustUtil
-import com.digital.sofia.domain.utils.LogUtil
 import com.digital.sofia.domain.utils.LogUtil.logDebug
 import com.digital.sofia.domain.utils.LogUtil.logError
 import com.digital.sofia.extensions.launchInScope
-import com.digital.sofia.models.common.Message
 import com.digital.sofia.models.common.StartDestination
 import com.digital.sofia.ui.BaseViewModel
 import com.digital.sofia.utils.ActivitiesCommonHelper
@@ -41,7 +36,6 @@ import com.digital.sofia.utils.LocalizationManager
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
 import com.digital.sofia.utils.ScreenshotsDetector
-import com.digital.sofia.utils.UpdateDocumentsHelper
 import com.scottyab.rootbeer.RootBeer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.onEach
@@ -59,7 +53,6 @@ class MainViewModel(
     private val preferences: PreferencesRepository,
     appEventsHelper: AppEventsHelper,
     localizationManager: LocalizationManager,
-    updateDocumentsHelper: UpdateDocumentsHelper,
     cryptographyRepository: CryptographyRepository,
     updateFirebaseTokenUseCase: UpdateFirebaseTokenUseCase,
     getLogLevelUseCase: GetLogLevelUseCase,
@@ -71,7 +64,6 @@ class MainViewModel(
     appEventsHelper = appEventsHelper,
     authorizationHelper = authorizationHelper,
     localizationManager = localizationManager,
-    updateDocumentsHelper = updateDocumentsHelper,
     cryptographyRepository = cryptographyRepository,
     updateFirebaseTokenUseCase = updateFirebaseTokenUseCase,
     getLogLevelUseCase = getLogLevelUseCase,

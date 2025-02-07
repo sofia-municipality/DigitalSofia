@@ -21,6 +21,8 @@ struct DocumentModel: Codable, Hashable {
     
     var rejected: String?
     
+    var generated: String?
+    
     var validUntill: String?
     
     var evrotrustThreadId: String?
@@ -50,6 +52,7 @@ struct DocumentModel: Codable, Hashable {
              expired,
              validUntill,
              signed,
+             generated,
              rejected,
              evrotrustThreadId,
              evrotrustTransactionId,
@@ -69,13 +72,14 @@ struct DocumentModel: Codable, Hashable {
         expired = try container.decodeIfPresent(String.self, forKey: .expired)
         validUntill = try container.decodeIfPresent(String.self, forKey: .validUntill)
         signed = try container.decodeIfPresent(String.self, forKey: .signed)
+        generated = try container.decodeIfPresent(String.self, forKey: .generated)
         rejected = try container.decodeIfPresent(String.self, forKey: .rejected)
         evrotrustThreadId = try container.decodeIfPresent(String.self, forKey: .evrotrustThreadId)
         evrotrustTransactionId = try container.decodeIfPresent(String.self, forKey: .evrotrustTransactionId)
         fileName = try container.decodeIfPresent(String.self, forKey: .fileName)
         formioId = try container.decodeIfPresent(String.self, forKey: .formioId)
         
-        status = try container.decode(String.self, forKey: .status)
+        status = try container.decode(String.self, forKey: .status).lowercased()
         docStatus = DocumentStatus(rawValue: status) ?? .unsigned
         
         referenceNumber = try container.decodeIfPresent(String.self, forKey: .referenceNumber)
@@ -89,7 +93,9 @@ enum DocumentStatus: String {
          signed = "signed",
          expired = "expired",
          rejected = "rejected",
-         failed = "failed"
+         failed = "failed",
+         delivering = "delivering",
+         delivered = "generated"
     
     var localisedDescription: String {
         switch self {
@@ -105,6 +111,10 @@ enum DocumentStatus: String {
             return AppConfig.UI.Documents.rejected.localized
         case .failed:
             return AppConfig.UI.Documents.failed.localized
+        case .delivering:
+            return AppConfig.UI.Documents.delivering.localized
+        case .delivered:
+            return AppConfig.UI.Documents.delivered.localized
         }
     }
 }

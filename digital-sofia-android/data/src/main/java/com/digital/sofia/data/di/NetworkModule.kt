@@ -21,6 +21,7 @@ import com.digital.sofia.data.network.common.CommonApi
 import com.digital.sofia.data.network.logs.LogsApi
 import com.digital.sofia.data.network.registration.RegistrationApi
 import com.digital.sofia.data.network.settings.SettingsApi
+import com.digital.sofia.data.network.user.UserApi
 import com.digital.sofia.data.network.utils.HeaderInterceptor
 import com.digital.sofia.data.network.utils.MockInterceptor
 import com.digital.sofia.data.network.utils.NullOrEmptyConverterFactory
@@ -68,6 +69,9 @@ val networkModule = module {
     }
     single {
         get<Retrofit>(named(RETROFIT_AUTH)).create(SettingsApi::class.java)
+    }
+    single {
+        get<Retrofit>(named(RETROFIT_BASE)).create(UserApi::class.java)
     }
     single {
         get<Retrofit>(named(RETROFIT_AUTH)).create(ConfirmationApi::class.java)

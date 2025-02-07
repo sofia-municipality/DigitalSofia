@@ -23,11 +23,15 @@ class DocumentsNotificationHelper {
         var selectedTab = serviceTab
         
         switch notification.name {
-        case NSNotification.Name.signedDocumentNotification, NSNotification.Name.expiredDocumentNotification:
+        case NSNotification.Name.signedDocumentNotification,
+            NSNotification.Name.expiredDocumentNotification:
             selectedTab = .docments
-        case NSNotification.Name.pendingDocumentNotification:
+            
+        case NSNotification.Name.pendingDocumentNotification,
+            NSNotification.Name.pendingDeliveryDocumentNotification:
             selectedTab = .pendingDocuments
             appState.hasPendingDocuments = true
+            
         default: break
         }
         

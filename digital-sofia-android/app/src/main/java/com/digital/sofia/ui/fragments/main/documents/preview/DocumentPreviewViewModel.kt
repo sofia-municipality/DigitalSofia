@@ -33,7 +33,6 @@ import com.digital.sofia.utils.FirebaseMessagingServiceHelper
 import com.digital.sofia.utils.LocalizationManager
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
-import com.digital.sofia.utils.UpdateDocumentsHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.onEach
 import java.io.File
@@ -46,7 +45,6 @@ class DocumentPreviewViewModel(
     appEventsHelper: AppEventsHelper,
     authorizationHelper: AuthorizationHelper,
     localizationManager: LocalizationManager,
-    updateDocumentsHelper: UpdateDocumentsHelper,
     cryptographyRepository: CryptographyRepository,
     updateFirebaseTokenUseCase: UpdateFirebaseTokenUseCase,
     getLogLevelUseCase: GetLogLevelUseCase,
@@ -58,7 +56,6 @@ class DocumentPreviewViewModel(
     appEventsHelper = appEventsHelper,
     authorizationHelper = authorizationHelper,
     localizationManager = localizationManager,
-    updateDocumentsHelper = updateDocumentsHelper,
     cryptographyRepository = cryptographyRepository,
     updateFirebaseTokenUseCase = updateFirebaseTokenUseCase,
     getLogLevelUseCase = getLogLevelUseCase,
@@ -75,22 +72,21 @@ class DocumentPreviewViewModel(
     private val _documentPdfLiveData = MutableStateFlow<File?>(null)
     val documentPdfLiveData = _documentPdfLiveData.readOnly()
 
-    var documentUrl: String? = null
+    private var documentFormIOId: String? = null
+
+    fun setDocumentFormIOId(documentFormIOId: String) {
+        this.documentFormIOId = documentFormIOId
+    }
 
     fun downloadDocument() {
-        logDebug("downloadFile documentUrl: $documentUrl", TAG)
-        if (documentUrl.isNullOrEmpty()) {
+        logDebug("downloadFile documentFormIOId: $documentFormIOId", TAG)
+        if (documentFormIOId.isNullOrEmpty()) {
             showErrorState(
                 description = StringSource.Text("Document url not found"),
             )
             return
         }
-        val documentUri = Uri.parse(documentUrl)
-        val authToken = documentUri.getQueryParameter("authToken")
-        val accessToken = preferences.readAccessToken()?.token
-        if (authToken != null && authToken != accessToken) {
-            documentUrl = "${documentUri.scheme}://${documentUri.host}${documentUri.path}?authToken=$accessToken"
-        }
+
         try {
             val directory = currentContext.get().cacheDir!!
             if (!directory.exists()) {
@@ -116,7 +112,7 @@ class DocumentPreviewViewModel(
             }
             documentsDownloadDocumentUseCase.invoke(
                 file = file,
-                documentUrl = documentUrl!!,
+                documentFormIOId = documentFormIOId ?: return,
             ).onEach { result ->
                 result.onLoading {
                     logDebug("downloadFile onLoading", TAG)

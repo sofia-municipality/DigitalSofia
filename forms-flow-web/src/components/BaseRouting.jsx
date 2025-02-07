@@ -47,6 +47,7 @@ import RequestService from "./sm/pages/RequestService";
 import LocalTaxesAndFees from "./sm/pages/RequestService/LocalTaxesAndFees";
 import MyServices from "./sm/pages/MyServices";
 import Loading from "../containers/Loading";
+import { useTranslation } from "react-i18next";
 
 const BaseRouting = React.memo(({ store }) => {
   const dispatch = useDispatch();
@@ -221,6 +222,7 @@ const SmRoutesWrapper = ({ hideNav, children }) => {
 
   const isHideNavParamReceived =
     hideNav || localStorage.getItem("hideNav") === "true";
+  const { t } = useTranslation();
 
   return isAdminOverridenRoute || isHideNavParamReceived ? (
     <>
@@ -236,6 +238,18 @@ const SmRoutesWrapper = ({ hideNav, children }) => {
     </>
   ) : (
     <>
+      {/* Remove once it is not beta version anymore */}
+      <section className={`container-fluid d-flex beta-container`}>
+        <div className="row w-100">
+          <div className="col-xs-3 beta-title d-flex justify-content-center align-content-center">
+            <span className="align-self-center">BETA</span>
+          </div>
+          <div className="col-xs-9 beta-description">
+            {t("navigation.beta.description")}
+            <span className="beta-link"> address@sofia.bg</span>
+          </div>
+        </div>
+      </section>
       <SmNavigation />
       {children}
       <SmFooter />

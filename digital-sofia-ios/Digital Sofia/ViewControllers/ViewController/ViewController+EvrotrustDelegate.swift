@@ -19,11 +19,25 @@ extension ViewController: EvrotrustCheckUserStatusDelegate {
             setNewUserState()
             
         case EvrotrustResultStatus.OK:
+            print(result.formattedDescription)
             if result.successfulCheck {
-                if result.identified == false {
+                if result.identified == true {
+                    if result.readyToSign == false {
+                        if UserProvider.shouldContinueResetPasswordFlow {
+                            NetworkManager.subscribeToETUserUpdates() { _ in }
+                            showResetPINView(readyToSign: false)
+                        } else {
+                            showSdkUserAuthFailedView()
+                        }
+                    } else {
+                        if UserProvider.shouldContinueResetPasswordFlow {
+                            showResetPINView(readyToSign: true)
+                        } else {
+                            UserProvider.isVerified ? authenticateUser() : showConfirmDataShareView()
+                        }
+                    }
+                } else if result.identified == false || result.rejected == true {
                     showEditETUser()
-                } else {
-                    authenticateUser()
                 }
             }
             

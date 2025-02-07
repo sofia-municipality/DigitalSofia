@@ -30,6 +30,10 @@ final class UserProvider {
         return currentUser?.useBiometrics == true && BiometricProvider.biometricsAvailable
     }
     
+    static var shouldContinueResetPasswordFlow: Bool {
+        return UserDefaults.standard.bool(forKey: AppConfig.UserDefaultsKeys.userInitiatedForgottenPasswordFlow)
+    }
+    
     func save(user: User?) {
         if let encodedUser = JSONUtilities.shared.encode(object: user) {
             KeychainDatastore.standard.save(data: encodedUser, key: UserProvider.USER_ACCESS_TOKEN)

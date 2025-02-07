@@ -11,19 +11,18 @@ struct ProfileDeleteView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var networkMonitor: NetworkMonitor
     @Environment(\.dismiss) var dismiss
-    
+    @Binding var canDeleteUser: Bool
     @StateObject private var viewModel = DeleteProfileViewModel()
-    @State private var isLoading = false
     
     var body: some View {
-        LoadingStack(isPresented: $isLoading) {
+        LoadingStack(isPresented: $viewModel.isLoading) {
             VStack {
                 LogoHeaderView(hideTitle: true)
                 
                 Spacer()
                 
-                Text(viewModel.hasPendingRequests ? AppConfig.UI.Text.deleteProfileRequestDetails.localized : AppConfig.UI.Text.deleteProfileDetails.localized)
-                    .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans, 
+                Text(canDeleteUser ? AppConfig.UI.Text.deleteProfileDetails.localized : AppConfig.UI.Text.deleteProfileRequestDetails.localized)
+                    .font(DSFonts.getCustomFont(family: DSFonts.FontFamily.sofiaSans,
                                                 weight: DSFonts.FontWeight.regular,
                                                 size: DSFonts.FontSize.large))
                     .foregroundColor(DSColors.Text.indigoDark)
@@ -37,13 +36,10 @@ struct ProfileDeleteView: View {
                         dismiss()
                     }
                     
-                    if viewModel.hasPendingRequests == false {
-                        BlueBackgroundButton(title: AppConfig.UI.Titles.Button.delete.localized, 
+                    if canDeleteUser {
+                        BlueBackgroundButton(title: AppConfig.UI.Titles.Button.delete.localized,
                                              action: {
-                            isLoading = true
                             viewModel.deleteUser { error in
-                                isLoading = false
-                                
                                 if error != nil {
                                     appState.alertItem = AlertProvider.errorAlert(message: error?.description ?? "")
                                 }
@@ -56,6 +52,9 @@ struct ProfileDeleteView: View {
             }
             .padding([.leading, .trailing], AppConfig.Dimensions.Padding.XXXL)
         }
+        .onChange(of: viewModel.networkError) { newValue in
+            appState.alertItem = AlertProvider.errorAlert(message: newValue ?? "")
+        }
         .lockScreen()
         .loginNotification()
         .environmentObject(appState)
@@ -66,6 +65,6 @@ struct ProfileDeleteView: View {
 
 struct ProfileDeleteView_Previews: PreviewProvider {
     static var previews: some View {
-        ProfileDeleteView()
+        ProfileDeleteView(canDeleteUser: .constant(false))
     }
 }

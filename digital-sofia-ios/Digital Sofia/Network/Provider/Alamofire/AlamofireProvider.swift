@@ -63,8 +63,8 @@ final class AlamofireProvider: ProviderProtocol {
     // MARK: - Private properties
     
     private let decoder = JSONDecoder()
-    private let retryLimit = 3
-    private let emptyResponseCodes: Set = [201, 204, 205]
+    private var retryLimit = 3
+    private let emptyResponseCodes: Set = [201, 204, 205, 206]
     
     // MARK: - Private methods
     
@@ -199,7 +199,8 @@ extension AlamofireProvider: RequestInterceptor {
             return
         }
         
-        guard request.retryCount < retryLimit else {
+        retryLimit = statusCode == 443 ? 20 : 3
+        guard request.retryCount <= retryLimit else {
             completion(.doNotRetry)
             return
         }
@@ -212,7 +213,7 @@ extension AlamofireProvider: RequestInterceptor {
                 isSuccess ? completion(.retry) : completion(.doNotRetry)
             }
         case 443:
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 8) {
                 completion(.retry)
             }
         default:

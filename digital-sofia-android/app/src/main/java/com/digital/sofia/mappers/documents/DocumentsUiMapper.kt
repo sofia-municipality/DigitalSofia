@@ -39,6 +39,7 @@ class DocumentsUiMapper(
                 created = created ?: currentContext.getString(R.string.unknown),
                 expired = expired,
                 rejected = rejected,
+                generated = generated,
                 fileUrl = fileUrl ?: currentContext.getString(R.string.unknown),
                 fileName = fileName ?: currentContext.getString(R.string.unknown),
                 formioId = formioId ?: currentContext.getString(R.string.unknown),

@@ -5,23 +5,17 @@
  **/
 package com.digital.sofia.ui.fragments.main
 
-import android.Manifest
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.digital.sofia.R
 import com.digital.sofia.databinding.FragmentMainTabsFlowContainerBinding
-import com.digital.sofia.extensions.launchInScope
 import com.digital.sofia.ui.fragments.base.BaseFlowFragment
-import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainTabsFlowFragment :
@@ -69,14 +63,6 @@ class MainTabsFlowFragment :
         }
         viewModel.newPendingDocumentLiveEventNotification.observe(viewLifecycleOwner) {
             handleNavigationToFragment(SIGNING_DOCUMENTS)
-        }
-    }
-
-    override fun onCreated() {
-        super.onCreated()
-        if (Build.VERSION.SDK_INT > 32) {
-            val requestPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
-            requestPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
 

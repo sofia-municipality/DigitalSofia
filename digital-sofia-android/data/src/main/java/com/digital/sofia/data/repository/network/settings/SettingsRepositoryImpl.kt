@@ -59,22 +59,4 @@ class SettingsRepositoryImpl(
         }
     }.flowOn(Dispatchers.IO)
 
-    override fun deleteUser(): Flow<ResultEmittedData<Unit>> = flow {
-        logDebug("deleteUser", TAG)
-        emit(ResultEmittedData.loading(null))
-        getResult {
-            settingsApi.deleteUser()
-        }.onSuccess {
-            logDebug("deleteUser onSuccess", TAG)
-            emit(ResultEmittedData.success(Unit))
-        }.onRetry {
-            logDebug("deleteUser onRetry", TAG)
-            emit(ResultEmittedData.retry(null))
-        }.onFailure {
-            logError("deleteUser onFailure", it, TAG)
-            emit(ResultEmittedData.error(it, null))
-        }
-    }.flowOn(Dispatchers.IO)
-
-
 }

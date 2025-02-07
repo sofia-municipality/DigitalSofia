@@ -22,19 +22,24 @@ enum APIService: ServiceProtocol {
         case .sendDocumentStatus(transactionId: let transactionId):
             return NetworkConfig.EP.API.sendDocumentStatus.format(transactionId)
         case .requestIdentity(egn: let egn):
-            return NetworkConfig.EP.API.requestIdentity.format(egn)
+            let language = LanguageProvider.shared.appLanguage?.short ?? ""
+            return NetworkConfig.EP.API.requestIdentity.format(egn, language)
         case .authenticateIdentityRequest(parameters: let parameters):
             return NetworkConfig.EP.API.authenticateIdentityRequest.format(parameters.evrotrustTransactionId)
         case .uploadLogFile(egn: let egn):
             return NetworkConfig.EP.API.uploadLogFile.format(egn)
+        case .getReceiptStatus(threadId: let threadId):
+            return NetworkConfig.EP.API.getReceiptStatus.format(threadId)
+        case .sdkAuthFailedStatus:
+            return NetworkConfig.EP.API.sdkAuthFailedStatus
         }
     }
     
     var method: SMHTTPMethod {
         switch self {
-        case .documents, .downloadPDF, .sendDocumentStatus, .requestIdentity:
+        case .documents, .downloadPDF, .sendDocumentStatus, .requestIdentity, .getReceiptStatus:
             return .get
-        case .authenticateIdentityRequest, .uploadLogFile:
+        case .authenticateIdentityRequest, .uploadLogFile, .sdkAuthFailedStatus:
             return .post
         }
     }
@@ -45,7 +50,9 @@ enum APIService: ServiceProtocol {
             return .requestParameters(parameters.getDictionary())
         case .authenticateIdentityRequest(let parameters):
             return .requestParameters(parameters.getDictionary())
-        case .downloadPDF, .sendDocumentStatus, .requestIdentity, .uploadLogFile:
+        case .sdkAuthFailedStatus(let parameters):
+            return .requestParameters(parameters.getDictionary())
+        case .downloadPDF, .sendDocumentStatus, .requestIdentity, .uploadLogFile, .getReceiptStatus:
             return .requestPlain
         }
     }
@@ -67,9 +74,9 @@ enum APIService: ServiceProtocol {
     
     var parametersEncoding: ParametersEncoding {
         switch self {
-        case .requestIdentity, .documents, .downloadPDF, .sendDocumentStatus, .uploadLogFile:
+        case .requestIdentity, .documents, .downloadPDF, .sendDocumentStatus, .uploadLogFile, .getReceiptStatus:
             return .url
-        case .authenticateIdentityRequest:
+        case .authenticateIdentityRequest, .sdkAuthFailedStatus:
             return .json
         }
     }
@@ -79,5 +86,7 @@ enum APIService: ServiceProtocol {
     case documents(documentsParameters: DocumentsParameters)
     case downloadPDF(formioId: String)
     case sendDocumentStatus(transactionId: String)
+    case getReceiptStatus(threadId: String)
     case uploadLogFile(egn: String)
+    case sdkAuthFailedStatus(parameters: SDKAuthFailedStatusParameters)
 }

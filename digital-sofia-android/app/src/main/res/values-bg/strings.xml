@@ -43,6 +43,9 @@
     <string name="sdk_error_cancelled">Отказахте стъпка в процеса. Можете да опитате oтново.</string>
     <string name="sdk_error_unknown">Неизвестна грешка, моля опитайте отново или рестартирайте приложение</string>
     <string name="sdk_error_critical">Критична грешка, моля опитайте отново или рестартирайте приложение</string>
+    <string name="sdk_error_user_not_verified">Потребителят не е верифициран, моля опитайте отново.</string>
+    <string name="sdk_error_user_profile_information_not_complete">Потребителската информация е непълна, трябва да актуализирате потребителската си информация, за да продължите</string>
+    <string name="sdk_error_user_profile_rejected">Потребителската информация беше отхвърлена, трябва да предоставите нова информация, за да продължите</string>
 
     <!-- Blocked -->
     <string name="error_blocked_title">Входът е блокиран</string>
@@ -286,6 +289,7 @@
     <string name="document_signed_on">Подписан на</string>
     <string name="document_rejected_on">Отказан на</string>
     <string name="document_expired_on">Изтекъл на</string>
+    <string name="document_delivered_on">Връчен на</string>
     <string name="document_status_signed">Подписан</string>
     <string name="document_status_wait_sign">Очаква подпис</string>
     <string name="document_status_expired">Изтекъл</string>
@@ -295,6 +299,8 @@
     <string name="document_status_unknown">Неизвестен</string>
     <string name="document_status_failed">Неуспешен</string>
     <string name="document_status_withdrawn">Оттеглен</string>
+    <string name="document_status_delivering">Очаква връчване</string>
+    <string name="document_status_generated">Връчен</string>
     <string name="document_view_file">Виж файл</string>
     <string name="document_download_file">Изтегли</string>
 
@@ -331,6 +337,15 @@
     <string name="beta_feedback_description">Toва е нова услуга – Вашата обратна връзка ще ни помогне да я подобрим. Пишете ни на address@sofia.bg</string>
     <string name="beta_button_title">beta</string>
     <string name="beta_feedback_email">address@sofia.bg</string>
+
+    <!-- Notifications information -->
+    <string name="notifications_information_button_title">Разбрах</string>
+    <string name="notifications_information_title">Добре дошли в Digital Sofia</string>
+    <string name="notifications_information_description">Приложението Digital Sofia дава възможност да се заявяват, обработват, проследяват и изпълняват дигитално общински административни услуги.</string>
+    <string name="notifications_information_disclaimer">За удобната работа на приложението, моля задължително позволете вашите нотификации.</string>
+
+    <!-- Profile verification wait -->
+    <string name="profile_verification_wait_message">Вашата идентификация се разглежда в момента. Ще ви информираме веднага, след като процесът приключи.</string>
 
     <!-- Lorem ipsum -->
     <string name="lorem_ipsum_size_1">Lorem ipsum</string>

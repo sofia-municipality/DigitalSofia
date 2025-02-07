@@ -1,4 +1,4 @@
-/* 
+/*
   Evrotrust.strings
   EvrotrustSDK
 
@@ -292,7 +292,7 @@
 "evrotrust_sc_error_registration_deactivated"   = "Устройството е деактивирано. Необходимо е да го регистрирате отново.";
 "evrotrust_sc_error_no_internet"                = "Няма връзка с интернет. Моля, опитайте отново.";
 "evrotrust_access_temporarily_denied"           = "Достъпът е временно блокиран. Опитайте отново след 5 минути";
-"evrotrust_user_not_identified"                 = "Трябва да сте се идентифицирали, за да завършите операцията. Идентификацията може да бъде направена в секция Настройки.";
+"evrotrust_user_not_identified"                 = "Необходимо е да актуализирате Вашите данни. Моля преминете през стъпките за идентификация.";
 "evrotrust_user_not_found"                      = "Не е открит такъв потребител";
 "evrotrust_user_identification_document_issue"  = "Възникна проблем с документа за идентификация. Моля, опитайте отново.";
 "evrotrust_user_under_eighteen"                 = "Лицето няма навършени 18 години.";
@@ -328,12 +328,12 @@
 
 "evrotrust_search_user_info"                                    = "Проверете дали имате Евротръст профил";
 "evrotrust_search_user_info_long"                               = "Моля, изберете един от идентификаторите и въведете";
-"evrotrust_search_user_not_registered"                          = "Не е намерен Евротръст профил за този идентификатор. Натиснете Не.";
-"evrotrust_search_user_registered"                              = "Вие имате завършена Евротръст регистрация. Натиснете Да.";
-"evrotrust_search_user_not_identified"                          = "Вие сте започнали Евротръст регистрация и сте сканирали лична карта. За да подписвате документи е необходимо да преминете през успешно лицево разпознаване, валидирате мобилен телефонен номер и електронна поща. Натиснете Да.";
-"evrotrust_search_user_not_supervised"                          = "Вие имате завършена Евротръст регистрация, профилът Ви е в процес на потвърждение. Натиснете Да.";
-"evrotrust_search_user_phone_not_confirmed"                     = "Вие сте започнали Евротръст регистрация. За да подписвате документи е необходимо и да валидирате мобилен телефонен номер. Натиснете Да.";
-"evrotrust_search_user_email_not_confirmed"                     = "Вие сте започнали Евротръст регистрация. За да подписвате документи е необходимо и да валидирате електронна поща. Натиснете Да.";
+"evrotrust_search_user_not_registered"                          = "Не е намерен Евротръст профил за този идентификатор.";
+"evrotrust_search_user_registered"                              = "Вие имате завършена Евротръст регистрация.";
+"evrotrust_search_user_not_identified"                          = "Вие имате Евротръст регистрация.";
+"evrotrust_search_user_not_supervised"                          = "Вие имате Евротръст регистрация, профилът Ви е в процес на разглеждане. Моля опитайте по-късно.";
+"evrotrust_search_user_phone_not_confirmed"                     = "Вие имате Евротръст регистрация.";
+"evrotrust_search_user_email_not_confirmed"                     = "Вие имате Евротръст регистрация.";
 
 "evrotrust_create_pin_info1"        = "Създайте своя ПИН код";
 "evrotrust_create_pin_info2"        = "Повторете ПИН кода";
@@ -406,6 +406,7 @@
 "evrotrust_id_scanner_error_identification_number_used" = "За избраното ЕГН вече съществува профил";
 "evrotrust_id_scanner_error_user_not_found"             = "Невалидни данни";
 "evrotrust_id_scanner_no_internet"                      = "Няма връзка с интернет. Искате ли да опитате отново?";
+"evrotrust_id_scanner_missing_profile_picture"          = "Неуспешно сканиране на документ. Моля опитайте отново.";
 
 "evrotrust_personal_info_form_info"                             = "Въведете данните от Вашия документ за самоличност";
 "evrotrust_personal_info_form_last_name_latin"                  = "Фамилия (латиница)";
@@ -484,7 +485,9 @@
 "evrotrust_auto_identification_session_expired"         = "Сесията за идентифициране ви е изтекла. Искате ли да опитате отново?";
 "evrotrust_auto_identification_slowdown_fail"           = "Поради забавяне вашата идентификация е невалидна. Да опитаме ли отново?";
 "evrotrust_auto_identification_success"                 = "Успешна идентификация";
+"evrotrust_auto_identification_waiting_supervising"     = "Идентификацията очаква преглед";
 "evrotrust_auto_identification_fail_new_user"           = "Неуспешна идентификация";
+"evrotrust_auto_identification_under_review"            = "Вашата идентификация се разглежда. Ще Ви информираме скоро за резултата.";
 
 "evrotrust_video_identification_title"                  = "Идентификация";
 "evrotrust_video_identification_info"                   = "Идентификация";

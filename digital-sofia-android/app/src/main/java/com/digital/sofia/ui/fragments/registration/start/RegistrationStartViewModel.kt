@@ -20,15 +20,13 @@ import com.digital.sofia.utils.FirebaseMessagingServiceHelper
 import com.digital.sofia.utils.LocalizationManager
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
-import com.digital.sofia.utils.UpdateDocumentsHelper
 
 class RegistrationStartViewModel(
     loginTimer: LoginTimer,
     appEventsHelper: AppEventsHelper,
-    preferences: PreferencesRepository,
+    private val preferences: PreferencesRepository,
     authorizationHelper: AuthorizationHelper,
     localizationManager: LocalizationManager,
-    updateDocumentsHelper: UpdateDocumentsHelper,
     cryptographyRepository: CryptographyRepository,
     updateFirebaseTokenUseCase: UpdateFirebaseTokenUseCase,
     getLogLevelUseCase: GetLogLevelUseCase,
@@ -40,7 +38,6 @@ class RegistrationStartViewModel(
     appEventsHelper = appEventsHelper,
     authorizationHelper = authorizationHelper,
     localizationManager = localizationManager,
-    updateDocumentsHelper = updateDocumentsHelper,
     cryptographyRepository = cryptographyRepository,
     updateFirebaseTokenUseCase = updateFirebaseTokenUseCase,
     getLogLevelUseCase = getLogLevelUseCase,
@@ -56,6 +53,10 @@ class RegistrationStartViewModel(
 
     fun onRegistrationClicked() {
         logDebug("onRegistrationClicked", TAG)
+//        val userAskedPermissionBefore = preferences.readUserAskedPermissionBefore()
+//        val destination =
+//            if (userAskedPermissionBefore) RegistrationStartFragmentDirections.toEnterEgnFragment()
+//            else RegistrationStartFragmentDirections.toNotificationsInformationFragment()
         findFlowNavController().navigateInMainThread(
             RegistrationStartFragmentDirections.toEnterEgnFragment(),
             viewModelScope

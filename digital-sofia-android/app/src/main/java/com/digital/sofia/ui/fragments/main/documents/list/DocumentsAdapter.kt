@@ -6,14 +6,16 @@
 package com.digital.sofia.ui.fragments.main.documents.list
 
 import com.digital.sofia.models.documents.DocumentDownloadModel
+import com.digital.sofia.models.documents.DocumentUi
 import com.digital.sofia.models.documents.DocumentsAdapterMarker
 import com.digital.sofia.utils.DefaultDiffUtilCallback
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
+import com.hannesdorfmann.adapterdelegates4.paging.PagedListDelegationAdapter
 
 class DocumentsAdapter(
     private val documentsDelegate: DocumentsDelegate,
     private val documentsHeaderDelegate: DocumentsHeaderDelegate,
-) : AsyncListDifferDelegationAdapter<DocumentsAdapterMarker>(DefaultDiffUtilCallback()) {
+) : PagedListDelegationAdapter<DocumentsAdapterMarker>(DefaultDiffUtilCallback()) {
 
     var clickListener: ClickListener? = null
         set(value) {
@@ -23,7 +25,6 @@ class DocumentsAdapter(
         }
 
     init {
-        items = mutableListOf()
         delegatesManager.apply {
             addDelegate(documentsDelegate)
             addDelegate(documentsHeaderDelegate)

@@ -16,13 +16,15 @@ import com.digital.sofia.extensions.navigateInMainThread
 import com.digital.sofia.extensions.navigateNewRootInMainThread
 import com.digital.sofia.models.common.StringSource
 import com.digital.sofia.ui.fragments.base.registration.identification.BaseConfirmIdentificationViewModel
+import com.digital.sofia.ui.fragments.registration.confirm.RegistrationConfirmIdentificationFragmentDirections
+import com.digital.sofia.ui.fragments.registration.confirm.RegistrationConfirmIdentificationViewModel
+import com.digital.sofia.ui.fragments.registration.confirm.RegistrationConfirmIdentificationViewModel.Companion
 import com.digital.sofia.utils.AppEventsHelper
 import com.digital.sofia.utils.EvrotrustSDKHelper
 import com.digital.sofia.utils.FirebaseMessagingServiceHelper
 import com.digital.sofia.utils.LocalizationManager
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
-import com.digital.sofia.utils.UpdateDocumentsHelper
 
 class ForgotPinRegistrationConfirmIdentificationViewModel(
     private val preferences: PreferencesRepository,
@@ -31,7 +33,6 @@ class ForgotPinRegistrationConfirmIdentificationViewModel(
     evrotrustSDKHelper: EvrotrustSDKHelper,
     authorizationHelper: AuthorizationHelper,
     localizationManager: LocalizationManager,
-    updateDocumentsHelper: UpdateDocumentsHelper,
     cryptographyRepository: CryptographyRepository,
     updateFirebaseTokenUseCase: UpdateFirebaseTokenUseCase,
     getLogLevelUseCase: GetLogLevelUseCase,
@@ -44,7 +45,6 @@ class ForgotPinRegistrationConfirmIdentificationViewModel(
     evrotrustSDKHelper = evrotrustSDKHelper,
     authorizationHelper = authorizationHelper,
     localizationManager = localizationManager,
-    updateDocumentsHelper = updateDocumentsHelper,
     cryptographyRepository = cryptographyRepository,
     updateFirebaseTokenUseCase = updateFirebaseTokenUseCase,
     getLogLevelUseCase = getLogLevelUseCase,
@@ -98,6 +98,15 @@ class ForgotPinRegistrationConfirmIdentificationViewModel(
             ForgotPinRegistrationConfirmIdentificationFragmentDirections.toErrorFragment(
                 errorMessage = StringSource.Res(R.string.registration_error_description)
             ),
+            viewModelScope
+        )
+    }
+
+    override fun toVerificationWaitFragment() {
+        logDebug("toVerificationWaitFragment", TAG)
+        preferences.saveAppStatus(AppStatus.PROFILE_VERIFICATION_FORGOTTEN_PIN)
+        findFlowNavController().navigateInMainThread(
+            ForgotPinRegistrationConfirmIdentificationFragmentDirections.toProfileVerificationWaitFlowFragment(),
             viewModelScope
         )
     }

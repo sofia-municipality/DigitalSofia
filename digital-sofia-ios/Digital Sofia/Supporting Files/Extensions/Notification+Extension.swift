@@ -18,6 +18,8 @@ extension Notification.Name {
     static let pendingDocumentNotification = Notification.Name("pending-document-notification")
     static let signedDocumentNotification = Notification.Name("signed-document-notification")
     static let expiredDocumentNotification = Notification.Name("expired-document-notification")
+    static let pendingDeliveryDocumentNotification = Notification.Name("pending-delivery-document-notification")
     static let tokenRefreshedNotification = Notification.Name("token-refreshed-notification")
     static let evrotrustSDKNotSetupNotification = Notification.Name("evrotrust-sdk-not-setup-notification")
+    static let evrotrustUserStatusNotification = Notification.Name("evrotrust-sdk-user-status-notification")
 }

@@ -34,7 +34,7 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:singleLine="false"
-                android:text="@string/profile_delete_confirm_description" />
+                android:text="@string/profile_delete_error_description" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnBack"

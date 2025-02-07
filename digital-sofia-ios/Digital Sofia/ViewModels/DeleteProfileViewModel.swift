@@ -8,17 +8,19 @@
 import Foundation
 
 @MainActor class DeleteProfileViewModel: ObservableObject {
-    @Published var hasPendingRequests = false
+    @Published var isLoading = false
+    @Published var networkError: String?
     
     func deleteUser(completion: @escaping (NetworkError?) -> ()) {
-        NetworkManager.deleteUser() { response in
+        isLoading = true
+        NetworkManager.deleteUser() { [weak self] response in
+            self?.isLoading = false
             switch response {
             case .success(_):
-                completion(nil)
                 UserProvider.shared.logout()
-                
+                completion(nil)
             case .failure(let error):
-                //                self?.hasPendingRequests = true
+                self?.networkError = error.description
                 completion(error)
             }
         }

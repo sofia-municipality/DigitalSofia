@@ -15,4 +15,5 @@ val appModules = listOf(
     appModule,
     presentationModule,
     viewModelsModule,
+    mappersModule,
 )
