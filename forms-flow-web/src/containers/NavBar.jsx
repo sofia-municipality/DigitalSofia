@@ -13,7 +13,7 @@ import createURLPathMatchExp from "../helper/regExp/pathMatch";
 import { useTranslation } from "react-i18next";
 import "./styles.scss";
 import {
-  STAFF_REVIEWER,
+  // STAFF_REVIEWER,
   APPLICATION_NAME,
   STAFF_DESIGNER,
   MULTITENANCY_ENABLED,
@@ -28,7 +28,11 @@ import i18n from "i18next";
 
 import { setLanguage } from "../actions/languageSetAction";
 import { updateUserlang } from "../apiManager/services/userservices";
-import { useGetBaseUrl, useHandleNavResize } from "../customHooks";
+import {
+  useGetBaseUrl,
+  useHandleNavResize,
+  useGetUserEvrotrustName,
+} from "../customHooks";
 
 const NavBar = React.memo(() => {
   const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
@@ -70,6 +74,7 @@ const NavBar = React.memo(() => {
   );
   const appName = getAppName();
   const { t } = useTranslation();
+  const evrotrustFullName = useGetUserEvrotrustName();
 
   useEffect(() => {
     if (!isAuthenticated && formTenant && MULTITENANCY_ENABLED && !TENANT_ID) {
@@ -89,10 +94,10 @@ const NavBar = React.memo(() => {
     dispatch(push(baseUrl));
     UserService.userLogout();
   };
+  // const goToTask = () => {
+  //   dispatch(push(`${baseUrl}task`));
+  // };
 
-  const goToTask = () => {
-    dispatch(push(`${baseUrl}task`));
-  };
   return (
     <header>
       <Navbar
@@ -207,7 +212,7 @@ const NavBar = React.memo(() => {
                     </Nav.Link>
                   ) : null
                 ) : null}
-                {getUserRolePermission(userRoles, STAFF_REVIEWER) ? (
+                {/* {getUserRolePermission(userRoles, STAFF_REVIEWER) ? (
                   <Nav.Link
                     as={Link}
                     to={`${baseUrl}task`}
@@ -222,7 +227,7 @@ const NavBar = React.memo(() => {
                     <i className="fa fa-list fa-lg fa-fw mr-2" />
                     {t("Tasks")}
                   </Nav.Link>
-                ) : null}
+                ) : null} */}
 
                 {getUserRolePermission(userRoles, ANALYTICS_VIEWER) ? (
                   <Nav.Link
@@ -282,15 +287,23 @@ const NavBar = React.memo(() => {
               <Nav className="px-lg-0 px-3">
                 <NavDropdown
                   title={
+                    // here
+
                     <>
                       <i className="fa fa-user fa-lg mr-1" />
-                      {user?.name || user?.preferred_username || ""}
+                      {evrotrustFullName ||
+                        user?.name ||
+                        user?.preferred_username ||
+                        ""}
                     </>
                   }
                 >
                   <NavDropdown.Item>
                     {" "}
-                    {user?.name || user?.preferred_username}
+                    {/* here */}
+                    {evrotrustFullName ||
+                      user?.name ||
+                      user?.preferred_username}
                     <br />
                     <i className="fa fa-users fa-lg fa-fw" />
                     <b>{t(getUserRoleName(userRoles))}</b>

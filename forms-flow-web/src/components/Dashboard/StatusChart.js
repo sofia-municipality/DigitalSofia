@@ -40,7 +40,6 @@ const ChartForm = React.memo((props) => {
     const option = { parentId: isParentId };
     props.getStatusDetails(id, option);
   };
-
   return (
     <div className="row">
       <div className="col-12">
@@ -53,7 +52,7 @@ const ChartForm = React.memo((props) => {
                   className="text-truncate"
                   style={{ maxWidth: version > 1 ? "500px" : "700px" }}
                 >
-                  {formName}
+                  {t(formName)}
                 </h2>
               </div>
               <p>
@@ -133,7 +132,7 @@ const ChartForm = React.memo((props) => {
                           height: "25px",
                         }}
                       ></span>
-                      <div className="legent-text">{entry.statusName}</div>
+                      <div className="legent-text">{t(entry.statusName)}</div>
                     </div>
                   ))}
                 </div>

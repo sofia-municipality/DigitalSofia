@@ -1,4 +1,8 @@
-import { httpGETRequest, httpPUTRequest } from "../httpRequestHandler";
+import {
+  httpGETRequest,
+  httpPUTRequest,
+  httpDELETERequest,
+} from "../httpRequestHandler";
 import API from "../endpoints/index";
 import UserService from "../../services/UserService";
 import { toast } from "react-toastify";
@@ -58,4 +62,16 @@ export const getFormioRoleIds = (...rest) => {
         done(error, null);
       });
   };
+};
+
+export const deleteProfileCheck = () => {
+  return httpGETRequest(API.DELETE_PROFILE);
+};
+
+export const deleteProfile = () => {
+  return httpDELETERequest(API.DELETE_PROFILE);
+};
+
+export const userLoginEvent = () => {
+  return httpPUTRequest(API.USER_LOGIN_EVENT, {}, UserService.getToken());
 };

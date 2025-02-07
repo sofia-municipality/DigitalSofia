@@ -18,7 +18,10 @@ import { setLanguage } from "../actions/languageSetAction";
 import Keycloak from "keycloak-js";
 import { updateUserlang } from "../apiManager/services/userservices";
 import { getTenantKeycloakJson } from "../apiManager/services/tenantServices";
-import { getFormioRoleIds } from "../apiManager/services/userservices";
+import {
+  getFormioRoleIds,
+  userLoginEvent,
+} from "../apiManager/services/userservices";
 import { LANGUAGE } from "../constants/constants";
 
 let KeycloakData;
@@ -85,8 +88,13 @@ const initKeycloak = async ({
   }
 
   dispatch(setUserAuth(authenticated));
+  console.log("authenticated");
+  console.log(authenticated);
+  console.log("user");
+  console.log(user);
   if (authenticated) {
     if (KeycloakData.resourceAccess[clientId]) {
+      userLoginEvent();
       const UserRoles = KeycloakData.resourceAccess[clientId].roles;
       dispatch(setUserRole(UserRoles));
       localStorage.setItem("USER_ROLES", JSON.stringify(UserRoles));
@@ -146,6 +154,7 @@ const userLogin = ({ store, options = {}, forceLogin = false }) => {
 
     try {
       KeycloakData?.login(options);
+      userLoginEvent();
     } catch (err) {
       console.log("Error on login");
       console.log(err);
