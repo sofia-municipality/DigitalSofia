@@ -25,7 +25,6 @@ import com.digital.sofia.utils.LocalizationManager
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
 import com.digital.sofia.utils.SupportBiometricManager
-import com.digital.sofia.utils.UpdateDocumentsHelper
 import javax.crypto.Cipher
 
 abstract class BaseEnableBiometricViewModel(
@@ -36,7 +35,6 @@ abstract class BaseEnableBiometricViewModel(
     appEventsHelper: AppEventsHelper,
     authorizationHelper: AuthorizationHelper,
     localizationManager: LocalizationManager,
-    updateDocumentsHelper: UpdateDocumentsHelper,
     updateFirebaseTokenUseCase: UpdateFirebaseTokenUseCase,
     getLogLevelUseCase: GetLogLevelUseCase,
     networkConnectionManager: NetworkConnectionManager,
@@ -47,7 +45,6 @@ abstract class BaseEnableBiometricViewModel(
     appEventsHelper = appEventsHelper,
     authorizationHelper = authorizationHelper,
     localizationManager = localizationManager,
-    updateDocumentsHelper = updateDocumentsHelper,
     cryptographyRepository = cryptographyRepository,
     updateFirebaseTokenUseCase = updateFirebaseTokenUseCase,
     getLogLevelUseCase = getLogLevelUseCase,

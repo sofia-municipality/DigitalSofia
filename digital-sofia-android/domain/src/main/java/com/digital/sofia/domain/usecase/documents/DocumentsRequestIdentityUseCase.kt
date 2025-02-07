@@ -24,14 +24,16 @@ class DocumentsRequestIdentityUseCase(
     }
 
     fun invoke(
-        personalIdentificationNumber: String
+        personalIdentificationNumber: String,
+        language: String,
     ): Flow<ResultEmittedData<DocumentModel>> {
         logDebug(
             "requestIdentity personalIdentificationNumber: $personalIdentificationNumber",
             TAG
         )
         return documentsNetworkRepository.requestIdentity(
-            personalIdentificationNumber = personalIdentificationNumber
+            personalIdentificationNumber = personalIdentificationNumber,
+            language = language,
         )
     }
 }

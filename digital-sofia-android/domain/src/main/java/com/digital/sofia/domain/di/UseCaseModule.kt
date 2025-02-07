@@ -12,36 +12,36 @@
 package com.digital.sofia.domain.di
 
 import com.digital.sofia.domain.repository.common.PreferencesRepository
-import com.digital.sofia.domain.repository.database.documents.DocumentsDatabaseRepository
 import com.digital.sofia.domain.repository.network.authorization.AuthorizationNetworkRepository
+import com.digital.sofia.domain.repository.network.common.CommonNetworkRepository
 import com.digital.sofia.domain.repository.network.confirmation.ConfirmationNetworkRepository
 import com.digital.sofia.domain.repository.network.documents.DocumentsNetworkRepository
-import com.digital.sofia.domain.repository.network.common.CommonNetworkRepository
 import com.digital.sofia.domain.repository.network.logs.LogsNetworkRepository
 import com.digital.sofia.domain.repository.network.registration.RegistrationNetworkRepository
 import com.digital.sofia.domain.repository.network.settings.SettingsRepository
+import com.digital.sofia.domain.repository.network.user.UserRepository
 import com.digital.sofia.domain.usecase.authorization.AuthorizationEnterToAccountUseCase
 import com.digital.sofia.domain.usecase.confirmation.ConfirmationGenerateCodeUseCase
 import com.digital.sofia.domain.usecase.confirmation.ConfirmationGetCodeStatusUseCase
 import com.digital.sofia.domain.usecase.confirmation.ConfirmationUpdateCodeStatusUseCase
 import com.digital.sofia.domain.usecase.documents.DocumentsAuthenticateDocumentUseCase
+import com.digital.sofia.domain.usecase.documents.DocumentsCheckDeliveredUseCase
+import com.digital.sofia.domain.usecase.documents.DocumentsCheckSignedUseCase
 import com.digital.sofia.domain.usecase.documents.DocumentsDownloadDocumentUseCase
 import com.digital.sofia.domain.usecase.documents.DocumentsGetHistoryUseCase
-import com.digital.sofia.domain.usecase.documents.DocumentsGetUnsignedUseCase
+import com.digital.sofia.domain.usecase.documents.DocumentsGetPendingUseCase
 import com.digital.sofia.domain.usecase.documents.DocumentsHaveUnsignedUseCase
 import com.digital.sofia.domain.usecase.documents.DocumentsRequestIdentityUseCase
-import com.digital.sofia.domain.usecase.documents.DocumentsSendSignedUseCase
-import com.digital.sofia.domain.usecase.documents.DocumentsSubscribeToUnsignedUseCase
-import com.digital.sofia.domain.usecase.documents.DocumentsSubscribeUseCase
-import com.digital.sofia.domain.usecase.documents.DocumentsUpdateUseCase
 import com.digital.sofia.domain.usecase.firebase.UpdateFirebaseTokenUseCase
 import com.digital.sofia.domain.usecase.logout.LogoutUseCase
 import com.digital.sofia.domain.usecase.logs.UploadLogsUseCase
 import com.digital.sofia.domain.usecase.registration.RegistrationCheckUserUseCase
 import com.digital.sofia.domain.usecase.registration.RegistrationRegisterNewUserUseCase
 import com.digital.sofia.domain.usecase.settings.ChangePinUseCase
+import com.digital.sofia.domain.usecase.user.CheckUserForDeletionUseCase
 import com.digital.sofia.domain.usecase.user.DeleteUserUseCase
 import com.digital.sofia.domain.usecase.user.GetLogLevelUseCase
+import com.digital.sofia.domain.usecase.user.SubscribeForUserStatusChangeUseCase
 import com.digital.sofia.domain.utils.AuthorizationHelper
 import org.koin.dsl.module
 
@@ -55,34 +55,21 @@ val useCaseModule = module {
         )
     }
 
-    factory<DocumentsSendSignedUseCase> {
-        DocumentsSendSignedUseCase(
+    factory<DocumentsCheckSignedUseCase> {
+        DocumentsCheckSignedUseCase(
             documentsNetworkRepository = get<DocumentsNetworkRepository>(),
         )
     }
 
-    factory<DocumentsSubscribeUseCase> {
-        DocumentsSubscribeUseCase(
-            documentsDatabaseRepository = get<DocumentsDatabaseRepository>(),
-        )
-    }
-
-    factory<DocumentsSubscribeToUnsignedUseCase> {
-        DocumentsSubscribeToUnsignedUseCase(
-            documentsDatabaseRepository = get<DocumentsDatabaseRepository>(),
+    factory<DocumentsCheckDeliveredUseCase> {
+        DocumentsCheckDeliveredUseCase(
+            documentsNetworkRepository = get<DocumentsNetworkRepository>()
         )
     }
 
     factory<DocumentsHaveUnsignedUseCase> {
         DocumentsHaveUnsignedUseCase(
             documentsNetworkRepository = get<DocumentsNetworkRepository>(),
-        )
-    }
-
-    factory<DocumentsUpdateUseCase> {
-        DocumentsUpdateUseCase(
-            documentsNetworkRepository = get<DocumentsNetworkRepository>(),
-            documentsDatabaseRepository = get<DocumentsDatabaseRepository>(),
         )
     }
 
@@ -110,8 +97,8 @@ val useCaseModule = module {
         )
     }
 
-    factory<DocumentsGetUnsignedUseCase> {
-        DocumentsGetUnsignedUseCase(
+    factory<DocumentsGetPendingUseCase> {
+        DocumentsGetPendingUseCase(
             documentsNetworkRepository = get<DocumentsNetworkRepository>()
         )
     }
@@ -179,9 +166,8 @@ val useCaseModule = module {
     single<LogoutUseCase> {
         LogoutUseCase(
             preferences = get<PreferencesRepository>(),
-            settingsRepository = get<SettingsRepository>(),
+            userRepository = get<UserRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            documentsDatabaseRepository = get<DocumentsDatabaseRepository>(),
         )
     }
 
@@ -206,10 +192,23 @@ val useCaseModule = module {
     single<DeleteUserUseCase> {
         DeleteUserUseCase(
             preferences = get<PreferencesRepository>(),
-            settingsRepository = get<SettingsRepository>(),
+            userRepository = get<UserRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            documentsDatabaseRepository = get<DocumentsDatabaseRepository>(),
         )
+    }
+
+    // check user for deletion
+
+    single<CheckUserForDeletionUseCase> {
+        CheckUserForDeletionUseCase(
+            userRepository = get<UserRepository>()
+        )
+    }
+
+    // subscribe for profile changes use case
+
+    single<SubscribeForUserStatusChangeUseCase> {
+        SubscribeForUserStatusChangeUseCase(userRepository = get<UserRepository>())
     }
 
 }

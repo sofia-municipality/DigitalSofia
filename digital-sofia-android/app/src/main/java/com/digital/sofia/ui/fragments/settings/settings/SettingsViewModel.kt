@@ -9,18 +9,25 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.digital.sofia.NavActivityDirections
 import com.digital.sofia.R
+import com.digital.sofia.domain.models.base.onFailure
+import com.digital.sofia.domain.models.base.onLoading
+import com.digital.sofia.domain.models.base.onRetry
+import com.digital.sofia.domain.models.base.onSuccess
 import com.digital.sofia.domain.models.common.AppLanguage
 import com.digital.sofia.domain.repository.common.CryptographyRepository
 import com.digital.sofia.domain.repository.common.PreferencesRepository
-import com.digital.sofia.domain.usecase.documents.DocumentsHaveUnsignedUseCase
+import com.digital.sofia.domain.repository.network.settings.SettingsRepository
 import com.digital.sofia.domain.usecase.firebase.UpdateFirebaseTokenUseCase
-import com.digital.sofia.domain.usecase.logout.LogoutUseCase
+import com.digital.sofia.domain.usecase.user.CheckUserForDeletionUseCase
 import com.digital.sofia.domain.usecase.user.GetLogLevelUseCase
 import com.digital.sofia.domain.utils.AuthorizationHelper
 import com.digital.sofia.domain.utils.LogUtil.logDebug
+import com.digital.sofia.domain.utils.LogUtil.logError
+import com.digital.sofia.extensions.launchInScope
 import com.digital.sofia.extensions.navigateInMainThread
 import com.digital.sofia.extensions.readOnly
 import com.digital.sofia.extensions.setValueOnMainThread
+import com.digital.sofia.models.common.Message
 import com.digital.sofia.ui.BaseViewModel
 import com.digital.sofia.utils.AppEventsHelper
 import com.digital.sofia.utils.FirebaseMessagingServiceHelper
@@ -28,16 +35,17 @@ import com.digital.sofia.utils.LocalizationManager
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
 import com.digital.sofia.utils.SupportBiometricManager
-import com.digital.sofia.utils.UpdateDocumentsHelper
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.onEach
 
 class SettingsViewModel(
     private val preferences: PreferencesRepository,
     private val biometricManager: SupportBiometricManager,
+    private val checkUserForDeletionUseCase: CheckUserForDeletionUseCase,
     loginTimer: LoginTimer,
     appEventsHelper: AppEventsHelper,
     authorizationHelper: AuthorizationHelper,
     localizationManager: LocalizationManager,
-    updateDocumentsHelper: UpdateDocumentsHelper,
     cryptographyRepository: CryptographyRepository,
     updateFirebaseTokenUseCase: UpdateFirebaseTokenUseCase,
     getLogLevelUseCase: GetLogLevelUseCase,
@@ -49,7 +57,6 @@ class SettingsViewModel(
     appEventsHelper = appEventsHelper,
     authorizationHelper = authorizationHelper,
     localizationManager = localizationManager,
-    updateDocumentsHelper = updateDocumentsHelper,
     cryptographyRepository = cryptographyRepository,
     updateFirebaseTokenUseCase = updateFirebaseTokenUseCase,
     getLogLevelUseCase = getLogLevelUseCase,
@@ -114,8 +121,42 @@ class SettingsViewModel(
 
     fun onDeleteProfileClicked() {
         logDebug("onDeleteProfileClicked", TAG)
+        checkUserForDeletion()
+    }
+
+    private fun checkUserForDeletion() {
+        logDebug("checkUserForDeletion", TAG)
+       checkUserForDeletionUseCase.invoke().onEach { result ->
+            result.onLoading {
+                logDebug("checkUserForDeletion onLoading", TAG)
+                showLoader()
+            }.onSuccess {
+                logDebug("checkUserForDeletion onSuccess", TAG)
+                hideLoader()
+                toConfirmDeleteProfile()
+            }.onRetry {
+                checkUserForDeletion()
+            }.onFailure { failure ->
+                logError("checkUserForDeletion onFailure", failure, TAG)
+                hideLoader()
+                when (failure.responseCode) {
+                    409 -> toDeleteErrorProfile()
+                    else -> showMessage(Message.error(R.string.error_server_error))
+                }
+            }
+        }.launchInScope(viewModelScope)
+    }
+
+    private fun toConfirmDeleteProfile() {
         findFlowNavController().navigateInMainThread(
             SettingsFragmentDirections.toDeleteProfileConfirmFragment(),
+            viewModelScope
+        )
+    }
+
+    private fun toDeleteErrorProfile() {
+        findFlowNavController().navigateInMainThread(
+            SettingsFragmentDirections.toDeleteProfileErrorFragment(),
             viewModelScope
         )
     }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_profile_verification_wait"
+    app:startDestination="@id/profileVerificationWaitFragment">
+
+    <fragment
+        android:id="@+id/profileVerificationWaitFragment"
+        android:name="com.digital.sofia.ui.fragments.profile.verification.wait.ProfileVerificationWaitFragment"
+        android:label="profileVerificationWaitFragment"
+        tools:layout="@layout/fragment_profile_verification_wait" />
+
+</navigation>

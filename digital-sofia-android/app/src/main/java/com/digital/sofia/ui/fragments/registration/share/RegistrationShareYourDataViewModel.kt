@@ -42,7 +42,6 @@ import com.digital.sofia.utils.LocalizationManager
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
 import com.digital.sofia.utils.SingleLiveEvent
-import com.digital.sofia.utils.UpdateDocumentsHelper
 import kotlinx.coroutines.flow.onEach
 
 class RegistrationShareYourDataViewModel(
@@ -54,7 +53,6 @@ class RegistrationShareYourDataViewModel(
     appEventsHelper: AppEventsHelper,
     authorizationHelper: AuthorizationHelper,
     localizationManager: LocalizationManager,
-    updateDocumentsHelper: UpdateDocumentsHelper,
     cryptographyRepository: CryptographyRepository,
     updateFirebaseTokenUseCase: UpdateFirebaseTokenUseCase,
     getLogLevelUseCase: GetLogLevelUseCase,
@@ -66,7 +64,6 @@ class RegistrationShareYourDataViewModel(
     appEventsHelper = appEventsHelper,
     authorizationHelper = authorizationHelper,
     localizationManager = localizationManager,
-    updateDocumentsHelper = updateDocumentsHelper,
     cryptographyRepository = cryptographyRepository,
     updateFirebaseTokenUseCase = updateFirebaseTokenUseCase,
     getLogLevelUseCase = getLogLevelUseCase,
@@ -176,8 +173,10 @@ class RegistrationShareYourDataViewModel(
         personalIdentificationNumber: String
     ) {
         logDebug("requestIdentity personalIdentificationNumber: $personalIdentificationNumber", TAG)
+        val language = preferences.readCurrentLanguage()
         documentsRequestIdentityUseCase.invoke(
-            personalIdentificationNumber = personalIdentificationNumber
+            personalIdentificationNumber = personalIdentificationNumber,
+            language = language.type,
         ).onEach { result ->
             result.onLoading {
                 logDebug("requestIdentity onLoading", TAG)

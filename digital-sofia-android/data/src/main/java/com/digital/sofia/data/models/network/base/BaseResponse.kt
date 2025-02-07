@@ -5,8 +5,6 @@
  **/
 package com.digital.sofia.data.models.network.base
 
-import okhttp3.ResponseBody
-
 abstract class BaseResponse  {
     abstract val type: String?
     abstract val message: String?

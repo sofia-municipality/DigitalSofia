@@ -15,6 +15,4 @@ interface SettingsRepository {
         data: ChangePinRequestModel,
     ): Flow<ResultEmittedData<Unit>>
 
-    fun deleteUser(): Flow<ResultEmittedData<Unit>>
-
 }

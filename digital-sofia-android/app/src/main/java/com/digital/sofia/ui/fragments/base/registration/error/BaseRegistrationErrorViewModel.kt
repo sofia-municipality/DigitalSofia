@@ -26,7 +26,6 @@ import com.digital.sofia.utils.LocalizationManager
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
 import com.digital.sofia.utils.SingleLiveEvent
-import com.digital.sofia.utils.UpdateDocumentsHelper
 
 abstract class BaseRegistrationErrorViewModel(
     private val preferences: PreferencesRepository,
@@ -34,7 +33,6 @@ abstract class BaseRegistrationErrorViewModel(
     appEventsHelper: AppEventsHelper,
     authorizationHelper: AuthorizationHelper,
     localizationManager: LocalizationManager,
-    updateDocumentsHelper: UpdateDocumentsHelper,
     cryptographyRepository: CryptographyRepository,
     updateFirebaseTokenUseCase: UpdateFirebaseTokenUseCase,
     getLogLevelUseCase: GetLogLevelUseCase,
@@ -46,7 +44,6 @@ abstract class BaseRegistrationErrorViewModel(
     appEventsHelper = appEventsHelper,
     authorizationHelper = authorizationHelper,
     localizationManager = localizationManager,
-    updateDocumentsHelper = updateDocumentsHelper,
     cryptographyRepository = cryptographyRepository,
     updateFirebaseTokenUseCase = updateFirebaseTokenUseCase,
     getLogLevelUseCase = getLogLevelUseCase,
@@ -72,9 +69,7 @@ abstract class BaseRegistrationErrorViewModel(
                 showMessage(
                     Message(
                         title = StringSource.Res(R.string.oops_with_dots),
-                        message = StringSource.Text(
-                            "User information is incomplete, you must update your user information to continue"
-                        ),
+                        message = StringSource.Res(R.string.sdk_error_user_profile_information_not_complete),
                         type = Message.Type.ALERT,
                         positiveButtonText = StringSource.Res(R.string.ok),
                         negativeButtonText = StringSource.Res(R.string.cancel),

@@ -17,7 +17,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
-import android.view.WindowManager
 import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -49,7 +48,6 @@ import com.digital.sofia.utils.EvrotrustSDKHelper
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.PersistentFragmentFactory
 import com.digital.sofia.utils.SupportBiometricManager
-import com.digital.sofia.utils.UpdateDocumentsHelper
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -75,7 +73,6 @@ class MainActivity : AppCompatActivity(),
     private val currentContext: CurrentContext by inject()
     private val evrotrustSDKHelper: EvrotrustSDKHelper by inject()
     private val biometricManager: SupportBiometricManager by inject()
-    private val updateDocumentsHelper: UpdateDocumentsHelper by inject()
     private val persistentFragmentFactory: PersistentFragmentFactory by inject()
     private val preferences: PreferencesRepository by inject()
 
@@ -106,7 +103,6 @@ class MainActivity : AppCompatActivity(),
         WindowCompat.setDecorFitsSystemWindows(window, false)
         hideSystemUI()
         savedInstanceState?.let(viewModel::onRestoreInstanceState)
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         if (BuildConfig.DEBUG && Build.VERSION.SDK_INT <= 29 && ContextCompat.checkSelfPermission(
                 this, Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
@@ -186,9 +182,6 @@ class MainActivity : AppCompatActivity(),
             finish()
         }
         viewModel.showMessageLiveData.observe(this) {
-            showMessage(it)
-        }
-        updateDocumentsHelper.showBannerMessageLiveData.observe(this) {
             showMessage(it)
         }
         loginTimer.lockStatusLiveData.observe(this) {

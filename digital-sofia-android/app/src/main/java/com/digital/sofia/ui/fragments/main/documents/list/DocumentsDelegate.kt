@@ -53,28 +53,39 @@ class DocumentsDelegate : AdapterDelegate<MutableList<DocumentsAdapterMarker>>()
 
         fun bind(model: DocumentUi) {
             binding.tvTitle.text = binding.root.context.getString(R.string.document_opened_title)
-            binding.tvNumber.text = "#${model.evrotrustTransactionId}"
+            val numberRef = "#${model.evrotrustTransactionId}"
+            binding.tvNumber.text = numberRef
             binding.tvFileName.text = model.fileName
             binding.tvCreatedOnValue.text = model.created.convertDate()
             model.signed?.let {
-                binding.tvSignedOnTitle.text = StringSource.Res(R.string.document_signed_on).getString(binding.root.context)
+                binding.tvSignedOnTitle.text =
+                    StringSource.Res(R.string.document_signed_on).getString(binding.root.context)
                 binding.tvSignedOnValue.text = it.convertDate()
             }
             model.rejected?.let {
-                binding.tvSignedOnTitle.text = StringSource.Res(R.string.document_rejected_on).getString(binding.root.context)
+                binding.tvSignedOnTitle.text =
+                    StringSource.Res(R.string.document_rejected_on).getString(binding.root.context)
                 binding.tvSignedOnValue.text = it.convertDate()
             }
             model.expired?.let {
-                binding.tvSignedOnTitle.text = StringSource.Res(R.string.document_expired_on).getString(binding.root.context)
+                binding.tvSignedOnTitle.text =
+                    StringSource.Res(R.string.document_expired_on).getString(binding.root.context)
+                binding.tvSignedOnValue.text = it.convertDate()
+            }
+            model.generated?.let {
+                binding.tvSignedOnTitle.text =
+                    StringSource.Res(R.string.document_delivered_on).getString(binding.root.context)
                 binding.tvSignedOnValue.text = it.convertDate()
             }
             binding.tvShowFile.isVisible = model.fileUrl.isNotEmpty()
             binding.tvDownloadFile.isVisible = model.fileUrl.isNotEmpty()
             val btnStatusColor = when (model.status) {
                 DocumentStatusModel.UNSIGNED,
+                DocumentStatusModel.GENERATED,
                 DocumentStatusModel.SIGNED -> R.drawable.bg_ripple_green_button_states
 
                 DocumentStatusModel.SIGNING,
+                DocumentStatusModel.DELIVERING,
                 DocumentStatusModel.PENDING -> R.drawable.bg_ripple_blue_button_states
 
                 DocumentStatusModel.REJECTED,
@@ -93,15 +104,19 @@ class DocumentsDelegate : AdapterDelegate<MutableList<DocumentsAdapterMarker>>()
                 DocumentStatusModel.UNSIGNED -> R.string.document_status_unsigned
                 DocumentStatusModel.FAILED -> R.string.document_status_failed
                 DocumentStatusModel.WITHDRAWN -> R.string.document_status_withdrawn
+                DocumentStatusModel.DELIVERING -> R.string.document_status_delivering
+                DocumentStatusModel.GENERATED -> R.string.document_status_generated
                 DocumentStatusModel.UNKNOWN -> R.string.document_status_unknown
 
             }
             binding.btnStatus.setTextResource(btnTextRes)
             @DrawableRes val btnIcon = when (model.status) {
                 DocumentStatusModel.UNSIGNED,
+                DocumentStatusModel.GENERATED,
                 DocumentStatusModel.SIGNED -> R.drawable.ic_ok
 
                 DocumentStatusModel.SIGNING,
+                DocumentStatusModel.DELIVERING,
                 DocumentStatusModel.PENDING -> R.drawable.ic_wait_white
 
                 DocumentStatusModel.UNKNOWN,
@@ -115,7 +130,8 @@ class DocumentsDelegate : AdapterDelegate<MutableList<DocumentsAdapterMarker>>()
                 showClickListener?.invoke(
                     DocumentDownloadModel(
                         name = model.fileName,
-                        url = model.fileUrl
+                        url = model.fileUrl,
+                        formioId = model.formioId
                     )
                 )
             }
@@ -123,7 +139,8 @@ class DocumentsDelegate : AdapterDelegate<MutableList<DocumentsAdapterMarker>>()
                 showClickListener?.invoke(
                     DocumentDownloadModel(
                         name = model.fileName,
-                        url = model.fileUrl
+                        url = model.fileUrl,
+                        formioId = model.formioId
                     )
                 )
             }
@@ -131,7 +148,8 @@ class DocumentsDelegate : AdapterDelegate<MutableList<DocumentsAdapterMarker>>()
                 downloadClickListener?.invoke(
                     DocumentDownloadModel(
                         name = model.fileName,
-                        url = model.fileUrl
+                        url = model.fileUrl,
+                        formioId = model.formioId
                     )
                 )
             }

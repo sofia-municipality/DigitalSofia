@@ -6,8 +6,8 @@ import com.digital.sofia.domain.models.base.onLoading
 import com.digital.sofia.domain.models.base.onRetry
 import com.digital.sofia.domain.models.base.onSuccess
 import com.digital.sofia.domain.repository.common.PreferencesRepository
-import com.digital.sofia.domain.repository.database.documents.DocumentsDatabaseRepository
 import com.digital.sofia.domain.repository.network.settings.SettingsRepository
+import com.digital.sofia.domain.repository.network.user.UserRepository
 import com.digital.sofia.domain.utils.AuthorizationHelper
 import com.digital.sofia.domain.utils.LogUtil.logDebug
 import com.digital.sofia.domain.utils.LogUtil.logError
@@ -20,9 +20,8 @@ import kotlinx.coroutines.flow.onEach
 
 class DeleteUserUseCase(
     private val preferences: PreferencesRepository,
-    private val settingsRepository: SettingsRepository,
+    private val userRepository: UserRepository,
     private val authorizationHelper: AuthorizationHelper,
-    private val documentsDatabaseRepository: DocumentsDatabaseRepository,
 ) {
 
     companion object {
@@ -30,9 +29,9 @@ class DeleteUserUseCase(
     }
 
     fun invoke(): Flow<ResultEmittedData<Unit>> = flow {
-        logDebug("logout", TAG)
+        logDebug("deleteUser", TAG)
         emit(ResultEmittedData.loading(null))
-        settingsRepository.deleteUser().onEach { result ->
+        userRepository.deleteUser().onEach { result ->
             result.onLoading {
                 logDebug("logout onLoading", TAG)
                 emit(ResultEmittedData.loading(null))
@@ -40,7 +39,6 @@ class DeleteUserUseCase(
                 logDebug("logout onSuccess", TAG)
                 authorizationHelper.stopUpdateTokenTimer()
                 preferences.logoutFromPreferences()
-                documentsDatabaseRepository.clear()
                 emit(ResultEmittedData.success(Unit))
             }.onRetry {
                 logDebug("logout onRetry", TAG)

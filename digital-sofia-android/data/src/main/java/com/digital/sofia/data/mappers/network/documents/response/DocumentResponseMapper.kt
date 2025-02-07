@@ -24,6 +24,7 @@ class DocumentResponseMapper: BaseMapper<DocumentResponse, DocumentModel>() {
                 expired = expired,
                 validUntill = validUntill,
                 rejected = rejected,
+                generated = generated,
                 evrotrustThreadId = evrotrustThreadId,
                 evrotrustTransactionId = evrotrustTransactionId ?: "",
                 formioId = formioId,

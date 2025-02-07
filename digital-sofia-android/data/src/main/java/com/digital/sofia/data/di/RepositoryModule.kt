@@ -12,7 +12,6 @@
 package com.digital.sofia.data.di
 
 import androidx.security.crypto.EncryptedSharedPreferences
-import com.digital.sofia.data.database.dao.documents.DocumentsDao
 import com.digital.sofia.data.mappers.database.documents.DocumentsEntityMapper
 import com.digital.sofia.data.mappers.network.authorization.AuthorizationResponseMapper
 import com.digital.sofia.data.mappers.network.confirmation.request.ConfirmationUpdateCodeStatusRequestMapper
@@ -21,6 +20,7 @@ import com.digital.sofia.data.mappers.network.confirmation.response.Confirmation
 import com.digital.sofia.data.mappers.network.confirmation.response.ConfirmationUpdateCodeStatusResponseMapper
 import com.digital.sofia.data.mappers.network.documents.request.DocumentAuthenticationRequestBodyMapper
 import com.digital.sofia.data.mappers.network.documents.response.DocumentResponseMapper
+import com.digital.sofia.data.mappers.network.documents.response.DocumentStatusResponseMapper
 import com.digital.sofia.data.mappers.network.documents.response.DocumentsResponseMapper
 import com.digital.sofia.data.mappers.network.firebase.request.FirebaseTokenRequestMapper
 import com.digital.sofia.data.mappers.network.logs.request.UploadFilesRequestMapper
@@ -29,6 +29,7 @@ import com.digital.sofia.data.mappers.network.registration.response.CheckPersona
 import com.digital.sofia.data.mappers.network.registration.response.CheckPinResponseMapper
 import com.digital.sofia.data.mappers.network.settings.request.ChangePinRequestBodyMapper
 import com.digital.sofia.data.mappers.network.settings.response.LogLevelResponseMapper
+import com.digital.sofia.data.mappers.network.user.request.UserProfileStatusChangesRequestBodyMapper
 import com.digital.sofia.data.network.authorization.AuthorizationApi
 import com.digital.sofia.data.network.common.CommonApi
 import com.digital.sofia.data.network.confirmation.ConfirmationApi
@@ -36,10 +37,9 @@ import com.digital.sofia.data.network.documents.DocumentsApi
 import com.digital.sofia.data.network.logs.LogsApi
 import com.digital.sofia.data.network.registration.RegistrationApi
 import com.digital.sofia.data.network.settings.SettingsApi
+import com.digital.sofia.data.network.user.UserApi
 import com.digital.sofia.data.repository.common.CryptographyRepositoryImpl
 import com.digital.sofia.data.repository.common.PreferencesRepositoryImpl
-import com.digital.sofia.data.repository.database.documents.DocumentsDatabaseRepositoryImpl
-import com.digital.sofia.data.repository.local.documents.DocumentsLocalRepositoryImpl
 import com.digital.sofia.data.repository.network.authorization.AuthorizationNetworkRepositoryImpl
 import com.digital.sofia.data.repository.network.common.CommonNetworkRepositoryImpl
 import com.digital.sofia.data.repository.network.confirmation.ConfirmationNetworkRepositoryImpl
@@ -47,19 +47,19 @@ import com.digital.sofia.data.repository.network.documents.DocumentsNetworkRepos
 import com.digital.sofia.data.repository.network.logs.LogsNetworkRepositoryImpl
 import com.digital.sofia.data.repository.network.registration.RegistrationNetworkRepositoryImpl
 import com.digital.sofia.data.repository.network.settings.SettingsRepositoryImpl
+import com.digital.sofia.data.repository.network.user.UserRepositoryImpl
 import com.digital.sofia.data.utils.AuthorizationHelperImpl
 import com.digital.sofia.data.utils.CoroutineContextProvider
 import com.digital.sofia.domain.repository.common.CryptographyRepository
 import com.digital.sofia.domain.repository.common.PreferencesRepository
-import com.digital.sofia.domain.repository.database.documents.DocumentsDatabaseRepository
-import com.digital.sofia.domain.repository.local.documents.DocumentsLocalRepository
 import com.digital.sofia.domain.repository.network.authorization.AuthorizationNetworkRepository
+import com.digital.sofia.domain.repository.network.common.CommonNetworkRepository
 import com.digital.sofia.domain.repository.network.confirmation.ConfirmationNetworkRepository
 import com.digital.sofia.domain.repository.network.documents.DocumentsNetworkRepository
-import com.digital.sofia.domain.repository.network.common.CommonNetworkRepository
 import com.digital.sofia.domain.repository.network.logs.LogsNetworkRepository
 import com.digital.sofia.domain.repository.network.registration.RegistrationNetworkRepository
 import com.digital.sofia.domain.repository.network.settings.SettingsRepository
+import com.digital.sofia.domain.repository.network.user.UserRepository
 import com.digital.sofia.domain.utils.AuthorizationHelper
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
@@ -86,21 +86,6 @@ val repositoryModule = module {
         )
     }
 
-    // local repository
-
-    single<DocumentsLocalRepository> {
-        DocumentsLocalRepositoryImpl()
-    }
-
-    // database repository
-
-    single<DocumentsDatabaseRepository> {
-        DocumentsDatabaseRepositoryImpl(
-            dao = get<DocumentsDao>(),
-            mapper = get<DocumentsEntityMapper>(),
-        )
-    }
-
     // database mappers
 
     single<DocumentsEntityMapper> {
@@ -114,6 +99,7 @@ val repositoryModule = module {
             documentsApi = get<DocumentsApi>(),
             documentResponseMapper = get<DocumentResponseMapper>(),
             documentsResponseMapper = get<DocumentsResponseMapper>(),
+            documentStatusResponseMapper = get<DocumentStatusResponseMapper>(),
             coroutineContextProvider = get<CoroutineContextProvider>(),
             documentAuthenticationRequestBodyMapper = get<DocumentAuthenticationRequestBodyMapper>(),
             authorizationHelper = get<AuthorizationHelper>(),
@@ -141,6 +127,14 @@ val repositoryModule = module {
             coroutineContextProvider = get<CoroutineContextProvider>(),
             changePinRequestBodyMapper = get<ChangePinRequestBodyMapper>(),
             authorizationHelper = get<AuthorizationHelper>(),
+        )
+    }
+    single<UserRepository> {
+        UserRepositoryImpl(
+            userApi = get<UserApi>(),
+            coroutineContextProvider = get<CoroutineContextProvider>(),
+            authorizationHelper = get<AuthorizationHelper>(),
+            userProfileStatusChangesRequestBodyMapper = get<UserProfileStatusChangesRequestBodyMapper>(),
         )
     }
     single<ConfirmationNetworkRepository> {
@@ -231,6 +225,10 @@ val repositoryModule = module {
 
     single<LogLevelResponseMapper> {
         LogLevelResponseMapper()
+    }
+
+    single<DocumentStatusResponseMapper> {
+        DocumentStatusResponseMapper()
     }
 
 }

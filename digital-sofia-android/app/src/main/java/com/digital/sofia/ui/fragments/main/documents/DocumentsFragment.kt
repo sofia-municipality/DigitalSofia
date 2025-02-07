@@ -5,19 +5,25 @@
  **/
 package com.digital.sofia.ui.fragments.main.documents
 
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.PagedList
 import com.digital.sofia.databinding.FragmentDocumentsBinding
 import com.digital.sofia.domain.repository.common.PreferencesRepository
 import com.digital.sofia.domain.utils.LogUtil.logDebug
 import com.digital.sofia.domain.utils.LogUtil.logError
 import com.digital.sofia.extensions.enableChangeAnimations
+import com.digital.sofia.extensions.registerChangeStateObserver
+import com.digital.sofia.extensions.unregisterChangeStateObserver
 import com.digital.sofia.models.common.Message
 import com.digital.sofia.models.documents.DocumentDownloadModel
 import com.digital.sofia.models.documents.DocumentsAdapterMarker
 import com.digital.sofia.ui.fragments.base.BaseFragment
 import com.digital.sofia.ui.fragments.main.documents.list.DocumentsAdapter
 import com.digital.sofia.utils.DownloadHelper
-import com.digital.sofia.utils.PaginationScrollListener
+import com.digital.sofia.utils.RecyclerViewAdapterDataObserver
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -27,6 +33,7 @@ class DocumentsFragment :
 
     companion object {
         private const val TAG = "DocumentsFragmentTag"
+        private const val DELAY_500 = 500L
     }
 
     override fun getViewBinding() = FragmentDocumentsBinding.inflate(layoutInflater)
@@ -39,25 +46,14 @@ class DocumentsFragment :
 
     private val preferences: PreferencesRepository by inject()
 
+    private val adapterDataObserver: RecyclerViewAdapterDataObserver by inject()
+
+    private var updateEmptyStateJob: Job? = null
+
     override fun setupView() {
         binding.rvDocuments.adapter = adapter
         adapter.clickListener = this
         binding.rvDocuments.enableChangeAnimations(false)
-        binding.rvDocuments.addOnScrollListener(object :
-            PaginationScrollListener(binding.rvDocuments.layoutManager as GridLayoutManager) {
-            override fun loadMoreItems() {
-                viewModel.loadMoreDocuments()
-            }
-
-            override fun isLastPage(): Boolean {
-                return viewModel.isLastPage()
-            }
-
-            override fun isLoading(): Boolean {
-                return viewModel.isLoading()
-            }
-
-        })
     }
 
     override fun onCreated() {
@@ -82,7 +78,7 @@ class DocumentsFragment :
     }
 
     override fun subscribeToLiveData() {
-        viewModel.adapterList.observe(viewLifecycleOwner) {
+        viewModel.adapterListLiveData.observe(viewLifecycleOwner) {
             setAdapterData(it)
         }
         downloadHelper.onReadyLiveData.observe(viewLifecycleOwner) {
@@ -93,10 +89,24 @@ class DocumentsFragment :
         }
     }
 
-    private fun setAdapterData(data: List<DocumentsAdapterMarker>) {
+    private fun setAdapterData(data: PagedList<DocumentsAdapterMarker>) {
         logDebug("setAdapterData size: ${data.size}", TAG)
         binding.refreshLayout.isRefreshing = false
-        adapter.items = data
+        adapter.submitList(data)
+        setupEmptyState(size = data.size)
+    }
+
+    private fun setupEmptyState(size: Int?) {
+        logDebug("setupEmptyState size: $size", TAG)
+        updateEmptyStateJob?.cancel()
+        updateEmptyStateJob = lifecycleScope.launch {
+            if (size == null || size == 0) {
+                delay(DELAY_500)
+                showEmptyState()
+            } else {
+                hideEmptyState()
+            }
+        }
     }
 
     override fun onShowFileClicked(downloadModel: DocumentDownloadModel) {
@@ -104,15 +114,8 @@ class DocumentsFragment :
             showMessage(Message.error("Document download url is empty"))
             return
         }
-        val token = preferences.readAccessToken()?.token
-        if (token.isNullOrEmpty()) {
-            showMessage(Message.error("Document download token is empty"))
-            return
-        }
-        logDebug("onShowFileClicked url: ${downloadModel.url} token: $token", TAG)
         try {
-            val urlWithToken = "${downloadModel.url}?authToken=$token"
-            viewModel.openDocument(urlWithToken)
+            viewModel.openDocument(documentFormIOId = downloadModel.formioId)
         } catch (e: Exception) {
             logError("onShowFileClicked Exception: ${e.message}", e, TAG)
             showMessage(Message.error("Error open document, may be download url is empty or wrong"))
@@ -125,6 +128,19 @@ class DocumentsFragment :
 
     override fun onResume() {
         super.onResume()
+        adapter.registerChangeStateObserver(
+            observer = adapterDataObserver,
+            changeStateListener = {
+                logDebug("adapterDataObserver stateChanged", TAG)
+                setupEmptyState(adapter.currentList?.size)
+            }
+        )
         viewModel.refreshData()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        logDebug("onPause", TAG)
+        adapter.unregisterChangeStateObserver(adapterDataObserver)
     }
 }

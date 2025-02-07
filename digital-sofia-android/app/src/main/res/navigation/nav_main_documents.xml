@@ -28,7 +28,7 @@
         tools:layout="@layout/fragment_documents" >
 
         <argument
-            android:name="documentUrl"
+            android:name="documentFormIOId"
             app:argType="string"
             app:nullable="false" />
 

@@ -6,7 +6,6 @@
 package com.digital.sofia.data.network.settings
 
 import com.digital.sofia.data.BuildConfig.URL_CHANGE_PIN
-import com.digital.sofia.data.BuildConfig.URL_DELETE_USER
 import com.digital.sofia.data.models.network.base.BaseResponse
 import com.digital.sofia.data.models.network.registration.ChangePinRequestBody
 import retrofit2.Response
@@ -19,8 +18,5 @@ interface SettingsApi {
     suspend fun changePin(
         @Body requestBody: ChangePinRequestBody,
     ): Response<BaseResponse>
-
-    @POST(URL_DELETE_USER)
-    suspend fun deleteUser(): Response<BaseResponse>
 
 }

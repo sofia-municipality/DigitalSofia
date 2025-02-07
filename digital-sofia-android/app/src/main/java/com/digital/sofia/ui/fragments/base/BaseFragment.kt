@@ -193,15 +193,11 @@ abstract class BaseFragment<VB : ViewBinding, VM : BaseViewModel> : Fragment(),
                 is NetworkState.Connected -> hideNoInternetConnectionState()
             }
         }
-        viewModel.newAppEventLiveData.observe(viewLifecycleOwner) {
-            viewModel.checkAppEvents()
+        viewModel.newAppEventLiveData.observe(viewLifecycleOwner) { notification ->
+            viewModel.checkAppEvents(notificationModel = notification)
         }
         viewModel.newFirebaseMessageLiveData.observe(viewLifecycleOwner) {
             viewModel.onNewFirebaseMessage(it)
-        }
-        viewModel.newAuthorizationEventLiveData.observe(viewLifecycleOwner) {
-            logDebug("updateDataHelper onNewAuthorizationEvent", TAG)
-            viewModel.onNewAuthorizationEvent()
         }
         viewModel.newTokenEventLiveData.observe(viewLifecycleOwner) {
             logDebug("firebaseMessagingServiceHelper newTokenEventLive", TAG)
@@ -278,7 +274,7 @@ abstract class BaseFragment<VB : ViewBinding, VM : BaseViewModel> : Fragment(),
         }
     }
 
-    private fun showEmptyState() {
+    protected fun showEmptyState() {
         logDebug("showEmptyState", TAG)
         try {
             val emptyStateView = view?.findViewById<FrameLayout>(R.id.emptyStateView)
@@ -290,7 +286,7 @@ abstract class BaseFragment<VB : ViewBinding, VM : BaseViewModel> : Fragment(),
         }
     }
 
-    private fun hideEmptyState() {
+    protected fun hideEmptyState() {
         logDebug("hideEmptyState", TAG)
         try {
             val emptyStateView = view?.findViewById<FrameLayout>(R.id.emptyStateView)

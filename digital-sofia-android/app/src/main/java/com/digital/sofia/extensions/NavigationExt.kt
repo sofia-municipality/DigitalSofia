@@ -26,6 +26,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+private const val TAG = "NavigationExtTag"
+
 fun Fragment.findActivityNavController(): NavController {
     val host = requireActivity().supportFragmentManager
         .findFragmentById(R.id.navigationContainer) as NavHostFragment
@@ -196,6 +198,29 @@ fun NavController.isFragmentInBackStack(
         true
     } catch (exception: Exception) {
         false
+    }
+}
+
+fun NavController.popBackStackToFragment(
+    @IdRes fragment: Int,
+    viewModelScope: CoroutineScope,
+) {
+    try {
+        if (isMainThread()) {
+            val success = popBackStack(fragment, false)
+            if (!success) {
+                logError("popBackStackToFragment error, fragment not found", TAG)
+            }
+        } else {
+            viewModelScope.launch(Dispatchers.Main) {
+                val success = popBackStack(fragment, false)
+                if (!success) {
+                    logError("popBackStackToFragment error, fragment not found", TAG)
+                }
+            }
+        }
+    } catch (e: Exception) {
+        logError("popBackStackToFragment Exception: ${e.message}", e, TAG)
     }
 }
 

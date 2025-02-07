@@ -18,6 +18,7 @@ import com.digital.sofia.data.BuildConfig.PROPERTY_KEY_PIN_CODE
 import com.digital.sofia.data.BuildConfig.PROPERTY_KEY_REFRESH_TOKEN
 import com.digital.sofia.data.BuildConfig.PROPERTY_KEY_SERVER_PUBLIC
 import com.digital.sofia.data.BuildConfig.PROPERTY_KEY_USER
+import com.digital.sofia.data.BuildConfig.PROPERTY_KEY_USER_ASKED_STORAGE_PERMISSION_BEFORE
 import com.digital.sofia.domain.extensions.getEnumTypeValue
 import com.digital.sofia.domain.models.common.AppLanguage
 import com.digital.sofia.domain.models.common.AppStatus
@@ -228,6 +229,17 @@ internal class PreferencesRepositoryImpl(
                 getEnumTypeValue<AppStatus>(it)
             } ?: AppStatus.NOT_REGISTERED
         logDebug("readAppStatus value: $value", TAG)
+        return value
+    }
+
+    override fun saveUserAskedPermissionBefore() {
+        logDebug("saveUserAskedPermissionBefore", TAG)
+        preferences.edit().putBoolean(PROPERTY_KEY_USER_ASKED_STORAGE_PERMISSION_BEFORE, true).apply()
+    }
+
+    override fun readUserAskedPermissionBefore(): Boolean {
+        val value = preferences.getBoolean(PROPERTY_KEY_USER_ASKED_STORAGE_PERMISSION_BEFORE, false)
+        logDebug("readUserAskedPermissionBefore value: $value", TAG)
         return value
     }
 

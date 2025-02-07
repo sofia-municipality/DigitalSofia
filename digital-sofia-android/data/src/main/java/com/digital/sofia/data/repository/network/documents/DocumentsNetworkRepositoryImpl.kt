@@ -7,6 +7,7 @@ package com.digital.sofia.data.repository.network.documents
 
 import com.digital.sofia.data.mappers.network.documents.request.DocumentAuthenticationRequestBodyMapper
 import com.digital.sofia.data.mappers.network.documents.response.DocumentResponseMapper
+import com.digital.sofia.data.mappers.network.documents.response.DocumentStatusResponseMapper
 import com.digital.sofia.data.mappers.network.documents.response.DocumentsResponseMapper
 import com.digital.sofia.data.network.documents.DocumentsApi
 import com.digital.sofia.data.repository.network.base.BaseRepository
@@ -18,6 +19,7 @@ import com.digital.sofia.domain.models.base.onSuccess
 import com.digital.sofia.domain.models.common.DownloadProgress
 import com.digital.sofia.domain.models.documents.DocumentAuthenticationRequestModel
 import com.digital.sofia.domain.models.documents.DocumentModel
+import com.digital.sofia.domain.models.documents.DocumentStatusModel
 import com.digital.sofia.domain.models.documents.DocumentsWithPaginationModel
 import com.digital.sofia.domain.repository.network.documents.DocumentsNetworkRepository
 import com.digital.sofia.domain.utils.AuthorizationHelper
@@ -33,6 +35,7 @@ class DocumentsNetworkRepositoryImpl(
     private val documentsApi: DocumentsApi,
     private val documentResponseMapper: DocumentResponseMapper,
     private val documentsResponseMapper: DocumentsResponseMapper,
+    private val documentStatusResponseMapper: DocumentStatusResponseMapper,
     private val documentAuthenticationRequestBodyMapper: DocumentAuthenticationRequestBodyMapper,
     private val authorizationHelper: AuthorizationHelper,
     coroutineContextProvider: CoroutineContextProvider,
@@ -74,13 +77,13 @@ class DocumentsNetworkRepositoryImpl(
 
     override fun downloadFile(
         file: File,
-        documentUrl: String,
+        documentFormIOId: String,
     ): Flow<ResultEmittedData<DownloadProgress>> = flow {
-        logDebug("downloadFile documentUrl: $documentUrl", TAG)
+        logDebug("downloadFile documentFormIOId: $documentFormIOId", TAG)
         emit(ResultEmittedData.loading())
         try {
             val response = documentsApi.downloadFile(
-                documentUrl = documentUrl,
+                documentFormIOId = documentFormIOId,
             )
             if (!response.isSuccessful) {
                 emit(
@@ -128,35 +131,59 @@ class DocumentsNetworkRepositoryImpl(
         }
     }.flowOn(Dispatchers.IO)
 
-    override fun sendOpenedDocument(
+    override fun checkSignedDocumentStatus(
         evrotrustTransactionId: String,
-    ): Flow<ResultEmittedData<Unit>> = flow {
-        logDebug("sendOpenedDocument", TAG)
+    ): Flow<ResultEmittedData<DocumentStatusModel>> = flow {
+        logDebug("checkSignedDocumentStatus", TAG)
         emit(ResultEmittedData.loading(null))
         getResult {
-            documentsApi.sendOpenedDocument(
+            documentsApi.checkSignedDocumentStatus(
                 evrotrustTransactionId = evrotrustTransactionId,
             )
-        }.onSuccess {
-            logDebug("sendOpenedDocument onSuccess", TAG)
-            emit(ResultEmittedData.success(Unit))
+        }.onSuccess { response ->
+            logDebug("checkSignedDocumentStatus onSuccess", TAG)
+            emit(ResultEmittedData.success(documentStatusResponseMapper.map(response)))
         }.onRetry {
-            logDebug("sendOpenedDocument onRetry", TAG)
+            logDebug("checkSignedDocumentStatus onRetry", TAG)
             emit(ResultEmittedData.retry(null))
         }.onFailure {
-            logError("sendOpenedDocument onFailure", it, TAG)
+            logError("checkSignedDocumentStatus onFailure", it, TAG)
             emit(ResultEmittedData.error(it, null))
         }
     }.flowOn(Dispatchers.IO)
 
+
+    override fun checkDeliveredDocumentStatus(evrotrustThreadId: String): Flow<ResultEmittedData<DocumentStatusModel>> =
+        flow {
+            logDebug("checkDeliveredDocumentStatus", TAG)
+            emit(ResultEmittedData.loading(null))
+            getResult {
+                documentsApi.checkDeliveredDocumentStatus(
+                    evrotrustThreadId = evrotrustThreadId,
+                )
+            }.onSuccess { response ->
+                logDebug("checkDeliveredDocumentStatus onSuccess", TAG)
+                emit(ResultEmittedData.success(documentStatusResponseMapper.map(response)))
+            }.onRetry {
+                logDebug("checkDeliveredDocumentStatus onRetry", TAG)
+                emit(ResultEmittedData.retry(null))
+            }.onFailure {
+                logError("checkDeliveredDocumentStatus onFailure", it, TAG)
+                emit(ResultEmittedData.error(it, null))
+            }
+
+        }.flowOn(Dispatchers.IO)
+
     override fun requestIdentity(
-        personalIdentificationNumber: String
+        personalIdentificationNumber: String,
+        language: String,
     ): Flow<ResultEmittedData<DocumentModel>> = flow {
         logDebug("requestIdentity", TAG)
         emit(ResultEmittedData.loading(null))
         getResult {
             documentsApi.requestIdentity(
-                personalIdentificationNumber = personalIdentificationNumber
+                personalIdentificationNumber = personalIdentificationNumber,
+                language = language,
             )
         }.onSuccess {
             logDebug("requestIdentity onSuccess", TAG)

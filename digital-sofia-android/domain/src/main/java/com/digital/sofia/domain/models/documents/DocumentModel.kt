@@ -16,6 +16,7 @@ data class DocumentModel(
     val fileUrl: String?,
     val expired: String?,
     val rejected: String?,
+    val generated: String?,
     val formioId: String?,
     val fileName: String?,
     val modified: String?,
@@ -37,4 +38,6 @@ enum class DocumentStatusModel(override val type: String) : TypeEnum {
     UNSIGNED("unsigned"),
     FAILED("failed"),
     WITHDRAWN("withdrawn"),
+    DELIVERING("delivering"),
+    GENERATED("generated")
 }

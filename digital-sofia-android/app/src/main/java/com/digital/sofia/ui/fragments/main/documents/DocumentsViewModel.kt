@@ -6,8 +6,13 @@
 package com.digital.sofia.ui.fragments.main.documents
 
 import android.content.Context
+import android.nfc.tech.MifareUltralight.PAGE_SIZE
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.paging.DataSource
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
 import com.digital.sofia.R
 import com.digital.sofia.domain.models.base.onFailure
 import com.digital.sofia.domain.models.base.onLoading
@@ -24,6 +29,7 @@ import com.digital.sofia.domain.utils.AuthorizationHelper
 import com.digital.sofia.domain.utils.LogUtil.logDebug
 import com.digital.sofia.domain.utils.LogUtil.logError
 import com.digital.sofia.extensions.launchInScope
+import com.digital.sofia.extensions.launchWithDispatcher
 import com.digital.sofia.extensions.navigateInMainThread
 import com.digital.sofia.extensions.readOnly
 import com.digital.sofia.extensions.setValueOnMainThread
@@ -32,13 +38,13 @@ import com.digital.sofia.models.common.Message
 import com.digital.sofia.models.documents.DocumentDownloadModel
 import com.digital.sofia.models.documents.DocumentsAdapterMarker
 import com.digital.sofia.ui.BaseViewModel
+import com.digital.sofia.ui.fragments.main.documents.list.DocumentsDataSource
 import com.digital.sofia.utils.AppEventsHelper
 import com.digital.sofia.utils.DownloadHelper
 import com.digital.sofia.utils.FirebaseMessagingServiceHelper
 import com.digital.sofia.utils.LocalizationManager
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
-import com.digital.sofia.utils.UpdateDocumentsHelper
 import kotlinx.coroutines.flow.onEach
 
 class DocumentsViewModel(
@@ -50,7 +56,6 @@ class DocumentsViewModel(
     preferences: PreferencesRepository,
     authorizationHelper: AuthorizationHelper,
     localizationManager: LocalizationManager,
-    updateDocumentsHelper: UpdateDocumentsHelper,
     cryptographyRepository: CryptographyRepository,
     updateFirebaseTokenUseCase: UpdateFirebaseTokenUseCase,
     getLogLevelUseCase: GetLogLevelUseCase,
@@ -62,7 +67,6 @@ class DocumentsViewModel(
     appEventsHelper = appEventsHelper,
     authorizationHelper = authorizationHelper,
     localizationManager = localizationManager,
-    updateDocumentsHelper = updateDocumentsHelper,
     cryptographyRepository = cryptographyRepository,
     updateFirebaseTokenUseCase = updateFirebaseTokenUseCase,
     getLogLevelUseCase = getLogLevelUseCase,
@@ -72,35 +76,67 @@ class DocumentsViewModel(
 
     companion object {
         private const val TAG = "DocumentsViewModelTag"
+        private const val PAGE_SIZE = 20
     }
 
     override val isAuthorizationActive: Boolean = true
 
-    private val _adapterList = MutableLiveData<List<DocumentsAdapterMarker>>(emptyList())
-    val adapterList = _adapterList.readOnly()
-
-    @Volatile
-    private var cursor: String? = null
-
-    @Volatile
-    private var isLoading = false
-
-    override fun onFirstAttach() {
-        logDebug("onFirstAttach", TAG)
-        loadInitialDocumentsHistory()
+    private var dataSourceFactory = object : DataSource.Factory<String, DocumentsAdapterMarker>() {
+        override fun create(): DataSource<String, DocumentsAdapterMarker> {
+            return DocumentsDataSource(
+                viewModelScope = viewModelScope,
+                documentsMapper = mapper,
+                documentsGetHistoryUseCase = documentsGetHistoryUseCase,
+                showLoader = {
+                    hideErrorState()
+                    showLoader()
+                },
+                hideLoader = { hideLoader() },
+                showErrorMessage = {
+                    if (adapterListLiveData.value?.isEmpty() == true) {
+                        showErrorState()
+                    } else {
+                        showMessage(Message.error(R.string.error_server_error))
+                    }
+                },
+            )
+        }
     }
 
-    fun isLastPage(): Boolean {
-        return cursor.isNullOrEmpty()
-    }
+    var adapterListLiveData: LiveData<PagedList<DocumentsAdapterMarker>>
+        private set
 
-    fun isLoading(): Boolean {
-        return isLoading
+    init {
+        val config = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setInitialLoadSizeHint(PAGE_SIZE)
+            .setPageSize(PAGE_SIZE / 2)
+            .build()
+        adapterListLiveData = LivePagedListBuilder(dataSourceFactory, config)
+            .setBoundaryCallback(object : PagedList.BoundaryCallback<DocumentsAdapterMarker>() {
+                override fun onZeroItemsLoaded() {
+                    super.onZeroItemsLoaded()
+                    showEmptyState()
+                }
+
+                override fun onItemAtEndLoaded(itemAtEnd: DocumentsAdapterMarker) {
+                    super.onItemAtEndLoaded(itemAtEnd)
+                    showReadyState()
+                }
+
+                override fun onItemAtFrontLoaded(itemAtFront: DocumentsAdapterMarker) {
+                    super.onItemAtFrontLoaded(itemAtFront)
+                    showReadyState()
+                }
+            })
+            .build()
     }
 
     override fun refreshData() {
         logDebug("refreshScreen", TAG)
-        loadInitialDocumentsHistory()
+        viewModelScope.launchWithDispatcher {
+            adapterListLiveData.value?.dataSource?.invalidate()
+        }
     }
 
     fun onSdkStatusChanged(sdkStatus: SdkStatus) {
@@ -118,69 +154,13 @@ class DocumentsViewModel(
         }
     }
 
-    fun openDocument(documentUrl: String) {
+    fun openDocument(documentFormIOId: String) {
         findFlowNavController().navigateInMainThread(
             DocumentsFragmentDirections.toDocumentPreviewFragment(
-                documentUrl = documentUrl
+                documentFormIOId = documentFormIOId
             ),
             viewModelScope
         )
-    }
-
-    fun loadMoreDocuments() {
-        logDebug("loadMoreDocuments", TAG)
-        isLoading = true
-        documentsGetHistoryUseCase.invoke(cursor = cursor).onEach { result ->
-            result.onLoading {
-                logDebug("loadMoreDocuments onLoading", TAG)
-            }.onSuccess {
-                logDebug("loadMoreDocuments onSuccess", TAG)
-                isLoading = false
-                if (it.documents.isNotEmpty()) {
-                    _adapterList.setValueOnMainThread(_adapterList.value?.plus(mapper.map(it.documents)))
-                }
-                cursor = it.cursor
-            }.onRetry {
-                loadMoreDocuments()
-            }.onFailure {
-                isLoading = false
-                logError("loadMoreDocuments onFailure", it, TAG)
-                showMessage(Message.error(R.string.error_server_error))
-            }
-        }.launchInScope(viewModelScope)
-    }
-
-    private fun loadInitialDocumentsHistory() {
-        logDebug("loadInitialDocumentsHistory", TAG)
-        isLoading = true
-        showReadyState()
-        documentsGetHistoryUseCase.invoke(cursor = null).onEach { result ->
-            result.onLoading {
-                logDebug("loadInitialDocumentsHistory onLoading", TAG)
-                showLoader()
-            }.onSuccess {
-                logDebug("loadInitialDocumentsHistory onSuccess", TAG)
-                hideLoader()
-                isLoading = false
-                if (it.documents.isEmpty()) {
-                    showEmptyState()
-                } else {
-                    _adapterList.setValueOnMainThread(mapper.mapWithHeader(it.documents))
-                    cursor = it.cursor
-                }
-            }.onRetry {
-                loadInitialDocumentsHistory()
-            }.onFailure {
-                logError("loadInitialDocumentsHistory onFailure", it, TAG)
-                isLoading = false
-                hideLoader()
-                if (adapterList.value?.isEmpty() == true) {
-                    showErrorState()
-                } else {
-                    showMessage(Message.error(R.string.error_server_error))
-                }
-            }
-        }.launchInScope(viewModelScope)
     }
 
     fun onDownloadClicked(

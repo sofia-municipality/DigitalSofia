@@ -25,7 +25,6 @@ import com.digital.sofia.utils.FirebaseMessagingServiceHelper
 import com.digital.sofia.utils.LocalizationManager
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
-import com.digital.sofia.utils.UpdateDocumentsHelper
 
 abstract class BaseConfirmIdentificationViewModel(
     private val preferences: PreferencesRepository,
@@ -34,7 +33,6 @@ abstract class BaseConfirmIdentificationViewModel(
     appEventsHelper: AppEventsHelper,
     authorizationHelper: AuthorizationHelper,
     localizationManager: LocalizationManager,
-    updateDocumentsHelper: UpdateDocumentsHelper,
     cryptographyRepository: CryptographyRepository,
     updateFirebaseTokenUseCase: UpdateFirebaseTokenUseCase,
     getLogLevelUseCase: GetLogLevelUseCase,
@@ -46,7 +44,6 @@ abstract class BaseConfirmIdentificationViewModel(
     appEventsHelper = appEventsHelper,
     authorizationHelper = authorizationHelper,
     localizationManager = localizationManager,
-    updateDocumentsHelper = updateDocumentsHelper,
     cryptographyRepository = cryptographyRepository,
     updateFirebaseTokenUseCase = updateFirebaseTokenUseCase,
     getLogLevelUseCase = getLogLevelUseCase,
@@ -62,11 +59,13 @@ abstract class BaseConfirmIdentificationViewModel(
 
     internal abstract fun onNoClicked()
 
-    protected abstract fun proceedNext()
+    internal abstract fun proceedNext()
 
     protected abstract fun toErrorFragment()
 
-    protected abstract fun toErrorFragment(@StringRes errorMessageRes: Int)
+    internal abstract fun toErrorFragment(@StringRes errorMessageRes: Int)
+
+    protected abstract fun toVerificationWaitFragment()
 
     internal fun onSdkStatusChanged(sdkStatus: SdkStatus) {
         logDebug("onSdkStatusChanged appStatus: ${sdkStatus.name}", TAG)
@@ -75,8 +74,8 @@ abstract class BaseConfirmIdentificationViewModel(
                 showMessage(
                     Message(
                         title = StringSource.Res(R.string.oops_with_dots),
-                        message = StringSource.Text(
-                            "User information is incomplete, you must update your user information to continue"
+                        message = StringSource.Res(
+                            R.string.sdk_error_user_profile_information_not_complete
                         ),
                         type = Message.Type.ALERT,
                         positiveButtonText = StringSource.Res(R.string.ok),
@@ -85,6 +84,7 @@ abstract class BaseConfirmIdentificationViewModel(
                 )
             }
 
+            SdkStatus.ACTIVITY_RESULT_EDIT_PERSONAL_DATA_READY,
             SdkStatus.ACTIVITY_RESULT_SETUP_PROFILE_READY -> {
                 val pinCode = preferences.readPinCode()
                 if (pinCode == null) {
@@ -118,6 +118,9 @@ abstract class BaseConfirmIdentificationViewModel(
             SdkStatus.SDK_SETUP_READY -> {
                 // Do nothing
             }
+
+            SdkStatus.ACTIVITY_RESULT_SETUP_PROFILE_NOT_VERIFIED,
+            SdkStatus.ACTIVITY_RESULT_EDIT_PERSONAL_NOT_VERIFIED -> toVerificationWaitFragment()
 
             else -> {
                 toErrorFragment(evrotrustSDKHelper.errorMessageRes ?: R.string.sdk_error_unknown)

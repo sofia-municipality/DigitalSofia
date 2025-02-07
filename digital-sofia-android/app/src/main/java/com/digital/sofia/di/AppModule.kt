@@ -19,7 +19,6 @@ import android.os.Looper
 import androidx.core.content.ContextCompat
 import com.digital.sofia.data.utils.CoroutineContextProvider
 import com.digital.sofia.domain.repository.common.PreferencesRepository
-import com.digital.sofia.domain.usecase.documents.DocumentsUpdateUseCase
 import com.digital.sofia.mappers.common.PermissionNamePmMapper
 import com.digital.sofia.utils.ActivitiesCommonHelper
 import com.digital.sofia.utils.AppEventsHelper
@@ -38,12 +37,12 @@ import com.digital.sofia.utils.NotificationHelper
 import com.digital.sofia.utils.PermissionsManager
 import com.digital.sofia.utils.PermissionsManagerImpl
 import com.digital.sofia.utils.PersistentFragmentFactory
+import com.digital.sofia.utils.RecyclerViewAdapterDataObserver
 import com.digital.sofia.utils.ScreenshotsDetector
 import com.digital.sofia.utils.ScreenshotsDetectorImpl
 import com.digital.sofia.utils.SocialNetworksHelper
 import com.digital.sofia.utils.SupportBiometricManager
 import com.digital.sofia.utils.SupportBiometricManagerImpl
-import com.digital.sofia.utils.UpdateDocumentsHelper
 import com.scottyab.rootbeer.RootBeer
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
@@ -93,6 +92,10 @@ val appModule = module {
             downloadManager = get<DownloadManager>(),
             preferences = get<PreferencesRepository>(),
         )
+    }
+
+    single<RecyclerViewAdapterDataObserver> {
+        RecyclerViewAdapterDataObserver()
     }
 
     single<RootBeer> {
@@ -160,12 +163,6 @@ val appModule = module {
         LocalizationManager(
             preferences = get<PreferencesRepository>(),
             currentContext = get<CurrentContext>(),
-        )
-    }
-
-    single<UpdateDocumentsHelper> {
-        UpdateDocumentsHelper(
-            documentsUpdateUseCase = get<DocumentsUpdateUseCase>(),
         )
     }
 

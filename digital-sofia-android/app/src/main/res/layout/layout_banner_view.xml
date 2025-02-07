@@ -28,9 +28,8 @@
         android:layout_marginHorizontal="@dimen/margin_16"
         android:layout_marginVertical="@dimen/margin_16"
         android:layout_weight="1"
-        android:maxLines="2"
         android:singleLine="false"
         android:textColor="@color/color_primary"
-        tools:text="Test" />
+        tools:text="@string/lorem_ipsum_size_2" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

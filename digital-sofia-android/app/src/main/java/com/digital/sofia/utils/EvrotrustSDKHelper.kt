@@ -7,13 +7,13 @@ package com.digital.sofia.utils
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
-import com.digital.sofia.BuildConfig
 import com.digital.sofia.R
 import com.digital.sofia.data.BuildConfig.EVROTRUST_APPLICATION_NUMBER
 import com.digital.sofia.data.BuildConfig.IS_EVROTRUST_PROD
+import com.digital.sofia.data.BuildConfig.URL_BASE
+import com.digital.sofia.data.BuildConfig.URL_PROFILE_STATUS_CALLBACK
 import com.digital.sofia.domain.models.common.AppStatus
 import com.digital.sofia.domain.models.common.SdkStatus
 import com.digital.sofia.domain.models.user.UserModel
@@ -28,6 +28,7 @@ import com.evrotrust.lib.activities.EvrotrustActivity
 import com.evrotrust.lib.listeners.EvrotrustChangeSecurityContextListener
 import com.evrotrust.lib.listeners.EvrotrustCheckUserStatusListener
 import com.evrotrust.lib.listeners.EvrotrustSetupSDKListener
+import com.evrotrust.lib.listeners.EvrotrustSubscribeForUserStatusCallbackListener
 import com.evrotrust.lib.listeners.EvrotrustUserSetUpOnlineListener
 import com.evrotrust.lib.models.EvrotrustChangeSecurityContextResult
 import com.evrotrust.lib.models.EvrotrustCheckUserStatusResult
@@ -36,6 +37,7 @@ import com.evrotrust.lib.models.EvrotrustOpenGroupDocumentsResult
 import com.evrotrust.lib.models.EvrotrustOpenSingleDocumentResult
 import com.evrotrust.lib.models.EvrotrustSetupProfileResult
 import com.evrotrust.lib.models.EvrotrustSetupSDKResult
+import com.evrotrust.lib.models.EvrotrustSubscribeForUserStatusCallbackResult
 import com.evrotrust.lib.models.EvrotrustUserSetUpOnlineResult
 import com.evrotrust.lib.services.EvrotrustCustomization
 import com.evrotrust.lib.utils.EvrotrustConstants
@@ -88,6 +90,8 @@ interface EvrotrustSDKHelper {
         data: Intent?,
     )
 
+    fun subscribeForProfileChanges()
+
 }
 
 class EvrotrustSDKHelperImpl(
@@ -97,10 +101,12 @@ class EvrotrustSDKHelperImpl(
     EvrotrustSetupSDKListener,
     EvrotrustCheckUserStatusListener,
     EvrotrustChangeSecurityContextListener,
-    EvrotrustUserSetUpOnlineListener {
+    EvrotrustUserSetUpOnlineListener,
+    EvrotrustSubscribeForUserStatusCallbackListener {
 
     companion object {
         private const val TAG = "EvrotrustSDKHelperTag"
+        private const val URL_PROFILE_CALLBACK = "${URL_BASE}/${URL_PROFILE_STATUS_CALLBACK}"
     }
 
     override var errorMessageRes: Int? = null
@@ -117,7 +123,8 @@ class EvrotrustSDKHelperImpl(
         logDebug("setupSdk", TAG)
         val user = preferences.readUser()
         logMessage("Started Evrotrust SDK setup for user with personal identification number ${user?.personalIdentificationNumber}")
-        val environment = if (IS_EVROTRUST_PROD) EvrotrustConstants.ENVIRONMENT_PROD else EvrotrustConstants.ENVIRONMENT_TEST
+        val environment =
+            if (IS_EVROTRUST_PROD) EvrotrustConstants.ENVIRONMENT_PROD else EvrotrustConstants.ENVIRONMENT_TEST
         EvrotrustSDK.getInstance(currentContext.get())
             .setupSDK(
                 EVROTRUST_APPLICATION_NUMBER,
@@ -253,7 +260,7 @@ class EvrotrustSDKHelperImpl(
             ) // optional parameter
             putExtra(
                 EvrotrustConstants.EXTRA_SHOULD_SKIP_CONTACT_INFORMATION,
-                false
+                true
             )
             if (prefillPersonalIdentificationNumber) {
                 putExtra(
@@ -354,7 +361,12 @@ class EvrotrustSDKHelperImpl(
                             TAG
                         )
                         if (isIdentified) {
-                            SdkStatus.USER_STATUS_READY
+                            when {
+                                isRejected.not() && isReadyToSign -> SdkStatus.USER_PROFILE_VERIFIED
+                                isReadyToSign.not() && isRejected.not() -> SdkStatus.USER_PROFILE_PROCESSING
+                                isRejected -> SdkStatus.USER_PROFILE_REJECTED
+                                else -> SdkStatus.USER_PROFILE_NOT_VERIFIED
+                            }
                         } else {
                             SdkStatus.USER_STATUS_NOT_IDENTIFIED
                         }
@@ -575,9 +587,82 @@ class EvrotrustSDKHelperImpl(
                 EvrotrustConstants.EXTRA_SECURITY_CONTEXT,
                 pinCode.hashedPin
             )
+            putExtra(EvrotrustConstants.EXTRA_SHOULD_SKIP_CONTACT_INFORMATION, true)
         }
         shouldHandleRequestCode = true
         activity.startActivityForResult(intent, EvrotrustConstants.REQUEST_CODE_EDIT_PERSONAL_DATA)
+    }
+
+    override fun subscribeForProfileChanges() {
+        val pinCode = preferences.readPinCode()?.hashedPin
+        val context = currentContext.get()
+        EvrotrustSDK.getInstance(currentContext.get())
+            .subscribeForUserStatusCallback(context, URL_PROFILE_CALLBACK, pinCode, this)
+    }
+
+    override fun еvrotrustSubscribeForUserStatusCallbackResult(result: EvrotrustSubscribeForUserStatusCallbackResult?) {
+        when (result?.status) {
+            EvrotrustConstants.ActivityStatus.OK -> {
+                setAppStatus(
+                    if (result.isSuccessful) {
+                        val isReadyToSign = result.isReadyToSign
+                        val isRejected = result.isRejected
+                        val isSupervised = result.isSupervised
+                        when {
+                            isReadyToSign && isRejected.not() -> SdkStatus.USER_PROFILE_VERIFIED
+                            isSupervised -> SdkStatus.USER_PROFILE_IS_SUPERVISED
+                            isReadyToSign.not() && isRejected.not() -> SdkStatus.USER_PROFILE_PROCESSING
+                            else -> {
+                                setupErrorMessage(R.string.sdk_error_user_not_verified)
+                                SdkStatus.USER_PROFILE_NOT_VERIFIED
+                            }
+                        }
+                    } else {
+                        logError(
+                            "еvrotrustSubscribeForUserStatusCallbackResult result.isSuccessful is false",
+                            TAG
+                        )
+                        setupErrorMessage(R.string.error_common)
+                        SdkStatus.USER_SETUP_ERROR
+                    }
+                )
+
+            }
+
+            EvrotrustConstants.ActivityStatus.ERROR_INPUT -> {
+                logError("еvrotrustSubscribeForUserStatusCallbackResult status ERROR_INPUT", TAG)
+                setupErrorMessage(R.string.sdk_error_wrong_input)
+                SdkStatus.USER_SETUP_ERROR
+            }
+
+            EvrotrustConstants.ActivityStatus.USER_CANCELED -> {
+                logError("еvrotrustSubscribeForUserStatusCallbackResult status USER_CANCELED", TAG)
+                setupErrorMessage(R.string.sdk_error_cancelled)
+                SdkStatus.ACTIVITY_RESULT_SETUP_PROFILE_CANCELLED
+            }
+
+            EvrotrustConstants.ActivityStatus.USER_NOT_SET_UP -> {
+                logError(
+                    "еvrotrustSubscribeForUserStatusCallbackResult status USER_NOT_SET_UP",
+                    TAG
+                )
+                setupErrorMessage(R.string.error_common)
+                SdkStatus.USER_SETUP_ERROR
+            }
+
+            EvrotrustConstants.ActivityStatus.SDK_NOT_SET_UP -> {
+                logError("еvrotrustSubscribeForUserStatusCallbackResult status SDK_NOT_SET_UP", TAG)
+                setupErrorMessage(R.string.error_common)
+                setupSdk()
+                SdkStatus.SDK_SETUP_ERROR
+            }
+
+            null -> {
+                logError("еvrotrustSubscribeForUserStatusCallbackResult status null", TAG)
+                setupErrorMessage(R.string.error_common)
+                SdkStatus.USER_SETUP_ERROR
+            }
+        }
     }
 
     override fun onActivityResult(
@@ -656,6 +741,8 @@ class EvrotrustSDKHelperImpl(
                                     if (result.lastLatinName.isNullOrEmpty()) oldUser?.lastLatinName
                                     else result.lastLatinName
                                 val isIdentified = result.isIdentified
+                                val isRejected = result.isRejected
+                                val isReadyToSign = result.isReadyToSign
                                 preferences.saveUser(
                                     UserModel(
                                         securityContext = securityContext,
@@ -699,7 +786,11 @@ class EvrotrustSDKHelperImpl(
                                             "isVerified: ${oldUser?.isVerified}", TAG
                                 )
                                 if (isIdentified) {
-                                    SdkStatus.ACTIVITY_RESULT_SETUP_PROFILE_READY
+                                    when {
+                                        isRejected.not() && isReadyToSign -> SdkStatus.ACTIVITY_RESULT_SETUP_PROFILE_READY
+                                        isReadyToSign.not() && isRejected.not() -> SdkStatus.ACTIVITY_RESULT_SETUP_PROFILE_NOT_VERIFIED
+                                        else -> SdkStatus.ACTIVITY_RESULT_SETUP_PROFILE_ERROR
+                                    }
                                 } else {
                                     SdkStatus.USER_STATUS_NOT_IDENTIFIED
                                 }
@@ -931,7 +1022,13 @@ class EvrotrustSDKHelperImpl(
                                 TAG
                             )
                             if (isIdentified) {
-                                setAppStatus(SdkStatus.ACTIVITY_RESULT_EDIT_PERSONAL_DATA_READY)
+                                setAppStatus(
+                                    when {
+                                        isRejected.not() && isReadyToSign -> SdkStatus.ACTIVITY_RESULT_EDIT_PERSONAL_DATA_READY
+                                        isReadyToSign.not() && isRejected.not() -> SdkStatus.ACTIVITY_RESULT_EDIT_PERSONAL_NOT_VERIFIED
+                                        else -> SdkStatus.ACTIVITY_RESULT_SETUP_PROFILE_ERROR
+                                    }
+                                )
                             } else {
                                 setAppStatus(SdkStatus.USER_STATUS_NOT_IDENTIFIED)
                             }

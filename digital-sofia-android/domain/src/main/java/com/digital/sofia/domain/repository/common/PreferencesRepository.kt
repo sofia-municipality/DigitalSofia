@@ -58,6 +58,10 @@ interface PreferencesRepository {
 
     fun readAppStatus(): AppStatus
 
+    fun saveUserAskedPermissionBefore()
+
+    fun readUserAskedPermissionBefore(): Boolean
+
     fun logoutFromPreferences()
 
 }

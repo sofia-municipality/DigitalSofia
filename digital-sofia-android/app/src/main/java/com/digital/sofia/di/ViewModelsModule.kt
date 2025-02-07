@@ -13,32 +13,32 @@ package com.digital.sofia.di
 
 import com.digital.sofia.domain.repository.common.CryptographyRepository
 import com.digital.sofia.domain.repository.common.PreferencesRepository
+import com.digital.sofia.domain.repository.network.settings.SettingsRepository
 import com.digital.sofia.domain.usecase.authorization.AuthorizationEnterToAccountUseCase
 import com.digital.sofia.domain.usecase.confirmation.ConfirmationGetCodeStatusUseCase
 import com.digital.sofia.domain.usecase.confirmation.ConfirmationUpdateCodeStatusUseCase
 import com.digital.sofia.domain.usecase.documents.DocumentsAuthenticateDocumentUseCase
+import com.digital.sofia.domain.usecase.documents.DocumentsCheckDeliveredUseCase
 import com.digital.sofia.domain.usecase.documents.DocumentsDownloadDocumentUseCase
 import com.digital.sofia.domain.usecase.documents.DocumentsGetHistoryUseCase
-import com.digital.sofia.domain.usecase.documents.DocumentsGetUnsignedUseCase
+import com.digital.sofia.domain.usecase.documents.DocumentsGetPendingUseCase
 import com.digital.sofia.domain.usecase.documents.DocumentsHaveUnsignedUseCase
 import com.digital.sofia.domain.usecase.documents.DocumentsRequestIdentityUseCase
-import com.digital.sofia.domain.usecase.documents.DocumentsSendSignedUseCase
-import com.digital.sofia.domain.usecase.documents.DocumentsSubscribeToUnsignedUseCase
-import com.digital.sofia.domain.usecase.documents.DocumentsSubscribeUseCase
-import com.digital.sofia.domain.usecase.documents.DocumentsUpdateUseCase
+import com.digital.sofia.domain.usecase.documents.DocumentsCheckSignedUseCase
 import com.digital.sofia.domain.usecase.firebase.UpdateFirebaseTokenUseCase
-import com.digital.sofia.domain.usecase.logout.LogoutUseCase
 import com.digital.sofia.domain.usecase.logs.UploadLogsUseCase
 import com.digital.sofia.domain.usecase.registration.RegistrationCheckUserUseCase
 import com.digital.sofia.domain.usecase.registration.RegistrationRegisterNewUserUseCase
 import com.digital.sofia.domain.usecase.settings.ChangePinUseCase
+import com.digital.sofia.domain.usecase.user.CheckUserForDeletionUseCase
 import com.digital.sofia.domain.usecase.user.DeleteUserUseCase
 import com.digital.sofia.domain.usecase.user.GetLogLevelUseCase
+import com.digital.sofia.domain.usecase.user.SubscribeForUserStatusChangeUseCase
 import com.digital.sofia.domain.utils.AuthorizationHelper
 import com.digital.sofia.mappers.common.CreateCodeResponseErrorToStringMapper
 import com.digital.sofia.mappers.common.PermissionNamePmMapper
 import com.digital.sofia.mappers.documents.DocumentsUiMapper
-import com.digital.sofia.mappers.forms.UnsignedDocumentUiMapper
+import com.digital.sofia.mappers.forms.PendingDocumentUiMapper
 import com.digital.sofia.ui.activity.MainViewModel
 import com.digital.sofia.ui.fragments.auth.AuthEnterCodeFlowViewModel
 import com.digital.sofia.ui.fragments.auth.biometric.AuthEnterBiometricViewModel
@@ -65,10 +65,10 @@ import com.digital.sofia.ui.fragments.main.documents.DocumentsViewModel
 import com.digital.sofia.ui.fragments.main.documents.preview.DocumentPreviewViewModel
 import com.digital.sofia.ui.fragments.main.request.ServiceRequestViewModel
 import com.digital.sofia.ui.fragments.main.services.MyServicesViewModel
-import com.digital.sofia.ui.fragments.main.signing.SigningViewModel
-import com.digital.sofia.ui.fragments.payment.PaymentBottomSheetFragment
+import com.digital.sofia.ui.fragments.main.pending.PendingViewModel
 import com.digital.sofia.ui.fragments.payment.PaymentBottomSheetViewModel
 import com.digital.sofia.ui.fragments.permissions.PermissionBottomSheetViewModel
+import com.digital.sofia.ui.fragments.profile.verification.wait.ProfileVerificationWaitViewModel
 import com.digital.sofia.ui.fragments.registration.RegistrationFlowViewModel
 import com.digital.sofia.ui.fragments.registration.biometric.RegistrationEnableBiometricViewModel
 import com.digital.sofia.ui.fragments.registration.confirm.RegistrationConfirmIdentificationViewModel
@@ -76,6 +76,7 @@ import com.digital.sofia.ui.fragments.registration.disagree.RegistrationDisagree
 import com.digital.sofia.ui.fragments.registration.egn.RegistrationEnterEgnViewModel
 import com.digital.sofia.ui.fragments.registration.email.RegistrationEnterEmailViewModel
 import com.digital.sofia.ui.fragments.registration.error.RegistrationErrorViewModel
+import com.digital.sofia.ui.fragments.registration.notifications.RegistrationNotificationsViewModel
 import com.digital.sofia.ui.fragments.registration.pin.create.RegistrationCreatePinViewModel
 import com.digital.sofia.ui.fragments.registration.pin.enter.RegistrationEnterPinViewModel
 import com.digital.sofia.ui.fragments.registration.ready.RegistrationReadyViewModel
@@ -106,7 +107,6 @@ import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
 import com.digital.sofia.utils.ScreenshotsDetector
 import com.digital.sofia.utils.SupportBiometricManager
-import com.digital.sofia.utils.UpdateDocumentsHelper
 import com.scottyab.rootbeer.RootBeer
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -122,7 +122,6 @@ val viewModelsModule = module {
             authorizationHelper = get<AuthorizationHelper>(),
             screenshotsDetector = get<ScreenshotsDetector>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             activitiesCommonHelper = get<ActivitiesCommonHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
@@ -140,7 +139,6 @@ val viewModelsModule = module {
             appEventsHelper = get<AppEventsHelper>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             documentsHaveUnsignedUseCase = get<DocumentsHaveUnsignedUseCase>(),
@@ -158,7 +156,6 @@ val viewModelsModule = module {
             appEventsHelper = get<AppEventsHelper>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -176,7 +173,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             documentsGetHistoryUseCase = get<DocumentsGetHistoryUseCase>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
@@ -187,19 +183,19 @@ val viewModelsModule = module {
     }
 
     viewModel {
-        SigningViewModel(
+        PendingViewModel(
             loginTimer = get<LoginTimer>(),
-            mapper = get<UnsignedDocumentUiMapper>(),
+            mapper = get<PendingDocumentUiMapper>(),
             preferences = get<PreferencesRepository>(),
             appEventsHelper = get<AppEventsHelper>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
-            documentsSendSignedUseCase = get<DocumentsSendSignedUseCase>(),
+            documentsCheckSignedUseCase = get<DocumentsCheckSignedUseCase>(),
+            documentsCheckDeliveredUseCase = get<DocumentsCheckDeliveredUseCase>(),
             firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
-            documentsGetUnsignedUseCase = get<DocumentsGetUnsignedUseCase>(),
+            documentsGetPendingUseCase = get<DocumentsGetPendingUseCase>(),
             networkConnectionManager = get<NetworkConnectionManager>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
         )
@@ -212,7 +208,6 @@ val viewModelsModule = module {
             appEventsHelper = get<AppEventsHelper>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -228,7 +223,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -245,7 +239,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
             documentsDownloadDocumentUseCase = get<DocumentsDownloadDocumentUseCase>(),
@@ -262,7 +255,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             permissionNamePmMapper = get<PermissionNamePmMapper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
@@ -279,7 +271,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -295,7 +286,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -311,7 +301,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -328,12 +317,12 @@ val viewModelsModule = module {
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
             biometricManager = get<SupportBiometricManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
             networkConnectionManager = get<NetworkConnectionManager>(),
             firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
+            checkUserForDeletionUseCase = get<CheckUserForDeletionUseCase>(),
         )
     }
 
@@ -345,7 +334,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -362,7 +350,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -378,7 +365,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -394,7 +380,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -411,7 +396,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -427,7 +411,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -443,7 +426,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -459,7 +441,21 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
+            cryptographyRepository = get<CryptographyRepository>(),
+            updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
+            getLogLevelUseCase = get<GetLogLevelUseCase>(),
+            networkConnectionManager = get<NetworkConnectionManager>(),
+            firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
+        )
+    }
+
+    viewModel {
+        RegistrationNotificationsViewModel(
+            loginTimer = get<LoginTimer>(),
+            appEventsHelper = get<AppEventsHelper>(),
+            preferences = get<PreferencesRepository>(),
+            localizationManager = get<LocalizationManager>(),
+            authorizationHelper = get<AuthorizationHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -476,7 +472,6 @@ val viewModelsModule = module {
             evrotrustSDKHelper = get<EvrotrustSDKHelper>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -493,7 +488,6 @@ val viewModelsModule = module {
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
             biometricManager = get<SupportBiometricManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
             createCodeResponseErrorToStringMapper = get<CreateCodeResponseErrorToStringMapper>(),
@@ -511,7 +505,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
             authorizationEnterToAccountUseCase = get<AuthorizationEnterToAccountUseCase>(),
@@ -529,7 +522,6 @@ val viewModelsModule = module {
             evrotrustSDKHelper = get<EvrotrustSDKHelper>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -545,7 +537,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -561,7 +552,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             registrationCheckUserUseCase = get<RegistrationCheckUserUseCase>(),
             firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
@@ -579,7 +569,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -596,7 +585,6 @@ val viewModelsModule = module {
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
             biometricManager = get<SupportBiometricManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -612,7 +600,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
             documentsRequestIdentityUseCase = get<DocumentsRequestIdentityUseCase>(),
@@ -633,7 +620,6 @@ val viewModelsModule = module {
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
             biometricManager = get<SupportBiometricManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -649,7 +635,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -666,7 +651,6 @@ val viewModelsModule = module {
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
             biometricManager = get<SupportBiometricManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -682,7 +666,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -698,7 +681,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -715,7 +697,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -732,7 +713,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -748,7 +728,6 @@ val viewModelsModule = module {
             appEventsHelper = get<AppEventsHelper>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -765,7 +744,6 @@ val viewModelsModule = module {
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
             biometricManager = get<SupportBiometricManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -782,7 +760,6 @@ val viewModelsModule = module {
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
             biometricManager = get<SupportBiometricManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -798,7 +775,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -814,7 +790,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -831,7 +806,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -850,7 +824,6 @@ val viewModelsModule = module {
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
             biometricManager = get<SupportBiometricManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
             createCodeResponseErrorToStringMapper = get<CreateCodeResponseErrorToStringMapper>(),
@@ -868,7 +841,6 @@ val viewModelsModule = module {
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
             biometricManager = get<SupportBiometricManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -885,7 +857,6 @@ val viewModelsModule = module {
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
             biometricManager = get<SupportBiometricManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -901,7 +872,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -917,7 +887,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             registrationRegisterNewUserUseCase = get<RegistrationRegisterNewUserUseCase>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
@@ -935,7 +904,6 @@ val viewModelsModule = module {
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
             biometricManager = get<SupportBiometricManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
             createCodeResponseErrorToStringMapper = get<CreateCodeResponseErrorToStringMapper>(),
@@ -955,7 +923,6 @@ val viewModelsModule = module {
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
             biometricManager = get<SupportBiometricManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -972,7 +939,6 @@ val viewModelsModule = module {
             evrotrustSDKHelper = get<EvrotrustSDKHelper>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -988,7 +954,6 @@ val viewModelsModule = module {
             appEventsHelper = get<AppEventsHelper>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -1005,7 +970,6 @@ val viewModelsModule = module {
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
             biometricManager = get<SupportBiometricManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
             createCodeResponseErrorToStringMapper = get<CreateCodeResponseErrorToStringMapper>(),
@@ -1022,7 +986,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             authorizationHelper = get<AuthorizationHelper>(),
             localizationManager = get<LocalizationManager>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
             documentsRequestIdentityUseCase = get<DocumentsRequestIdentityUseCase>(),
@@ -1041,7 +1004,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -1057,7 +1019,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
@@ -1073,7 +1034,6 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
             confirmationGetCodeStatusUseCase = get<ConfirmationGetCodeStatusUseCase>(),
@@ -1091,12 +1051,28 @@ val viewModelsModule = module {
             preferences = get<PreferencesRepository>(),
             localizationManager = get<LocalizationManager>(),
             authorizationHelper = get<AuthorizationHelper>(),
-            updateDocumentsHelper = get<UpdateDocumentsHelper>(),
             cryptographyRepository = get<CryptographyRepository>(),
             firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
             getLogLevelUseCase = get<GetLogLevelUseCase>(),
             networkConnectionManager = get<NetworkConnectionManager>(),
             updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
+        )
+    }
+
+    viewModel {
+        ProfileVerificationWaitViewModel(
+            evrotrustSDKHelper = get<EvrotrustSDKHelper>(),
+            loginTimer = get<LoginTimer>(),
+            appEventsHelper = get<AppEventsHelper>(),
+            preferences = get<PreferencesRepository>(),
+            authorizationHelper = get<AuthorizationHelper>(),
+            localizationManager = get<LocalizationManager>(),
+            cryptographyRepository = get<CryptographyRepository>(),
+            updateFirebaseTokenUseCase = get<UpdateFirebaseTokenUseCase>(),
+            getLogLevelUseCase = get<GetLogLevelUseCase>(),
+            networkConnectionManager = get<NetworkConnectionManager>(),
+            firebaseMessagingServiceHelper = get<FirebaseMessagingServiceHelper>(),
+            subscribeForUserStatusChangeUseCase = get<SubscribeForUserStatusChangeUseCase>()
         )
     }
 

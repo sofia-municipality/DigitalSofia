@@ -9,6 +9,7 @@ import com.digital.sofia.domain.utils.LogUtil.logDebug
 import com.digital.sofia.domain.utils.LogUtil.logError
 import com.digital.sofia.extensions.readOnly
 import com.digital.sofia.extensions.setValueOnMainThread
+import com.digital.sofia.models.common.NotificationModel
 import com.digital.sofia.models.common.StringSource
 import com.google.firebase.messaging.RemoteMessage
 
@@ -21,9 +22,13 @@ class AppEventsHelper(
         private const val CODE_KEY = "code"
         private const val EXPIRES_AT_KEY = "expiresAt"
         private const val STATUS_KEY = "status"
+        private const val IS_IDENTIFIED_KEY = "isIdentified"
+        private const val IS_READY_TO_SIGN_KEY = "isReadyToSign"
+        private const val IS_REJECTED_KEY = "isRejected"
+        private const val IS_SUPERVISED_KEY = "isSupervised"
     }
 
-    private val _newAppEventLiveData = MutableLiveData<Unit>()
+    private val _newAppEventLiveData = MutableLiveData<NotificationModel?>()
     val newAppEventLiveData = _newAppEventLiveData.readOnly()
 
     private val _documentsForSignLiveData = LiveEvent<Boolean>()
@@ -33,6 +38,7 @@ class AppEventsHelper(
     var hasNewAuthorizationEvent = false
     var hasNewPendingDocumentEvent = false
     var hasNewSignedDocumentEvent = false
+    var hasNewUserProfileStatusChangeEvent = false
 
     var isNotificationEvent = false
         private set
@@ -45,12 +51,36 @@ class AppEventsHelper(
         logDebug("onNewIntent", TAG)
         val bundle = intent?.extras ?: return
         isNotificationEvent = true
-        handleData(
-            code = bundle.getString(CODE_KEY),
-            expires = bundle.getString(EXPIRES_AT_KEY),
-            status = bundle.getString(STATUS_KEY),
-        )
-        _newAppEventLiveData.setValueOnMainThread(null)
+        val notification = when {
+            bundle.getString(STATUS_KEY).isNullOrEmpty()
+                .not() -> NotificationModel.DocumentStatusNotificationModel(
+                status = bundle.getString(
+                    STATUS_KEY
+                )
+            )
+
+            bundle.getString(CODE_KEY).isNullOrEmpty().not() && bundle.getString(EXPIRES_AT_KEY)
+                .isNullOrEmpty().not() -> NotificationModel.AuthorizationNotificationModel(
+                code = bundle.getString(CODE_KEY),
+                expiresAt = bundle.getString(EXPIRES_AT_KEY),
+            )
+
+            bundle.getString(IS_IDENTIFIED_KEY).isNullOrEmpty().not() && bundle.getString(
+                IS_READY_TO_SIGN_KEY
+            ).isNullOrEmpty().not() && bundle.getString(IS_REJECTED_KEY).isNullOrEmpty()
+                .not() && bundle.getString(IS_SUPERVISED_KEY).isNullOrEmpty()
+                .not() -> NotificationModel.UserProfileStatusChangeNotificationModel(
+                isIdentified = bundle.getString(IS_IDENTIFIED_KEY).toBoolean(),
+                isSupervised = bundle.getString(IS_SUPERVISED_KEY).toBoolean(),
+                isRejected = bundle.getString(IS_REJECTED_KEY).toBoolean(),
+                isReadyToSign = bundle.getString(IS_READY_TO_SIGN_KEY).toBoolean(),
+            )
+
+            else -> null
+        }
+
+        handleNotification(notificationModel = notification)
+        _newAppEventLiveData.setValueOnMainThread(notification)
     }
 
     fun onNewFirebaseMessage(message: RemoteMessage) {
@@ -59,17 +89,39 @@ class AppEventsHelper(
         if (message.data.isEmpty()) {
             logError("onNewFirebaseMessage message.data.isEmpty()", TAG)
             notificationHelper.showNotificationOnMainThread(
-                title = StringSource.Text(message.notification?.title!!),
-                content = StringSource.Text(message.notification?.body!!),
+                title = StringSource.Text(message.notification?.title ?: "N/A"),
+                content = StringSource.Text(message.notification?.body ?: "N/A"),
             )
             return
         }
-        handleData(
-            code = message.data[CODE_KEY],
-            expires = message.data[EXPIRES_AT_KEY],
-            status = message.data[STATUS_KEY],
-        )
-        _newAppEventLiveData.setValueOnMainThread(null)
+        val notification = when {
+            message.data[STATUS_KEY].isNullOrEmpty()
+                .not() -> NotificationModel.DocumentStatusNotificationModel(
+                status = message.data[STATUS_KEY]
+            )
+
+            message.data[CODE_KEY].isNullOrEmpty().not() && message.data[EXPIRES_AT_KEY]
+                .isNullOrEmpty().not() -> NotificationModel.AuthorizationNotificationModel(
+                code = message.data[CODE_KEY],
+                expiresAt = message.data[EXPIRES_AT_KEY],
+            )
+
+            message.data[IS_IDENTIFIED_KEY].isNullOrEmpty().not() && message.data[
+                IS_READY_TO_SIGN_KEY
+            ].isNullOrEmpty().not() && message.data[IS_REJECTED_KEY].isNullOrEmpty()
+                .not() && message.data[IS_SUPERVISED_KEY].isNullOrEmpty()
+                .not() -> NotificationModel.UserProfileStatusChangeNotificationModel(
+                isIdentified = message.data[IS_IDENTIFIED_KEY].toBoolean(),
+                isSupervised = message.data[IS_SUPERVISED_KEY].toBoolean(),
+                isRejected = message.data[IS_REJECTED_KEY].toBoolean(),
+                isReadyToSign = message.data[IS_READY_TO_SIGN_KEY].toBoolean(),
+            )
+
+            else -> null
+        }
+
+        handleNotification(notificationModel = notification)
+        _newAppEventLiveData.setValueOnMainThread(notification)
         val bundle = Bundle().apply {
             message.data.forEach { (key, value) ->
                 putString(key, value)
@@ -77,39 +129,43 @@ class AppEventsHelper(
         }
         notificationHelper.showNotificationOnMainThread(
             bundle = bundle,
-            title = StringSource.Text(message.notification?.title!!),
-            content = StringSource.Text(message.notification?.body!!),
+            title = StringSource.Text(message.notification?.title ?: "N/A"),
+            content = StringSource.Text(message.notification?.body ?: "N/A"),
         )
     }
 
-    private fun handleData(
-        code: String?,
-        expires: String?,
-        status: String?,
+    private fun handleNotification(
+        notificationModel: NotificationModel?,
     ) {
+        if (notificationModel?.isValid == true) {
+            when (notificationModel) {
+                is NotificationModel.AuthorizationNotificationModel -> hasNewAuthorizationEvent =
+                    true
 
-        if (!code.isNullOrEmpty() && !expires.isNullOrEmpty()) {
-            hasNewAuthorizationEvent = true
-        }
-        if (!status.isNullOrEmpty()) {
-            getEnumTypeValue<DocumentStatusModel>(status)?.let {
-                when (it) {
-                    DocumentStatusModel.PENDING,
-                    DocumentStatusModel.SIGNING -> {
-                        hasNewPendingDocumentEvent = true
-                    }
+                is NotificationModel.DocumentStatusNotificationModel -> notificationModel.status?.let { status ->
+                    getEnumTypeValue<DocumentStatusModel>(status.lowercase())?.let {
+                        when (it) {
+                            DocumentStatusModel.PENDING,
+                            DocumentStatusModel.DELIVERING,
+                            DocumentStatusModel.SIGNING -> {
+                                hasNewPendingDocumentEvent = true
+                            }
 
-                    DocumentStatusModel.EXPIRED,
-                    DocumentStatusModel.SIGNED -> {
-                        hasNewSignedDocumentEvent = true
-                    }
+                            DocumentStatusModel.EXPIRED,
+                            DocumentStatusModel.SIGNED -> {
+                                hasNewSignedDocumentEvent = true
+                            }
 
-                    else -> {
-                        // not need
+                            else -> {
+                                // not need
+                            }
+                        }
                     }
                 }
-            }
 
+                is NotificationModel.UserProfileStatusChangeNotificationModel -> hasNewUserProfileStatusChangeEvent =
+                    true
+            }
         }
     }
 }

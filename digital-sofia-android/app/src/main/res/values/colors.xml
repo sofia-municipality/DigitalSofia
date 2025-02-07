@@ -30,6 +30,7 @@
     <color name="color_switch">#007BFF</color>
     <color name="color_background_error_field">#F0F2F9</color>
     <color name="color_shadow_bottom_line">#6682C7</color>
+    <color name="color_notifications_red">#D04925</color>
 
     <!-- SDK -->
     <color name="evrotrustMainColor1">#5268A0</color>

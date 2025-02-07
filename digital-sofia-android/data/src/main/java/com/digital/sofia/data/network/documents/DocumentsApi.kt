@@ -5,10 +5,12 @@
  **/
 package com.digital.sofia.data.network.documents
 
+import com.digital.sofia.data.BuildConfig.URL_CHECK_DELIVERED_DOCUMENT
+import com.digital.sofia.data.BuildConfig.URL_CHECK_SIGNED_DOCUMENT
 import com.digital.sofia.data.BuildConfig.URL_DOCUMENT_AUTHENTICATION
+import com.digital.sofia.data.BuildConfig.URL_DOWNLOAD_DOCUMENT
 import com.digital.sofia.data.BuildConfig.URL_GET_DOCUMENTS
 import com.digital.sofia.data.BuildConfig.URL_REQUEST_IDENTITY
-import com.digital.sofia.data.BuildConfig.URL_SEND_SIGNED_DOCUMENT
 import com.digital.sofia.data.models.network.base.EmptyResponse
 import com.digital.sofia.data.models.network.documents.DocumentAuthenticationRequestBody
 import com.digital.sofia.data.models.network.documents.DocumentResponse
@@ -33,20 +35,26 @@ interface DocumentsApi {
     ): Response<DocumentsResponse>
 
     @Streaming
-    @GET
+    @GET(URL_DOWNLOAD_DOCUMENT)
     suspend fun downloadFile(
-        @Url documentUrl: String
+        @Path("documentFormIOId") documentFormIOId: String
     ): Response<ResponseBody>
 
-    @GET(URL_SEND_SIGNED_DOCUMENT)
-    suspend fun sendOpenedDocument(
+    @GET(URL_CHECK_SIGNED_DOCUMENT)
+    suspend fun checkSignedDocumentStatus(
         @Path("evrotrustTransactionId") evrotrustTransactionId: String,
+    ): Response<DocumentStatusResponse>
+
+    @GET(URL_CHECK_DELIVERED_DOCUMENT)
+    suspend fun checkDeliveredDocumentStatus(
+        @Path("evrotrustThreadId") evrotrustThreadId: String,
     ): Response<DocumentStatusResponse>
 
 
     @GET(URL_REQUEST_IDENTITY)
     suspend fun requestIdentity(
         @Path("personalIdentificationNumber") personalIdentificationNumber: String,
+        @Query("lang") language: String,
     ): Response<DocumentResponse>
 
     @POST(URL_DOCUMENT_AUTHENTICATION)

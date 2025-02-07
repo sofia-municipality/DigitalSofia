@@ -20,6 +20,7 @@ class DocumentsGetHistoryUseCase(
             DocumentStatusModel.UNSIGNED,
             DocumentStatusModel.FAILED,
             DocumentStatusModel.WITHDRAWN,
+            DocumentStatusModel.GENERATED,
         )
     }
 

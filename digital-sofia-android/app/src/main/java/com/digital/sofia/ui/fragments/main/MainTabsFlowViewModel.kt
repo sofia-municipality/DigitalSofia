@@ -7,7 +7,6 @@ package com.digital.sofia.ui.fragments.main
 
 import androidx.lifecycle.viewModelScope
 import com.digital.sofia.R
-import com.digital.sofia.domain.extensions.readOnly
 import com.digital.sofia.domain.models.base.onFailure
 import com.digital.sofia.domain.models.base.onLoading
 import com.digital.sofia.domain.models.base.onRetry
@@ -17,7 +16,6 @@ import com.digital.sofia.domain.repository.common.PreferencesRepository
 import com.digital.sofia.domain.usecase.confirmation.ConfirmationGetCodeStatusUseCase
 import com.digital.sofia.domain.usecase.documents.DocumentsHaveUnsignedUseCase
 import com.digital.sofia.domain.usecase.firebase.UpdateFirebaseTokenUseCase
-import com.digital.sofia.domain.usecase.logout.LogoutUseCase
 import com.digital.sofia.domain.usecase.user.GetLogLevelUseCase
 import com.digital.sofia.domain.utils.AuthorizationHelper
 import com.digital.sofia.domain.utils.LogUtil.logDebug
@@ -28,13 +26,10 @@ import com.digital.sofia.models.common.Message
 import com.digital.sofia.ui.BaseViewModel
 import com.digital.sofia.utils.AppEventsHelper
 import com.digital.sofia.utils.FirebaseMessagingServiceHelper
-import com.digital.sofia.utils.LiveEvent
 import com.digital.sofia.utils.LocalizationManager
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
 import com.digital.sofia.utils.SingleLiveEvent
-import com.digital.sofia.utils.UpdateDocumentsHelper
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.onEach
 
 class MainTabsFlowViewModel(
@@ -45,7 +40,6 @@ class MainTabsFlowViewModel(
     private val preferences: PreferencesRepository,
     loginTimer: LoginTimer,
     localizationManager: LocalizationManager,
-    updateDocumentsHelper: UpdateDocumentsHelper,
     cryptographyRepository: CryptographyRepository,
     updateFirebaseTokenUseCase: UpdateFirebaseTokenUseCase,
     getLogLevelUseCase: GetLogLevelUseCase,
@@ -57,7 +51,6 @@ class MainTabsFlowViewModel(
     appEventsHelper = appEventsHelper,
     authorizationHelper = authorizationHelper,
     localizationManager = localizationManager,
-    updateDocumentsHelper = updateDocumentsHelper,
     cryptographyRepository = cryptographyRepository,
     updateFirebaseTokenUseCase = updateFirebaseTokenUseCase,
     getLogLevelUseCase = getLogLevelUseCase,
@@ -95,7 +88,7 @@ class MainTabsFlowViewModel(
 
     private fun checkForUnsignedDocuments() {
         logDebug("checkForUnsignedDocuments", TAG)
-        documentsHaveUnsignedUseCase.invoke(status = "signing").onEach { result ->
+        documentsHaveUnsignedUseCase.invoke(status = "signing,delivering").onEach { result ->
             result.onLoading {
                 logDebug("checkForUnsignedDocuments onLoading", TAG)
             }.onSuccess {

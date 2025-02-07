@@ -27,7 +27,6 @@ import com.digital.sofia.utils.FirebaseMessagingServiceHelper
 import com.digital.sofia.utils.LocalizationManager
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
-import com.digital.sofia.utils.UpdateDocumentsHelper
 
 class RegistrationConfirmIdentificationViewModel(
     private val preferences: PreferencesRepository,
@@ -36,7 +35,6 @@ class RegistrationConfirmIdentificationViewModel(
     evrotrustSDKHelper: EvrotrustSDKHelper,
     authorizationHelper: AuthorizationHelper,
     localizationManager: LocalizationManager,
-    updateDocumentsHelper: UpdateDocumentsHelper,
     cryptographyRepository: CryptographyRepository,
     updateFirebaseTokenUseCase: UpdateFirebaseTokenUseCase,
     getLogLevelUseCase: GetLogLevelUseCase,
@@ -49,7 +47,6 @@ class RegistrationConfirmIdentificationViewModel(
     evrotrustSDKHelper = evrotrustSDKHelper,
     authorizationHelper = authorizationHelper,
     localizationManager = localizationManager,
-    updateDocumentsHelper = updateDocumentsHelper,
     cryptographyRepository = cryptographyRepository,
     updateFirebaseTokenUseCase = updateFirebaseTokenUseCase,
     getLogLevelUseCase = getLogLevelUseCase,
@@ -114,6 +111,15 @@ class RegistrationConfirmIdentificationViewModel(
             RegistrationConfirmIdentificationFragmentDirections.toErrorFragment(
                 errorMessage = StringSource.Res(R.string.registration_error_description)
             ),
+            viewModelScope
+        )
+    }
+
+    override fun toVerificationWaitFragment() {
+        logDebug("toVerificationWaitFragment", TAG)
+        preferences.saveAppStatus(AppStatus.PROFILE_VERIFICATION_REGISTRATION)
+        findFlowNavController().navigateInMainThread(
+            RegistrationConfirmIdentificationFragmentDirections.toProfileVerificationWaitFlowFragment(),
             viewModelScope
         )
     }

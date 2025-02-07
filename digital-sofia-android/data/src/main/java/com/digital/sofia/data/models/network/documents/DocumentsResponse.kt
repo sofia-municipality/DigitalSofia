@@ -25,6 +25,7 @@ data class DocumentResponse(
     @SerializedName("status") val status: String?,
     @SerializedName("signed") val signed: String?,
     @SerializedName("expired") val expired: String?,
+    @SerializedName("generated") val generated: String?,
     @SerializedName("fileUrl") val fileUrl: String?,
     @SerializedName("created") val created: String?,
     @SerializedName("rejected") val rejected: String?,

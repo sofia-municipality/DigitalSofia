@@ -22,7 +22,6 @@ import com.digital.sofia.utils.LocalizationManager
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
 import com.digital.sofia.utils.SupportBiometricManager
-import com.digital.sofia.utils.UpdateDocumentsHelper
 
 class RegistrationCreatePinViewModel(
     loginTimer: LoginTimer,
@@ -31,7 +30,6 @@ class RegistrationCreatePinViewModel(
     authorizationHelper: AuthorizationHelper,
     localizationManager: LocalizationManager,
     biometricManager: SupportBiometricManager,
-    updateDocumentsHelper: UpdateDocumentsHelper,
     cryptographyRepository: CryptographyRepository,
     firebaseMessagingServiceHelper: FirebaseMessagingServiceHelper,
     createCodeResponseErrorToStringMapper: CreateCodeResponseErrorToStringMapper,
@@ -45,7 +43,6 @@ class RegistrationCreatePinViewModel(
     biometricManager = biometricManager,
     authorizationHelper = authorizationHelper,
     localizationManager = localizationManager,
-    updateDocumentsHelper = updateDocumentsHelper,
     cryptographyRepository = cryptographyRepository,
     firebaseMessagingServiceHelper = firebaseMessagingServiceHelper,
     createCodeResponseErrorToStringMapper = createCodeResponseErrorToStringMapper,

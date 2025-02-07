@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_background"
@@ -24,84 +25,98 @@
             android:clipToPadding="false"
             android:fillViewport="true">
 
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/color_background"
-                android:orientation="vertical">
+                android:layout_height="match_parent">
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="start|center_vertical"
-                        android:layout_marginStart="@dimen/margin_20"
-                        android:layout_marginTop="@dimen/margin_20"
-                        android:layout_marginBottom="@dimen/margin_20"
-                        android:src="@drawable/ic_gear" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/TextStyle.20spRegularMainColor"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="@dimen/margin_20"
-                        android:layout_marginTop="@dimen/margin_20"
-                        android:layout_marginBottom="@dimen/margin_20"
-                        android:layout_weight="1"
-                        android:text="@string/settings_title" />
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
+                    android:layout_height="match_parent"
+                    android:background="@color/color_background"
                     android:orientation="vertical">
 
-                    <com.digital.sofia.ui.view.SettingsButtonView
-                        android:id="@+id/btnProfile"
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:settings_button_view_icon="@drawable/ic_right_arrow"
-                        app:settings_button_view_title="@string/settings_profile" />
+                        android:orientation="horizontal">
 
-                    <com.digital.sofia.ui.view.SettingsButtonView
-                        android:id="@+id/btnLanguage"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:settings_button_view_icon="@drawable/ic_right_arrow"
-                        app:settings_button_view_title="@string/settings_application_language" />
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start|center_vertical"
+                            android:layout_marginStart="@dimen/margin_20"
+                            android:layout_marginTop="@dimen/margin_20"
+                            android:layout_marginBottom="@dimen/margin_20"
+                            android:src="@drawable/ic_gear" />
 
-                    <com.digital.sofia.ui.view.SettingsButtonView
-                        android:id="@+id/btnAuthMethod"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:settings_button_view_icon="@drawable/ic_right_arrow"
-                        app:settings_button_view_title="@string/settings_security_on_entry" />
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/TextStyle.20spRegularMainColor"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="@dimen/margin_20"
+                            android:layout_marginTop="@dimen/margin_20"
+                            android:layout_marginBottom="@dimen/margin_20"
+                            android:layout_weight="1"
+                            android:text="@string/settings_title" />
 
-                    <com.digital.sofia.ui.view.SettingsButtonView
-                        android:id="@+id/btnChangePin"
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <com.digital.sofia.ui.view.SettingsButtonView
+                            android:id="@+id/btnProfile"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:settings_button_view_icon="@drawable/ic_right_arrow"
+                            app:settings_button_view_title="@string/settings_profile" />
+
+                        <com.digital.sofia.ui.view.SettingsButtonView
+                            android:id="@+id/btnLanguage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:settings_button_view_icon="@drawable/ic_right_arrow"
+                            app:settings_button_view_title="@string/settings_application_language" />
+
+                        <com.digital.sofia.ui.view.SettingsButtonView
+                            android:id="@+id/btnAuthMethod"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:settings_button_view_icon="@drawable/ic_right_arrow"
+                            app:settings_button_view_title="@string/settings_security_on_entry" />
+
+                        <com.digital.sofia.ui.view.SettingsButtonView
+                            android:id="@+id/btnChangePin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:settings_button_view_icon="@drawable/ic_right_arrow"
+                            app:settings_button_view_title="@string/settings_change_pin" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <com.digital.sofia.ui.view.SettingsButtonSecondaryView
+                        android:id="@+id/btnDeleteProfile"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:settings_button_view_icon="@drawable/ic_right_arrow"
-                        app:settings_button_view_title="@string/settings_change_pin" />
+                        app:settings_button_secondary_view_icon="@drawable/ic_delete_profile"
+                        app:settings_button_secondary_view_title="@string/settings_delete_profile" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <com.digital.sofia.ui.view.SettingsButtonSecondaryView
-                    android:id="@+id/btnDeleteProfile"
+                <com.digital.sofia.ui.view.LoaderView
+                    android:id="@+id/loaderView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:settings_button_secondary_view_icon="@drawable/ic_delete_profile"
-                    app:settings_button_secondary_view_title="@string/settings_delete_profile" />
+                    android:layout_height="match_parent"
+                    android:background="@color/color_background"
+                    android:visibility="gone"
+                    tools:visibility="gone" />
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+            </FrameLayout>
 
         </androidx.core.widget.NestedScrollView>
 

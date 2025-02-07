@@ -26,7 +26,6 @@ import com.digital.sofia.utils.FirebaseMessagingServiceHelper
 import com.digital.sofia.utils.LocalizationManager
 import com.digital.sofia.utils.LoginTimer
 import com.digital.sofia.utils.NetworkConnectionManager
-import com.digital.sofia.utils.UpdateDocumentsHelper
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -37,7 +36,6 @@ class BlockedViewModel(
     appEventsHelper: AppEventsHelper,
     localizationManager: LocalizationManager,
     authorizationHelper: AuthorizationHelper,
-    updateDocumentsHelper: UpdateDocumentsHelper,
     cryptographyRepository: CryptographyRepository,
     getLogLevelUseCase: GetLogLevelUseCase,
     networkConnectionManager: NetworkConnectionManager,
@@ -49,7 +47,6 @@ class BlockedViewModel(
     appEventsHelper = appEventsHelper,
     authorizationHelper = authorizationHelper,
     localizationManager = localizationManager,
-    updateDocumentsHelper = updateDocumentsHelper,
     cryptographyRepository = cryptographyRepository,
     updateFirebaseTokenUseCase = updateFirebaseTokenUseCase,
     getLogLevelUseCase = getLogLevelUseCase,

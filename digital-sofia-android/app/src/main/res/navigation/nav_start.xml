@@ -11,4 +11,14 @@
         android:label="splashFragment"
         tools:layout="@layout/fragment_splash" />
 
+    <action
+        android:id="@+id/toProfileVerificationWaitFlowFragment"
+        app:destination="@id/nav_profile_verification_wait"
+        app:enterAnim="@anim/fragment_scale_enter_front"
+        app:exitAnim="@anim/fragment_scale_enter_back"
+        app:popEnterAnim="@anim/fragment_scale_exit_back"
+        app:popExitAnim="@anim/fragment_scale_exit_front" />
+
+    <include app:graph="@navigation/nav_profile_verification_wait" />
+
 </navigation>
