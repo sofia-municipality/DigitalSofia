@@ -55,29 +55,25 @@ const linkApplication = (cell, row, redirectUrl) => {
 
 const ReceiptButton = ({ formId, name, receiptId }) => {
   const handleClick = async () => {
+    const sliceSize = 512;
+
     const resp = await getFormSubmission(formId, receiptId);
     const dataUrl = resp.data.file[0].url;
 
-    const newWindow = window.open("", "_blank");
+    const byteCharacters = Buffer.from(dataUrl.split(',')[1], 'base64');
+    const byteArrays = [];
 
-    newWindow.document.write(`
-      <html>
-        <head>
-          <title>PDF Viewer</title>
-        </head>
-        <body>
-          <h1>Receipt</h1>
-          <iframe 
-            src="${dataUrl}" 
-            width="100%" 
-            height="1000px" 
-            style="border: none;">
-          </iframe>
-        </body>
-      </html>
-    `);
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      const slice = byteCharacters.subarray(offset, offset + sliceSize);
 
-    newWindow.document.close();
+      const byteArray = Uint8Array.prototype.slice.call(slice);
+      byteArrays.push(byteArray);
+    }
+
+    const blob = new Blob(byteArrays, { type: "application/pdf" });
+    const blobUrl = URL.createObjectURL(blob);
+  
+    window.open(blobUrl, "_blank");
   };
 
   return (
