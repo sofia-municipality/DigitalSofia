@@ -1,92 +1,175 @@
-# SOA23DG55-158
+# Digital Sofia - Цифрова София
 
+Платформа за електронни услуги на Столична община София, предназначена за предоставяне на удобни и достъпни електронни услуги на гражданите. В първата версия се поддържат две основни услуги:
+- Плащане и справки за данъци
+- Смяна на постоянен и настоящ адрес
 
+‼️ Важно ‼️ Проекта е в състояние на затворена бета/closed beta. 
 
-## Getting started
+Предстои надграждане с допълнителни фукнционалности за:
+- автентикация с еАвт на eGov.bg https://eauth.egov.bg/eauth/ssologin
+- допълнителни административни услуги
+- известия за събития, ремонти и важни за града новини по локации
+- и други, за които може да пишете в Отворения роудмап тук: https://github.com/orgs/sofia-municipality/projects/3/
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## ✨ Основни функционалности
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+### За граждани:
+- 📱 Мобилно приложение за iOS и Android
+- 🏠 Уеб портал за електронни услуги
+- 🔐 Сигурна автентикация с Евротръст
+- 📄 Подаване на заявления за смяна на адрес
+- 📄 Проверка и плащане на данъци
+- 📝 Проследяване на статуса на заявления и плащания
+- 📋 Изтегляне на документи
+- 💬 Контакти и поддръжка
+- 🌍 Многоезична поддръжка (български/английски)
 
-## Add your files
+### За администратори:
+- 🔧 Административен панел
+- 📊 Аналитика и отчети
+- 📋 Управление на формуляри
+- ⚙️ Конфигуриране на процеси
+- 👥 Управление на потребители
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+## 🏗️ Архитектура
 
+Системата използва модерна микросервисна архитектура с:
+
+- **Frontend**: React.js със Single-SPA микро фронтенди
+- **Mobile**: мобилни приложения за Android (Kotlin) и iOS (Swift)
+- **Backend**: Python Flask API със Spring Boot Camunda
+- **Аутентикация**: Keycloak за SSO и управление на потребители
+- **База данни**: PostgreSQL
+- **Workflow**: Camunda BPM Engine
+- **Аналитика**: Redash за визуализация на данни
+- **Евротръст**: Интеграция за електронни подписи и идентификация
+
+## 📱 Компоненти на системата
+
+### Мобилни приложения
+- **digital-sofia-android/** - Android мобилно приложение (Kotlin, Clean Architecture)
+- **digital-sofia-ios/** - iOS мобилно приложение (Swift, SwiftUI)
+
+### Уеб платформа
+- **forms-flow-web/** - Основно уеб приложение (React.js 17.0.2)
+- **forms-flow-web-mf/** - Микро фронтенд модули
+- **forms-flow-web-mf-admin/** - Административен интерфейс
+- **forms-flow-web-mf-nav/** - Навигационни компоненти
+- **forms-flow-web-mf-service/** - Сервизни модули
+- **forms-flow-web-mf-theme/** - Теми и стилове
+- **forms-flow-web-root-config/** - Web конфигурация
+
+### Backend системи
+- **forms-flow-api/** - Основно API (Python, Flask 2.1.3)
+- **forms-flow-bpm/** - Workflow engine (Camunda 7.17.0, Spring Boot 2.6.6)
+- **forms-flow-analytics/** - Аналитика и отчети (Redash 10.1.4)
+- **forms-flow-data-analysis-api/** - API за анализ на данни
+- **forms-flow-documents/** - Документооборот
+- **forms-flow-forms/** - Форм.ио интеграция
+- **forms-flow-idm/** - Управление на идентичност (Keycloak)
+- **formsflow-admin-api/** - Административно API
+
+### Интеграции и разширения
+- **forms-flow-eforms-auditlog-client/** - Одит лог клиент
+- **forms-flow-eforms-idp-extensions/** - IDP разширения
+- **forms-flow-eforms-integrations/** - Е-форми интеграции
+- **forms-flow-eforms-signature-services/** - Услуги за подписване
+- **forms-flow-api-utils/** - API утилити
+- **forms-flow-mail-templates/** - Шаблони за имейли
+
+## ⚡ Бърз старт
+‼️ Важно ‼️ Наличния сорс код все още не е в състояние за пълноценно стартиране и разработка в Дев среда. Липсват основни конфигурации и данни в базите. Повечето от проектите могат да се стартират поотделно.
+
+### 1. Клониране на репозиторията
+```bash
+git clone https://github.com/sofia-municipality/DigitalSofia
+cd DigitalSofia
 ```
-cd existing_repo
-git remote add origin https://git.egov.bg/so/eservices/soa23dg55-158.git
-git branch -M main
-git push -uf origin main
+
+### 2. Конфигуриране на околната среда
+Всеки компонент има свой `sample.env` файл. Преименувайте го на `.env` и конфигурирайте според вашата среда.
+
+### 3. Стартиране с Docker
+```bash
+# За стартиране на цялата платформа
+docker-compose up -d
+
+# За стартиране на отделни компоненти
+cd forms-flow-api && docker-compose up -d
+cd forms-flow-web && docker-compose up -d
+cd forms-flow-bpm && docker-compose up -d
+cd forms-flow-analytics && docker-compose up -d
 ```
 
-## Integrate with your tools
+### 4. Достъп до компонентите
+- **Уеб приложение**: http://localhost:3000
+- **API**: http://localhost:5000
+- **BPM Admin**: http://localhost:8000
+- **Аналитика**: http://localhost:7000
+- **Keycloak**: http://localhost:8080
 
-- [ ] [Set up project integrations](https://git.egov.bg/so/eservices/soa23dg55-158/-/settings/integrations)
+## 📚 Документация
 
-## Collaborate with your team
+Всеки компонент съдържа подробна документация в съответните README.md файлове:
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+- [API Документация](./forms-flow-api/README.md)
+- [Уеб приложение](./forms-flow-web/README.md)
+- [BPM Engine](./forms-flow-bpm/README.md)
+- [Аналитика](./forms-flow-analytics/README.md)
+- [Android приложение](./digital-sofia-android/README.md)
+- [iOS приложение](./digital-sofia-ios/README.md)
 
-## Test and Deploy
+## 🔐 Сигурност
 
-Use the built-in continuous integration in GitLab.
+Системата имплементира модерни сигурностни практики:
+- OAuth 2.0 / OpenID Connect
+- JWT токени
+- Evrotrust интеграция за електронни подписи
+- Криптиране на чувствителни данни
+- Биометрична автентикация в мобилните приложения
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## 🌍 Локализация
 
-***
+Платформата поддържа:
+- Български език (по подразбиране)
+- Английски език
+- Динамично превключване между езици
 
-# Editing this README
+## 📱 Мобилни приложения
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+### Android
+- Минимална версия: Android 7.0 (API 24)
+- Нативно Kotlin приложение
+- Clean Architecture
+- Biometric автентикация
+- Offline capabilities
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+### iOS
+- Минимална версия: iOS 14.0
+- SwiftUI интерфейс
+- Touch ID / Face ID
+- Push нотификации
 
-## Name
-Choose a self-explaining name for your project.
+## 🤝 Помощ в разработката
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+За да допринесете към проекта:
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+1. Създайте branch за вашата функционалност
+2. Следвайте кодовите стандарти на проекта
+3. Добавете тестове за новата функционалност
+4. Създайте merge request
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+## 📞 Поддръжка
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+За въпроси и поддръжка:
+- Създайте issue в GitHub
+- Свържете се с техническия екип
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+## 📄 Лиценз
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+Този проект е собственост на Столична община София.
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+---
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+© 2023-2025 Столична община София. Всички права запазени.
