@@ -18,7 +18,7 @@
         <dss-mock-tsa.version>5.8.2</dss-mock-tsa.version>
         <lombock.version>1.18.20</lombock.version>
         <commons.validator.version>1.7</commons.validator.version>
-        <tika.version>2.1.0</tika.version>
+        <tika.version>3.2.2</tika.version>
     </properties>
 
     <repositories>
