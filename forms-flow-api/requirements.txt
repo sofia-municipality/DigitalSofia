@@ -39,7 +39,7 @@ itsdangerous==2.1.2
 jsonschema==4.17.3
 kaitaistruct==0.10
 marshmallow-sqlalchemy==0.29.0
-marshmallow==3.19.0
+marshmallow==3.26.2
 outcome==1.2.0
 packaging==23.1
 psycopg2-binary==2.9.6
