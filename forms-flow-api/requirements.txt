@@ -12,7 +12,7 @@ PyJWT==2.7.0
 PySocks==1.7.1
 SQLAlchemy-Utils==0.41.1
 SQLAlchemy==2.0.21
-Werkzeug==2.3.6
+Werkzeug==3.1.5
 alembic==1.11.1
 aniso8601==9.0.1
 async-generator==1.10
